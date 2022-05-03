@@ -1,97 +1,109 @@
+import { copyFile } from 'fs';
 import * as THREE from 'three'
 import { Vector3, Mesh, Matrix3, Quaternion } from 'three';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 
-var _v1 = new Vector3()
+var _deltaPos = new Vector3();
+var _v1 = new Vector3();
+var _v2 = new Vector3();
 var _ux = new Vector3(1);
 var _uy = new Vector3(0, 1);
 var _uz = new Vector3(0, 0, 1);
 var _m1 = new Matrix3()
 var _q1 = new Quaternion()
 
-export class PhysicBody {
+
+export class PhysicBall {
     mesh: Mesh
     position: Vector3
-    kineticEnergy: number
+    radius: number
     speedDirection: Vector3
     speed: Vector3
-    acceleration: Vector3
-    // rotationSpeed: Vector3
-    speedRotationRate: number
-    totalForce: Vector3
-    // physics: boolean
+    speedNorm: number
+    speedNormSq: number
+    // deformationEnergy: number
+    INERTIA: number
+    ELASIC_COEF: number
+    testCollisions: (ball: PhysicBall) => void
 
-    constructor(mesh: Mesh, speed: Vector3) {
+    // distance vectors, one per collision
+    collisionVectors: Vector3[]
+
+    constructor(mesh: Mesh, radius: number, speedDirection: Vector3, energy: number, testCollisions: (ball: PhysicBall) => void ) {
         this.mesh = mesh;
+        this.radius = radius;
         this.position = mesh.position;
-        this.acceleration = new Vector3(0, 0);
-        // this.rotationSpeed = new Vector3(0, 0, 1);
-        this.speedRotationRate = 10;
-        this.speed = speed;
-        this.kineticEnergy = speed.length();
+        // this.deformationEnergy = 0;
+        this.speed = new Vector3();
         this.speedDirection = new Vector3();
-        this.speedDirection.copy(speed).normalize();
-        this.totalForce = new Vector3(0, 0);
-        // this.physics = true;
+        this.speedDirection.copy(speedDirection).normalize();
+        this.INERTIA = 1;
+        this.ELASIC_COEF = 1;
+        this.speedNormSq = energy / this.INERTIA;
+        this.speedNorm = Math.sqrt(this.speedNormSq);
+        this.testCollisions = testCollisions;
+        this.collisionVectors = [];
     }
 
-    // startCollisionTween() {
-    //     const elasticCoef = 1;
-    //     const penetrationDist = this.speed.x / elasticCoef;
-    //     const collisionHalfTime = Math.PI / (4 * elasticCoef);
-    //     const direction = Math.sign(this.speed.x);
-    //     var tween1 = new TWEEN.Tween(this.position);
-    //     tween1.to({
-    //         x: this.position.x + direction * penetrationDist,
-    //         y: this.position.y + collisionHalfTime * this.speed.y / 1000,
-    //     }, collisionHalfTime).easing(TWEEN.Easing.Circular.Out);
-    //     var tween2 = new TWEEN.Tween(this.position);
-    //     tween2.to({
-    //         x: this.position.x,
-    //         y: this.position.y + 2 * collisionHalfTime * this.speed.y / 1000,
-    //     }, collisionHalfTime).easing(TWEEN.Easing.Circular.In);
-    //     tween1.chain(tween2);
-    //     tween1.onStart(() => {
-    //         // this.physics = false;
-    //     });
-    //     const previousSpeedX = this.speed.x;
-    //     tween2.onComplete(() => {
-    //         // this.physics = true;
-    //         this.speed.x = -previousSpeedX;
-    //     })
-    //     tween1.start();
-    // }
+    kineticEnergy() {
+        return this.INERTIA * this.speedNormSq;
+    }
+
+    deformationEnergy(collisionDistance: number) {
+        if (collisionDistance > this.radius)
+            return 0;
+        var dR = collisionDistance - this.radius;
+        return (
+            this.ELASIC_COEF
+                * Math.pow(dR, 2)
+                * (1 + 1 / Math.pow((1 + dR / this.radius), 2))
+        );
+    }
+
+
+
+    addCollision(collisionDistanceVec: Vector3) {
+        this.collisionVectors.push(collisionDistanceVec.clone())
+    }
+
+    resetCollisions() {
+        this.collisionVectors = [];
+    }
 
     updatePosition(time: number) {
-        _v1.copy(this.speed);
-        _v1.multiplyScalar(time / 1000);
-        this.position.add(_v1);
+        _deltaPos.copy(this.speed);
+        _deltaPos.multiplyScalar(time / 1000);
+        this.position.add(_deltaPos);
     }
 
-    updateSpeed(time: number) {
-        // _v1.crossVectors(this.rotationSpeed, this.speed);
-        // _v1.multiplyScalar(.01);
-        // this.acceleration.copy(_v1);
-        var angle = this.speedRotationRate * time / 1000; 
-        _q1.setFromAxisAngle(_uz, angle);
-        _v1.copy(this.speedDirection)
-        _v1.applyQuaternion(_q1)
-        _v1.multiplyScalar(this.kineticEnergy)
-        this.speed.copy(_v1)
-
-        // this.speed.applyQuaternion(_q1)
-        // this.speed.x += time * this.acceleration.x / 1000;
-        // this.speed.y += time * this.acceleration.y / 1000;
+    updateCollisions(time: number) {
+        this.testCollisions(this);
+        if (this.collisionVectors.length != 0) {
+            // 1 collision for now
+            var collisionDistanceVec = this.collisionVectors[0];
+            var collisionDistance = collisionDistanceVec.length();
+            var minR = this.minimumRadius();
+            if (collisionDistance < minR) {
+                this.rigidAdjustPosition(collisionDistanceVec, minR); // must modify collisionDistanceVec
+                collisionDistance = minR;
+            }
+            var Ed = this.deformationEnergy(collisionDistance);
+        }
     }
+
+    // updateSpeed(time: number) {
+    //     // var angle = this.speedRotationRate * time / 1000;
+    //     // _q1.setFromAxisAngle(_uz, angle);
+    //     // _v1.copy(this.speedDirection)
+    //     // _v1.applyQuaternion(_q1)
+    //     // _v1.multiplyScalar(this.kineticEnergy)
+    //     // this.speed.copy(_v1)
+    // }
 
     update(time: number) {
-        // this.position.x += time * this.speed.x / 1000;
-        // this.position.y += time * this.speed.y / 1000;
         this.updatePosition(time);
-        this.updateSpeed(time);
-        this.speedRotationRate = Math.exp(-0.02 * time) * this.speedRotationRate;
-        // if (ballBarCollision(ball, bar.position)) {
-        //     ball.startCollisionTween();
-        // }
+        // this.speedRotationRate = Math.exp(-0.02 * time) * this.speedRotationRate;
+        this.updateCollisions(time);
+        this.resetCollisions();
     }
 }
