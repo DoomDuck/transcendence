@@ -38,17 +38,17 @@ export function ballBarDistance(ball: PhysicBall, bar: Bar): [Vector3, Vector3, 
     return [distanceToCenter, distanceToBorder, closestPoint];
 }
 
-export function ballWallCollisionDistances(ball: PhysicBall, gameWidth: number, gameHeight: number): Vector3[] {
+export function ballWallCollisionDistances(ball: PhysicBall, left: number, right: number, top: number, bottom: number): Vector3[] {
     var distanceVectors = [];
 
-    if (ball.position.x < ball.radius)
-        distanceVectors.push(new Vector3(ball.position.x, 0));
-    if (ball.position.x > gameWidth - ball.radius)
-        distanceVectors.push(new Vector3(ball.position.x - gameWidth, 0));
-    if (ball.position.y < ball.radius)
-        distanceVectors.push(new Vector3(ball.position.y, 0));
-    if (ball.position.y > gameHeight - ball.radius)
-        distanceVectors.push(new Vector3(ball.position.y - gameHeight, 0));
+    if (ball.position.x < left + ball.radius)
+        distanceVectors.push(new Vector3(ball.position.x - left, 0));
+    if (ball.position.x > right - ball.radius)
+        distanceVectors.push(new Vector3(ball.position.x - right, 0));
+    if (ball.position.y < top + ball.radius)
+        distanceVectors.push(new Vector3(0, ball.position.y - top));
+    if (ball.position.y > bottom - ball.radius)
+        distanceVectors.push(new Vector3(0, ball.position.y - bottom));
 
     return distanceVectors;
 }
