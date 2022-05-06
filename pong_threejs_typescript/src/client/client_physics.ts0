@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { Vector2, Vector3 } from 'three';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
-import { PhysicBody } from './PhysicBody';
+import { PhysicBall } from './PhysicBall';
 
 const scene = new THREE.Scene()
 
@@ -41,7 +41,7 @@ const bar = new THREE.Mesh(barGeometry, barMaterial)
 const ballMesh = new THREE.Mesh(ballGeometry, ballMaterial)
 ballMesh.rotateX(THREE.MathUtils.degToRad(90));
 var ballSpeed = new Vector3(-10, 1);
-var ball = new PhysicBody(ballMesh, ballSpeed);
+var ball = new PhysicBall(ballMesh, ballSpeed);
 bar.position.x -= w/4;
 // const cube2 = new THREE.Mesh(geometry, material2)
 
@@ -76,7 +76,7 @@ function onKeyDown(e: KeyboardEvent) {
 }
 
 
-function ballBarCollision(ball: PhysicBody, barPos: Vector3) {
+function ballBarCollision(ball: PhysicBall, barPos: Vector3) {
     const xBar = barPos.x + barWidth / 2;
     const xBallMin = ball.position.x - ballRadius;
     const xBallMax = ball.position.x + ballRadius;

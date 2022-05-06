@@ -1,5 +1,9 @@
 import * as THREE from 'three'
 import { Vector3 } from 'three';
+import { PhysicBall } from './PhysicBall';
+import { Bar } from './Bar';
+import { ballBarDistance } from './collision';
+
 
 const scene = new THREE.Scene()
 
@@ -13,48 +17,42 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
 // Geometry
+// const barGeometry = new THREE.BoxGeometry(
+    //     barWidth, barHeight
+    // )
+
+
+
+
+// BAR ----->
 const barWidth = 100;
 const barHeight = 1000;
-const barGeometry = new THREE.BoxGeometry(
-    barWidth, barHeight
-)
+const barX = -w/4;
+const barY = 0;
+var bar = new Bar(barWidth, barHeight, -w/4, 0);
+// BALL ---->
 const ballRadius = 100;
-// const ballRadius = 10;
-const ballRadialSegments = 100;
-const ballGeometry = new THREE.CylinderGeometry(
-    ballRadius, ballRadius,
-    1,
-    ballRadialSegments,
-)
-
-
-// Material
-const barMaterial = new THREE.MeshBasicMaterial({
-    color: 0xd14081,
-})
-const ballMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    // wireframe: true,
-})
-
-
-// Mesh
-const bar = new THREE.Mesh(barGeometry, barMaterial)
-const ball = new THREE.Mesh(ballGeometry, ballMaterial)
-ball.rotateX(THREE.MathUtils.degToRad(90));
-bar.position.x -= w/4;
+const ballX = 0;
+const ballY = 0;
+const ballSpeedX = -10;
+const ballSpeedY = 0;
+var ball = new PhysicBall(ballRadius, ballX, ballY, ballSpeedX, ballSpeedY, computeCollisionDistances);
+// var ball = new PhysicBall(ballRadius, ballX, ballY, ballSpeedX, ballSpeedY, (_: any) => {});
 
 
 // Helpers
 const axesHelper = new THREE.AxesHelper( 300 );
-const arrowDist = new THREE.ArrowHelper( new Vector3(), new Vector3(), 300, 0xff0000 );
+const arrowDist = new THREE.ArrowHelper( new Vector3(), new Vector3(), 0, 0xff0000 );
+const arrowForce = new THREE.ArrowHelper( new Vector3(), new Vector3(), 0, 0x0000ff );
 arrowDist.position.z = 5;
+arrowForce.position.z = 5;
 
 
 scene.add(bar)
 scene.add(ball)
 scene.add(axesHelper);
 scene.add(arrowDist);
+scene.add(arrowForce);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
@@ -69,7 +67,6 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     camera.position.z = 2;
 
-
     axesHelper.position.x = -w/2
     axesHelper.position.y = -h * (1/2 - .15)
 
@@ -78,11 +75,11 @@ function onWindowResize() {
 }
 onWindowResize();
 
-window.addEventListener('mousemove', onMouseMove, false);
-function onMouseMove(e: MouseEvent) {
-    ball.position.x = e.clientX + camera.left;
-    ball.position.y = e.clientY + camera.top;
-}
+// window.addEventListener('mousemove', onMouseMove, false);
+// function onMouseMove(e: MouseEvent) {
+//     ball.position.x = e.clientX + camera.left;
+//     ball.position.y = e.clientY + camera.top;
+// }
 
 var _ux = new Vector3(1);
 var _uy = new Vector3(0, 1);
@@ -90,79 +87,31 @@ var _uz = new Vector3(0, 0, 1);
 var _v1 = new Vector3();
 var _v2 = new Vector3();
 
-function ballBarDistance() {
-    var distanceToCenter = new Vector3();
-    var distanceToBorder = new Vector3();
-    var closestPoint = new Vector3();
-
-    // v1: bar to ball-center
-    distanceToCenter.copy(ball.position);
-    distanceToCenter.sub(bar.position);
-    var signX = Math.sign(distanceToCenter.x);
-    var signY = Math.sign(distanceToCenter.y);
-    var x = Math.abs(distanceToCenter.x) - barWidth / 2;
-    var y = Math.abs(distanceToCenter.y) - barHeight / 2;
-    distanceToCenter.x -= signX * (barWidth / 2)
-    distanceToCenter.y -= signY * (barHeight / 2)
-    // distanceToBorder: bar to ball-border
-    if (x > 0 && y < 0) {
-        // lateral face
-        distanceToCenter.set(distanceToCenter.x, 0, 0);
-        closestPoint.set(bar.position.x + signX * barWidth / 2, ball.position.y, 0);
-    }
-    else if (x < 0 && y > 0) {
-        // upper face
-        distanceToCenter.set(0, distanceToCenter.y, 0);
-        closestPoint.set(ball.position.x, bar.position.y + signY * barHeight / 2, 0);
-    }
-    else if (x > 0 && y > 0) {
-        // diagonal
-        closestPoint.set(bar.position.x + signX * barWidth / 2, bar.position.y + signY * barHeight / 2, 0)
-    }
-    if (x > ballRadius || y > ballRadius) {
-        distanceToBorder.copy(distanceToCenter);
-        distanceToBorder.setLength(distanceToBorder.length() - ballRadius);
-    }
-
-    return [distanceToCenter, distanceToBorder, closestPoint];
-}
-
 function updateArrowDist(distanceVec: Vector3, closestPoint: Vector3) {
     // origin
-    arrowDist.position.copy(closestPoint)
+    arrowDist.position.copy(closestPoint);
 
     // direction
     var dist = distanceVec.length();
     _v1.copy(distanceVec);
     _v1.normalize();
     arrowDist.setDirection(_v1);
+
+    // length
     arrowDist.setLength(dist);
 }
 
-
-function ballBarCollision(distanceVec: Vector3, closestPoint: Vector3) {
-    ball.scale.x = 1;
-    ball.rotation.y = 0;
-
-    var dist = distanceVec.length();
-    var distDir = new Vector3();
-    distDir.copy(distanceVec).normalize();
-    if (dist < ballRadius) {
-        ball.scale.x = dist / ballRadius;
-        var signY = Math.sign(distanceVec.y)
-        ball.rotation.y = signY * distanceVec.angleTo(_ux)
-    }
+function computeCollisionDistances(ball: PhysicBall): Vector3[] {
+    return ballBarDistance(ball, bar);
 }
-
-
-// var distanceVec = new Vector3();
-// var closestPoint = new Vector3();
 
 function animate(time: number) {
     requestAnimationFrame(animate);
-    var [distanceToCenter, distanceToBorder, closestPoint] = ballBarDistance();
+    ball.update(time);
+    var [distanceToCenter, distanceToBorder, closestPoint] = ballBarDistance(ball, bar);
+    ball.deformCollision(distanceToCenter);
     updateArrowDist(distanceToBorder, closestPoint);
-    ballBarCollision(distanceToCenter, closestPoint);
+    ball.updateArrowForce(arrowForce);
     render()
 }
 function render() {
