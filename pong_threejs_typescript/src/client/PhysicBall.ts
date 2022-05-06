@@ -44,7 +44,7 @@ export class PhysicBall extends THREE.Mesh {
         this.totalForces = new Vector3();
         this.mass = BALL_MASS;
         this.updateCollisionDistances = updateCollisionDistances;
-        this.energy = 1 / 2 * this.mass * this.speed.lengthSq();
+        this.energy = this.mass * this.speed.lengthSq() / 2;
     }
 
     repulsionForce(dist: number) {
@@ -52,6 +52,19 @@ export class PhysicBall extends THREE.Mesh {
             return 0;
         var deltaR = this.radius - dist;
         return this.ELASIC_COEF * (deltaR / this.radius + (this.radius / dist) ** 2);
+    }
+
+	repulsionEnergyOne(dist: number) {
+        if (dist > this.radius)
+            return 0;
+        return this.ELASIC_COEF * (dist - dist ** 2 / this.radius / 2 - this.radius ** 2 / dist + this.radius)
+	}
+
+    repulsionEnergy() {
+        return (this.updateCollisionDistances(this)
+            .map((vec: Vector3) => this.repulsionEnergyOne(vec.length()))
+            .reduce((x, y) => x + y, 0)
+        );
     }
 
     deformCollision(distanceVectors: Vector3[]) {
@@ -69,6 +82,29 @@ export class PhysicBall extends THREE.Mesh {
             this.scale.x = dist / this.radius;
             var signY = Math.sign(distanceVec.y)
             this.rotation.y = signY * distanceVec.angleTo(_ux)
+        }
+    }
+
+    correctSpeedBasedOnEnergy() {
+        var rE = this.repulsionEnergy();
+        if (rE > this.energy)
+            this.speed.set(0, 0, 0)
+        else if (rE > 0.01) {
+            _v1.copy(this.totalForces);
+            _v1.setLength(1);
+            var speedOrthoNorm = this.speed.dot(_v1)
+            _v1.multiplyScalar(speedOrthoNorm); // speedOrtho
+            _v2.copy(this.speed);
+            _v2.sub(_v1); //speedPara
+            var speedParaNormSq = _v2.lengthSq()
+            var newSpeedOrthoEnergy = Math.max(this.energy - speedParaNormSq * this.mass / 2 - rE, 0)
+            var newSpeedOrthoNorm = Math.sqrt(2 * newSpeedOrthoEnergy / this.mass);
+            _v1.setLength(1);
+            _v1.multiplyScalar(newSpeedOrthoNorm);
+            this.speed.copy(_v1).add(_v2)
+        }
+        else {
+            this.speed.setLength(Math.sqrt(2 * this.energy / this.mass))
         }
     }
 
@@ -90,8 +126,8 @@ export class PhysicBall extends THREE.Mesh {
             if (this.updateForces())
                 this.updateSpeed(dt);
             this.updatePosition(dt);
-            // this.correctSpeedBasedOnEnergy()
         }
+        this.correctSpeedBasedOnEnergy()
     }
 
     updateForces(): boolean {
