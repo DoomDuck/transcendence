@@ -9,30 +9,15 @@
                 overflow: hidden;
                 margin: 0px;
             }
-            #info-axis {
-            	position: absolute;
-                display: flex;
-                flex-direction: row;
-            	top: 10px;
-                left: 10px;
-                padding: 10px;
-            	text-align: center;
-            	z-index: 100;
-                background-color: white;
-                border: 5px solid gray;
-            }
-            #info-axis p {
-                margin: 10px 10px;
-                font-size: 72px;
+            canvas {
+                position: relative;
+                left: 50%;
+                top: 50%;
+                transform: translateX(-50%);
             }
         </style>
     </head>
     <body>
         <script type="module" src="bundle.js"></script>
-        <div id="info-axis">
-            <p style="color: red;">x</p>
-            <p style="color: green;">y</p>
-            <p style="color: blue;">z</p>
-        </div>
     </body>
 </html>

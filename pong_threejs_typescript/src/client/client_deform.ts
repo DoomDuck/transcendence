@@ -7,40 +7,41 @@ import { updateArrowDist, updateArrowForce } from './arrow_helpers';
 
 
 const scene = new THREE.Scene()
-
-// var w = window.innerWidth;
-// var h = window.innerHeight;
-const camera = new THREE.OrthographicCamera();
-camera.position.z = 10;
-
 const renderer = new THREE.WebGLRenderer()
-renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
-
 // GAME ---->
-var gameDims = {
-    w: window.innerWidth,
-    h: window.innerHeight
-}
-// var gameDims.w = window.innerWidth;
-// var gameDims.h = window.innerHeight;
+const GAME_RATIO = 4 / 3;
+const GAME_WIDTH = 2;
+const GAME_HEIGHT = GAME_WIDTH / GAME_RATIO;
+
+// CAMERA -->
+const camera = new THREE.OrthographicCamera();
+camera.left = -GAME_WIDTH / 2;
+camera.right = GAME_WIDTH / 2;
+camera.top = -GAME_HEIGHT / 2;
+camera.bottom = GAME_HEIGHT / 2;
+camera.near = 0;
+camera.far = 1000;
+camera.position.z = 10;
+camera.updateProjectionMatrix();
+
 // BAR ----->
-const barWidth = 100;
-const barHeight = 1000;
-const barX = -gameDims.w/4;
+const barWidth = .1;
+const barHeight = 1;
+const barX = -GAME_WIDTH / 4;
 const barY = 0;
-var bar = new Bar(barWidth, barHeight, -gameDims.w/4, 0);
+var bar = new Bar(barWidth, barHeight, barX, barY);
+
 // BALL ---->
-const ballRadius = 100;
+const ballRadius = .1;
 const ballX = 0;
-const ballY = -550;
+const ballY = -.51;
 const ballSpeedX = -1;
 const ballSpeedY = 0;
 var ball = new PhysicBall(ballRadius, ballX, ballY, ballSpeedX, ballSpeedY, computeCollisionDistances);
 
 // Helpers
-const axesHelper = new THREE.AxesHelper( 300 );
 const arrowDist = new THREE.ArrowHelper( new Vector3(), new Vector3(), 0, 0xff0000 );
 const arrowForce = new THREE.ArrowHelper( new Vector3(), new Vector3(), 0, 0x0000ff );
 arrowDist.position.z = 5;
@@ -49,27 +50,16 @@ arrowForce.position.z = 5;
 
 scene.add(bar)
 scene.add(ball)
-scene.add(axesHelper);
 scene.add(arrowDist);
 scene.add(arrowForce);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
-    gameDims.w = window.innerWidth;
-    gameDims.h = window.innerHeight;
-    camera.left = -gameDims.w/2;
-    camera.right = gameDims.w/2;
-    camera.top = -gameDims.h/2;
-    camera.bottom = gameDims.h/2;
-    camera.near = 0;
-    camera.far = 1000;
-    camera.updateProjectionMatrix();
-    camera.position.z = 2;
+    if (window.innerWidth / window.innerHeight < GAME_RATIO)
+        renderer.setSize(window.innerWidth, window.innerWidth / GAME_RATIO);
+    else
+        renderer.setSize(GAME_RATIO * window.innerHeight, window.innerHeight);
 
-    axesHelper.position.x = -gameDims.w/2
-    axesHelper.position.y = -gameDims.h * (1/2 - .15)
-
-    renderer.setSize(window.innerWidth, window.innerHeight)
     render()
 }
 onWindowResize();
@@ -97,9 +87,18 @@ function computeCollisionDistances(ball: PhysicBall): Vector3[] {
     return collisionDistanceVectors;
 }
 
-function animate(time: number) {
+var lastTimeStamp = 0;
+var elapsedTime;
+var cpt = 0;
+
+function animate(timeStamp: number) {
+    elapsedTime = timeStamp - lastTimeStamp;
+    lastTimeStamp = timeStamp;
+    if (cpt % 100 == 0)
+        console.log('elapsed: ' + elapsedTime); 
+    cpt++;
     requestAnimationFrame(animate);
-    ball.update(time);
+    ball.update(elapsedTime);
     var [distanceToCenter, distanceToBorder, closestPoint] = ballBarDistance(ball, bar);
     updateArrowDist(distanceToBorder, closestPoint, arrowDist);
     updateArrowForce(ball, arrowForce);

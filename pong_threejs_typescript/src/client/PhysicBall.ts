@@ -3,9 +3,9 @@ import { Vector3 } from 'three';
 
 
 const BALL_RADIAL_SEGMENTS = 100;
-const BALL_ELASTIC_COEF = 1;
-const BALL_MASS = 500;
-const DELTA_T = 1000 / 60;
+const BALL_ELASTIC_COEF = 10;
+const BALL_MASS = 50;
+const DELTA_T = 1000 / 120;
 
 var _delta = new Vector3();
 var _v1 = new Vector3();
@@ -14,6 +14,7 @@ var _ux = new Vector3(1);
 var _uy = new Vector3(0, 1);
 var _uz = new Vector3(0, 0, 1);
 
+var cpt = 0;
 
 export class PhysicBall extends THREE.Mesh {
     radius: number
@@ -44,7 +45,7 @@ export class PhysicBall extends THREE.Mesh {
         this.totalForces = new Vector3();
         this.mass = BALL_MASS;
         this.updateCollisionDistances = updateCollisionDistances;
-        this.energy = this.mass * this.speed.lengthSq() / 2;
+        this.energy = this.mass * this.speed.lengthSq() / 2 + this.repulsionEnergy();
     }
 
     repulsionForce(dist: number) {
@@ -86,26 +87,26 @@ export class PhysicBall extends THREE.Mesh {
     }
 
     correctSpeedBasedOnEnergy() {
-        var rE = this.repulsionEnergy();
-        if (rE > this.energy)
-            this.speed.set(0, 0, 0)
-        else if (rE > 0.01) {
-            _v1.copy(this.totalForces);
-            _v1.setLength(1);
-            var speedOrthoNorm = this.speed.dot(_v1)
-            _v1.multiplyScalar(speedOrthoNorm); // speedOrtho
-            _v2.copy(this.speed);
-            _v2.sub(_v1); //speedPara
-            var speedParaNormSq = _v2.lengthSq()
-            var newSpeedOrthoEnergy = Math.max(this.energy - speedParaNormSq * this.mass / 2 - rE, 0)
-            var newSpeedOrthoNorm = Math.sqrt(2 * newSpeedOrthoEnergy / this.mass);
-            _v1.setLength(1);
-            _v1.multiplyScalar(newSpeedOrthoNorm);
-            this.speed.copy(_v1).add(_v2)
-        }
-        else {
+        // var rE = this.repulsionEnergy();
+        // if (rE > this.energy)
+        //     this.speed.set(0, 0, 0)
+        // else if (rE > 0.01) {
+        //     _v1.copy(this.totalForces);
+        //     _v1.setLength(1);
+        //     var speedOrthoNorm = this.speed.dot(_v1)
+        //     _v1.multiplyScalar(speedOrthoNorm); // speedOrtho
+        //     _v2.copy(this.speed);
+        //     _v2.sub(_v1); //speedPara
+        //     var speedParaNormSq = _v2.lengthSq()
+        //     var newSpeedOrthoEnergy = Math.max(this.energy - speedParaNormSq * this.mass / 2 - rE, 0)
+        //     var newSpeedOrthoNorm = Math.sqrt(2 * newSpeedOrthoEnergy / this.mass);
+        //     _v1.setLength(1);
+        //     _v1.multiplyScalar(newSpeedOrthoNorm);
+        //     this.speed.copy(_v1).add(_v2)
+        // }
+        // else {
             this.speed.setLength(Math.sqrt(2 * this.energy / this.mass))
-        }
+        // }
     }
 
     updatePosition(elapsedTime: number) {
@@ -128,6 +129,9 @@ export class PhysicBall extends THREE.Mesh {
             this.updatePosition(dt);
         }
         this.correctSpeedBasedOnEnergy()
+        if (cpt % 10 == 0)
+            console.log('speed length: ' + this.speed.length())
+        cpt += 1;
     }
 
     updateForces(): boolean {
