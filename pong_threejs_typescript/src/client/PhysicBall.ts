@@ -3,9 +3,9 @@ import { Vector3 } from 'three';
 
 
 const BALL_RADIAL_SEGMENTS = 100;
-const BALL_ELASTIC_COEF = 10;
-const BALL_MASS = 50;
-const DELTA_T = 1000 / 120;
+const BALL_ELASTIC_COEF = 1;
+const BALL_MASS = 5;
+const COLLISION_DISTANCE_MIN = .01
 
 var _delta = new Vector3();
 var _v1 = new Vector3();
@@ -14,14 +14,13 @@ var _ux = new Vector3(1);
 var _uy = new Vector3(0, 1);
 var _uz = new Vector3(0, 0, 1);
 
-var cpt = 0;
-
 export class PhysicBall extends THREE.Mesh {
     radius: number
     speed: Vector3
     ELASIC_COEF: number
+    MASS: number
+    // collisionDistanceVectors: Vector3[]
     totalForces: Vector3
-    mass: number
     energy: number
     updateCollisionDistances: (ball: PhysicBall) => Vector3[]
 
@@ -42,10 +41,11 @@ export class PhysicBall extends THREE.Mesh {
         this.radius = radius;
         this.speed = new Vector3(speedX, speedY);
         this.ELASIC_COEF = BALL_ELASTIC_COEF;
+        this.MASS = BALL_MASS;
+        // this.collisionDistanceVectors = []
         this.totalForces = new Vector3();
-        this.mass = BALL_MASS;
         this.updateCollisionDistances = updateCollisionDistances;
-        this.energy = this.mass * this.speed.lengthSq() / 2 + this.repulsionEnergy();
+        this.energy = this.MASS * this.speed.lengthSq() / 2 + this.repulsionEnergy();
     }
 
     repulsionForce(dist: number) {
@@ -98,40 +98,15 @@ export class PhysicBall extends THREE.Mesh {
         //     _v2.copy(this.speed);
         //     _v2.sub(_v1); //speedPara
         //     var speedParaNormSq = _v2.lengthSq()
-        //     var newSpeedOrthoEnergy = Math.max(this.energy - speedParaNormSq * this.mass / 2 - rE, 0)
-        //     var newSpeedOrthoNorm = Math.sqrt(2 * newSpeedOrthoEnergy / this.mass);
+        //     var newSpeedOrthoEnergy = Math.max(this.energy - speedParaNormSq * this.MASS / 2 - rE, 0)
+        //     var newSpeedOrthoNorm = Math.sqrt(2 * newSpeedOrthoEnergy / this.MASS);
         //     _v1.setLength(1);
         //     _v1.multiplyScalar(newSpeedOrthoNorm);
         //     this.speed.copy(_v1).add(_v2)
         // }
         // else {
-            this.speed.setLength(Math.sqrt(2 * this.energy / this.mass))
+            this.speed.setLength(Math.sqrt(2 * this.energy / this.MASS))
         // }
-    }
-
-    updatePosition(elapsedTime: number) {
-        _delta.copy(this.speed);
-        _delta.multiplyScalar(elapsedTime / 1000);
-        this.position.add(_delta);
-    }
-
-    updateSpeed(elapsedTime: number) {
-        _delta.copy(this.totalForces).divideScalar(this.mass);
-        _delta.multiplyScalar(elapsedTime / 1000);
-        this.speed.add(_delta);
-    }
-
-    updateDynamics(elapsedTime: number) {
-        for (var t = 0; t < elapsedTime; t += DELTA_T) {
-            var dt = (t + DELTA_T < elapsedTime) ? DELTA_T : elapsedTime - t;
-            if (this.updateForces())
-                this.updateSpeed(dt);
-            this.updatePosition(dt);
-        }
-        this.correctSpeedBasedOnEnergy()
-        if (cpt % 10 == 0)
-            console.log('speed length: ' + this.speed.length())
-        cpt += 1;
     }
 
     updateForces(): boolean {
@@ -163,10 +138,51 @@ export class PhysicBall extends THREE.Mesh {
         return true;
     }
 
+    updatePosition(elapsedTime: number) {
+        _delta.copy(this.speed);
+        _delta.multiplyScalar(elapsedTime / 1000);
+        this.position.add(_delta);
+    }
+
+    updateSpeed(elapsedTime: number) {
+        _delta.copy(this.totalForces).divideScalar(this.MASS);
+        _delta.multiplyScalar(elapsedTime / 1000);
+        this.speed.add(_delta);
+    }
+
+    updateDynamics(elapsedTime: number) {
+        if (this.updateForces())
+            this.updateSpeed(elapsedTime);
+        this.updatePosition(elapsedTime);
+        var collisionDistanceVectors = this.updateCollisionDistances(this);
+        for (var collisionDistanceVec of collisionDistanceVectors) {
+            if (collisionDistanceVec.length() < COLLISION_DISTANCE_MIN) {
+                this.position.sub(collisionDistanceVec);
+                collisionDistanceVec.setLength(COLLISION_DISTANCE_MIN);
+                this.position.add(collisionDistanceVec);
+            }
+        }
+    }
+
+    updateOnFrameEnd() {
+        this.correctSpeedBasedOnEnergy();
+        this.deformCollision(this.updateCollisionDistances(this));
+    }
+
+    // updateDynamics(elapsedTime: number) {
+    //     for (var t = 0; t < elapsedTime; t += DELTA_T) {
+    //         var dt = (t + DELTA_T < elapsedTime) ? DELTA_T : elapsedTime - t;
+    //         if (this.updateForces())
+    //             this.updateSpeed(dt);
+    //         this.updatePosition(dt);
+    //     }
+    //     this.correctSpeedBasedOnEnergy()
+    // }
+
 
     update(elapsedTime: number) {
         this.updateDynamics(elapsedTime);
-        this.deformCollision(this.updateCollisionDistances(this));
+        // this.deformCollision(this.updateCollisionDistances(this));
         // console.log(this.position)
         // this.speedRotationRate = Math.exp(-0.02 * time) * this.speedRotationRate;
     }

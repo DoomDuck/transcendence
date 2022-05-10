@@ -30,6 +30,14 @@ export function ballBarDistance(ball: PhysicBall, bar: Bar): [Vector3, Vector3, 
         // diagonal
         closestPoint.set(bar.position.x + signX * bar.width / 2, bar.position.y + signY * bar.height / 2, 0)
     }
+    else if (Math.abs(x) < Math.abs(y)) {
+        closestPoint.set(bar.position.x + signX * bar.width / 2, ball.position.y, 0);
+        distanceToCenter.set(-distanceToCenter.x, 0, 0);
+    }
+    else {
+        closestPoint.set(ball.position.x, bar.position.y + signY * bar.height / 2, 0);
+        distanceToCenter.set(0, -distanceToCenter.y, 0);
+    }
     if (x > ball.radius || y > ball.radius) {
         distanceToBorder.copy(distanceToCenter);
         distanceToBorder.setLength(distanceToBorder.length() - ball.radius);

@@ -4,6 +4,7 @@ import { PhysicBall } from './PhysicBall';
 import { Bar } from './Bar';
 import { ballBarDistance, ballWallCollisionDistances } from './collision';
 import { updateArrowDist, updateArrowForce } from './arrow_helpers';
+import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
 
 
 const scene = new THREE.Scene()
@@ -14,6 +15,11 @@ document.body.appendChild(renderer.domElement)
 const GAME_RATIO = 4 / 3;
 const GAME_WIDTH = 2;
 const GAME_HEIGHT = GAME_WIDTH / GAME_RATIO;
+var clientWidth: number;
+var clientHeight: number;
+
+// PHYSIC -->
+const DELTA_T = 1000 / 360;
 
 // CAMERA -->
 const camera = new THREE.OrthographicCamera();
@@ -40,6 +46,16 @@ const ballY = -.51;
 const ballSpeedX = -1;
 const ballSpeedY = 0;
 var ball = new PhysicBall(ballRadius, ballX, ballY, ballSpeedX, ballSpeedY, computeCollisionDistances);
+function computeCollisionDistances(ball: PhysicBall): Vector3[] {
+    var collisionDistanceVectors = [];
+    var ballBarDistanceVec = ballBarDistance(ball, bar)[0];
+    if (ballBarDistanceVec.length() < ball.radius) {
+        collisionDistanceVectors.push(ballBarDistanceVec);
+    }
+    collisionDistanceVectors.push(...ballWallCollisionDistances(ball, camera.left, camera.right, camera.top, camera.bottom));
+    // return collisionDistanceVectors.filter((vec: Vector3) => (vec.length() < ball.radius));
+    return collisionDistanceVectors;
+}
 
 // Helpers
 const arrowDist = new THREE.ArrowHelper( new Vector3(), new Vector3(), 0, 0xff0000 );
@@ -55,20 +71,28 @@ scene.add(arrowForce);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
-    if (window.innerWidth / window.innerHeight < GAME_RATIO)
+    if (window.innerWidth / window.innerHeight < GAME_RATIO) {
         renderer.setSize(window.innerWidth, window.innerWidth / GAME_RATIO);
-    else
+        clientWidth = window.innerWidth;
+        clientHeight = window.innerWidth / GAME_RATIO;
+    }
+    else {
         renderer.setSize(GAME_RATIO * window.innerHeight, window.innerHeight);
+        clientWidth = GAME_RATIO * window.innerHeight;
+        clientHeight = window.innerHeight;
+    }
 
     render()
 }
 onWindowResize();
 
-// window.addEventListener('mousemove', onMouseMove, false);
-// function onMouseMove(e: MouseEvent) {
-//     ball.position.x = e.clientX + camera.left;
-//     ball.position.y = e.clientY + camera.top;
-// }
+window.addEventListener('keydown', onKeyDown, false);
+function onKeyDown(e: KeyboardEvent) {
+    if (e.key == 'b') {
+        console.log('Bump');
+        bar.onBump();
+    }
+}
 
 var _ux = new Vector3(1);
 var _uy = new Vector3(0, 1);
@@ -76,32 +100,42 @@ var _uz = new Vector3(0, 0, 1);
 var _v1 = new Vector3();
 var _v2 = new Vector3();
 
-function computeCollisionDistances(ball: PhysicBall): Vector3[] {
-    var collisionDistanceVectors = [];
-    var ballBarDistanceVec = ballBarDistance(ball, bar)[0];
-    if (ballBarDistanceVec.length() < ball.radius) {
-        collisionDistanceVectors.push(ballBarDistanceVec);
+
+function updatePhysics(elapsedTime: number) {
+    for (var t = 0; t < elapsedTime; t += DELTA_T) {
+        var dt = (t + DELTA_T < elapsedTime) ? DELTA_T : elapsedTime - t;
+        // var inCollision = ballBarDistance(ball, bar)[0].length() < ball.radius;
+        // if (bar.update(dt) && inCollision) {
+        //     ball.position.add(bar.deltaPos);
+        //     ball.update(dt);
+        //     ball.energy += ball.totalForces.dot(bar.deltaPos)
+        // }
+        // else
+        bar.update(dt);
+        ball.update(dt);
     }
-    collisionDistanceVectors.push(...ballWallCollisionDistances(ball, camera.left, camera.right, camera.top, camera.bottom));
-    // return collisionDistanceVectors.filter((vec: Vector3) => (vec.length() < ball.radius));
-    return collisionDistanceVectors;
+    ball.updateOnFrameEnd();
 }
+
+// window.addEventListener('mousemove', onMouseMove);
+// function onMouseMove(e: MouseEvent) {
+//     ball.position.x = (e.clientX - window.innerWidth/2) / clientWidth * GAME_WIDTH;
+//     ball.position.y = (e.clientY - window.innerHeight/2) / clientHeight * GAME_HEIGHT;
+// } 
 
 var lastTimeStamp = 0;
 var elapsedTime;
-var cpt = 0;
 
 function animate(timeStamp: number) {
     elapsedTime = timeStamp - lastTimeStamp;
     lastTimeStamp = timeStamp;
-    if (cpt % 100 == 0)
-        console.log('elapsed: ' + elapsedTime); 
-    cpt++;
+
     requestAnimationFrame(animate);
-    ball.update(elapsedTime);
+    updatePhysics(elapsedTime);
     var [distanceToCenter, distanceToBorder, closestPoint] = ballBarDistance(ball, bar);
-    updateArrowDist(distanceToBorder, closestPoint, arrowDist);
-    updateArrowForce(ball, arrowForce);
+    // updateArrowDist(distanceToBorder, closestPoint, arrowDist);
+    updateArrowDist(distanceToCenter, closestPoint, arrowDist);
+    // updateArrowForce(ball, arrowForce);
     render()
 }
 function render() {
