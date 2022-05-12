@@ -11,10 +11,10 @@ document.body.appendChild(renderer.domElement)
 
 // CAMERA SETUP
 const camera = new THREE.OrthographicCamera();
-camera.left = GSettings.GAME_LEFT;
-camera.right = GSettings.GAME_RIGHT;
-camera.top = GSettings.GAME_TOP;
-camera.bottom = GSettings.GAME_BOTTOM;
+camera.left = GSettings.SCREEN_LEFT;
+camera.right = GSettings.SCREEN_RIGHT;
+camera.top = GSettings.SCREEN_TOP;
+camera.bottom = GSettings.SCREEN_BOTTOM;
 camera.near = 0;
 camera.far = 1000;
 camera.position.z = 10;
@@ -23,8 +23,21 @@ camera.updateProjectionMatrix();
 
 // DECORATION
 
-// const texture = new THREE.TextureLoader().load("img/background.jpg");
-// scene.background = texture;
+const texture = new THREE.TextureLoader().load(
+    "/img/background.jpg",
+    onLoad,
+    onProgress,
+    onError,
+);
+function onLoad(texture: THREE.Texture) {
+    scene.background = texture;
+    console.log('Texture loaded');
+}
+function onProgress() {}
+function onError(e: ErrorEvent) {
+    console.log(`Error loading texture: ${e}`)
+}
+
 
 
 // ENTITIES
@@ -75,11 +88,11 @@ scene.add(ball);
 
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
-    if (window.innerWidth / window.innerHeight < GSettings.GAME_RATIO) {
-        renderer.setSize(window.innerWidth, window.innerWidth / GSettings.GAME_RATIO);
+    if (window.innerWidth / window.innerHeight < GSettings.SCREEN_RATIO) {
+        renderer.setSize(window.innerWidth, window.innerWidth / GSettings.SCREEN_RATIO);
     }
     else {
-        renderer.setSize(GSettings.GAME_RATIO * window.innerHeight, window.innerHeight);
+        renderer.setSize(GSettings.SCREEN_RATIO * window.innerHeight, window.innerHeight);
     }
     render()
 }

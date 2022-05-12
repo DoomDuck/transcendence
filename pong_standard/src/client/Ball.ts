@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { Vector3 } from 'three';
 import { GSettings } from './constants';
 import { Bar } from './Bar';
+import { setDefaultResultOrder } from 'dns';
 
 var _delta = new Vector3();
 
@@ -27,39 +28,114 @@ export class Ball extends THREE.Mesh {
         this.onGoal = onGoal;
     }
 
+    topY(): number {
+        return this.position.y - this.radius;
+    }
+
+    bottomY(): number {
+        return this.position.y + this.radius;
+    }
+
+    setTopY(y: number) {
+        this.position.y = y + this.radius;
+    }
+
+    setBottomY(y: number) {
+        this.position.y = y - this.radius;
+    }
+
     updatePosition(elapsedTime: number) {
         _delta.copy(this.speed);
         _delta.multiplyScalar(elapsedTime / 1000);
         this.position.add(_delta);
     }
 
+    /**
+     * Return whether the ball is inside and the distance from the
+     * bar to the ball (edges of the rectangle to center)
+     * @param {Bar} bar
+     * @returns {[boolean, Vector3]}
+     */
+    //
+    barCollisionDistance(bar: Bar): [boolean, Vector3] {
+        var distanceToCenter = new Vector3();
+        var isInside = false;
+
+        distanceToCenter.copy(this.position);
+        distanceToCenter.sub(bar.position);
+        var signX = Math.sign(distanceToCenter.x);
+        var signY = Math.sign(distanceToCenter.y);
+        var x = Math.abs(distanceToCenter.x) - bar.width / 2;
+        var y = Math.abs(distanceToCenter.y) - bar.height / 2;
+        distanceToCenter.x -= signX * (bar.width / 2)
+        distanceToCenter.y -= signY * (bar.height / 2)
+        // distanceToBorder: bar to ball-border
+        if (x > 0 && y < 0) {
+            // lateral face
+            distanceToCenter.y = 0;
+        }
+        else if (x < 0 && y > 0) {
+            // upper face
+            distanceToCenter.x = 0;
+        }
+        else if (x > 0 && y > 0) {
+            // diagonal
+            // TODO: Speed boost
+        }
+        else  {
+            isInside = true;
+        }
+
+        return [isInside, distanceToCenter];
+    }
+
     handleBarCollision(bar: Bar) {
-        // detection
-        var deltaX = this.position.x - bar.collisionEdgeX();
-        deltaX *= bar.collisionEdgeDirection
-        if (deltaX < 0 || deltaX > this.radius)
+        //detection
+        if (this.speed.x * bar.collisionEdgeDirection >= 0)
             return;
-        var deltaY = this.position.y - bar.position.y;
-        if (Math.abs(deltaY) > bar.height / 2)
+        var [isInside, distanceVecToCenter] = this.barCollisionDistance(bar);
+        var distance = distanceVecToCenter.length();
+        if (distance >= this.radius)
+            return;
+        if (distanceVecToCenter.x * bar.collisionEdgeDirection <= 0)
             return;
 
-        // resolution
-        this.position.x = this.radius * bar.collisionEdgeDirection + bar.collisionEdgeX();
+        //resolution
+        var posCorrection = distanceVecToCenter.clone();
+        posCorrection.setLength(this.radius - distance);
+        this.position.add(posCorrection);
+        this.changeSpeedBarCollision(bar);
+    }
+
+    changeSpeedBarCollision(bar: Bar) {
+        // speed.x
         this.speed.x *= -1;
         this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
         if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
             this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
+
+        // speed.y
+        var deltaY = this.position.y - bar.position.y;
         this.speed.y += (deltaY / bar.height) * GSettings.BALL_SPEEDY_GAIN_MAX;
     }
 
     handleWallCollisions() {
-        if (this.position.y < GSettings.GAME_TOP || this.position.y > GSettings.GAME_BOTTOM) {
+        if (this.topY() < GSettings.GAME_TOP) {
+            // top wall
             this.speed.y *= -1;
+            this.setTopY(GSettings.GAME_TOP);
+        }
+        else if (this.bottomY() > GSettings.GAME_BOTTOM) {
+            // bottom wall
+            this.speed.y *= -1;
+            this.setBottomY(GSettings.GAME_BOTTOM);
         }
         else if (this.position.x < GSettings.GAME_LEFT) {
+            // goal to the left
             this.onGoal(0);
         }
         else if (this.position.x > GSettings.GAME_RIGHT) {
+            // goal to the right
             this.onGoal(1);
         }
     }

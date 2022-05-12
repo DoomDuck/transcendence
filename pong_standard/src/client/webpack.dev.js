@@ -10,10 +10,5 @@ module.exports = merge(common, {
             directory: path.join(__dirname, '../../dist/client'),
         },
         hot: true,
-        open: {
-            app: {
-              name: 'firefox'
-            },
-        },
     },
 })
