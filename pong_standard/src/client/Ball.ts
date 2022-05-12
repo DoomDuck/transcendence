@@ -10,6 +10,8 @@ export class Ball extends THREE.Mesh {
     radius: number
     speed: Vector3
     onGoal: (playerId: number) => void
+    deltaPosition: Vector3;
+    deltaPositionCached: boolean;
 
     constructor(radius: number, x: number, y: number, speedX: number, speedY: number, onGoal: (playerId: number) => void) {
 
@@ -26,6 +28,7 @@ export class Ball extends THREE.Mesh {
         this.radius = radius;
         this.speed = new Vector3(speedX, speedY);
         this.onGoal = onGoal;
+        this.deltaPosition = new Vector3();
     }
 
     topY(): number {
@@ -44,10 +47,16 @@ export class Ball extends THREE.Mesh {
         this.position.y = y - this.radius;
     }
 
+    getDeltaPosition(elapsedTime: number): Vector3 {
+        // if (!this.deltaPositionCached) {
+            this.deltaPosition.copy(this.speed);
+            this.deltaPosition.multiplyScalar(elapsedTime / 1000);
+            return this.deltaPosition;
+        // }
+    }
+
     updatePosition(elapsedTime: number) {
-        _delta.copy(this.speed);
-        _delta.multiplyScalar(elapsedTime / 1000);
-        this.position.add(_delta);
+        this.position.add(this.getDeltaPosition(elapsedTime));
     }
 
     /**
@@ -142,5 +151,10 @@ export class Ball extends THREE.Mesh {
 
     update(elapsedTime: number) {
         this.updatePosition(elapsedTime);
+        // this.resetFrameCache();
     }
+
+    // resetFrameCache() {
+    //     this.deltaPositionCached = false;
+    // }
 }

@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { Vector3 } from 'three';
 import { GSettings } from './constants';
 
 export class Bar extends THREE.Mesh {
@@ -57,6 +58,12 @@ export class Bar extends THREE.Mesh {
             this.setBottomY(GSettings.GAME_BOTTOM);
     }
 
+    getDeltaPos(elapsedTime: number): Vector3 {
+        var speed = (+this.downPressed - +this.upPressed) * GSettings.BAR_SENSITIVITY;
+        return new Vector3(elapsedTime * speed / 1000);
+    }
+
+
     keydownHandler(e: KeyboardEvent) {
         if (this.upKeys.includes(e.key)) {
             this.upPressed = true;
@@ -76,8 +83,7 @@ export class Bar extends THREE.Mesh {
     }
 
     update(elapsedTime: number) {
-        var speed = (+this.downPressed - +this.upPressed) * GSettings.BAR_SENSITIVITY;
-        this.position.y += elapsedTime * speed / 1000;
+        this.position.add(this.getDeltaPos(elapsedTime));
         this.clipPosition();
     }
 }
