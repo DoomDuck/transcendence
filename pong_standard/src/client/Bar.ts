@@ -6,7 +6,7 @@ export class Bar extends THREE.Mesh {
     height: number;
     upKeys: string[];
     downKeys: string[];
-    collisionEdgeDirection: number;
+    frontDirection: number;
     upPressed: boolean;
     downPressed: boolean;
 
@@ -23,38 +23,42 @@ export class Bar extends THREE.Mesh {
         this.height = height;
         this.position.x = x;
         this.position.y = y;
-        this.collisionEdgeDirection = collisionEdgeDirection;
+        this.frontDirection = collisionEdgeDirection;
         this.upKeys = ['ArrowUp'];
         this.downKeys = ['ArrowDown'];
         this.upPressed = false
         this.downPressed = false
     }
 
-    setTopY(y: number) {
+    setTop(y: number) {
         this.position.y = y + this.height / 2;
     }
 
-    setBottomY(y: number) {
+    setBottom(y: number) {
         this.position.y = y - this.height / 2;
     }
 
-    topY(): number {
+    top(): number {
         return this.position.y - this.height / 2;
     }
 
-    bottomY(): number {
+    bottom(): number {
         return this.position.y + this.height / 2;
     }
 
-    collisionEdgeX(): number {
-        return this.position.x + this.collisionEdgeDirection * this.width / 2;
+    front(): number {
+        return this.position.x + this.frontDirection * this.width / 2;
+    }
+
+    back(): number {
+        return this.position.x - this.frontDirection * this.width / 2;
     }
 
     clipPosition() {
-        if (this.topY() < GSettings.GAME_TOP)
-            this.setTopY(GSettings.GAME_TOP);
-        else if (this.bottomY() > GSettings.GAME_BOTTOM)
-            this.setBottomY(GSettings.GAME_BOTTOM);
+        if (this.top() < GSettings.GAME_TOP)
+            this.setTop(GSettings.GAME_TOP);
+        else if (this.bottom() > GSettings.GAME_BOTTOM)
+            this.setBottom(GSettings.GAME_BOTTOM);
     }
 
     keydownHandler(e: KeyboardEvent) {

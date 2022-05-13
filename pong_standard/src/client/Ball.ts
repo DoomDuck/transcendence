@@ -28,31 +28,70 @@ export class Ball extends THREE.Mesh {
         this.onGoal = onGoal;
     }
 
-    topY(): number {
+    top(): number {
         return this.position.y - this.radius;
     }
 
-    bottomY(): number {
+    bottom(): number {
         return this.position.y + this.radius;
     }
 
-    setTopY(y: number) {
+    front(edgeDirection: number) {
+        return this.position.x + edgeDirection * this.radius;
+    }
+
+    back(edgeDirection: number) {
+        return this.position.x - edgeDirection * this.radius;
+    }
+
+    setTop(y: number) {
         this.position.y = y + this.radius;
     }
 
-    setBottomY(y: number) {
+    setBottom(y: number) {
         this.position.y = y - this.radius;
     }
 
-    updatePosition(elapsedTime: number) {
-        _delta.copy(this.speed);
-        _delta.multiplyScalar(elapsedTime / 1000);
-        this.position.add(_delta);
-    }
+    // /**
+    //  * Return whether the ball is inside and the distance from the
+    //  * bar to the ball (edges of the rectangle to center)
+    //  * @param {Bar} bar
+    //  * @returns {[boolean, Vector3]}
+    //  */
+    // //
+    // barCollisionDistance(bar: Bar): [boolean, Vector3] {
+    //     var distanceToCenter = new Vector3();
+    //     var isInside = false;
 
+    //     distanceToCenter.copy(this.position);
+    //     distanceToCenter.sub(bar.position);
+    //     var signX = Math.sign(distanceToCenter.x);
+    //     var signY = Math.sign(distanceToCenter.y);
+    //     var x = Math.abs(distanceToCenter.x) - bar.width / 2;
+    //     var y = Math.abs(distanceToCenter.y) - bar.height / 2;
+    //     distanceToCenter.x -= signX * (bar.width / 2)
+    //     distanceToCenter.y -= signY * (bar.height / 2)
+    //     // distanceToBorder: bar to ball-border
+    //     if (x > 0 && y < 0) {
+    //         // lateral face
+    //         distanceToCenter.y = 0;
+    //     }
+    //     else if (x < 0 && y > 0) {
+    //         // upper face
+    //         distanceToCenter.x = 0;
+    //     }
+    //     else if (x > 0 && y > 0) {
+    //         // diagonal
+    //     }
+    //     else  {
+    //         // inside
+    //         isInside = true;
+    //     }
+
+    //     return [isInside, distanceToCenter];
+    // }
     /**
-     * Return whether the ball is inside and the distance from the
-     * bar to the ball (edges of the rectangle to center)
+     * Return the delta
      * @param {Bar} bar
      * @returns {[boolean, Vector3]}
      */
@@ -80,24 +119,26 @@ export class Ball extends THREE.Mesh {
         }
         else if (x > 0 && y > 0) {
             // diagonal
-            // TODO: Speed boost
         }
         else  {
+            // inside
             isInside = true;
         }
 
         return [isInside, distanceToCenter];
     }
 
+
+
     handleBarCollision(bar: Bar) {
         //detection
-        if (this.speed.x * bar.collisionEdgeDirection >= 0)
+        if (this.speed.x * bar.frontDirection >= 0)
             return;
         var [isInside, distanceVecToCenter] = this.barCollisionDistance(bar);
         var distance = distanceVecToCenter.length();
         if (distance >= this.radius)
             return;
-        if (distanceVecToCenter.x * bar.collisionEdgeDirection <= 0)
+        if (distanceVecToCenter.x * bar.frontDirection <= 0)
             return;
 
         //resolution
@@ -120,15 +161,15 @@ export class Ball extends THREE.Mesh {
     }
 
     handleWallCollisions() {
-        if (this.topY() < GSettings.GAME_TOP) {
+        if (this.top() < GSettings.GAME_TOP) {
             // top wall
             this.speed.y *= -1;
-            this.setTopY(GSettings.GAME_TOP);
+            this.setTop(GSettings.GAME_TOP);
         }
-        else if (this.bottomY() > GSettings.GAME_BOTTOM) {
+        else if (this.bottom() > GSettings.GAME_BOTTOM) {
             // bottom wall
             this.speed.y *= -1;
-            this.setBottomY(GSettings.GAME_BOTTOM);
+            this.setBottom(GSettings.GAME_BOTTOM);
         }
         else if (this.position.x < GSettings.GAME_LEFT) {
             // goal to the left
@@ -141,6 +182,8 @@ export class Ball extends THREE.Mesh {
     }
 
     update(elapsedTime: number) {
-        this.updatePosition(elapsedTime);
+        _delta.copy(this.speed);
+        _delta.multiplyScalar(elapsedTime / 1000);
+        this.position.add(_delta);
     }
 }
