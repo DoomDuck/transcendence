@@ -17,7 +17,7 @@ export class GSettings {
 
 
     // PHYSIC -->
-    static readonly DELTA_T = 1000 / 60;
+    static readonly DELTA_T = 1000 / 6;
 
 
     // Initial values
@@ -29,7 +29,7 @@ export class GSettings {
     static readonly BAR_SENSITIVITY = GSettings.SCREEN_WIDTH * 2 / 4;
 
     // BALL ---->
-    static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
+    static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 8;
     static readonly BAll_INITIALX = 0;
     static readonly BAll_INITIALY = 0;
     static readonly BAll_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;

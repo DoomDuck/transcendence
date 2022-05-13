@@ -2,16 +2,13 @@ import * as THREE from 'three'
 import { Vector3 } from 'three';
 import { GSettings } from './constants';
 import { Bar } from './Bar';
-import { setDefaultResultOrder } from 'dns';
-
 var _delta = new Vector3();
 
 export class Ball extends THREE.Mesh {
     radius: number
     speed: Vector3
     onGoal: (playerId: number) => void
-    deltaPosition: Vector3;
-    deltaPositionCached: boolean;
+    deltaPosition: {cached: boolean, ignore: boolean, vec: Vector3};
 
     constructor(radius: number, x: number, y: number, speedX: number, speedY: number, onGoal: (playerId: number) => void) {
 
@@ -28,7 +25,11 @@ export class Ball extends THREE.Mesh {
         this.radius = radius;
         this.speed = new Vector3(speedX, speedY);
         this.onGoal = onGoal;
-        this.deltaPosition = new Vector3();
+        this.deltaPosition = {
+            cached: false,
+            ignore: false,
+            vec: new Vector3(),
+        }
     }
 
     topY(): number {
@@ -47,86 +48,93 @@ export class Ball extends THREE.Mesh {
         this.position.y = y - this.radius;
     }
 
+    resetCache() {
+        this.deltaPosition.cached = false;
+        this.deltaPosition.ignore = false;
+    }
+
     getDeltaPosition(elapsedTime: number): Vector3 {
-        // if (!this.deltaPositionCached) {
-            this.deltaPosition.copy(this.speed);
-            this.deltaPosition.multiplyScalar(elapsedTime / 1000);
-            return this.deltaPosition;
-        // }
+        if (!this.deltaPosition.cached) {
+            this.deltaPosition.vec.copy(this.speed);
+            this.deltaPosition.vec.multiplyScalar(elapsedTime / 1000);
+            this.deltaPosition.cached = true;
+        }
+        return this.deltaPosition.vec;
     }
 
     updatePosition(elapsedTime: number) {
-        this.position.add(this.getDeltaPosition(elapsedTime));
+        if (!this.deltaPosition.ignore)
+            this.position.add(this.getDeltaPosition(elapsedTime));
     }
 
-    /**
-     * Return whether the ball is inside and the distance from the
-     * bar to the ball (edges of the rectangle to center)
-     * @param {Bar} bar
-     * @returns {[boolean, Vector3]}
-     */
-    //
-    barCollisionDistance(bar: Bar): [boolean, Vector3] {
-        var distanceToCenter = new Vector3();
-        var isInside = false;
+    // /**
+    //  * Return whether the ball is inside and the distance from the
+    //  * bar to the ball (edges of the rectangle to center)
+    //  * @param {Bar} bar
+    //  * @returns {[boolean, Vector3]}
+    //  */
+    // //
+    // barCollisionDistance(bar: Bar): [boolean, Vector3] {
+    //     var distanceToCenter = new Vector3();
+    //     var isInside = false;
 
-        distanceToCenter.copy(this.position);
-        distanceToCenter.sub(bar.position);
-        var signX = Math.sign(distanceToCenter.x);
-        var signY = Math.sign(distanceToCenter.y);
-        var x = Math.abs(distanceToCenter.x) - bar.width / 2;
-        var y = Math.abs(distanceToCenter.y) - bar.height / 2;
-        distanceToCenter.x -= signX * (bar.width / 2)
-        distanceToCenter.y -= signY * (bar.height / 2)
-        // distanceToBorder: bar to ball-border
-        if (x > 0 && y < 0) {
-            // lateral face
-            distanceToCenter.y = 0;
-        }
-        else if (x < 0 && y > 0) {
-            // upper face
-            distanceToCenter.x = 0;
-        }
-        else if (x > 0 && y > 0) {
-            // diagonal
-            // TODO: Speed boost
-        }
-        else  {
-            isInside = true;
-        }
+    //     distanceToCenter.copy(this.position);
+    //     distanceToCenter.sub(bar.position);
+    //     var signX = Math.sign(distanceToCenter.x);
+    //     var signY = Math.sign(distanceToCenter.y);
+    //     var x = Math.abs(distanceToCenter.x) - bar.width / 2;
+    //     var y = Math.abs(distanceToCenter.y) - bar.height / 2;
+    //     distanceToCenter.x -= signX * (bar.width / 2)
+    //     distanceToCenter.y -= signY * (bar.height / 2)
+    //     // distanceToBorder: bar to ball-border
+    //     if (x > 0 && y < 0) {
+    //         // lateral face
+    //         distanceToCenter.y = 0;
+    //     }
+    //     else if (x < 0 && y > 0) {
+    //         // upper face
+    //         distanceToCenter.x = 0;
+    //     }
+    //     else if (x > 0 && y > 0) {
+    //         // diagonal
+    //         // TODO: Speed boost
+    //     }
+    //     else  {
+    //         isInside = true;
+    //     }
 
-        return [isInside, distanceToCenter];
-    }
+    //     return [isInside, distanceToCenter];
+    // }
 
-    handleBarCollision(bar: Bar) {
-        //detection
-        if (this.speed.x * bar.collisionEdgeDirection >= 0)
-            return;
-        var [isInside, distanceVecToCenter] = this.barCollisionDistance(bar);
-        var distance = distanceVecToCenter.length();
-        if (distance >= this.radius)
-            return;
-        if (distanceVecToCenter.x * bar.collisionEdgeDirection <= 0)
-            return;
+    // handleBarCollision(bar: Bar) {
+    //     //detection
+    //     if (this.speed.x * bar.collisionEdgeDirection >= 0)
+    //         return;
+    //     var [isInside, distanceVecToCenter] = this.barCollisionDistance(bar);
+    //     var distance = distanceVecToCenter.length();
+    //     if (distance >= this.radius)
+    //         return;
+    //     if (distanceVecToCenter.x * bar.collisionEdgeDirection <= 0)
+    //         return;
 
-        //resolution
-        var posCorrection = distanceVecToCenter.clone();
-        posCorrection.setLength(this.radius - distance);
-        this.position.add(posCorrection);
-        this.changeSpeedBarCollision(bar);
-    }
+    //     //resolution
+    //     var posCorrection = distanceVecToCenter.clone();
+    //     posCorrection.setLength(this.radius - distance);
+    //     this.position.add(posCorrection);
+    //     this.changeSpeedBarCollision(bar);
+    // }
 
-    changeSpeedBarCollision(bar: Bar) {
-        // speed.x
-        this.speed.x *= -1;
-        this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
-        if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
-            this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
+    // changeSpeedBarCollision(bar: Bar) {
+    //     // speed.x
+    //     this.speed.x *= -1;
+    //     this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
+    //     if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
+    //         this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
 
-        // speed.y
-        var deltaY = this.position.y - bar.position.y;
-        this.speed.y += (deltaY / bar.height) * GSettings.BALL_SPEEDY_GAIN_MAX;
-    }
+    //     // speed.y
+    //     var deltaY = this.position.y - bar.position.y;
+    //     this.speed.y += (deltaY / bar.height) * GSettings.BALL_SPEEDY_GAIN_MAX;
+    // }
 
     handleWallCollisions() {
         if (this.topY() < GSettings.GAME_TOP) {
@@ -149,12 +157,49 @@ export class Ball extends THREE.Mesh {
         }
     }
 
-    update(elapsedTime: number) {
-        this.updatePosition(elapsedTime);
-        // this.resetFrameCache();
+    sideCollision(k: number, barCollisionY: number, bar: Bar) {
+        // position;
+        this.position.x += (2 * k - 1) * this.deltaPosition.vec.x;
+        this.position.y += this.deltaPosition.vec.y;
+
+        // speed.x
+        this.speed.x *= -1;
+        this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
+        if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
+            this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
+
+        // speed.y
+        this.speed.y += (barCollisionY / bar.height) * GSettings.BALL_SPEEDY_GAIN_MAX;
+
+        // ignore the normal deltaPos
+        this.deltaPosition.ignore = true;
     }
 
-    // resetFrameCache() {
-    //     this.deltaPositionCached = false;
-    // }
+    cornerCollision(k: number, barCorner: Vector3, cornerDirection: number, bar: Bar) {
+        // position step 1
+        this.position.x += k * this.deltaPosition.vec.x;
+        this.position.y += k * this.deltaPosition.vec.y;
+
+        // position step 2
+        var reboundVec = this.position.clone();
+        reboundVec.sub(barCorner);
+        reboundVec.setLength(this.deltaPosition.vec.length());
+        this.position.x += (1 - k) * this.deltaPosition.vec.x;
+        this.position.y += (1 - k) * this.deltaPosition.vec.y;
+
+        // speed.x
+        this.speed.x *= -1;
+        this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
+        if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
+            this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
+
+        // speed.y
+        this.speed.y += cornerDirection * GSettings.BALL_SPEEDY_GAIN_MAX;
+    }
+
+    update(elapsedTime: number) {
+        this.updatePosition(elapsedTime);
+        this.resetCache();
+    }
+
 }

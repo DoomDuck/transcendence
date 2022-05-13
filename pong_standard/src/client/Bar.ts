@@ -60,9 +60,8 @@ export class Bar extends THREE.Mesh {
 
     getDeltaPos(elapsedTime: number): Vector3 {
         var speed = (+this.downPressed - +this.upPressed) * GSettings.BAR_SENSITIVITY;
-        return new Vector3(elapsedTime * speed / 1000);
+        return new Vector3(0, elapsedTime * speed / 1000);
     }
-
 
     keydownHandler(e: KeyboardEvent) {
         if (this.upKeys.includes(e.key)) {

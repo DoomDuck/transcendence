@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { Vector3 } from 'three';
 import { Ball } from './Ball';
 import { Bar } from './Bar';
+import { ballBarContinuousCollision } from './collision';
 import { GSettings } from './constants';
 
 // THREEJS SETUP
@@ -124,8 +125,8 @@ function updateGame(elapsedTime: number) {
         bar1.update(dt);
         bar2.update(dt);
         ball.update(dt);
-        ball.handleBarCollision(bar1);
-        ball.handleBarCollision(bar2);
+        ballBarContinuousCollision(ball, bar1, dt);
+        ballBarContinuousCollision(ball, bar2, dt);
         ball.handleWallCollisions();
     }
 }
