@@ -51,6 +51,11 @@ module.export = {
 };
 ```
 
-This config file and every entry is optional as they have defaults
+This config file and every property is optional as they have defaults
 
+## Entries
 
+A project can have multiple entries with dependency relations creating various bundles.
+This is useful when ever only a part is wanted (ex: multiple pages site)
+Webpack can smartly spilt the code in multiple bundles for optimal load speeds.
+(see `optimization.splitChunks`)
