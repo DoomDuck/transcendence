@@ -64,3 +64,9 @@ Webpack can smartly spilt the code in multiple bundles for optimal load speeds.
 
 Describe how to name (`filename`) bundles and in which folder (`path`).
 When mutilple bundles/chunks are created one can use `subtitutions`.
+
+## Loaders
+
+Loaders are code that allows one to include other file types than js in
+a project (typescript, svelte) that can be chained to create multiple effects.
+They provide the information required for module resolution.
