@@ -59,3 +59,8 @@ A project can have multiple entries with dependency relations creating various b
 This is useful when ever only a part is wanted (ex: multiple pages site)
 Webpack can smartly spilt the code in multiple bundles for optimal load speeds.
 (see `optimization.splitChunks`)
+
+## Outputs
+
+Describe how to name (`filename`) bundles and in which folder (`path`).
+When mutilple bundles/chunks are created one can use `subtitutions`.
