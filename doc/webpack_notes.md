@@ -23,3 +23,34 @@ in independant packages.
 
 - Browser compatibiliy
 > It is possible to generate old js supported everywhere from recent code
+
+
+## Webpack config structure
+
+The file must be in `webpack.config.js` and look like
+
+```js
+import HtmlPlugin = require('html-webpack-plugin');
+
+module.export = {
+  entry: {
+    main: './path/to/entry.js',
+  }
+
+  output: {
+    filename: 'bundle.js'
+  },
+  
+  module: {
+    rules: [{ test: /.txt$/, use: 'raw-loader'}],
+  },
+  
+  plugins: [new HtmlPlugin({template: './src/index.html'})],
+  
+  mode: 'production',
+};
+```
+
+This config file and every entry is optional as they have defaults
+
+
