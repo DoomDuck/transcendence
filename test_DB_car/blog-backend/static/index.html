@@ -13,11 +13,13 @@
 	<h1>Welcome<h1>
 		<form>
 			<input v-model ="text" type = "text"/>
-			<button type='submit' @click.prevent="sendMessage()">Send</button>
+			<button type='submit' @click.prevent="sendChatMessage()">Send</button>
 		</form>
 		<p>
 			<ul>
-				<li v-for="msg of messages ">{{msg }}</li>
+				<li v-for="msg of messages ">
+					<strong>{{msg.sender }}:</strong>{{msg.message}}
+				</li>
 			</ul>
 		</p>
 	</div>
@@ -25,26 +27,34 @@
 		var app = new Vue ({
 					el: '#v-app',
 					data: {
-						tittle: 'Websockets Testez',
+						username:'',
 						text:'',
-						messages: ['Some message', 'Another message']
+						messages: [],
+						socket: {chat:null, alerts: null},
+						alerts:[],
 					},
 				methods: {
-					sendMessage(){
-							console.log(`send: ${this.text}`);
-							this.messages.push(this.text);
-								this.socket.emit(`msgToServer`,this.text);
+					sendChatMessage(){
+								this.socket.chat.emit('chatToServer',{sender: this.username, message: this.text});
 								this.text="";
 							},
-					receiveMessage(msg){	
-							console.log(`recv: ${msg}`);
+					receiveChatMessage(msg){	
+							this.messages.push(msg);
+						}
+
+					receiveAlertMessage(msg){	
 							this.messages.push(msg);
 						}
 					},
 					created(){
-						this.socket = io('http://localhost:5000');
-						this.socket.on('msgToClient',(msg)=>{
-							this.receiveMessage(msg);
+						this.username = prompt('Enter tour username:');
+						this.socket.chat = io('http://localhost:5000/chat');
+						this.socket.chat.on('chatToClient',(msg)=>{
+							this.receiveChatMessage(msg);
+						});
+						this.socket.alerts = io('http://localhost:5000/alerts');
+						this.socket.alerts.on('alertToClient',(msg)=>{
+							this.receiveAlertMessage(msg);
 						});
 				}
 			});
