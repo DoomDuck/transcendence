@@ -1,27 +1,27 @@
 import * as THREE from 'three'
 import { Camera } from './Camera';
-import { Ball } from './Ball';
-import { Bar } from './Bar';
+import { LocalBall } from './LocalBall';
+import { LocalBar } from './LocalBar';
 import { GSettings } from './constants';
 
-export class ClientGame {
+export class ClientLocalGame {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
     camera: Camera;
-    bar1: Bar;
-    bar2: Bar;
-    ball: Ball;
+    bar1: LocalBar;
+    bar2: LocalBar;
+    ball: LocalBall;
 
     constructor() {
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
         this.camera = new Camera();
         this.loadBackground();
-        this.bar1 = new Bar(1);
+        this.bar1 = new LocalBar(1);
         this.bar1.upKeys = ['w'];
         this.bar1.downKeys = ['s'];
-        this.bar2 = new Bar(-1);
-        this.ball = new Ball(this.handleGoal.bind(this));
+        this.bar2 = new LocalBar(-1);
+        this.ball = new LocalBall(this.handleGoal.bind(this));
         this.reset(Math.random() > .5 ? -1: 1);
         this.scene.add(this.bar1);
         this.scene.add(this.bar2);

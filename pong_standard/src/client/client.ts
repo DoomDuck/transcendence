@@ -1,6 +1,6 @@
-import { ClientGame } from './ClientGame';
+import { ClientLocalGame } from './ClientLocalGame';
 
-const game = new ClientGame();
+const game = new ClientLocalGame();
 document.body.appendChild(game.domElement)
 window.addEventListener('resize', game.handleDisplayResize.bind(game), false);
 window.addEventListener('keydown', game.handleKeydown.bind(game), false);
