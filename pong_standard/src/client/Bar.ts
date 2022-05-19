@@ -11,18 +11,18 @@ export class Bar extends THREE.Mesh {
     downPressed: boolean;
 
     // collisionEdge: -1 for the left edge, +1 for the right edge
-    constructor(width: number, height: number, x: number, y: number, collisionEdgeDirection: number) {
+    constructor(collisionEdgeDirection: number) {
         const geometry = new THREE.BoxGeometry(
-            width, height
+            GSettings.BAR_WIDTH, GSettings.BAR_HEIGHT
         );
         const material = new THREE.MeshBasicMaterial({
             color: 0xd14081,
         });
         super(geometry, material)
-        this.width = width;
-        this.height = height;
-        this.position.x = x;
-        this.position.y = y;
+        this.width = GSettings.BAR_WIDTH;
+        this.height = GSettings.BAR_HEIGHT;
+        this.position.x = -collisionEdgeDirection * GSettings.BAR_INITIALX;
+        this.position.y = GSettings.BAR_INITIALY;
         this.collisionEdgeDirection = collisionEdgeDirection;
         this.upKeys = ['ArrowUp'];
         this.downKeys = ['ArrowDown'];
@@ -57,7 +57,7 @@ export class Bar extends THREE.Mesh {
             this.setBottomY(GSettings.GAME_BOTTOM);
     }
 
-    keydownHandler(e: KeyboardEvent) {
+    handleKeydown(e: KeyboardEvent) {
         if (this.upKeys.includes(e.key)) {
             this.upPressed = true;
         }
@@ -66,7 +66,7 @@ export class Bar extends THREE.Mesh {
         }
     }
 
-    keyupHandler(e: KeyboardEvent) {
+    handleKeyup(e: KeyboardEvent) {
         if (this.upKeys.includes(e.key)) {
             this.upPressed = false;
         }

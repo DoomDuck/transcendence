@@ -11,20 +11,23 @@ export class Ball extends THREE.Mesh {
     speed: Vector3
     onGoal: (playerId: number) => void
 
-    constructor(radius: number, x: number, y: number, speedX: number, speedY: number, onGoal: (playerId: number) => void) {
+    constructor(onGoal: (playerId: number) => void) {
 
         const geometry = new THREE.CylinderGeometry(
-            radius, radius, 1, GSettings.BALL_RADIAL_SEGMENTS,
+            GSettings.BALL_RADIUS,
+            GSettings.BALL_RADIUS,
+            1,
+            GSettings.BALL_RADIAL_SEGMENTS,
         )
         const material = new THREE.MeshBasicMaterial({
             color: 0xffffff,
         })
         super(geometry, material);
         this.rotateX(THREE.MathUtils.degToRad(90));
-        this.position.x = x;
-        this.position.y = y;
-        this.radius = radius;
-        this.speed = new Vector3(speedX, speedY);
+        this.position.x = 0;
+        this.position.y = 0;
+        this.radius = GSettings.BALL_RADIUS;
+        this.speed = new Vector3();
         this.onGoal = onGoal;
     }
 
@@ -116,7 +119,7 @@ export class Ball extends THREE.Mesh {
 
         // speed.y
         var deltaY = this.position.y - bar.position.y;
-        this.speed.y += (deltaY / bar.height) * GSettings.BALL_SPEEDY_GAIN_MAX;
+        this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
     }
 
     handleWallCollisions() {
@@ -131,11 +134,11 @@ export class Ball extends THREE.Mesh {
             this.setBottomY(GSettings.GAME_BOTTOM);
         }
         else if (this.position.x < GSettings.GAME_LEFT) {
-            // goal to the left
-            this.onGoal(0);
+            // goal to the left, player 2 scored
+            this.onGoal(2);
         }
         else if (this.position.x > GSettings.GAME_RIGHT) {
-            // goal to the right
+            // goal to the right, player 1 scored
             this.onGoal(1);
         }
     }
