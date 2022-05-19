@@ -1,4 +1,4 @@
-import { ClientGame } from './Game';
+import { ClientGame } from './ClientGame';
 
 const game = new ClientGame();
 document.body.appendChild(game.domElement)
