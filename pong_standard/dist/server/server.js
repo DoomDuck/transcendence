@@ -1,18 +1,18 @@
-import express from 'express'
-import path from 'path'
-import http from 'http'
-import socketio from 'socket.io'
-
-const port: number = 3000
-
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const path_1 = __importDefault(require("path"));
+const http_1 = __importDefault(require("http"));
+const socket_io_1 = __importDefault(require("socket.io"));
+const port = 3000;
 class App {
-    private server: http.Server
-    private port: number
-
-    constructor(port: number) {
+    constructor(port) {
         this.port = port;
-        const app = express();
-        app.use(express.static(path.join(__dirname, '../client')));
+        const app = (0, express_1.default)();
+        app.use(express_1.default.static(path_1.default.join(__dirname, '../client')));
         // In the webpack version of the boilerplate, it is not necessary
         // to add static references to the libs in node_modules if
         // you are using module specifiers in your client.ts imports.
@@ -28,40 +28,37 @@ class App {
         // # npm start            (this starts nodejs with express and serves the ./dist/client folder)
         //
         // visit http://127.0.0.1:3000
-
-        this.server = new http.Server(app);
-        const io = new socketio.Server(this.server);
+        this.server = new http_1.default.Server(app);
+        const io = new socket_io_1.default.Server(this.server);
         let game = {
             players: [null, null],
             observers: [],
         };
-        io.on("connect", (socket: socketio.Socket) => {
+        io.on("connect", (socket) => {
             console.log("client connected");
-            socket.on("playerId", (playerId: number) => {
+            socket.on("playerId", (playerId) => {
                 if (playerId < 2)
                     game.players[playerId] = socket;
                 else
                     game.observers.push(socket);
             });
-            socket.on("bar", (barNumber: number, y: number) => {
+            socket.on("bar", (barNumber, y) => {
+                var _a, _b;
                 console.log("bar", barNumber, y);
                 if (barNumber == 2)
-                    game.players[0]?.emit("bar", 2, y);
+                    (_a = game.players[0]) === null || _a === void 0 ? void 0 : _a.emit("bar", 2, y);
                 if (barNumber == 1)
-                    game.players[1]?.emit("bar", 1, y);
+                    (_b = game.players[1]) === null || _b === void 0 ? void 0 : _b.emit("bar", 1, y);
                 for (let sock of game.observers) {
                     sock.emit("bar", barNumber, y);
                 }
-            })
-
+            });
         });
     }
-
-    public Start() {
+    Start() {
         this.server.listen(this.port, () => {
-            console.log(`Server listening on port ${this.port}.`)
-        })
+            console.log(`Server listening on port ${this.port}.`);
+        });
     }
 }
-
-new App(port).Start()
+new App(port).Start();

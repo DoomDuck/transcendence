@@ -118,11 +118,11 @@ export class LocalBall extends Ball {
         }
         else if (this.position.x < GSettings.GAME_LEFT) {
             // goal to the left, player 2 scored
-            this.onGoal(2);
+            this.onGoal(1);
         }
         else if (this.position.x > GSettings.GAME_RIGHT) {
             // goal to the right, player 1 scored
-            this.onGoal(1);
+            this.onGoal(0);
         }
     }
 

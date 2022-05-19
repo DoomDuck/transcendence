@@ -1,27 +1,46 @@
 import * as THREE from 'three'
+import * as socketio from 'socket.io-client'
 import { Camera } from './Camera';
-import { LocalBall } from './LocalBall';
+import { Ball } from './Ball';
+import { Bar } from './Bar';
 import { LocalBar } from './LocalBar';
 import { GSettings } from './constants';
+import { DistantBar } from './DistantBar';
+import { DistantBall } from './DistantBall';
 
-export class ClientLocalGame {
+export class ClientGame {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
     camera: Camera;
-    bar1: LocalBar;
-    bar2: LocalBar;
-    ball: LocalBall;
+    bar1: Bar;
+    bar2: Bar;
+    ball: Ball;
+    controlledBar: LocalBar | null;
+    playerId: number;
 
-    constructor() {
+    constructor(playerId: number) {
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
         this.camera = new Camera();
         this.loadBackground();
-        this.bar1 = new LocalBar(1);
-        this.bar1.upKeys = ['w'];
-        this.bar1.downKeys = ['s'];
-        this.bar2 = new LocalBar(-1);
-        this.ball = new LocalBall(this.handleGoal.bind(this));
+
+        this.controlledBar = null;
+        this.playerId = playerId;
+        if (playerId == 0) {
+            this.bar1 = new LocalBar(1);
+            this.bar2 = new DistantBar(-1);
+            this.controlledBar = this.bar1 as LocalBar;
+        }
+        else if (playerId == 1) {
+            this.bar1 = new DistantBar(1);
+            this.bar2 = new LocalBar(-1);
+            this.controlledBar = this.bar2 as LocalBar;
+        }
+        else {
+            this.bar1 = new DistantBar(1);
+            this.bar2 = new DistantBar(-1);
+        }
+        this.ball = new DistantBall(this.handleGoal.bind(this));
         this.reset(Math.random() > .5 ? -1: 1);
         this.scene.add(this.bar1);
         this.scene.add(this.bar2);
@@ -55,12 +74,23 @@ export class ClientLocalGame {
     }
 
     reset(ballDirection: number) {
-        this.ball.position.set(0, 0, 0);
-        this.ball.speed.set(
-            ballDirection * GSettings.BAll_INITIAL_SPEEDX,
-            (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3,
-            0
-        );
+        // this.ball.position.set(0, 0, 0);
+        // this.ball.speed.set(
+        //     ballDirection * GSettings.BAll_INITIAL_SPEEDX,
+        //     (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3,
+        //     0
+        // );
+    }
+
+    updateBar(id: number, y: number) {
+        if (this.playerId + 1 == id) {
+            console.log("useless updateBar call");
+            return;
+        }
+        if (id == 1)
+            this.bar1.position.y = y;
+        else
+            this.bar2.position.y = y;
     }
 
     update(elapsedTime: number) {
@@ -70,9 +100,9 @@ export class ClientLocalGame {
             this.bar1.update(dt);
             this.bar2.update(dt);
             this.ball.update(dt);
-            this.ball.handleBarCollision(this.bar1);
-            this.ball.handleBarCollision(this.bar2);
-            this.ball.handleWallCollisions();
+            // this.ball.handleBarCollision(this.bar1);
+            // this.ball.handleBarCollision(this.bar2);
+            // this.ball.handleWallCollisions();
         }
     }
 
@@ -95,12 +125,15 @@ export class ClientLocalGame {
     }
 
     handleKeydown(e: KeyboardEvent) {
-        this.bar1.handleKeydown(e);
-        this.bar2.handleKeydown(e);
+        this.controlledBar?.handleKeydown(e);
     }
 
     handleKeyup(e: KeyboardEvent) {
-        this.bar1.handleKeyup(e);
-        this.bar2.handleKeyup(e);
+        this.controlledBar?.handleKeyup(e);
+    }
+
+    emmit(socket: socketio.Socket) {
+        if (this.playerId < 2)
+            socket.emit("bar", this.playerId + 1, (this.controlledBar as LocalBar).position.y);
     }
 }
