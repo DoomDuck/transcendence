@@ -77,3 +77,11 @@ Plugins does everything else that loaders cannot do.
 A plugin is js object that has an apply method that take the webpack compiler.
 Plugins must be instanciated (use the `new` keyword).
 Webpack it self is built out of plugins for itself
+
+## Configuration
+
+Inclusions are made using CommonJs packages (ie using `require(...)`)
+Configuration can be written in many languages Js, Ts, CoffeeScript etc...
+
+
+
