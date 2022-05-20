@@ -83,5 +83,23 @@ Webpack it self is built out of plugins for itself
 Inclusions are made using CommonJs packages (ie using `require(...)`)
 Configuration can be written in many languages Js, Ts, CoffeeScript etc...
 
+## Modules
+
+Module express dependency relations with any kind of inclusions:
+- ecmascript `import`
+- commonjs `require`
+- AMD `require`
+- css/sass/less `@import`
+- HTML `url(...)` or `<img src...>`
+The resulting modules types are:
+- Ecmascript
+- commonjs
+- AMD
+- Assets
+- WASM
+
+Loaders than discribe what those inclusions do to the bundle
+
+
 
 
