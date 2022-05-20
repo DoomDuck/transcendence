@@ -70,3 +70,10 @@ When mutilple bundles/chunks are created one can use `subtitutions`.
 Loaders are code that allows one to include other file types than js in
 a project (typescript, svelte) that can be chained to create multiple effects.
 They provide the information required for module resolution.
+
+## Plugins
+
+Plugins does everything else that loaders cannot do.
+A plugin is js object that has an apply method that take the webpack compiler.
+Plugins must be instanciated (use the `new` keyword).
+Webpack it self is built out of plugins for itself
