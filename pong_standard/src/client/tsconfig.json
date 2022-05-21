@@ -3,6 +3,9 @@
         "target": "ES6",
         "moduleResolution": "node",
         "strict": true,
+        // "paths": {
+        //     "three": ["./node_modules/three"],
+        // },
     },
     "include": ["**/*.ts"]
 }
