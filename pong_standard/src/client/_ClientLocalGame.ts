@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { Camera } from './Camera';
 import { LocalBall } from './LocalBall';
 import { LocalBar } from './LocalBar';
-import { GSettings } from './constants';
+import { GSettings } from '../common/constants';
 
 export class ClientLocalGame {
     scene: THREE.Scene;
@@ -65,8 +65,8 @@ export class ClientLocalGame {
 
     update(elapsedTime: number) {
         // The loop ensures simulation stability (essentially, about collisions) by having a bounded time step
-        for (var t = 0; t < elapsedTime; t += GSettings.DELTA_T) {
-            var dt = (t + GSettings.DELTA_T < elapsedTime) ? GSettings.DELTA_T : elapsedTime - t;
+        for (let t = 0; t < elapsedTime; t += GSettings.DELTA_T) {
+            let dt = (t + GSettings.DELTA_T < elapsedTime) ? GSettings.DELTA_T : elapsedTime - t;
             this.bar1.update(dt);
             this.bar2.update(dt);
             this.ball.update(dt);

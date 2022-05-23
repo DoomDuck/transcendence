@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { GSettings } from './constants';
+import { GSettings } from '../common/constants';
 
 
 export abstract class Bar extends THREE.Mesh {

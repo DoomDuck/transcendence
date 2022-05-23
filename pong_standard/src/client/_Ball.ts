@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { GSettings } from 'common/constants';
+import { GSettings } from '../common/constants';
 
 export abstract class Ball extends THREE.Mesh {
     radius: number

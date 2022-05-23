@@ -1,0 +1,2 @@
+travail a jour dans server/, pas dans client/
+TODO: read about events for better patterns (eg link a receiver to an emiter for a given event)

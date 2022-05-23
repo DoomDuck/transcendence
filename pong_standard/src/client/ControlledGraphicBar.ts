@@ -1,8 +1,8 @@
-import * as THREE from 'three'
-import { Bar } from './Bar';
-import { GSettings } from './constants';
+import { GraphicBar } from './GraphicBar';
+import { GSettings } from '../common/constants';
+import { GameEvent } from '../common';
 
-export class LocalBar extends Bar {
+export class ControlledGraphicBar extends GraphicBar {
     upKeys: string[];
     downKeys: string[];
     upPressed: boolean;
@@ -15,6 +15,8 @@ export class LocalBar extends Bar {
         this.downKeys = ['ArrowDown'];
         this.upPressed = false;
         this.downPressed = false;
+        window.addEventListener('keydown', this.handleKeydown.bind(this), false);
+        window.addEventListener('keyup', this.handleKeyup.bind(this), false);
     }
 
     setTopY(y: number) {
@@ -63,8 +65,9 @@ export class LocalBar extends Bar {
     }
 
     update(elapsedTime: number) {
-        var speed = (+this.downPressed - +this.upPressed) * GSettings.BAR_SENSITIVITY;
+        let speed = (+this.downPressed - +this.upPressed) * GSettings.BAR_SENSITIVITY;
         this.position.y += elapsedTime * speed / 1000;
         this.clipPosition();
+        this.emit(GameEvent.SET_BAR_POSITION, this.position.y);
     }
 }

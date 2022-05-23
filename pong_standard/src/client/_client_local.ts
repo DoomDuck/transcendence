@@ -7,8 +7,8 @@ window.addEventListener('keydown', game.handleKeydown.bind(game), false);
 window.addEventListener('keyup', game.handleKeyup.bind(game), false);
 game.handleDisplayResize();
 
-var lastTimeStamp = 0;
-var elapsedTime;
+let lastTimeStamp = 0;
+let elapsedTime;
 
 function animate(timeStamp: number) {
     elapsedTime = timeStamp - lastTimeStamp;

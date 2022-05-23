@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import { Vector3 } from 'three';
 import { Ball } from './Ball';
-import { GSettings } from './constants';
-import { Bar } from './Bar';
+import { GSettings } from '../common/constants';
+import { Bar } from 'Bar';
 
-var _delta = new Vector3();
+let _delta = new Vector3();
 
 export class LocalBall extends Ball {
     speed: Vector3
@@ -44,15 +44,15 @@ export class LocalBall extends Ball {
      */
     //
     barCollisionDistance(bar: Bar): [boolean, Vector3] {
-        var distanceToCenter = new Vector3();
-        var isInside = false;
+        let distanceToCenter = new Vector3();
+        let isInside = false;
 
         distanceToCenter.copy(this.position);
         distanceToCenter.sub(bar.position);
-        var signX = Math.sign(distanceToCenter.x);
-        var signY = Math.sign(distanceToCenter.y);
-        var x = Math.abs(distanceToCenter.x) - bar.width / 2;
-        var y = Math.abs(distanceToCenter.y) - bar.height / 2;
+        let signX = Math.sign(distanceToCenter.x);
+        let signY = Math.sign(distanceToCenter.y);
+        let x = Math.abs(distanceToCenter.x) - bar.width / 2;
+        let y = Math.abs(distanceToCenter.y) - bar.height / 2;
         distanceToCenter.x -= signX * (bar.width / 2)
         distanceToCenter.y -= signY * (bar.height / 2)
         // distanceToBorder: bar to ball-border
@@ -79,15 +79,15 @@ export class LocalBall extends Ball {
         //detection
         if (this.speed.x * bar.collisionEdgeDirection >= 0)
             return;
-        var [isInside, distanceVecToCenter] = this.barCollisionDistance(bar);
-        var distance = distanceVecToCenter.length();
+        let [isInside, distanceVecToCenter] = this.barCollisionDistance(bar);
+        let distance = distanceVecToCenter.length();
         if (distance >= this.radius)
             return;
         if (distanceVecToCenter.x * bar.collisionEdgeDirection <= 0)
             return;
 
         //resolution
-        var posCorrection = distanceVecToCenter.clone();
+        let posCorrection = distanceVecToCenter.clone();
         posCorrection.setLength(this.radius - distance);
         this.position.add(posCorrection);
         this.changeSpeedBarCollision(bar);
@@ -101,7 +101,7 @@ export class LocalBall extends Ball {
             this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
 
         // speed.y
-        var deltaY = this.position.y - bar.position.y;
+        let deltaY = this.position.y - bar.position.y;
         this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
     }
 
