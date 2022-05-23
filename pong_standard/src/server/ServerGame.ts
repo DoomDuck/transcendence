@@ -1,8 +1,16 @@
 import now from "performance-now"
 import { Socket } from "socket.io"
 import { EventEmitter } from "stream";
+import { Vector3 } from "three";
+import {GS}
 
 const GAME_STEP = 1000 / 60;
+enum Direction {
+    LEFT = 0,
+    RIGHT = 1,
+}
+const LEFT = Direction.LEFT;
+const RIGHT = Direction.RIGHT;
 
 function removeElementByValue<T>(array: T[], item: T) {
     var index = array.indexOf(item);
@@ -81,8 +89,23 @@ class Game {
 class Entities {
     ball: Ball;
     bars: [Bar, Bar];
+
+    update(elapsed: number)
 }
 
-class Ball extends EventEmitter {}
+class Ball extends EventEmitter {
+    position: Vector3;
+}
 
-class Bar {}
+class Bar {
+    position: Vector3;
+}
+
+class InitialState {
+    constructor(public ballDirection: Direction) {}
+    reset(entities: Entities) {
+        entities.ball.position.set(0, 0, 0);
+        entities.bars[0].position.set(
+            , 0, 0);
+    }
+}

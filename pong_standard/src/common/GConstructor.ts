@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Vector3 } from 'three';
-import { GSettings } from '../client/constants'
+import { GSettings } from './constants'
 
 // export type GConstructor<T = {}> = new (...args: any[]) => T;
 

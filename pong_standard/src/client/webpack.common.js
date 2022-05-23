@@ -16,9 +16,9 @@ module.exports = {
         ],
     },
     resolve: {
-        alias: {
-            three: path.resolve('./node_modules/three')
-        },
+        // alias: {
+        //     three: path.resolve('./node_modules/three')
+        // },
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
