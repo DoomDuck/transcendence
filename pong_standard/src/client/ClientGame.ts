@@ -23,6 +23,7 @@ export class ClientGame extends Game {
             (playerId == PLAYER2) ? new ControlledGraphicBar(RIGHT) : new GraphicBar(RIGHT)
         );
         super(gameState);
+        console.log(`bar1 proto: ${this.state.bars[0]}`)
         this.requestAnimationFrameId = 0;
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
@@ -30,14 +31,15 @@ export class ClientGame extends Game {
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
         this.scene.add((this.state.ball as GraphicBall).mesh);
-        this.scene.add((this.state.bars[PLAYER1] as GraphicBar).mesh);
-        this.scene.add((this.state.bars[PLAYER2] as GraphicBar).mesh);
+        this.scene.add((this.state.bars[0] as GraphicBar).mesh);
+        this.scene.add((this.state.bars[1] as GraphicBar).mesh);
         this.loadBackground();
         this.on(GameEvent.SET_OTHER_PLAYER_BAR_POSITION, (y: number) => {
             this.state.bars[this.otherPlayerId].position.y = y;
         });
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
+        this.render();
     }
 
     get domElement() {
@@ -48,6 +50,7 @@ export class ClientGame extends Game {
         const onLoad = (texture: THREE.Texture) => {
             this.scene.background = texture;
             console.log('Texture loaded');
+            this.render();
         }
         const onProgress = () => {}
         const onError = (e: ErrorEvent) => {
@@ -89,6 +92,7 @@ export class ClientGame extends Game {
 
     animate() {
         this.requestAnimationFrameId = requestAnimationFrame(this.animate.bind(this));
+        // console.log("animation frame");
         this.frame();
         this.render();
     }

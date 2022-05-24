@@ -1,7 +1,7 @@
 import { Ball } from "./Ball";
 import { Bar } from "./Bar";
 import { GSettings, PLAYER1, PLAYER2, PlayerID, Direction, LEFT, RIGHT, GameEvent } from "../common"
-import { EventEmitter } from "stream";
+import { EventEmitter } from "events";
 
 export class GameState extends EventEmitter {
     ball: Ball;

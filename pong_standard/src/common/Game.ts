@@ -1,8 +1,8 @@
-import now from "performance-now"
-import { Socket } from "socket.io"
-import { EventEmitter } from "stream";
+import { EventEmitter } from "events";
 import { GameEvent, GSettings } from "."
 import { GameState } from "./GameState";
+
+const now = Date.now;
 
 export abstract class Game extends EventEmitter {
     lastTime: number;
@@ -20,17 +20,24 @@ export abstract class Game extends EventEmitter {
         this.stepsAccumulated = 0;
         this.paused = false;
         this.state = state;
+        this.setupEvents();
+    }
+
+    setupEvents() {
+        this.on(GameEvent.START, () => this.start());
+        this.on(GameEvent.PAUSE, () => this.pause());
+        this.on(GameEvent.UNPAUSE, () => this.unpause());
     }
 
     abstract startGameLoop(): void;
     abstract stopGameLoop(): void;
 
     start() {
+        console.log("start from Game");
         this.lastTime = now();
         this.time = 0;
         this.timeAccumulated = 0;
         this.stepsAccumulated = 0;
-        this.emit(GameEvent.START);
         this.startGameLoop();
     }
 
@@ -38,7 +45,6 @@ export abstract class Game extends EventEmitter {
         if (this.paused)
             return;
         this.paused = true;
-        this.emit(GameEvent.PAUSE);
         this.stopGameLoop();
     }
 
@@ -46,7 +52,6 @@ export abstract class Game extends EventEmitter {
         if (!this.paused)
             return;
         this.paused = false;
-        this.emit(GameEvent.UNPAUSE);
         this.lastTime = now();
         this.startGameLoop();
     }
@@ -61,7 +66,9 @@ export abstract class Game extends EventEmitter {
         this.timeAccumulated += dt;
         this.lastTime = newTime;
 
+        console.log("ho");
         while (this.timeAccumulated >= GSettings.GAME_STEP) {
+            console.log("ha");
             this.time += GSettings.GAME_STEP;
             this.timeAccumulated -= GSettings.GAME_STEP;
             this.state.update(GSettings.GAME_STEP);

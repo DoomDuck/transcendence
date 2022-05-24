@@ -1,4 +1,4 @@
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 import { Vector3 } from 'three';
 import { GSettings } from './constants';
 

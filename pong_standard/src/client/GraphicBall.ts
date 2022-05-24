@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Ball } from "../common/ball";
+import { Ball } from "../common/Ball";
 import { GSettings } from "../common/constants";
 
 export class GraphicBall extends Ball {

@@ -1,8 +1,8 @@
 import { Vector3 } from 'three';
-import { GSettings, PlayerID, PLAYER1, PLAYER2 } from './constants'
+import { GSettings, PlayerID, PLAYER1, PLAYER2, GameEvent } from './constants'
 import { Bar } from './Bar'
 import { ballBarCollisionDistance } from './collision';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 
 let _v = new Vector3();
 

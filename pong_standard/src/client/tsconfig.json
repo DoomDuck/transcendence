@@ -7,5 +7,5 @@
             // "common": ["common"],
         },
     },
-    "include": ["**/*.ts"]
+    "include": ["**/*.ts", "_LocalBar.ts_"]
 }

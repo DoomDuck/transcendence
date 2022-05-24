@@ -16,5 +16,6 @@ export class GraphicBar extends Bar {
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.copy(this.position);
         this.position = this.mesh.position;
+        console.log(`position: ${this.position.x}, ${this.position.y}`)
     }
 }
