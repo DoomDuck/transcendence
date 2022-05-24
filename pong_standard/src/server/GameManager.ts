@@ -1,7 +1,7 @@
 import EventEmitter from "events";
 import { Socket } from "socket.io"
 import { Bar, Ball, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from "../common";
-import { GameEvent } from "../common/constants";
+import { GameEvent, Direction } from "../common/constants";
 import { ServerGame } from "./ServerGame";
 
 function removeElementByValue<T>(array: T[], item: T) {
@@ -10,13 +10,12 @@ function removeElementByValue<T>(array: T[], item: T) {
         array.splice(index, 1);
 }
 
-export class GameManager extends EventEmitter {
+export class GameManager {
     playerSockets: [Socket, Socket];
     observerSockets: Socket[];
     game: ServerGame;
 
     constructor (playerSockets: [Socket, Socket]) {
-        super();
         this.playerSockets = playerSockets;
         this.observerSockets = [];
         this.game = new ServerGame();
@@ -28,19 +27,21 @@ export class GameManager extends EventEmitter {
         this.playerSockets[PLAYER2].on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER2, reason));
         this.setupBarSetEventTransmit(PLAYER1);
         this.setupBarSetEventTransmit(PLAYER2);
-        this.setupEventFromGameForBroadcast(GameEvent.SET_BALL);
-        this.setupEventFromGameForBroadcast(GameEvent.GOAL);
+        this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
+        this.game.on(GameEvent.SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.SET_BALL, ...args));
     }
 
-    start() {
-        this.game.start();
+    start(direction: Direction) {
+        this.game.start(direction);
+        this.playerSockets[0].emit(GameEvent.START, direction);
+        this.playerSockets[1].emit(GameEvent.START, direction);
     }
-    pause() {
-        this.game.pause();
-    }
-    unpause() {
-        this.game.unpause();
-    }
+    // pause() {
+    //     this.game.pause();
+    // }
+    // unpause() {
+    //     this.game.unpause();
+    // }
 
     addObserver(socket: Socket) {
         this.observerSockets.push(socket);
@@ -58,6 +59,7 @@ export class GameManager extends EventEmitter {
     }
 
     broadcastEvent(event: string, ...args: any[]) {
+        // console.log(`emitting for broadcast: '${event}' with args '${args}'`);
         this.playerSockets[PLAYER1].emit(event, ...args);
         this.playerSockets[PLAYER2].emit(event, ...args);
         for (let observerSocket of this.observerSockets)
@@ -74,10 +76,6 @@ export class GameManager extends EventEmitter {
         this.game.on(event, (...args: any[]) => this.broadcastEvent(event, ...args));
     }
 
-    setupEventTowardGame(event: string) {
-        this.on(event, () => this.game.emit(event));
-    }
-
     setupBarSetEventTransmit(emitter: PlayerID) {
         let receiver = this.otherPlayer(emitter);
         this.playerSockets[emitter].on(GameEvent.SET_BAR_POSITION, (y: number) => {
@@ -88,7 +86,7 @@ export class GameManager extends EventEmitter {
 
     handleGoal(playerId: PlayerID) {
         let dir = (playerId == PLAYER1) ? LEFT : RIGHT;
-        this.game.state.resetEntities(dir);
+        this.game.state.reset(dir);
         this.broadcastEvent(GameEvent.GOAL, playerId);
         console.log("GOAL !!!")
     }

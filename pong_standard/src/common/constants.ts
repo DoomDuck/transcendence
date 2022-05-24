@@ -16,9 +16,9 @@ export class GSettings {
     static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
 
     // PHYSIC -->
-    static readonly DELTA_T = 1000 / 60;
+    // static readonly DELTA_T = 1000 / 60;
     static readonly GAME_STEP = 1000 / 60;
-    static readonly SERVER_EMIT_INTERVAL = 100;
+    static readonly SERVER_EMIT_INTERVAL = 1;
 
     // Initial values
     // BAR ----->
@@ -39,7 +39,7 @@ export class GSettings {
 
 export enum PlayerID {
     PLAYER1 = 0,
-    PLAYER2 = 1
+    PLAYER2 = 1,
 }
 export const PLAYER1 = PlayerID.PLAYER1;
 export const PLAYER2 = PlayerID.PLAYER2;

@@ -20,6 +20,7 @@ export class GameState extends EventEmitter {
     update(elapsed: number) {
         this.ball.update(elapsed);
         this.ball.handleCollisions(this.bars);
+        // console.log(`ball pos: ${this.bars[0].position.x}, ${this.bars[0].position.y}`)
     }
 
     resetPositions() {
@@ -36,7 +37,7 @@ export class GameState extends EventEmitter {
         );
     }
 
-    resetEntities(ballDirection: Direction) {
+    reset(ballDirection: Direction) {
         this.resetPositions();
         this.resetBallSpeed(ballDirection);
     }

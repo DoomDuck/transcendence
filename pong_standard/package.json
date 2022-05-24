@@ -5,7 +5,7 @@
   "author": "lzins",
   "scripts": {
     "build": "webpack --config ./src/client/webpack.dev.js && tsc -p ./src/server --outDir ./dist",
-    "watch_client": "webpack --config ./src/client/webpack.dev.js",
+    "watch_client": "webpack watch --config ./src/client/webpack.dev.js",
     "watch_server": "tsc -p ./src/server --outDir ./dist --watch",
     "dev": "webpack serve --open --config ./src/client/webpack.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1",

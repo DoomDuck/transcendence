@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { Vector3 } from 'three';
-import { GSettings } from './constants';
+import { GSettings, LEFT, PLAYER1, PlayerID, RIGHT } from './constants';
 
 export class Bar extends EventEmitter {
     width: number;
@@ -8,16 +8,12 @@ export class Bar extends EventEmitter {
     collisionEdgeDirection: number;
     position: Vector3;
 
-    /**
-     * @param {number} collisionEdgeDirection - 1 for the left bar (right edge), -1 for the right bar (left edge)
-     */
-    constructor(collisionEdgeDirection: number) {
+    constructor(playerId: PlayerID) {
         super();
         this.width = GSettings.BAR_WIDTH;
         this.height = GSettings.BAR_HEIGHT;
-        this.collisionEdgeDirection = collisionEdgeDirection;
+        this.collisionEdgeDirection = (playerId == PLAYER1) ? RIGHT : LEFT;
         this.position = new Vector3();
-        this.resetPosition();
     }
 
     resetPosition() {

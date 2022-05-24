@@ -82,12 +82,12 @@ export class Ball extends EventEmitter {
     handleWallCollisions() {
         if (this.topY() < GSettings.GAME_TOP) {
             // top wall
-            this.speed.y *= -1;
+            this.speed.y = Math.abs(this.speed.y);
             this.setTopY(GSettings.GAME_TOP);
         }
         else if (this.bottomY() > GSettings.GAME_BOTTOM) {
             // bottom wall
-            this.speed.y *= -1;
+            this.speed.y *= -Math.abs(this.speed.y);
             this.setBottomY(GSettings.GAME_BOTTOM);
         }
         else if (this.position.x < GSettings.GAME_LEFT) {

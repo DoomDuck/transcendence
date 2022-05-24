@@ -1,5 +1,5 @@
 import { GraphicBar } from './GraphicBar';
-import { GSettings } from '../common/constants';
+import { GSettings, PlayerID } from '../common/constants';
 import { GameEvent } from '../common';
 
 export class ControlledGraphicBar extends GraphicBar {
@@ -9,8 +9,8 @@ export class ControlledGraphicBar extends GraphicBar {
     downPressed: boolean;
 
     // collisionEdge: -1 for the left edge, +1 for the right edge
-    constructor(collisionEdgeDirection: number) {
-        super(collisionEdgeDirection);
+    constructor(playerId: PlayerID) {
+        super(playerId);
         this.upKeys = ['ArrowUp'];
         this.downKeys = ['ArrowDown'];
         this.upPressed = false;

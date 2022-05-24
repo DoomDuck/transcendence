@@ -4,13 +4,18 @@ import http from 'http'
 import { ServerGame } from './ServerGame'
 import { GameManager } from './GameManager'
 import { Server as socketioServer, Socket } from 'socket.io'
-import { GameEvent } from '../common'
+import { GameEvent, LEFT } from '../common'
 
 const port: number = 3000
 
 class App {
     private server: http.Server
     private port: number
+    private gameManager: GameManager;
+    private gameSockets: {
+        players: [Socket, Socket],
+        observers: Socket[],
+    }
 
     constructor(port: number) {
         this.port = port;
@@ -34,38 +39,24 @@ class App {
 
         this.server = new http.Server(app);
         const io = new socketioServer(this.server);
-        let gameSockets = {
-            players: [null, null] as [Socket, Socket],
-            observers: [] as Socket[],
+        this.gameSockets = {
+            players: [null, null],
+            observers: [],
         };
-        let gameManager: GameManager;
         io.on("connect", (socket: Socket) => {
             console.log("client connected");
             socket.on("playerId", (playerId: number) => {
                 if (playerId < 2)
-                    gameSockets.players[playerId] = socket;
+                    this.gameSockets.players[playerId] = socket;
                 else
-                    gameSockets.observers.push(socket);
+                    this.gameSockets.observers.push(socket);
                 console.log(`playerId = ${playerId}`)
-                if (gameSockets.players[0] !== null && gameSockets.players[1] !== null) {
-                    gameManager = new GameManager(gameSockets.players);
+                if (this.gameSockets.players[0] !== null && this.gameSockets.players[1] !== null) {
+                    this.gameManager = new GameManager(this.gameSockets.players);
                     console.log("both players are present, starting ")
-                    gameManager.start();
-                    gameSockets.players[0].emit(GameEvent.START);
-                    gameSockets.players[1].emit(GameEvent.START);
+                    this.gameManager.game.start(LEFT);
                 }
             });
-            // socket.on("bar", (barNumber: number, y: number) => {
-            //     console.log("bar", barNumber, y);
-            //     if (barNumber == 2)
-            //         gameSockets.players[0]?.emit("bar", 2, y);
-            //     if (barNumber == 1)
-            //         gameSockets.players[1]?.emit("bar", 1, y);
-            //     for (let sock of gameSockets.observers) {
-            //         sock.emit("bar", barNumber, y);
-            //     }
-            // })
-
         });
     }
 
