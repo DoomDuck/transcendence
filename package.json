@@ -8,6 +8,7 @@
     "test": "test"
   },
   "scripts": {
+    "build": "webpack",
     "test": "node test/index.js"
   },
   "repository": {
