@@ -100,6 +100,10 @@ The resulting modules types are:
 
 Loaders than discribe what those inclusions do to the bundle
 
+## Module resolution
 
-
-
+Js import statements are highly customizable import are cusomized by
+webpack using [enhanced-resolve](https://github.com/webpack/enhanced-resolve)
+However by default you can consider 2 ways to import modules
+- "Real" paths which can be relative or absolute (useful for your files)
+- "Module" import registered modules
