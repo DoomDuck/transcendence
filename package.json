@@ -4,10 +4,11 @@
   "description": "42's Common core end project",
   "main": "src/index.js",
   "directories": {
-    "doc": "doc"
+    "doc": "doc",
+    "test": "test"
   },
   "scripts": {
-    "test": "node tests/index.js"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +20,12 @@
     "nestjs",
     "pong"
   ],
-  "author": "dburgun efarin lzins hgallien",
+  "contributors": [
+    "dburgun",
+    "efarin",
+    "lzins",
+    "hgallien"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/DoomDuck/transcendence/issues"
