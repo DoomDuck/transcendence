@@ -16,5 +16,6 @@ export class GraphicBar extends Bar {
         });
         this.mesh = new THREE.Mesh(geometry, material);
         this.position = this.mesh.position;
+        this.resetPosition();
     }
 }

@@ -19,8 +19,9 @@ export class GameState extends EventEmitter {
 
     update(elapsed: number) {
         this.ball.update(elapsed);
+        this.bars[0].update(elapsed);
+        this.bars[1].update(elapsed);
         this.ball.handleCollisions(this.bars);
-        // console.log(`ball pos: ${this.bars[0].position.x}, ${this.bars[0].position.y}`)
     }
 
     resetPositions() {
@@ -29,17 +30,9 @@ export class GameState extends EventEmitter {
         this.bars[1].resetPosition();
     }
 
-    resetBallSpeed(ballDirection: Direction) {
-        this.ball.speed.set(
-            ballDirection * GSettings.BAll_INITIAL_SPEEDX,
-            (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3,
-            0
-        );
-    }
-
-    reset(ballDirection: Direction) {
+    reset(ballSpeedX: number, ballSpeedY: number) {
         this.resetPositions();
-        this.resetBallSpeed(ballDirection);
+        this.ball.speed.set(ballSpeedX, ballSpeedY, 0);
     }
 
 }

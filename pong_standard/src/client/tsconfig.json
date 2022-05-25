@@ -6,6 +6,7 @@
         "paths": {
             // "common": ["common"],
         },
+        "esModuleInterop": true,
     },
     "include": ["**/*.ts", "_LocalBar.ts_"]
 }

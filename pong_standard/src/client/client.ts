@@ -27,13 +27,14 @@ function startGame(playerId: number) {
     transmitEventFromServerToGame(GameEvent.GOAL);
     transmitEventFromServerToGame(GameEvent.SET_BALL);
     transmitEventFromServerToGame(GameEvent.START);
+    transmitEventFromServerToGame(GameEvent.RESET);
     transmitEventFromServerToGame(GameEvent.PAUSE);
     transmitEventFromServerToGame(GameEvent.UNPAUSE);
 
     function animate() {
         requestAnimationFrame(animate);
         // plante
-        // game.frame();
+        game.frame();
         game.render();
     }
     animate();

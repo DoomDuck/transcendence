@@ -1,9 +1,7 @@
 import { EventEmitter } from "events";
 import { GameEvent, GSettings } from "."
 import { GameState } from "./GameState";
-import { Direction } from "./constants"
-
-const now = Date.now;
+import now from "performance-now"
 
 export abstract class Game extends EventEmitter {
     lastTime: number;
@@ -23,17 +21,20 @@ export abstract class Game extends EventEmitter {
     }
 
     setupEvents() {
-        this.on(GameEvent.START, (direction: Direction) => this.start(direction));
+        this.on(GameEvent.START, () => this.start());
         this.on(GameEvent.PAUSE, () => this.pause());
         this.on(GameEvent.UNPAUSE, () => this.unpause());
     }
 
-    start(direction: Direction) {
-        // console.log("start from Game");
-        this.state.reset(direction);
+    reset(ballSpeedX: number, ballSpeedY: number) {
+        this.state.reset(ballSpeedX, ballSpeedY);
         this.lastTime = now();
         this.time = 0;
         this.timeAccumulated = 0;
+        this.paused = true;
+    }
+
+    start() {
         this.paused = false;
     }
 
@@ -55,11 +56,11 @@ export abstract class Game extends EventEmitter {
             return;
         let newTime = now();
         let dt = newTime - this.lastTime;
+        console.log(`dt = ${dt}`);
         // if (dt > GAME_MAX_STEP)
         //     dt = this.step;
         this.timeAccumulated += dt;
         this.lastTime = newTime;
-        this.emit("frame");
 
         while (this.timeAccumulated >= GSettings.GAME_STEP) {
             this.time += GSettings.GAME_STEP;
@@ -67,6 +68,7 @@ export abstract class Game extends EventEmitter {
             this.state.update(GSettings.GAME_STEP);
             this.emit("update");
         }
+        this.emit("frame");
     }
 }
 

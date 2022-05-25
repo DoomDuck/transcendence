@@ -1,7 +1,7 @@
 import EventEmitter from "events";
 import { Socket } from "socket.io"
 import { Bar, Ball, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from "../common";
-import { GameEvent, Direction } from "../common/constants";
+import { GameEvent, Direction, GSettings } from "../common/constants";
 import { ServerGame } from "./ServerGame";
 
 function removeElementByValue<T>(array: T[], item: T) {
@@ -31,17 +31,28 @@ export class GameManager {
         this.game.on(GameEvent.SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.SET_BALL, ...args));
     }
 
-    start(direction: Direction) {
-        this.game.start(direction);
-        this.playerSockets[0].emit(GameEvent.START, direction);
-        this.playerSockets[1].emit(GameEvent.START, direction);
+    start(ballDirection: Direction) {
+        this.reset(ballDirection);
+        // TODO: wait ready
+        this.game.start();
+        this.playerSockets[0].emit(GameEvent.START);
+        this.playerSockets[1].emit(GameEvent.START);
     }
-    // pause() {
-    //     this.game.pause();
-    // }
-    // unpause() {
-    //     this.game.unpause();
-    // }
+    
+    reset(ballDirection: Direction) {
+        let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
+        let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
+        this.game.reset(ballSpeedX, ballSpeedY);
+        this.playerSockets[0].emit(GameEvent.RESET, ballSpeedX, ballSpeedY);
+        this.playerSockets[1].emit(GameEvent.RESET, ballSpeedX, ballSpeedY);
+    }
+
+    handleGoal(playerId: PlayerID) {
+        let ballDirection = (playerId == PLAYER1) ? LEFT : RIGHT;
+        this.start(ballDirection);
+        this.broadcastEvent(GameEvent.GOAL, playerId);
+        console.log("GOAL !!!")
+    }
 
     addObserver(socket: Socket) {
         this.observerSockets.push(socket);
@@ -82,13 +93,6 @@ export class GameManager {
             this.transmitEvent(receiver, GameEvent.SET_OTHER_PLAYER_BAR_POSITION, y);
             this.game.state.bars[emitter].position.y = y;
         });
-    }
-
-    handleGoal(playerId: PlayerID) {
-        let dir = (playerId == PLAYER1) ? LEFT : RIGHT;
-        this.game.state.reset(dir);
-        this.broadcastEvent(GameEvent.GOAL, playerId);
-        console.log("GOAL !!!")
     }
 }
 

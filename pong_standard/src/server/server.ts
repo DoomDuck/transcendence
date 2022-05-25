@@ -54,7 +54,7 @@ class App {
                 if (this.gameSockets.players[0] !== null && this.gameSockets.players[1] !== null) {
                     this.gameManager = new GameManager(this.gameSockets.players);
                     console.log("both players are present, starting ")
-                    this.gameManager.game.start(LEFT);
+                    this.gameManager.start(LEFT);
                 }
             });
         });

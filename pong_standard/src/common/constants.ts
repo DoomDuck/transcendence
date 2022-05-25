@@ -30,7 +30,7 @@ export class GSettings {
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
-    static readonly BAll_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
+    static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
     static readonly BALL_RADIAL_SEGMENTS = 100;
     static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 40;
     static readonly BALL_SPEEDX_MAX = GSettings.SCREEN_WIDTH * 2;
@@ -59,5 +59,6 @@ export class GameEvent {
     static readonly PAUSE = "pause";
     static readonly UNPAUSE = "unpause";
     static readonly SET_BALL  = "setBall";
-    static readonly GOAL  = "goal";
+    static readonly GOAL = "goal";
+    static readonly RESET = "reset";
 }

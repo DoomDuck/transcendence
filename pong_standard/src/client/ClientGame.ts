@@ -18,10 +18,8 @@ export class ClientGame extends Game {
 
     constructor(playerId: PlayerID) {
         const ball = new GraphicBall();
-        // const bar1 = (playerId == PLAYER1) ? new ControlledGraphicBar(RIGHT) : new GraphicBar(RIGHT);
-        // const bar2 = (playerId == PLAYER2) ? new ControlledGraphicBar(LEFT) : new GraphicBar(LEFT);
-        const bar1 = new GraphicBar(PLAYER1);
-        const bar2 = new GraphicBar(PLAYER2);
+        const bar1 = (playerId == PLAYER1) ? new ControlledGraphicBar(PLAYER1) : new GraphicBar(PLAYER1);
+        const bar2 = (playerId == PLAYER2) ? new ControlledGraphicBar(PLAYER2) : new GraphicBar(PLAYER2);
         const gameState = new GameState(ball, bar1, bar2);
         super(gameState);
         this.scene = new THREE.Scene();
@@ -39,14 +37,17 @@ export class ClientGame extends Game {
         });
         this.on(GameEvent.SET_BALL, (x: number, y: number, vx: number, vy: number) => {
             // console.log(`setBall event: x=${x}, y=${y}, vx=${vx}, vy=${vy}`);
-            this.state.ball.position.setX(x);
-            this.state.ball.position.setY(y);
+            this.state.ball.position.set(x, y, 0);
+            this.state.ball.speed.set(vx, vy, 0);
             // ball.speed.set(vx, vy, 0);
         })
         this.on(GameEvent.GOAL, (playerid: PlayerID) => {
-            let dir = (playerId == PLAYER1) ? LEFT : RIGHT;
-            this.state.reset(dir);
+            // let dir = (playerId == PLAYER1) ? LEFT : RIGHT;
+            // this.state.reset(dir);
         });
+        this.on(GameEvent.RESET, (ballSpeedX: number, ballSpeedY: number) => {
+            this.state.reset(ballSpeedX, ballSpeedY);
+        })
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
         // this.render();

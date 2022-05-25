@@ -18,9 +18,11 @@ export class Bar extends EventEmitter {
 
     resetPosition() {
         this.position.set(
-            0,
             -this.collisionEdgeDirection * GSettings.BAR_INITIALX,
             GSettings.BAR_INITIALY,
+            0
         )
     }
+
+    update(elapsed: number) {}
 }
