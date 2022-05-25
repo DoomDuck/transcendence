@@ -7,12 +7,13 @@ import { Bar } from './Bar'
  * bar to the ball (edges of the rectangle to center)
  * @param {Ball} ball
  * @param {Bar} bar
- * @returns {[boolean, Vector3]} -
+ * @returns {[boolean, Vector3]} - whether the center of the ball is inside and the distance vector
  */
 //
-export function ballBarCollisionDistance(ball: Ball, bar: Bar): [boolean, Vector3] {
+export function ballBarCollision(ball: Ball, bar: Bar): {inside: boolean, corner: boolean, distanceVec: Vector3} {
     let distanceToCenter = new Vector3();
-    let isInside = false;
+    let inside = false;
+    let corner = false;
 
     distanceToCenter.copy(ball.position);
     distanceToCenter.sub(bar.position);
@@ -32,11 +33,25 @@ export function ballBarCollisionDistance(ball: Ball, bar: Bar): [boolean, Vector
     }
     else if (x > 0 && y > 0) {
         // diagonal
-        // TODO: Speed boost
+        corner = true;
     }
-    else  {
-        isInside = true;
+    // the center of the ball is inside of the bar
+    else if (x < y) {
+        // closer to the top/bottom
+        inside = true;
+        distanceToCenter.x = 0;
+        distanceToCenter.y = - distanceToCenter.y;
+    }
+    else {
+        // closer to the sides
+        inside = true;
+        distanceToCenter.x = - distanceToCenter.x;
+        distanceToCenter.y = 0;
     }
 
-    return [isInside, distanceToCenter];
+    return {
+        inside: inside,
+        corner: corner,
+        distanceVec: distanceToCenter,
+    };
 }

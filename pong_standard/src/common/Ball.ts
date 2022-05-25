@@ -1,7 +1,7 @@
 import { Vector3 } from 'three';
 import { GSettings, PlayerID, PLAYER1, PLAYER2, GameEvent } from './constants'
 import { Bar } from './Bar'
-import { ballBarCollisionDistance } from './collision';
+import { ballBarCollision } from './collision';
 import { EventEmitter } from 'events';
 
 let _v = new Vector3();
@@ -50,32 +50,37 @@ export class Ball extends EventEmitter {
     }
 
     handleBarCollision(bar: Bar) {
-        //detection
+        // detection
         if (this.speed.x * bar.collisionEdgeDirection >= 0)
             return;
-        let [isInside, distanceVecToCenter] = ballBarCollisionDistance(this, bar);
-        let distance = distanceVecToCenter.length();
-        if (distance >= this.radius)
+        let collision = ballBarCollision(this, bar);
+        let distance = collision.distanceVec.length();
+        if (!collision.inside && distance >= this.radius)
             return;
-        if (distanceVecToCenter.x * bar.collisionEdgeDirection <= 0)
+        if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection <= 0)
             return;
 
-        //resolution
-        let posCorrection = distanceVecToCenter.clone();
-        posCorrection.setLength(this.radius - distance);
+        // resolution
+        let posCorrection = collision.distanceVec.clone();
+        if (!collision.inside)
+            posCorrection.setLength(this.radius - distance);
+        else
+            posCorrection.setLength(this.radius + distance);
         this.position.add(posCorrection);
-        this.changeSpeedBarCollision(bar);
-    }
 
-    changeSpeedBarCollision(bar: Bar) {
+        // update speed
         // speed.x
         this.speed.x *= -1;
         this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
+        if (collision.corner)
+            this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
         if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
             this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
 
         // speed.y
         let deltaY = this.position.y - bar.position.y;
+        if (collision.corner)
+            deltaY = Math.sign(deltaY) * bar.height;
         this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
     }
 

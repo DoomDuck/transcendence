@@ -56,9 +56,6 @@ export abstract class Game extends EventEmitter {
             return;
         let newTime = now();
         let dt = newTime - this.lastTime;
-        console.log(`dt = ${dt}`);
-        // if (dt > GAME_MAX_STEP)
-        //     dt = this.step;
         this.timeAccumulated += dt;
         this.lastTime = newTime;
 

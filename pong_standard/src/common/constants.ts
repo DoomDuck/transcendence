@@ -18,7 +18,7 @@ export class GSettings {
     // PHYSIC -->
     // static readonly DELTA_T = 1000 / 60;
     static readonly GAME_STEP = 1000 / 60;
-    static readonly SERVER_EMIT_INTERVAL = 1;
+    static readonly SERVER_EMIT_INTERVAL = 2;
 
     // Initial values
     // BAR ----->
@@ -33,6 +33,7 @@ export class GSettings {
     static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
     static readonly BALL_RADIAL_SEGMENTS = 100;
     static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 40;
+    static readonly BALL_SPEEDX_CORNER_BOOST = GSettings.SCREEN_WIDTH / 4;
     static readonly BALL_SPEEDX_MAX = GSettings.SCREEN_WIDTH * 2;
     static readonly BALL_SPEEDY_MAX = GSettings.SCREEN_WIDTH / 2;
 }

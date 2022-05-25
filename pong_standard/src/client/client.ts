@@ -2,18 +2,35 @@ import { ClientGame } from './ClientGame';
 import { io } from 'socket.io-client'
 import { GameEvent, PlayerID } from '../common/constants';
 
+let game: ClientGame;
+let domElementAdded = false;
+
+// socketio
+const socket = io();
+socket.on("connect", () => {
+    console.log("connected to server");
+});
+socket.on("disconnect", ()=> {
+    if (domElementAdded) {
+        document.body.removeChild(game.domElement);
+        domElementAdded = false;
+    }
+})
+socket.on("playerIdUnavailable", (playerId: number) => {
+    alert(`playerId ${playerId} is already taken`)
+});
+socket.on("playerIdAlreadySelected", (playerId: number) => {
+    // alert(`playerId already selected`)
+});
+socket.on("playerIdConfirmed", (playerId: number) => {
+    startGame(playerId);
+});
+
 function startGame(playerId: number) {
     // game
-    const game = new ClientGame(playerId);
+    game = new ClientGame(playerId);
     document.body.appendChild(game.domElement);
-
-    // socketio
-    const socket = io();
-    socket.on("connect", () => {
-        socket.emit("playerId", playerId);
-        console.log("connected to server");
-    });
-    socket.on("start", () => console.log("start"))
+    domElementAdded = true;
 
     // outgoing events
     game.thisBar().on(GameEvent.SET_BAR_POSITION, (y: number) => {
@@ -33,13 +50,12 @@ function startGame(playerId: number) {
 
     function animate() {
         requestAnimationFrame(animate);
-        // plante
         game.frame();
         game.render();
     }
     animate();
 }
 
-document.getElementById("launch-0")?.addEventListener("click", () => startGame(0));
-document.getElementById("launch-1")?.addEventListener("click", () => startGame(1));
-document.getElementById("launch-2")?.addEventListener("click", () => startGame(2));
+document.getElementById("launch-0")?.addEventListener("click", () => socket.emit("playerIdSelect", 0));
+document.getElementById("launch-1")?.addEventListener("click", () => socket.emit("playerIdSelect", 1));
+document.getElementById("launch-2")?.addEventListener("click", () => socket.emit("playerIdSelect", 2));

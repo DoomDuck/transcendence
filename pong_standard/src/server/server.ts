@@ -12,10 +12,10 @@ class App {
     private server: http.Server
     private port: number
     private gameManager: GameManager;
-    private gameSockets: {
-        players: [Socket, Socket],
-        observers: Socket[],
-    }
+    // private gameSockets: {
+    //     players: [Socket, Socket],
+    //     observers: Socket[],
+    // }
 
     constructor(port: number) {
         this.port = port;
@@ -39,20 +39,28 @@ class App {
 
         this.server = new http.Server(app);
         const io = new socketioServer(this.server);
-        this.gameSockets = {
-            players: [null, null],
-            observers: [],
+        let gameSockets = {
+            players: [null, null] as [Socket, Socket],
+            observers: [] as Socket[],
         };
         io.on("connect", (socket: Socket) => {
             console.log("client connected");
-            socket.on("playerId", (playerId: number) => {
-                if (playerId < 2)
-                    this.gameSockets.players[playerId] = socket;
+            socket.on("playerIdSelect", (playerId: number) => {
+                if (playerId < 2 && gameSockets.players[playerId] === null) {
+                    gameSockets.players[playerId] = socket;
+                    socket.emit("playerIdConfirmed", playerId);
+                }
+                else if (playerId < 2 && gameSockets.players[playerId] === socket) {
+                    socket.emit("playerIdAlreadySelected");
+                }
+                else if (playerId < 2) {
+                    socket.emit("playerIdUnavailable");
+                }
                 else
-                    this.gameSockets.observers.push(socket);
-                console.log(`playerId = ${playerId}`)
-                if (this.gameSockets.players[0] !== null && this.gameSockets.players[1] !== null) {
-                    this.gameManager = new GameManager(this.gameSockets.players);
+                    gameSockets.observers.push(socket);
+                console.log(playerId < 2 ? `player ${playerId} joined` : "an observer joined")
+                if (gameSockets.players[0] !== null && gameSockets.players[1] !== null) {
+                    this.gameManager = new GameManager(gameSockets);
                     console.log("both players are present, starting ")
                     this.gameManager.start(LEFT);
                 }
