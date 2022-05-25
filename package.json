@@ -1,0 +1,28 @@
+{
+  "name": "transcendence",
+  "version": "0.0.1",
+  "description": "42's Common core end project",
+  "main": "src/index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "node tests/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoomDuck/transcendence.git"
+  },
+  "keywords": [
+    "42",
+    "transcendance",
+    "nestjs",
+    "pong"
+  ],
+  "author": "dburgun efarin lzins hgallien",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DoomDuck/transcendence/issues"
+  },
+  "homepage": "https://github.com/DoomDuck/transcendence#readme"
+}
