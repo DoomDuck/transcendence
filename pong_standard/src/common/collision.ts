@@ -2,18 +2,28 @@ import { Vector3 } from 'three';
 import { Ball } from './Ball'
 import { Bar } from './Bar'
 
+export type CollisionResultType = {
+    inside: boolean,
+    corner: boolean,
+    horizontal: boolean,
+    vertical: boolean,
+    distanceVec: Vector3,
+}
+
 /**
  * Return whether the ball is inside and the distance from the
  * bar to the ball (edges of the rectangle to center)
  * @param {Ball} ball
  * @param {Bar} bar
- * @returns {[boolean, Vector3]} - whether the center of the ball is inside and the distance vector
+ * @returns ...
  */
 //
-export function ballBarCollision(ball: Ball, bar: Bar): {inside: boolean, corner: boolean, distanceVec: Vector3} {
+export function ballBarCollision(ball: Ball, bar: Bar): CollisionResultType {
     let distanceToCenter = new Vector3();
     let inside = false;
     let corner = false;
+    let horizontal = false;
+    let vertical = false;
 
     distanceToCenter.copy(ball.position);
     distanceToCenter.sub(bar.position);
@@ -26,10 +36,12 @@ export function ballBarCollision(ball: Ball, bar: Bar): {inside: boolean, corner
     if (x > 0 && y < 0) {
         // lateral face
         distanceToCenter.y = 0;
+        horizontal = true;
     }
     else if (x < 0 && y > 0) {
-        // upper face
+        // upper/lower face
         distanceToCenter.x = 0;
+        vertical = true;
     }
     else if (x > 0 && y > 0) {
         // diagonal
@@ -52,6 +64,8 @@ export function ballBarCollision(ball: Ball, bar: Bar): {inside: boolean, corner
     return {
         inside: inside,
         corner: corner,
+        horizontal: horizontal,
+        vertical: vertical,
         distanceVec: distanceToCenter,
     };
 }

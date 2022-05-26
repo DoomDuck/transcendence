@@ -3,7 +3,7 @@ import { Vector3 } from 'three';
 import { Bar } from '../common/Bar';
 import { GSettings, PlayerID } from '../common/constants';
 
-export class GraphicBar extends Bar {
+export class ClientBar extends Bar {
     mesh: THREE.Mesh;
 
     constructor(playerId: PlayerID) {
@@ -16,6 +16,6 @@ export class GraphicBar extends Bar {
         });
         this.mesh = new THREE.Mesh(geometry, material);
         this.position = this.mesh.position;
-        this.resetPosition();
+        this.reset();
     }
 }

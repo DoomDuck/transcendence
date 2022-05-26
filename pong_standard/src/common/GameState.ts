@@ -24,15 +24,10 @@ export class GameState extends EventEmitter {
         this.ball.handleCollisions(this.bars);
     }
 
-    resetPositions() {
-        this.ball.resetPosition();
-        this.bars[0].resetPosition();
-        this.bars[1].resetPosition();
-    }
-
     reset(ballSpeedX: number, ballSpeedY: number) {
-        this.resetPositions();
+        this.ball.reset();
         this.ball.speed.set(ballSpeedX, ballSpeedY, 0);
+        this.bars[0].reset();
+        this.bars[1].reset();
     }
-
 }

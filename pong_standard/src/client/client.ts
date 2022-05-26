@@ -1,12 +1,20 @@
 import { ClientGame } from './ClientGame';
 import { io } from 'socket.io-client'
 import { GameEvent, PlayerID } from '../common/constants';
+import { EventEmitter } from 'events';
+import { ClientSynchroTime } from './ClientSynchroTime';
 
 let game: ClientGame;
 let domElementAdded = false;
 
 // socketio
 const socket = io();
+////
+let synchroTime = new ClientSynchroTime(socket);
+synchroTime.connect().then(() => {
+    console.log("SyncroTime connected");
+});
+////
 socket.on("connect", () => {
     console.log("connected to server");
 });
@@ -27,27 +35,33 @@ socket.on("playerIdConfirmed", (playerId: number) => {
 });
 
 function startGame(playerId: number) {
+    console.log('starting game')
     // game
     game = new ClientGame(playerId);
     document.body.appendChild(game.domElement);
     domElementAdded = true;
 
-    // outgoing events
-    game.thisBar().on(GameEvent.SET_BAR_POSITION, (y: number) => {
-        socket.emit(GameEvent.SET_BAR_POSITION, y);
-    });
-    // incomming events
-    const transmitEventFromServerToGame = (event: string) => {
-        socket.on(event, (...args: any[]) => { game.emit(event, ...args) });
+    // // outgoing events
+    const transmitEventFromGameToServer = (event: string, eventEmitter: EventEmitter) => {
+        eventEmitter.on(event, (...args: any[]) => { socket.emit(event, ...args) });
     }
-    transmitEventFromServerToGame(GameEvent.SET_OTHER_PLAYER_BAR_POSITION);
-    transmitEventFromServerToGame(GameEvent.GOAL);
-    transmitEventFromServerToGame(GameEvent.SET_BALL);
-    transmitEventFromServerToGame(GameEvent.START);
-    transmitEventFromServerToGame(GameEvent.RESET);
-    transmitEventFromServerToGame(GameEvent.PAUSE);
-    transmitEventFromServerToGame(GameEvent.UNPAUSE);
+    transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN, game.state.bars[game.playerId]);
+    transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP, game.state.bars[game.playerId]);
 
+    // incomming events
+    const transmitEventFromServerToGame = (event: string, eventEmitter: EventEmitter) => {
+        socket.on(event, (...args: any[]) => { eventEmitter.emit(event, ...args) });
+    }
+    transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN, game.state.bars[game.otherPlayerId]);
+    transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP, game.state.bars[game.otherPlayerId]);
+    transmitEventFromServerToGame(GameEvent.GOAL, game);
+    transmitEventFromServerToGame(GameEvent.START, game);
+    transmitEventFromServerToGame(GameEvent.RESET, game);
+    transmitEventFromServerToGame(GameEvent.PAUSE, game);
+    transmitEventFromServerToGame(GameEvent.UNPAUSE, game);
+    transmitEventFromServerToGame(GameEvent.SET_BALL, game.state.ball);
+
+    // Game loop
     function animate() {
         requestAnimationFrame(animate);
         game.frame();

@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { GameEvent, GSettings } from "."
 import { GameState } from "./GameState";
-import now from "performance-now"
+import now from 'performance-now'
 
 export abstract class Game extends EventEmitter {
     lastTime: number;
@@ -28,7 +28,7 @@ export abstract class Game extends EventEmitter {
 
     reset(ballSpeedX: number, ballSpeedY: number) {
         this.state.reset(ballSpeedX, ballSpeedY);
-        this.lastTime = now();
+        this.lastTime = Date.now();
         this.time = 0;
         this.timeAccumulated = 0;
         this.paused = true;
@@ -48,13 +48,13 @@ export abstract class Game extends EventEmitter {
         if (!this.paused)
             return;
         this.paused = false;
-        this.lastTime = now();
+        this.lastTime = Date.now();
     }
 
     frame() {
         if (this.paused)
             return;
-        let newTime = now();
+        let newTime = Date.now();
         let dt = newTime - this.lastTime;
         this.timeAccumulated += dt;
         this.lastTime = newTime;

@@ -3,13 +3,12 @@ import { Camera } from './Camera';
 import { GSettings, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../common/constants';
 import { Game } from "../common/Game";
 import { GameState } from '../common/GameState';
-import { GraphicBall } from './GraphicBall';
-import { GraphicBar } from './GraphicBar';
-import { ControlledGraphicBar } from './ControlledGraphicBar';
+import { ClientBall } from './ClientBall';
+import { ClientBar } from './ClientBar';
+import { ClientBarControlled } from './ClientBarControlled';
 import { GameEvent } from '../common/constants';
 
 export class ClientGame extends Game {
-    requestAnimationFrameId: number;
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
     camera: Camera;
@@ -17,40 +16,35 @@ export class ClientGame extends Game {
     otherPlayerId: PlayerID;
 
     constructor(playerId: PlayerID) {
-        const ball = new GraphicBall();
-        const bar1 = (playerId == PLAYER1) ? new ControlledGraphicBar(PLAYER1) : new GraphicBar(PLAYER1);
-        const bar2 = (playerId == PLAYER2) ? new ControlledGraphicBar(PLAYER2) : new GraphicBar(PLAYER2);
+        const ball = new ClientBall();
+        const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
+        const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
         const gameState = new GameState(ball, bar1, bar2);
         super(gameState);
+        // ////
+        // var oldEmit = this.emit;
+        // this.emit = function(event: string, ...args: any[]) {
+        //     console.log(`got event ${event}`)
+        //     return oldEmit.apply(this, [event, ...args]);
+        // }
+        // ////
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
         this.camera = new Camera();
         this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
-        this.requestAnimationFrameId = 0;
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
         this.loadBackground();
-        this.on(GameEvent.SET_OTHER_PLAYER_BAR_POSITION, (y: number) => {
-            this.state.bars[this.otherPlayerId].position.y = y;
-        });
-        this.on(GameEvent.SET_BALL, (x: number, y: number, vx: number, vy: number) => {
-            // console.log(`setBall event: x=${x}, y=${y}, vx=${vx}, vy=${vy}`);
-            this.state.ball.position.set(x, y, 0);
-            this.state.ball.speed.set(vx, vy, 0);
-            // ball.speed.set(vx, vy, 0);
-        })
         this.on(GameEvent.GOAL, (playerid: PlayerID) => {
-            // let dir = (playerId == PLAYER1) ? LEFT : RIGHT;
-            // this.state.reset(dir);
+            console.log("GOAL !!!")
         });
         this.on(GameEvent.RESET, (ballSpeedX: number, ballSpeedY: number) => {
-            this.state.reset(ballSpeedX, ballSpeedY);
+            this.reset(ballSpeedX, ballSpeedY);
         })
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
-        // this.render();
     }
 
     get domElement() {
@@ -87,10 +81,6 @@ export class ClientGame extends Game {
                 window.innerHeight);
         }
         this.render()
-    }
-
-    thisBar(): GraphicBar {
-        return this.state.bars[this.playerId] as GraphicBar;
     }
 
     render() {

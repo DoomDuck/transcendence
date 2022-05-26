@@ -30,12 +30,14 @@ export class GSettings {
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
-    static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
+    // static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
+    static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_RADIAL_SEGMENTS = 100;
     static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 40;
-    static readonly BALL_SPEEDX_CORNER_BOOST = GSettings.SCREEN_WIDTH / 4;
+    static readonly BALL_SPEEDX_CORNER_BOOST = GSettings.BALL_SPEEDX_INCREASE * 2;
     static readonly BALL_SPEEDX_MAX = GSettings.SCREEN_WIDTH * 2;
     static readonly BALL_SPEEDY_MAX = GSettings.SCREEN_WIDTH / 2;
+    static readonly BALL_COLLISION_VERTICAL_SPEEDY_BOOST = GSettings.SCREEN_WIDTH;
 }
 
 export enum PlayerID {
@@ -54,12 +56,35 @@ export const RIGHT = Direction.RIGHT;
 
 
 export class GameEvent {
-    static readonly SET_BAR_POSITION = "setBarPosition";
-    static readonly SET_OTHER_PLAYER_BAR_POSITION = "setOtherPlayerBarPosition";
+    // key: string, time: number
+    static readonly SEND_BAR_KEYDOWN = "sendBarKeydown";
+    // key: string, y: number
+    static readonly SEND_BAR_KEYUP = "sendBarKeyup";
+    // y: number, time: number
+    static readonly SEND_BAR_POSITION = "sendBarPosition";
+    // key: string, time: number
+    static readonly RECEIVE_BAR_KEYDOWN = "receiveBarKeydown";
+    // key: string, y: number
+    static readonly RECEIVE_BAR_KEYUP = "receiveBarKeyup";
+    // y: number, time: number
+    static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
+    // startTime: number
     static readonly START = "start";
+    // pauseTime: number
     static readonly PAUSE = "pause";
+    // unpauseTime: number
     static readonly UNPAUSE = "unpause";
+    // x: number, y: number, speedX: number, speedY: number, time: number
     static readonly SET_BALL  = "setBall";
+    // playerId: PlayerID
     static readonly GOAL = "goal";
+    // ballSpeedX: number, ballSpeedY: number
     static readonly RESET = "reset";
 }
+
+export enum KeyValue {
+    UP,
+    DOWN,
+}
+export const UP = KeyValue.UP;
+export const DOWN = KeyValue.DOWN;
