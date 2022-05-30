@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "webpack",
+    "build:dev": "webpack --watch",
     "test": "node test/index.js"
   },
   "repository": {
