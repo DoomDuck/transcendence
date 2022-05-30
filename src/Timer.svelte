@@ -1,18 +1,15 @@
-<script>
+<script lang="ts">
 import { onDestroy } from 'svelte';
-import { fade } from 'svelte/transition';
 
 let start = new Date();
-let now = start;
+let now : Date = start;
 let interval_id = null;
 
-let duration;
-$: duration = Math.floor((now - start) / 1000);
-let h;
+let duration: number;
+$: duration = Math.floor((now.getTime() - start.getTime()) / 1000);
+let h : number, m: number, s: number;
 $: h = Math.floor(duration / 3600);
-let m;
 $: m = Math.floor(duration / 60) % 60;
-let s;
 $: s = Math.floor(duration % 60);
 
 function start_timer() {

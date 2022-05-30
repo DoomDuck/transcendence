@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Timer from './Timer.svelte';
 </script>
 

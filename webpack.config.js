@@ -1,7 +1,9 @@
 const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const svelte_preprocess = require('svelte-preprocess');
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: "./src/index.ts",
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "./bundle.js",
@@ -21,15 +23,31 @@ module.exports = {
     rules: [
       {
         test: /\.(html|svelte)$/,
-        use: 'svelte-loader'
+        use: {
+          loader: 'svelte-loader',
+          options: {
+            emitCss: true,
+            preprocess: svelte_preprocess({}),
+          }
+        },
       },
       {
         // Required to prevent errors from Svelte on Wepback 5+
         test: /node_modules\/svelte\/.*\.mjs$/,
-        resolve: {
-          fullySpecified: false,
-        }
+        resolve: { fullySpecified: false },
+      },
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          // options necessary to use url('/path/to/some/asset.png|jpg|gif')
+          { loader: 'css-loader', options: { url: false } },
+        ]
       },
     ]
   },
+  
+  plugins: [
+    new MiniCssExtractPlugin({ filename: 'styles.css' }),
+  ]
 };
