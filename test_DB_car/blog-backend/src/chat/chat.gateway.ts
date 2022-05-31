@@ -3,7 +3,7 @@ import {Socket, Server} from 'socket.io';
 import {Logger} from '@nestjs/common';
 
 @WebSocketGateway({namespace:'/chat'})
-export class ChatGateway {
+export class ChatGateway implements OnGatewayInit{
 
 	@WebSocketServer() wss: Server;
 
