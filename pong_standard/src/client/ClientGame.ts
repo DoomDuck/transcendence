@@ -20,6 +20,7 @@ export class ClientGame extends Game {
     playersScore: PlayersScore;
 
     constructor(playerId: PlayerID) {
+        // game state
         const ball = new ClientBall();
         const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
@@ -32,6 +33,13 @@ export class ClientGame extends Game {
         //     return oldEmit.apply(this, [event, ...args]);
         // }
         // ////
+
+        // renderers
+        this.renderer = new THREE.WebGLRenderer();
+        this.labelRenderer = new CSS2DRenderer();
+        this.labelRenderer.domElement.className = 'game-text';
+
+        // scene
         this.scene = new THREE.Scene();
         this.camera = new Camera();
         this.scene.add(ball.mesh);
@@ -39,14 +47,13 @@ export class ClientGame extends Game {
         this.scene.add(bar2.mesh);
         this.playersScore = new PlayersScore();
         this.scene.add(this.playersScore.group);
+        this.loadBackground();
 
-        this.renderer = new THREE.WebGLRenderer();
-        this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.domElement.className = 'game-text';
-
+        // player-realted info
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
-        this.loadBackground();
+
+        // callbacks
         this.on(GameEvent.GOAL, (playerId: PlayerID) => {
             console.log("GOAL !!!");
             this.playersScore.handleGoal(playerId);
@@ -56,10 +63,6 @@ export class ClientGame extends Game {
         })
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
-    }
-
-    get domElement() {
-        return this.renderer.domElement;
     }
 
     loadBackground() {
