@@ -21,7 +21,7 @@ class Score {
         this.position.set(
             GSettings.SCORE_X * direction,
             GSettings.SCORE_Y,
-            0
+            -1
         );
     }
 

@@ -26,7 +26,7 @@ export class ClientGame extends Game {
         const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
         // const gameState = new GameState(ball, bar1, bar2);
-        const gameState = new ClientGameState(ball, bar1, bar2);
+        const gameState = new ClientGameState(ball, bar1, bar2, playerId);
         super(gameState);
         // ////
         // var oldEmit = this.emit;
@@ -47,7 +47,7 @@ export class ClientGame extends Game {
         this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
-        this.scene.add(gameState.serverBall.mesh);
+        // this.scene.add(gameState.serverBallEstimation.mesh);
         this.playersScore = new PlayersScore();
         this.scene.add(this.playersScore.group);
         this.loadBackground();

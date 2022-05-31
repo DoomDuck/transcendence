@@ -49,6 +49,7 @@ function startGame(playerId: number) {
     }
     transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN, game.state.bars[game.playerId]);
     transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP, game.state.bars[game.playerId]);
+    transmitEventFromGameToServer(GameEvent.SEND_SET_BALL, game.state);
 
     // incomming events
     const transmitEventFromServerToGame = (event: string, eventEmitter: EventEmitter) => {
@@ -61,7 +62,7 @@ function startGame(playerId: number) {
     transmitEventFromServerToGame(GameEvent.RESET, game);
     transmitEventFromServerToGame(GameEvent.PAUSE, game);
     transmitEventFromServerToGame(GameEvent.UNPAUSE, game);
-    transmitEventFromServerToGame(GameEvent.SET_BALL, game.state);
+    transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL, game.state);
 
     // Game loop
     function animate() {

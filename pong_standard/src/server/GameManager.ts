@@ -4,6 +4,7 @@ import { GameEvent, Direction, GSettings } from "../common/constants";
 import { ServerGame } from "./ServerGame";
 import { ServerSynchroTime } from "./ServerSynchroTime";
 import * as socketio from 'socket.io'
+import { EventEmitter } from "events";
 
 function removeElementByValue<T>(array: T[], item: T) {
     let index = array.indexOf(item);
@@ -92,12 +93,14 @@ export class GameManager {
     setupSockets() {
         this.sockets.players[PLAYER1].on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER1, reason));
         this.sockets.players[PLAYER2].on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER2, reason));
-        this.setupBarSetEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP);
-        this.setupBarSetEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP);
-        this.setupBarSetEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN);
-        this.setupBarSetEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN);
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER1]);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER2]);
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER1]);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER2]);
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
         this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
-        this.game.on(GameEvent.SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.SET_BALL, ...args));
+        this.game.on(GameEvent.SEND_SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.RECEIVE_SET_BALL, ...args));
     }
 
     resetSockets() {
@@ -125,11 +128,11 @@ export class GameManager {
             observerSocket.emit(event, ...args);
     }
 
-    setupBarSetEvent(emitter: PlayerID, barSendEvent: string, barReceiveEvent) {
+    setupSendReceiveEvent(emitter: PlayerID, sendEvent: string, receiveEvent, thisGameEventEmitter: EventEmitter) {
         let receiver = this.otherPlayer(emitter);
-        this.sockets.players[emitter].on(barSendEvent, (...args: any[]) => {
-            this.transmitEvent(receiver, barReceiveEvent, ...args);
-            this.game.state.bars[emitter].emit(barReceiveEvent, ...args);
+        this.sockets.players[emitter].on(sendEvent, (...args: any[]) => {
+            this.transmitEvent(receiver, receiveEvent, ...args);
+            thisGameEventEmitter.emit(receiveEvent, ...args);
         });
     }
 
