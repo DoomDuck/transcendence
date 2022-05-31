@@ -15,6 +15,10 @@ export class GSettings {
     static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
     static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
 
+    // UID
+    static readonly SCORE_X = GSettings.SCREEN_WIDTH / 10;
+    static readonly SCORE_Y = -GSettings.GAME_HEIGHT * (1 / 2 - 1 / 10);
+
     // PHYSIC -->
     // static readonly DELTA_T = 1000 / 60;
     static readonly GAME_STEP = 1000 / 60;
@@ -30,8 +34,8 @@ export class GSettings {
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
-    // static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
-    static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 20;
+    static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
+    // static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_RADIAL_SEGMENTS = 100;
     static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 40;
     static readonly BALL_SPEEDX_CORNER_BOOST = GSettings.BALL_SPEEDX_INCREASE * 2;

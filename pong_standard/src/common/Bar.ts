@@ -60,7 +60,7 @@ export class Bar extends EventEmitter {
 
     onReceiveKeydown(keyValue: KeyValue, emitTime: number) {
         let delta = Date.now() - emitTime;
-        console.log(`delta = ${delta}`);
+        console.log(`keyup receive delta = ${delta}`);
         if (keyValue == KeyValue.UP) {
             this.position.y -= delta * GSettings.BAR_SENSITIVITY / 1000;
             this.upPressed = true;

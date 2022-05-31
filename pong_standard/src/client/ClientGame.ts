@@ -7,13 +7,17 @@ import { ClientBall } from './ClientBall';
 import { ClientBar } from './ClientBar';
 import { ClientBarControlled } from './ClientBarControlled';
 import { GameEvent } from '../common/constants';
+import { PlayersScore } from './PlayersScore';
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 export class ClientGame extends Game {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
+    labelRenderer: CSS2DRenderer;
     camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
+    playersScore: PlayersScore;
 
     constructor(playerId: PlayerID) {
         const ball = new ClientBall();
@@ -29,16 +33,23 @@ export class ClientGame extends Game {
         // }
         // ////
         this.scene = new THREE.Scene();
-        this.renderer = new THREE.WebGLRenderer();
         this.camera = new Camera();
         this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
+        this.playersScore = new PlayersScore();
+        this.scene.add(this.playersScore.group);
+
+        this.renderer = new THREE.WebGLRenderer();
+        this.labelRenderer = new CSS2DRenderer();
+        this.labelRenderer.domElement.className = 'game-text';
+
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
         this.loadBackground();
-        this.on(GameEvent.GOAL, (playerid: PlayerID) => {
-            console.log("GOAL !!!")
+        this.on(GameEvent.GOAL, (playerId: PlayerID) => {
+            console.log("GOAL !!!");
+            this.playersScore.handleGoal(playerId);
         });
         this.on(GameEvent.RESET, (ballSpeedX: number, ballSpeedY: number) => {
             this.reset(ballSpeedX, ballSpeedY);
@@ -70,20 +81,22 @@ export class ClientGame extends Game {
     }
 
     handleDisplayResize() {
+        let width, height;
         if (window.innerWidth / window.innerHeight < GSettings.SCREEN_RATIO) {
-            this.renderer.setSize(
-                window.innerWidth,
-                window.innerWidth / GSettings.SCREEN_RATIO);
+            width = window.innerWidth;
+            height = window.innerWidth / GSettings.SCREEN_RATIO;
         }
         else {
-            this.renderer.setSize(
-                GSettings.SCREEN_RATIO * window.innerHeight,
-                window.innerHeight);
+            width = GSettings.SCREEN_RATIO * window.innerHeight;
+            height = window.innerHeight;
         }
-        this.render()
+        this.renderer.setSize(width, height);
+        this.labelRenderer.setSize(width, height);
+        this.render();
     }
 
     render() {
         this.renderer.render(this.scene, this.camera);
+        this.labelRenderer.render(this.scene, this.camera);
     }
 }
