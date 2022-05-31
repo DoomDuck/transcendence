@@ -33,11 +33,9 @@ export class ServerGame extends Game {
                 this.state.ball.position.x,
                 this.state.ball.position.y,
                 this.state.ball.speed.x,
-                this.state.ball.speed.y,
-                Date.now(),
+                this.state.ball.speed.y
             );
             this.stepsAccumulated = 0;
-            // console.log(`${this.state.ball.position.x}, ${this.state.ball.position.y}`);
         }
     }
 }

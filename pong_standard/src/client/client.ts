@@ -20,7 +20,8 @@ socket.on("connect", () => {
 });
 socket.on("disconnect", ()=> {
     if (domElementAdded) {
-        document.body.removeChild(game.domElement);
+        document.body.removeChild(game.renderer.domElement);
+        document.body.removeChild(game.labelRenderer.domElement);
         domElementAdded = false;
     }
 })
@@ -38,7 +39,8 @@ function startGame(playerId: number) {
     console.log('starting game')
     // game
     game = new ClientGame(playerId);
-    document.body.appendChild(game.domElement);
+    document.body.appendChild(game.renderer.domElement);
+    document.body.appendChild(game.labelRenderer.domElement);
     domElementAdded = true;
 
     // // outgoing events

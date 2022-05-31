@@ -18,6 +18,7 @@ export class Ball extends EventEmitter {
         this.position = new Vector3();
         this.speed = new Vector3();
         this.reset();
+        this.on(GameEvent.SET_BALL, this.handleSetBall.bind(this));
         this.wallCollided = false;
     }
 
@@ -126,5 +127,10 @@ export class Ball extends EventEmitter {
         this.handleWallCollisions();
         this.handleBarCollision(bars[0]);
         this.handleBarCollision(bars[1]);
+    }
+
+    handleSetBall(x: number, y: number, vx: number, vy: number) {
+        this.position.set(x, y, 0);
+        this.speed.set(vx, vy, 0);
     }
 }

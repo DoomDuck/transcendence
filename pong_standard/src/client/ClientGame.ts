@@ -8,15 +8,20 @@ import { ClientBar } from './ClientBar';
 import { ClientBarControlled } from './ClientBarControlled';
 import { GameEvent } from '../common/constants';
 import { ClientGameState } from './ClientGameState';
+import { PlayersScore } from './PlayersScore';
+import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 export class ClientGame extends Game {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
+    labelRenderer: CSS2DRenderer;
     camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
+    playersScore: PlayersScore;
 
     constructor(playerId: PlayerID) {
+        // game state
         const ball = new ClientBall();
         const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
@@ -30,28 +35,37 @@ export class ClientGame extends Game {
         //     return oldEmit.apply(this, [event, ...args]);
         // }
         // ////
-        this.scene = new THREE.Scene();
+
+        // renderers
         this.renderer = new THREE.WebGLRenderer();
+        this.labelRenderer = new CSS2DRenderer();
+        this.labelRenderer.domElement.className = 'game-text';
+
+        // scene
+        this.scene = new THREE.Scene();
         this.camera = new Camera();
-        // this.scene.add(ball.mesh);
+        this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
         this.scene.add(gameState.serverBall.mesh);
+        this.playersScore = new PlayersScore();
+        this.scene.add(this.playersScore.group);
+        this.loadBackground();
+
+        // player-realted info
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
-        this.loadBackground();
-        this.on(GameEvent.GOAL, (playerid: PlayerID) => {
-            console.log("GOAL !!!")
+
+        // callbacks
+        this.on(GameEvent.GOAL, (playerId: PlayerID) => {
+            console.log("GOAL !!!");
+            this.playersScore.handleGoal(playerId);
         });
         this.on(GameEvent.RESET, (ballSpeedX: number, ballSpeedY: number) => {
             this.reset(ballSpeedX, ballSpeedY);
         })
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
-    }
-
-    get domElement() {
-        return this.renderer.domElement;
     }
 
     loadBackground() {
@@ -73,20 +87,22 @@ export class ClientGame extends Game {
     }
 
     handleDisplayResize() {
+        let width, height;
         if (window.innerWidth / window.innerHeight < GSettings.SCREEN_RATIO) {
-            this.renderer.setSize(
-                window.innerWidth,
-                window.innerWidth / GSettings.SCREEN_RATIO);
+            width = window.innerWidth;
+            height = window.innerWidth / GSettings.SCREEN_RATIO;
         }
         else {
-            this.renderer.setSize(
-                GSettings.SCREEN_RATIO * window.innerHeight,
-                window.innerHeight);
+            width = GSettings.SCREEN_RATIO * window.innerHeight;
+            height = window.innerHeight;
         }
-        this.render()
+        this.renderer.setSize(width, height);
+        this.labelRenderer.setSize(width, height);
+        this.render();
     }
 
     render() {
         this.renderer.render(this.scene, this.camera);
+        this.labelRenderer.render(this.scene, this.camera);
     }
 }
