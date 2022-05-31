@@ -17,14 +17,14 @@ export class Ball extends EventEmitter {
         this.radius = GSettings.BALL_RADIUS;
         this.position = new Vector3();
         this.speed = new Vector3();
-        this.reset();
+        this.reset(0, 0, 0, 0);
         this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
         this.wallCollided = false;
     }
 
-    reset() {
-        this.position.set(0, 0, 0);
-        this.speed.set(0, 0, 0);
+    reset(x: number, y: number, vx: number, vy: number) {
+        this.position.set(x, y, 0);
+        this.speed.set(vx, vy, 0);
     }
 
     topY(): number {
@@ -55,13 +55,13 @@ export class Ball extends EventEmitter {
 
     handleBarCollision(bar: Bar) {
         // detection
-        if (this.speed.x * bar.collisionEdgeDirection >= 0)
+        if (this.speed.x * bar.collisionEdgeDirection > 0)
             return;
         let collision = ballBarCollision(this, bar);
         let distance = collision.distanceVec.length();
         if (!collision.inside && distance >= this.radius)
             return;
-        if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection <= 0)
+        if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection < 0)
             return;
         if (collision.vertical && this.wallCollided) {
             this.speed.y = 0;
@@ -95,27 +95,27 @@ export class Ball extends EventEmitter {
             this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
         }
         else if (collision.vertical) {
-            this.speed.y = bar.speed() * (1 + GSettings.BALL_COLLISION_VERTICAL_SPEEDY_BOOST);
+            this.speed.y *= -1;
         }
     }
 
     handleWallCollisions() {
         this.wallCollided = true;
-        if (this.topY() < GSettings.GAME_TOP) {
+        if (this.topY() <= GSettings.GAME_TOP) {
             // top wall
             this.speed.y = Math.abs(this.speed.y);
             this.setTopY(GSettings.GAME_TOP);
         }
-        else if (this.bottomY() > GSettings.GAME_BOTTOM) {
+        else if (this.bottomY() >= GSettings.GAME_BOTTOM) {
             // bottom wall
             this.speed.y = -Math.abs(this.speed.y);
             this.setBottomY(GSettings.GAME_BOTTOM);
         }
-        else if (this.position.x < GSettings.GAME_LEFT) {
+        else if (this.position.x < GSettings.GAME_LEFT - this.radius) {
             // goal to the left, player 2 scored
             this.emit(GameEvent.GOAL, PLAYER2);
         }
-        else if (this.position.x > GSettings.GAME_RIGHT) {
+        else if (this.position.x > GSettings.GAME_RIGHT + this.radius) {
             // goal to the right, player 1 scored
             this.emit(GameEvent.GOAL, PLAYER1);
         }
@@ -124,9 +124,9 @@ export class Ball extends EventEmitter {
     }
 
     handleCollisions(bars: [Bar, Bar]) {
-        this.handleWallCollisions();
         this.handleBarCollision(bars[0]);
         this.handleBarCollision(bars[1]);
+        this.handleWallCollisions();
     }
 
     handleReceiveSetBall(x: number, y: number, vx: number, vy: number) {

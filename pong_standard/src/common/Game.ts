@@ -26,8 +26,8 @@ export abstract class Game extends EventEmitter {
         this.on(GameEvent.UNPAUSE, () => this.unpause());
     }
 
-    reset(ballSpeedX: number, ballSpeedY: number) {
-        this.state.reset(ballSpeedX, ballSpeedY);
+    reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
+        this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
         this.lastTime = Date.now();
         this.time = 0;
         this.timeAccumulated = 0;

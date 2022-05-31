@@ -61,8 +61,8 @@ export class ClientGame extends Game {
             console.log("GOAL !!!");
             this.playersScore.handleGoal(playerId);
         });
-        this.on(GameEvent.RESET, (ballSpeedX: number, ballSpeedY: number) => {
-            this.reset(ballSpeedX, ballSpeedY);
+        this.on(GameEvent.RESET, (ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) => {
+            this.reset(ballX, ballY, ballSpeedX, ballSpeedY);
         })
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();

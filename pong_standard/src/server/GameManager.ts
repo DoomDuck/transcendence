@@ -58,7 +58,8 @@ export class GameManager {
                 this.game = new ServerGame();
                 this.setupSockets();
                 console.log("both players are present, starting")
-                this.start(LEFT);
+                // this.start(0, 0, LEFT);
+                this.start(-GSettings.BAR_INITIALX, GSettings.BAR_HEIGHT, LEFT);
             }
         });
     }
@@ -143,27 +144,30 @@ export class GameManager {
     }
 
 
-    start(ballDirection: Direction) {
-        this.reset(ballDirection);
+    start(ballX: number, ballY: number, ballDirection: Direction) {
+        this.reset(ballX, ballY, ballDirection);
         // TODO: wait ready
         this.game.start();
         this.sockets.players[0].emit(GameEvent.START);
         this.sockets.players[1].emit(GameEvent.START);
     }
 
-    reset(ballDirection: Direction) {
+    reset(ballX: number, ballY: number, ballDirection: Direction) {
         if (this.game === undefined)
             return;
         let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
-        this.game.reset(ballSpeedX, ballSpeedY);
-        this.sockets.players[0].emit(GameEvent.RESET, ballSpeedX, ballSpeedY);
-        this.sockets.players[1].emit(GameEvent.RESET, ballSpeedX, ballSpeedY);
+        // this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
+        // this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+        // this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+        this.game.reset(ballX, ballY, 0, -1);
+        this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, 0, -1);
+        this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, 0, -1);
     }
 
     handleGoal(playerId: PlayerID) {
         let ballDirection = (playerId == PLAYER1) ? LEFT : RIGHT;
-        this.start(ballDirection);
+        this.start(0, 0, ballDirection);
         this.broadcastEvent(GameEvent.GOAL, playerId);
         // console.log("GOAL !!!")
     }
