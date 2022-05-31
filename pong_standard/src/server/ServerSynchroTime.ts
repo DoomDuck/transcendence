@@ -6,8 +6,10 @@ export class ServerSynchroTime {
     timeReqSend: number;
     clocksAbsoluteOffset: number;
     halfRoundTripDelay: number;
+    connected: boolean;
 
     constructor(private socket: Socket) {
+        this.connected = false;
         this.socket.on("timeResponse", (timeReqReceive: number, timeRespSend: number) => {
             let timeRespReceive = Date.now();
             this.clocksAbsoluteOffset = (timeReqReceive - this.timeReqSend) + (timeRespSend - timeRespReceive);
@@ -29,7 +31,10 @@ export class ServerSynchroTime {
 
     async estimateOffset() {
         await new Promise(resolve => {
-            this.socket.once("timeResponse", resolve);
+            this.socket.once("timeResponse", () => {
+                this.connected = true;
+                resolve(undefined);
+            });
             this.timeReqSend = Date.now();
             this.socket.emit("timeRequest");
         })

@@ -7,6 +7,7 @@ import { ClientBall } from './ClientBall';
 import { ClientBar } from './ClientBar';
 import { ClientBarControlled } from './ClientBarControlled';
 import { GameEvent } from '../common/constants';
+import { ClientGameState } from './ClientGameState';
 
 export class ClientGame extends Game {
     scene: THREE.Scene;
@@ -19,7 +20,8 @@ export class ClientGame extends Game {
         const ball = new ClientBall();
         const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
-        const gameState = new GameState(ball, bar1, bar2);
+        // const gameState = new GameState(ball, bar1, bar2);
+        const gameState = new ClientGameState(ball, bar1, bar2);
         super(gameState);
         // ////
         // var oldEmit = this.emit;
@@ -31,9 +33,10 @@ export class ClientGame extends Game {
         this.scene = new THREE.Scene();
         this.renderer = new THREE.WebGLRenderer();
         this.camera = new Camera();
-        this.scene.add(ball.mesh);
+        // this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
+        this.scene.add(gameState.serverBall.mesh);
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
         this.loadBackground();

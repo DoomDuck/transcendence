@@ -3,11 +3,18 @@ import now from 'performance-now'
 import { Socket } from 'socket.io-client';
 
 export class ClientSynchroTime {
+    flightOffset: number;
+    connected: boolean;
 
     constructor(private socket: Socket) {
-        this.socket.on("timeRequest", (timeReqSend: number) => {
+        this.connected = false;
+        this.flightOffset = 0;
+        this.socket.on("timeRequest", () => {
             let timeReqReceive = Date.now();
             this.socket.emit("timeResponse", timeReqReceive, Date.now());
+        });
+        this.socket.on("setOffsetData", (clocksAbsoluteOffset: number, halfRoundTripDelay: number) => {
+            this.flightOffset = clocksAbsoluteOffset + halfRoundTripDelay;
         })
     }
 
@@ -18,7 +25,10 @@ export class ClientSynchroTime {
                 console.log("received syncroTimeConnectionServer");
                 this.socket.emit("syncroTimeConnectionClient");
             });
-            this.socket.once("syncroTimeConnectionServerConfirm", resolve);
+            this.socket.once("syncroTimeConnectionServerConfirm", () => {
+                this.connected = true;
+                resolve(undefined);
+            });
         })
     }
 }

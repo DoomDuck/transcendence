@@ -12,7 +12,7 @@ const socket = io();
 ////
 let synchroTime = new ClientSynchroTime(socket);
 synchroTime.connect().then(() => {
-    console.log("SyncroTime connected");
+    console.log(`SyncroTime connected: ${synchroTime.connected}`);
 });
 ////
 socket.on("connect", () => {
@@ -59,7 +59,7 @@ function startGame(playerId: number) {
     transmitEventFromServerToGame(GameEvent.RESET, game);
     transmitEventFromServerToGame(GameEvent.PAUSE, game);
     transmitEventFromServerToGame(GameEvent.UNPAUSE, game);
-    transmitEventFromServerToGame(GameEvent.SET_BALL, game.state.ball);
+    transmitEventFromServerToGame(GameEvent.SET_BALL, game.state);
 
     // Game loop
     function animate() {

@@ -81,7 +81,7 @@ export class GameManager {
     synchroTimeWithClient(socket: Socket) {
         let synchroTime = new ServerSynchroTime(socket);
         synchroTime.connect().then(() => {
-            console.log("SyncroTime connected");
+            console.log(`SyncroTime connected: ${synchroTime.connected}`);
             synchroTime.estimateOffset().then(() => {
                 console.log(`theta = ${synchroTime.clocksAbsoluteOffset}`);
                 console.log(`delta/2 = ${synchroTime.halfRoundTripDelay}`);
@@ -125,11 +125,11 @@ export class GameManager {
             observerSocket.emit(event, ...args);
     }
 
-    setupBarSetEvent(emitter: PlayerID, barSetEvent: string, barSetOtherPlayerEvent) {
+    setupBarSetEvent(emitter: PlayerID, barSendEvent: string, barReceiveEvent) {
         let receiver = this.otherPlayer(emitter);
-        this.sockets.players[emitter].on(barSetEvent, (...args: any[]) => {
-            this.transmitEvent(receiver, barSetOtherPlayerEvent, ...args);
-            this.game.state.bars[emitter].emit(barSetOtherPlayerEvent, ...args);
+        this.sockets.players[emitter].on(barSendEvent, (...args: any[]) => {
+            this.transmitEvent(receiver, barReceiveEvent, ...args);
+            this.game.state.bars[emitter].emit(barReceiveEvent, ...args);
         });
     }
 

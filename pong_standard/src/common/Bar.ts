@@ -22,7 +22,7 @@ export class Bar extends EventEmitter {
         this.downPressed = false;
         this.on(GameEvent.RECEIVE_BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
         this.on(GameEvent.RECEIVE_BAR_KEYUP, this.onReceiveKeyup.bind(this));
-        this.on(GameEvent.RECEIVE_BAR_POSITION, this.onReceiveKeyup.bind(this));
+        // this.on(GameEvent.RECEIVE_BAR_POSITION, this.onReceiveKeyup.bind(this));
     }
 
     reset() {
@@ -60,7 +60,7 @@ export class Bar extends EventEmitter {
 
     onReceiveKeydown(keyValue: KeyValue, emitTime: number) {
         let delta = Date.now() - emitTime;
-        console.log(`delta = ${delta}`);
+        console.log(`deltaKeydown = ${delta}`);
         if (keyValue == KeyValue.UP) {
             this.position.y -= delta * GSettings.BAR_SENSITIVITY / 1000;
             this.upPressed = true;
@@ -70,7 +70,7 @@ export class Bar extends EventEmitter {
             this.downPressed = true;
         }
         this.clipPosition();
-        console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'SetOtherPlayerBarKeydown' with parameters (keyValue, emitTime) = ${keyValue}, ${emitTime}`)
+        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receiveKeydown' with parameters (keyValue, emitTime) = ${keyValue}, ${emitTime}`)
     }
 
     onReceiveKeyup(keyValue: KeyValue, y: number) {
@@ -81,11 +81,12 @@ export class Bar extends EventEmitter {
             this.downPressed = false;
         }
         this.position.y = y;
-        console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'SetOtherPlayerBarKeyup' with parameter keyValue = ${keyValue}`)
+        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receiveKeyup' with parameter keyValue = ${keyValue}, y = ${y}`)
     }
 
     onReceivePosition(y: number) {
         this.position.y = y;
+        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receivePosition' with parameter keyValue = ${keyValue}, y = ${y}`)
     }
 
     speed() {

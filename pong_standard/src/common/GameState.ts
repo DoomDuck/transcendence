@@ -13,7 +13,6 @@ export class GameState extends EventEmitter {
         this.ball = ball;
         this.bars = [bar1, bar2];
         this.score = [0, 0];
-        // this.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
         this.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.emit(GameEvent.GOAL, playerId));
     }
 
