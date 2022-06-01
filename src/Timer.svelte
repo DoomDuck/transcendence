@@ -46,11 +46,11 @@ onDestroy(stop_timer);
 
 <div id=buttons>
 {#if !interval_id}
-<button on:click={start_timer}> START </button>
+<div style="background-color: olive;" on:click={start_timer}> START </div>
 {:else}
-<button on:click={stop_timer}> STOP </button>
+<div style="background-color: darkcyan" on:click={stop_timer}> STOP </div>
 {/if}
-<button on:click={reset_timer}> RESET </button>
+<div style="background-color: brown;" on:click={reset_timer}> RESET </div>
 </div>
 
 </div>
@@ -77,14 +77,17 @@ onDestroy(stop_timer);
 }
 
 #buttons {
-  font-size: 2em;
-  margin: 0.2em;
   display: flex;
   justify-content: space-around;
 }
 
-button {
-  width: 4em;
+#buttons > div {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0.2em;
+  padding: 0.2em;
+  border-radius: 3px;
+  background-color: #c0c0c0;
 }
 
 </style>
