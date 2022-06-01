@@ -17,7 +17,6 @@ export class Ball extends EventEmitter {
         this.radius = GSettings.BALL_RADIUS;
         this.position = new Vector3();
         this.speed = new Vector3();
-        this.reset(0, 0, 0, 0);
         this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
         this.wallCollided = false;
     }
@@ -33,6 +32,14 @@ export class Ball extends EventEmitter {
 
     bottomY(): number {
         return this.position.y + this.radius;
+    }
+
+    rightX(): number {
+        return this.position.x + this.radius;
+    }
+    
+    leftX(): number {
+        return this.position.x - this.radius;
     }
 
     setTopY(y: number) {
@@ -110,14 +117,6 @@ export class Ball extends EventEmitter {
             // bottom wall
             this.speed.y = -Math.abs(this.speed.y);
             this.setBottomY(GSettings.GAME_BOTTOM);
-        }
-        else if (this.position.x < GSettings.GAME_LEFT - this.radius) {
-            // goal to the left, player 2 scored
-            this.emit(GameEvent.GOAL, PLAYER2);
-        }
-        else if (this.position.x > GSettings.GAME_RIGHT + this.radius) {
-            // goal to the right, player 1 scored
-            this.emit(GameEvent.GOAL, PLAYER1);
         }
         else
             this.wallCollided = false;

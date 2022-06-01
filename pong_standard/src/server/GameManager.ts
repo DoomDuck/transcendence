@@ -14,17 +14,28 @@ function removeElementByValue<T>(array: T[], item: T) {
 
 type GameSockets = {
     players: [Socket, Socket],
+    playersReady: [boolean, boolean],
+    playersSetBallCallbacks: [(...args: any[]) => void, (...args: any[]) => void];
     observers: Socket[],
 };
 
-export class GameManager {
+function delay(duration) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
+}
+
+export class GameManager extends EventEmitter {
     socketServer: socketio.Server;
     sockets: GameSockets;
     game: ServerGame;
 
     constructor (socketServer: socketio.Server) {
+        super()
         this.sockets = {
             players: [null, null],
+            playersReady: [false, false],
+            playersSetBallCallbacks: [null, null],
             observers: [],
         };
         socketServer.on("connection", this.onConnection.bind(this));
@@ -57,11 +68,23 @@ export class GameManager {
             if (this.sockets.players[PLAYER1] !== null && this.sockets.players[PLAYER2] !== null) {
                 this.game = new ServerGame();
                 this.setupSockets();
-                console.log("both players are present, starting")
-                // this.start(0, 0, LEFT);
-                this.start(-GSettings.BAR_INITIALX, GSettings.BAR_HEIGHT, LEFT);
+                console.log("both players are present");
+                // this.start(-GSettings.BAR_INITIALX, GSettings.BAR_HEIGHT, LEFT);
             }
         });
+        socket.on("playerReady", () => {
+            for (let i = 0; i < 2; i++) {
+                if (socket === this.sockets.players[i]) {
+                    console.log(`player ${i + 1} is ready`);
+                    this.sockets.playersReady[i] = true;
+                }
+            }
+            if (this.sockets.playersReady[0] && this.sockets.playersReady[1]) {
+                console.log("both players are ready, starting");
+                this.reset(0, 0, LEFT);
+                this.start();
+            }
+        })
     }
 
     onDisconnect(socket: Socket) {
@@ -70,6 +93,7 @@ export class GameManager {
             if (socket === this.sockets.players[i]) {
                 console.log(`player ${i + 1} has disconnected`);
                 this.sockets.players[i] = null;
+                this.sockets.playersReady[i] = false;
                 this.resetSockets();
                 return;
             }
@@ -98,21 +122,35 @@ export class GameManager {
         this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER2]);
         this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER1]);
         this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER2]);
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
-        this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
+        this.setupSetBallEvents();
+        // this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
+        this.setupSendReceiveEventBroadcast(PLAYER1, GameEvent.SEND_GOAL, GameEvent.RECEIVE_GOAL, this);
+        this.setupSendReceiveEventBroadcast(PLAYER2, GameEvent.SEND_GOAL, GameEvent.RECEIVE_GOAL, this);
+        this.on(GameEvent.RECEIVE_GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
         this.game.on(GameEvent.SEND_SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.RECEIVE_SET_BALL, ...args));
     }
 
     resetSockets() {
         this.sockets.players[PLAYER1]?.removeAllListeners();
         this.sockets.players[PLAYER2]?.removeAllListeners();
+        this.sockets.playersSetBallCallbacks = [null, null];
         for (let observer of this.sockets.observers)
             observer?.removeAllListeners();
         this.game?.removeAllListeners();
         this.game?.state?.ball?.removeAllListeners();
         this.game?.state?.bars[PLAYER1]?.removeAllListeners();
         this.game?.state?.bars[PLAYER2]?.removeAllListeners();
+    }
+
+    setupSetBallEvents() {
+        this.sockets.playersSetBallCallbacks[PLAYER1] = this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
+        this.sockets.playersSetBallCallbacks[PLAYER2] = this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
+    }
+
+    resetSetBallEvents() {
+        this.sockets.players[PLAYER1].removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER1]);
+        this.sockets.players[PLAYER2].removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER2]);
+        this.sockets.playersSetBallCallbacks = [null, null];
     }
 
     broadcastEvent(event: string, ...args: any[]) {
@@ -129,12 +167,25 @@ export class GameManager {
             observerSocket.emit(event, ...args);
     }
 
-    setupSendReceiveEvent(emitter: PlayerID, sendEvent: string, receiveEvent, thisGameEventEmitter: EventEmitter) {
+    setupSendReceiveEvent(emitter: PlayerID, sendEvent: string, receiveEvent, thisGameEventEmitter: EventEmitter)
+    : (...args: any[]) => void {
         let receiver = this.otherPlayer(emitter);
-        this.sockets.players[emitter].on(sendEvent, (...args: any[]) => {
+        let callback = (...args: any[]) => {
             this.transmitEvent(receiver, receiveEvent, ...args);
             thisGameEventEmitter.emit(receiveEvent, ...args);
-        });
+        };
+        this.sockets.players[emitter].on(sendEvent, callback);
+        return callback;
+    }
+    
+    setupSendReceiveEventBroadcast(emitter: PlayerID, sendEvent: string, receiveEvent, thisGameEventEmitter: EventEmitter)
+    : (...args: any[]) => void {
+        let callback = (...args: any[]) => {
+            this.broadcastEvent(receiveEvent, ...args);
+            thisGameEventEmitter.emit(receiveEvent, ...args);
+        };
+        this.sockets.players[emitter].on(sendEvent, callback);
+        return callback;
     }
 
     handlePlayerDisconnect(playerId: PlayerID, reason?: string) {
@@ -144,9 +195,7 @@ export class GameManager {
     }
 
 
-    start(ballX: number, ballY: number, ballDirection: Direction) {
-        this.reset(ballX, ballY, ballDirection);
-        // TODO: wait ready
+    start() {
         this.game.start();
         this.sockets.players[0].emit(GameEvent.START);
         this.sockets.players[1].emit(GameEvent.START);
@@ -157,19 +206,28 @@ export class GameManager {
             return;
         let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
-        // this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-        // this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-        // this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-        this.game.reset(ballX, ballY, 0, -1);
-        this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, 0, -1);
-        this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, 0, -1);
+        this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
+        this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+        this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+        // this.game.reset(ballX, ballY, 0, -1);
+        // this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, 0, -1);
+        // this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, 0, -1);
     }
 
     handleGoal(playerId: PlayerID) {
+        console.log("GOAL !!!");
         let ballDirection = (playerId == PLAYER1) ? LEFT : RIGHT;
-        this.start(0, 0, ballDirection);
-        this.broadcastEvent(GameEvent.GOAL, playerId);
-        // console.log("GOAL !!!")
+        // the timer is important because it ensures any SEND_SET_BALL event of the previous point
+        // doesn't interfere with the next one
+        Promise.resolve()
+            .then(() => this.resetSetBallEvents())
+            .then(() => delay(500))
+            .then(() => this.reset(0, 0, ballDirection))
+            .then(() => delay(500))
+            .then(() => {
+                this.setupSetBallEvents();
+                this.start();
+            });
     }
 
     otherPlayer(playerId: PlayerID): PlayerID {

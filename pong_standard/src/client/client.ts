@@ -50,6 +50,7 @@ function startGame(playerId: number) {
     transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN, game.state.bars[game.playerId]);
     transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP, game.state.bars[game.playerId]);
     transmitEventFromGameToServer(GameEvent.SEND_SET_BALL, game.state);
+    transmitEventFromGameToServer(GameEvent.SEND_GOAL, game.state.ball);
 
     // incomming events
     const transmitEventFromServerToGame = (event: string, eventEmitter: EventEmitter) => {
@@ -57,12 +58,14 @@ function startGame(playerId: number) {
     }
     transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN, game.state.bars[game.otherPlayerId]);
     transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP, game.state.bars[game.otherPlayerId]);
-    transmitEventFromServerToGame(GameEvent.GOAL, game);
+    transmitEventFromServerToGame(GameEvent.RECEIVE_GOAL, game);
     transmitEventFromServerToGame(GameEvent.START, game);
     transmitEventFromServerToGame(GameEvent.RESET, game);
     transmitEventFromServerToGame(GameEvent.PAUSE, game);
     transmitEventFromServerToGame(GameEvent.UNPAUSE, game);
     transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL, game.state);
+
+    socket.emit("playerReady");
 
     // Game loop
     function animate() {

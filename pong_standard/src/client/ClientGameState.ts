@@ -1,5 +1,7 @@
 import { Vector3 } from "three";
 import { Ball, Bar, GameEvent, GameState, GSettings, PLAYER1, PlayerID } from "../common";
+import { ClientBall } from "./ClientBall";
+import { ClientBar } from "./ClientBar";
 import { ServerBall } from "./ServerBall";
 
 export class ClientGameState extends GameState {
@@ -7,7 +9,7 @@ export class ClientGameState extends GameState {
     // serverBall: ServerBall;
     playerId: PlayerID;
     playerDirection: number;
-    constructor(ball: Ball, bar1: Bar, bar2: Bar, playerId: PlayerID) {
+    constructor(ball: ClientBall, bar1: ClientBar, bar2: ClientBar, playerId: PlayerID) {
         super(ball, bar1, bar2);
         // this.serverBallEstimation = new ServerBall();
         // this.serverBall = new ServerBall();
@@ -33,7 +35,8 @@ export class ClientGameState extends GameState {
         // this.ball.position.lerp(this.serverBall.position, .05);
         super.update(elapsed);
         // this.serverBallEstimation.update(elapsed);
-        if (this.ball.position.x * this.playerDirection > GSettings.BALL_CONTROL_FRONTIER_X_CLIENT) {
+        if (this.ball.position.x * this.playerDirection > GSettings.BALL_CONTROL_FRONTIER_X_CLIENT
+            && !(this.ball as ClientBall).atMyLimit) {
             this.emit(GameEvent.SEND_SET_BALL,
                 this.ball.position.x,
                 this.ball.position.y,

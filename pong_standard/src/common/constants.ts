@@ -43,6 +43,7 @@ export class GSettings {
     static readonly BALL_SPEEDY_MAX = GSettings.SCREEN_WIDTH / 2;
     static readonly BALL_CONTROL_FRONTIER_X_CLIENT = GSettings.BAR_INITIALX - 1/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_CONTROL_FRONTIER_X_SERVER = GSettings.BAR_INITIALX - 2/10 * GSettings.SCREEN_WIDTH;
+    static readonly BALL_SPEED_AT_LIMIT = GSettings.SCREEN_WIDTH / 20;
 }
 
 export enum PlayerID {
@@ -84,7 +85,9 @@ export class GameEvent {
     // x: number, y: number, speedX: number, speedY: number, time: number
     static readonly SEND_SET_BALL  = "sendSetBall";
     // playerId: PlayerID
-    static readonly GOAL = "goal";
+    static readonly SEND_GOAL = "sendGoal";
+    // playerId: PlayerID
+    static readonly RECEIVE_GOAL = "receiveGoal";
     // ballSpeedX: number, ballSpeedY: number
     static readonly RESET = "reset";
 }

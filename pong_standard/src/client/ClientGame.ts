@@ -22,10 +22,9 @@ export class ClientGame extends Game {
 
     constructor(playerId: PlayerID) {
         // game state
-        const ball = new ClientBall();
+        const ball = new ClientBall(playerId);
         const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
-        // const gameState = new GameState(ball, bar1, bar2);
         const gameState = new ClientGameState(ball, bar1, bar2, playerId);
         super(gameState);
         // ////
@@ -57,11 +56,12 @@ export class ClientGame extends Game {
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
 
         // callbacks
-        this.on(GameEvent.GOAL, (playerId: PlayerID) => {
+        this.on(GameEvent.RECEIVE_GOAL, (playerId: PlayerID) => {
             console.log("GOAL !!!");
             this.playersScore.handleGoal(playerId);
         });
         this.on(GameEvent.RESET, (ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) => {
+            console.log("received RESET");
             this.reset(ballX, ballY, ballSpeedX, ballSpeedY);
         })
         window.addEventListener("resize", () => this.handleDisplayResize());
