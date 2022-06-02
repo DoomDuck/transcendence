@@ -3,20 +3,6 @@ html, body {
     height: 100%;
  }
 
-main {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	grid-template-areas: "chat alerts";
-}
-
-section.chat{
-	grid-area: chat;
-}
-
-section.alerts{
-	grid-area: alerts;
-}
-
 body {
     overflow: hidden;
     margin: 0px;
