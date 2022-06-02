@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import now from 'performance-now'
 import { Vector3 } from 'three';
 import { GameEvent, GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from './constants';
 

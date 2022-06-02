@@ -1,7 +1,6 @@
 import { ClientBar } from './ClientBar';
 import { GSettings, KeyValue, PlayerID } from '../common/constants';
 import { GameEvent } from '../common';
-import now from 'performance-now'
 
 export class ClientBarControlled extends ClientBar {
     upKeys: string[];

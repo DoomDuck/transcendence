@@ -1,5 +1,4 @@
 // Source : https://en.wikipedia.org/wiki/Network_Time_Protocol
-import now from 'performance-now'
 import { Socket } from 'socket.io';
 
 export class ServerSynchroTime {

@@ -1,7 +1,6 @@
 import { EventEmitter } from "events";
 import { GameEvent, GSettings } from "."
 import { GameState } from "./GameState";
-import now from 'performance-now'
 
 export abstract class Game extends EventEmitter {
     lastTime: number;
