@@ -3,9 +3,8 @@ import Timer from './Timer.svelte';
 </script>
 
 <header>
-MAGIC EMMA
+Magic Emma
 </header>
-
 <div id="clock">
 <Timer/>
 </div>
