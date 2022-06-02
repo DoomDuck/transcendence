@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "moduleResolution": "node",
+        "strict": true,
+        "paths": {
+            // "common": ["common"],
+        },
+        "esModuleInterop": true,
+    },
+    "include": ["**/*.ts"]
+}
