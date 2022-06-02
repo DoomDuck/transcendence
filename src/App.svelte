@@ -2,6 +2,10 @@
 import Timer from './Timer.svelte';
 </script>
 
+<header>
+MAGIC EMMA
+</header>
+
 <div id="clock">
 <Timer/>
 </div>
