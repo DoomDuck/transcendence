@@ -41,4 +41,7 @@ npm run build
 
 # To re-build on change
 npm run build:dev
+
+# Open the page on browser
+open public/index.html
 ```
