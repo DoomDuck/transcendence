@@ -26,11 +26,11 @@ function delay(duration) {
 }
 
 export class GameManager extends EventEmitter {
-    socketServer: socketio.Server;
+    socketNamespace: socketio.Namespace;
     sockets: GameSockets;
     game: ServerGame;
 
-    constructor (socketServer: socketio.Server) {
+    constructor (socketServer: socketio.Namespace) {
         super()
         this.sockets = {
             players: [null, null],

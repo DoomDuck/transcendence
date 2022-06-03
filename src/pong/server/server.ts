@@ -18,7 +18,7 @@ class App {
 
         this.server = new http.Server(app);
         const io = new socketio.Server(this.server);
-        this.gameManager = new GameManager(io);
+        this.gameManager = new GameManager(io.of("/"));
     }
 
     public Start() {
