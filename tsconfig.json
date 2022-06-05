@@ -6,11 +6,20 @@
     	"express",
   		"node",
   		"three",
-      "jest"
+      "jest",
+      "svelte"
     ],
     "outDir": "build",
-    "experimentalDecorators": true
+
+    "importsNotUsedAsValues": "remove",
+    "allowSyntheticDefaultImports": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "noImplicitAny": true,
+    "strictNullChecks": true,
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules/**/*", "build"]
+  "include": ["src/**/*.ts", "src/**/*.svelte"],
+  "exclude": ["src/backend/**/*.ts"]
 }
