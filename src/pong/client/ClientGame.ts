@@ -27,6 +27,16 @@ export class ClientGame extends Game {
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
         const gameState = new ClientGameState(ball, bar1, bar2, playerId);
         super(gameState);
+        
+        // player-realted info
+        this.playerId = playerId;
+        this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
+
+        // events specific to ClientGame
+        let otherBar = this.state.bars[this.otherPlayerId];
+        this.on(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
+        this.on(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
+
         // ////
         // var oldEmit = this.emit;
         // this.emit = function(event: string, ...args: any[]) {
@@ -50,10 +60,6 @@ export class ClientGame extends Game {
         this.playersScore = new PlayersScore();
         this.scene.add(this.playersScore.group);
         this.loadBackground();
-
-        // player-realted info
-        this.playerId = playerId;
-        this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
 
         // callbacks
         this.on(GameEvent.RECEIVE_GOAL, (playerId: PlayerID) => {

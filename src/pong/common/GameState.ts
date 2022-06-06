@@ -2,8 +2,9 @@ import { Ball } from "./Ball";
 import { Bar } from "./Bar";
 import { GSettings, PLAYER1, PLAYER2, PlayerID, Direction, LEFT, RIGHT, GameEvent } from "../common"
 import { EventEmitter } from "events";
+import { Game } from "./Game";
 
-export class GameState extends EventEmitter {
+export abstract class GameState extends EventEmitter {
     ball: Ball;
     bars: [Bar, Bar];
     score: [number, number];
@@ -28,4 +29,6 @@ export class GameState extends EventEmitter {
         this.bars[0].reset();
         this.bars[1].reset();
     }
+
+    abstract onReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number): void;
 }

@@ -57,26 +57,26 @@ export class ClientContext {
         document.body.appendChild(game.labelRenderer.domElement);
 
         // // outgoing events
-        const transmitEventFromGameToServer = (event: string, eventEmitter: EventEmitter) => {
-            eventEmitter.on(event, (...args: any[]) => { this.socket.emit(event, ...args) });
+        const transmitEventFromGameToServer = (event: string) => {
+            game.on(event, (...args: any[]) => { this.socket.emit(event, ...args) });
         }
-        transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN, game.state.bars[game.playerId]);
-        transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP, game.state.bars[game.playerId]);
-        transmitEventFromGameToServer(GameEvent.SEND_SET_BALL, game.state);
-        transmitEventFromGameToServer(GameEvent.SEND_GOAL, game.state.ball);
+        transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN);
+        transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP);
+        transmitEventFromGameToServer(GameEvent.SEND_SET_BALL);
+        transmitEventFromGameToServer(GameEvent.SEND_GOAL);
 
         // incomming events
-        const transmitEventFromServerToGame = (event: string, eventEmitter: EventEmitter) => {
-            this.socket.on(event, (...args: any[]) => { eventEmitter.emit(event, ...args) });
+        const transmitEventFromServerToGame = (event: string) => {
+            this.socket.on(event, (...args: any[]) => { game.emit(event, ...args) });
         }
-        transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN, game.state.bars[game.otherPlayerId]);
-        transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP, game.state.bars[game.otherPlayerId]);
-        transmitEventFromServerToGame(GameEvent.RECEIVE_GOAL, game);
-        transmitEventFromServerToGame(GameEvent.START, game);
-        transmitEventFromServerToGame(GameEvent.RESET, game);
-        transmitEventFromServerToGame(GameEvent.PAUSE, game);
-        transmitEventFromServerToGame(GameEvent.UNPAUSE, game);
-        transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL, game.state);
+        transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN);
+        transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP);
+        transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL);
+        transmitEventFromServerToGame(GameEvent.RECEIVE_GOAL);
+        transmitEventFromServerToGame(GameEvent.START);
+        transmitEventFromServerToGame(GameEvent.RESET);
+        transmitEventFromServerToGame(GameEvent.PAUSE);
+        transmitEventFromServerToGame(GameEvent.UNPAUSE);
         
         this.socket.emit("playerReady");
         

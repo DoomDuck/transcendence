@@ -1,9 +1,10 @@
 import { Ball, Bar, GameEvent, GameState, GSettings } from "../common";
+import { ServerGame } from "./ServerGame";
 
 export class ServerGameState extends GameState {
     constructor(ball: Ball, bar1: Bar, bar2: Bar) {
         super(ball, bar1, bar2);
-        this.on(GameEvent.RECEIVE_SET_BALL, this.onReceiveSetBall.bind(this));
+        // this.on(GameEvent.RECEIVE_SET_BALL, this.onReceiveSetBall.bind(this));
     }
 
     onReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {

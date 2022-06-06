@@ -36,11 +36,11 @@ export class ClientBarControlled extends ClientBar {
     handleKeyup(e: KeyboardEvent) {
         if (this.upKeys.includes(e.key)) {
             this.upPressed = false;
-            this.emit(GameEvent.SEND_BAR_KEYUP, +KeyValue.UP, this.position.y);
+            this.emit(GameEvent.SEND_BAR_KEYUP, KeyValue.UP, this.position.y);
         }
         else if (this.downKeys.includes(e.key)) {
             this.downPressed = false;
-            this.emit(GameEvent.SEND_BAR_KEYUP, +KeyValue.DOWN, this.position.y);
+            this.emit(GameEvent.SEND_BAR_KEYUP, KeyValue.DOWN, this.position.y);
         }
     }
 }

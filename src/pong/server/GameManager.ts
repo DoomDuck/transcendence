@@ -120,10 +120,10 @@ export class GameManager extends EventEmitter {
     setupSockets() {
         (this.sockets.players[PLAYER1] as Socket).on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER1, reason));
         (this.sockets.players[PLAYER2] as Socket).on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER2, reason));
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER1]);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER2]);
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER1]);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER2]);
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game);
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game);
         this.setupSetBallEvents();
         // this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
         this.setupSendReceiveEventBroadcast(PLAYER1, GameEvent.SEND_GOAL, GameEvent.RECEIVE_GOAL, this);
@@ -145,8 +145,8 @@ export class GameManager extends EventEmitter {
     }
 
     setupSetBallEvents() {
-        this.sockets.playersSetBallCallbacks[PLAYER1] = this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
-        this.sockets.playersSetBallCallbacks[PLAYER2] = this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
+        this.sockets.playersSetBallCallbacks[PLAYER1] = this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game);
+        this.sockets.playersSetBallCallbacks[PLAYER2] = this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game);
     }
 
     resetSetBallEvents() {
@@ -227,6 +227,7 @@ export class GameManager extends EventEmitter {
             .then(() => this.reset(0, 0, ballDirection))
             .then(() => delay(500))
             .then(() => {
+                console.log("server ball: ", this.game.state.ball.position.x, this.game.state.ball.position.y);
                 this.setupSetBallEvents();
                 this.start();
             });

@@ -19,8 +19,9 @@ export class Bar extends EventEmitter {
         this.position = new Vector3();
         this.upPressed = false;
         this.downPressed = false;
-        this.on(GameEvent.RECEIVE_BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
-        this.on(GameEvent.RECEIVE_BAR_KEYUP, this.onReceiveKeyup.bind(this));
+        ///
+        // this.on(GameEvent.RECEIVE_BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
+        // this.on(GameEvent.RECEIVE_BAR_KEYUP, this.onReceiveKeyup.bind(this));
         // this.on(GameEvent.RECEIVE_BAR_POSITION, this.onReceiveKeyup.bind(this));
     }
 
