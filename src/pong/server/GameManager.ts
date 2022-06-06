@@ -48,7 +48,7 @@ export class GameManager extends EventEmitter {
         socket.on("disconnect", () => this.onDisconnect(socket));
         this.synchroTimeWithClient(socket);
         socket.on("playerIdSelect", (playerId: number) => {
-            if (playerId < 2 && this.sockets.players[playerId] === null) {
+            if (playerId < 2 && this.sockets.players[playerId] === undefined) {
                 this.sockets.players[playerId] = socket;
                 socket.emit("playerIdConfirmed", playerId);
             }
@@ -67,7 +67,7 @@ export class GameManager extends EventEmitter {
                 }
             }
             console.log(playerId < 2 ? `player ${playerId + 1} joined` : "an observer joined")
-            if (this.sockets.players[PLAYER1] !== null && this.sockets.players[PLAYER2] !== null) {
+            if (this.sockets.players[PLAYER1] !== undefined && this.sockets.players[PLAYER2] !== undefined) {
                 this.game = new ServerGame();
                 this.setupSockets();
                 console.log("both players are present");

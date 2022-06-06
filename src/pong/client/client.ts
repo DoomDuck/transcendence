@@ -38,15 +38,21 @@ export class ClientContext {
             this.startGame(playerId);
         });
 
-        document.getElementById("launch-0")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 0));
-        document.getElementById("launch-1")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 1));
-        document.getElementById("launch-2")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 2));
+        // document.getElementById("launch-0")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 0));
+        // document.getElementById("launch-1")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 1));
+        // document.getElementById("launch-2")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 2));
+
+    }
+
+    select(playerId: number) {
+        this.socket?.emit("playerIdSelect", playerId)
     }
 
     startGame(playerId: number) {
         // game
         let game = new ClientGame(playerId);
         this.game = game;
+
         document.body.appendChild(game.renderer.domElement);
         document.body.appendChild(game.labelRenderer.domElement);
 
@@ -71,14 +77,14 @@ export class ClientContext {
         transmitEventFromServerToGame(GameEvent.PAUSE, game);
         transmitEventFromServerToGame(GameEvent.UNPAUSE, game);
         transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL, game.state);
-
+        
         this.socket.emit("playerReady");
-
+        
         // Game loop
-        function animate() {
+        let animate = () => {
             requestAnimationFrame(animate);
-            game.frame();
-            game.render();
+            this.game?.frame();
+            this.game?.render();
         }
         animate();
     }
