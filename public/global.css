@@ -7,6 +7,7 @@ body {
     overflow: hidden;
     margin: 0px;
 }
+
 canvas {
     position: relative;
     left: 50%;

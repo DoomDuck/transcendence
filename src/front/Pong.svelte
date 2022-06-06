@@ -1,7 +1,7 @@
 <script lang="ts">
-import {ClientContext} from "../pong/client/client.ts";
+import {ClientContext} from "../pong/client/client";
 
-setup();
+const ctx = new ClientContext();
 
 </script>
 
