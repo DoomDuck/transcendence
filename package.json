@@ -12,7 +12,10 @@
 		"nest_start": "nest start",
 		"nest_start:dev": "nest start --watch",
 		"nest_start:debug": "nest start --debug --watch",
-		"nest_start:prod": "node dist/main"
+		"nest_start:prod": "node dist/main",
+        "_pongserv_build": "tsc -p src/pong/server/tsconfig.json",
+        "_pongserv_build:dev": "tsc -p src/pong/server/tsconfig.json -w",
+        "_pongserv_start": "node build/pong-temporary-server/server/server.js"
 	},
 	"repository": {
 		"type": "git",

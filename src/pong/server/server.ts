@@ -14,7 +14,7 @@ class App {
     constructor(port: number) {
         this.port = port;
         const app = express();
-        app.use(express.static(path.join(__dirname, '../client')));
+        app.use(express.static(path.join(__dirname, '../../../public')));
 
         this.server = new http.Server(app);
         const io = new socketio.Server(this.server);

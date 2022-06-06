@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "ES2019",
         "module": "commonjs",
-        "outDir": "../../dist/server",
+        "outDir": "../../../build/pong-temporary-server",
         "esModuleInterop": true,
     },
     "include": ["**/*.ts"]
