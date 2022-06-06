@@ -62,6 +62,16 @@ export const RIGHT = Direction.RIGHT;
 
 
 export class GameEvent {
+
+    // enum Send {
+    //     ....
+    // }
+    // enum Receive {
+    //     ....
+    // }
+    // enum FromServer {
+    //     ....
+    // }
     // key: string, time: number
     static readonly SEND_BAR_KEYDOWN = "sendBarKeydown";
     // key: string, y: number

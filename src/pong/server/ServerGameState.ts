@@ -1,4 +1,4 @@
-import { Ball, Bar, GameEvent, GameState, GSettings } from "../../pong/common";
+import { Ball, Bar, GameEvent, GameState, GSettings } from "../common";
 
 export class ServerGameState extends GameState {
     constructor(ball: Ball, bar1: Bar, bar2: Bar) {

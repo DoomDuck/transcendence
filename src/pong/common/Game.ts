@@ -23,6 +23,7 @@ export abstract class Game extends EventEmitter {
         this.on(GameEvent.START, () => this.start());
         this.on(GameEvent.PAUSE, () => this.pause());
         this.on(GameEvent.UNPAUSE, () => this.unpause());
+        // this.on(GameEvent.RECEIVE_BAR_KEYDOWN, )
     }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {

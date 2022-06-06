@@ -1,6 +1,6 @@
-import { GameEvent, GSettings, PLAYER1, PLAYER2 } from "../../pong/common";
-import { Game } from "../../pong/common/Game";
-import { Bar, Ball, LEFT, RIGHT, GameState } from "../../pong/common";
+import { GameEvent, GSettings, PLAYER1, PLAYER2 } from "../common";
+import { Game } from "../common/Game";
+import { Bar, Ball, LEFT, RIGHT, GameState } from "../common";
 
 export class ServerGame extends Game {
     timeOutHandle: NodeJS.Timeout;
