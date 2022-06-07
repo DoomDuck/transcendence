@@ -2,7 +2,6 @@ import { Socket } from "socket.io"
 import { LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from "../common";
 import { GameEvent, Direction, GSettings } from "../common/constants";
 import { ServerGame } from "./ServerGame";
-import { ServerSynchroTime } from "./ServerSynchroTime";
 import * as socketio from 'socket.io'
 import { EventEmitter } from "events";
 
@@ -17,7 +16,6 @@ type VoidCallback = (...args: any[]) => void;
 type GameSockets = {
     players: [Socket?, Socket?],
     playersReady: [boolean, boolean],
-    playersSetBallCallbacks: [VoidCallback?, VoidCallback?];
     observers: Socket[],
 };
 
@@ -25,6 +23,10 @@ function delay(duration: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, duration);
   });
+}
+
+function otherPlayer(playerId: PlayerID): PlayerID {
+    return (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
 }
 
 export class GameManager extends EventEmitter {
@@ -37,7 +39,6 @@ export class GameManager extends EventEmitter {
         this.sockets = {
             players: [undefined, undefined],
             playersReady: [false, false],
-            playersSetBallCallbacks: [undefined, undefined],
             observers: [],
         };
         socketServer.on("connection", this.onConnection.bind(this));
@@ -46,7 +47,6 @@ export class GameManager extends EventEmitter {
     onConnection(socket: Socket) {
         console.log(`client ${socket.id} connected`)
         socket.on("disconnect", () => this.onDisconnect(socket));
-        this.synchroTimeWithClient(socket);
         socket.on("playerIdSelect", (playerId: number) => {
             if (playerId < 2 && this.sockets.players[playerId] === undefined) {
                 this.sockets.players[playerId] = socket;
@@ -106,53 +106,23 @@ export class GameManager extends EventEmitter {
         }
     }
 
-    synchroTimeWithClient(socket: Socket) {
-        let synchroTime = new ServerSynchroTime(socket);
-        synchroTime.connect().then(() => {
-            console.log(`SyncroTime connected: ${synchroTime.connected}`);
-            synchroTime.estimateOffset().then(() => {
-                console.log(`theta = ${synchroTime.clocksAbsoluteOffset}`);
-                console.log(`delta/2 = ${synchroTime.halfRoundTripDelay}`);
-            });
-        });
-    }
-
     setupSockets() {
         (this.sockets.players[PLAYER1] as Socket).on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER1, reason));
         (this.sockets.players[PLAYER2] as Socket).on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER2, reason));
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game);
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game);
-        this.setupSetBallEvents();
-        // this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
-        this.setupSendReceiveEventBroadcast(PLAYER1, GameEvent.SEND_GOAL, GameEvent.RECEIVE_GOAL, this);
-        this.setupSendReceiveEventBroadcast(PLAYER2, GameEvent.SEND_GOAL, GameEvent.RECEIVE_GOAL, this);
-        this.on(GameEvent.RECEIVE_GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
+        this.setupBarEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP);
+        this.setupBarEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP);
+        this.setupBarEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN);
+        this.setupBarEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN);
+        this.game.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
         this.game.on(GameEvent.SEND_SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.RECEIVE_SET_BALL, ...args));
     }
 
     resetSockets() {
         this.sockets.players[PLAYER1]?.removeAllListeners();
         this.sockets.players[PLAYER2]?.removeAllListeners();
-        this.sockets.playersSetBallCallbacks = [undefined, undefined];
         for (let observer of this.sockets.observers)
             observer?.removeAllListeners();
         this.game?.removeAllListeners();
-        this.game?.state?.ball?.removeAllListeners();
-        this.game?.state?.bars[PLAYER1]?.removeAllListeners();
-        this.game?.state?.bars[PLAYER2]?.removeAllListeners();
-    }
-
-    setupSetBallEvents() {
-        this.sockets.playersSetBallCallbacks[PLAYER1] = this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game);
-        this.sockets.playersSetBallCallbacks[PLAYER2] = this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game);
-    }
-
-    resetSetBallEvents() {
-        (this.sockets.players[PLAYER1] as Socket).removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER1] as VoidCallback);
-        (this.sockets.players[PLAYER2] as Socket).removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER2] as VoidCallback);
-        this.sockets.playersSetBallCallbacks = [undefined, undefined];
     }
 
     broadcastEvent(event: string, ...args: any[]) {
@@ -169,35 +139,22 @@ export class GameManager extends EventEmitter {
             observerSocket.emit(event, ...args);
     }
 
-    setupSendReceiveEvent(emitter: PlayerID, sendEvent: string, receiveEvent: string, thisGameEventEmitter: EventEmitter)
-    : VoidCallback {
-        let receiver = this.otherPlayer(emitter);
-        let callback = (...args: any[]) => {
+    setupBarEvent(emitter: PlayerID, sendEvent: string, receiveEvent: string) {
+        let receiver = otherPlayer(emitter);
+        (this.sockets.players[emitter] as Socket).on(sendEvent, (...args: any[]) => {
             this.transmitEvent(receiver, receiveEvent, ...args);
-            thisGameEventEmitter.emit(receiveEvent, ...args);
-        };
-        (this.sockets.players[emitter] as Socket).on(sendEvent, callback);
-        return callback;
-    }
-
-    setupSendReceiveEventBroadcast(emitter: PlayerID, sendEvent: string, receiveEvent: string, thisGameEventEmitter: EventEmitter)
-    : VoidCallback {
-        let callback = (...args: any[]) => {
-            this.broadcastEvent(receiveEvent, ...args);
-            thisGameEventEmitter.emit(receiveEvent, ...args);
-        };
-        (this.sockets.players[emitter] as Socket).on(sendEvent, callback);
-        return callback;
+            this.game.emit(receiveEvent, emitter, ...args); // the event on the server has 1 additionnal parameter : the playerId of the owner of the bar
+        });
     }
 
     handlePlayerDisconnect(playerId: PlayerID, reason?: string) {
         this.game.pause();
-        let receiver = this.otherPlayer(playerId);
+        let receiver = otherPlayer(playerId);
         this.transmitEvent(receiver, "otherPlayerDisconnect", reason);
     }
 
-
     start() {
+        console.log('start');
         this.game.start();
         (this.sockets.players[0] as Socket).emit(GameEvent.START);
         (this.sockets.players[1] as Socket).emit(GameEvent.START);
@@ -206,35 +163,24 @@ export class GameManager extends EventEmitter {
     reset(ballX: number, ballY: number, ballDirection: Direction) {
         if (this.game === undefined)
             return;
+        console.log('reset');
         let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
         this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
         (this.sockets.players[0] as Socket).emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         (this.sockets.players[1] as Socket).emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-        // this.game.reset(ballX, ballY, 0, -1);
-        // this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, 0, -1);
-        // this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, 0, -1);
     }
 
     handleGoal(playerId: PlayerID) {
         console.log("GOAL !!!");
+        this.broadcastEvent(GameEvent.GOAL, playerId);
         let ballDirection = (playerId == PLAYER1) ? LEFT : RIGHT;
         // the timer is important because it ensures any SEND_SET_BALL event of the previous point
         // doesn't interfere with the next one
-        Promise.resolve()
-            .then(() => this.resetSetBallEvents())
-            .then(() => delay(500))
+        delay(500)
             .then(() => this.reset(0, 0, ballDirection))
             .then(() => delay(500))
-            .then(() => {
-                console.log("server ball: ", this.game.state.ball.position.x, this.game.state.ball.position.y);
-                this.setupSetBallEvents();
-                this.start();
-            });
-    }
-
-    otherPlayer(playerId: PlayerID): PlayerID {
-        return (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
+            .then(() => this.start());
     }
 
     addObserver(socket: Socket) {

@@ -5,7 +5,6 @@ import { ServerGameState } from "./ServerGameState";
 
 export class ServerGame extends Game {
     timeOutHandle: NodeJS.Timeout;
-    stepsAccumulated: number;
     constructor() {
         const gameState = new ServerGameState(
             new Ball(),
@@ -13,16 +12,8 @@ export class ServerGame extends Game {
             new Bar(PLAYER2)
         );
         super(gameState);
-        this.on(GameEvent.RECEIVE_BAR_KEYDOWN_SERVER, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeydown(...args));
-        this.on(GameEvent.RECEIVE_BAR_KEYUP_SERVER, (playerId: PlayerID, ...args: BarKeyUpEvent) => this.state.bars[playerId].onReceiveKeyup(...args));
-        // ////
-        // var oldEmit = this.emit;
-        // this.emit = function(event: string, ...args: any[]) {
-        //     console.log(`got event ${event}`)
-        //     return oldEmit.apply(this, [event, ...args]);
-        // }
-        // ////
-        this.stepsAccumulated = 0;
+        this.on(GameEvent.RECEIVE_BAR_KEYDOWN, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeydown(...args));
+        this.on(GameEvent.RECEIVE_BAR_KEYUP, (playerId: PlayerID, ...args: BarKeyUpEvent) => this.state.bars[playerId].onReceiveKeyup(...args));
         // Game loop
         setInterval(this.frame.bind(this), GSettings.GAME_STEP);
     }

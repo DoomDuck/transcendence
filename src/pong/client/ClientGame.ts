@@ -5,11 +5,10 @@ import { Game } from "../common/Game";
 import { GameState } from '../common/GameState';
 import { ClientBall } from './ClientBall';
 import { ClientBar } from './ClientBar';
-import { ClientBarControlled } from './ClientBarControlled';
 import { GameEvent } from '../common/constants';
-import { ClientGameState } from './ClientGameState';
 import { PlayersScore } from './PlayersScore';
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import { ClientGameState } from './ClientGameState';
 
 export class ClientGame extends Game {
     scene: THREE.Scene;
@@ -23,8 +22,10 @@ export class ClientGame extends Game {
     constructor(playerId: PlayerID) {
         // game state
         const ball = new ClientBall(playerId);
-        const bar1 = (playerId == PLAYER1) ? new ClientBarControlled(PLAYER1) : new ClientBar(PLAYER1);
-        const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
+        const [bar1, bar2] = [
+            new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
+            new ClientBar(PLAYER2, {controllable: playerId == PLAYER2}),
+        ]
         const gameState = new ClientGameState(ball, bar1, bar2, playerId);
         super(gameState);
         
@@ -36,14 +37,6 @@ export class ClientGame extends Game {
         let otherBar = this.state.bars[this.otherPlayerId];
         this.on(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
         this.on(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
-
-        // ////
-        // var oldEmit = this.emit;
-        // this.emit = function(event: string, ...args: any[]) {
-        //     console.log(`got event ${event}`)
-        //     return oldEmit.apply(this, [event, ...args]);
-        // }
-        // ////
 
         // renderers
         this.renderer = new THREE.WebGLRenderer();
@@ -62,14 +55,10 @@ export class ClientGame extends Game {
         this.loadBackground();
 
         // callbacks
-        this.on(GameEvent.RECEIVE_GOAL, (playerId: PlayerID) => {
+        this.on(GameEvent.GOAL, (playerId: PlayerID) => {
             console.log("GOAL !!!");
             this.playersScore.handleGoal(playerId);
         });
-        this.on(GameEvent.RESET, (ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) => {
-            console.log("received RESET");
-            this.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-        })
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
     }

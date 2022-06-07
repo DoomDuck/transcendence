@@ -20,9 +20,9 @@ export class Bar extends EventEmitter {
         this.upPressed = false;
         this.downPressed = false;
         ///
-        // this.on(GameEvent.RECEIVE_BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
-        // this.on(GameEvent.RECEIVE_BAR_KEYUP, this.onReceiveKeyup.bind(this));
-        // this.on(GameEvent.RECEIVE_BAR_POSITION, this.onReceiveKeyup.bind(this));
+        // this.on(GameEvent.BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
+        // this.on(GameEvent.BAR_KEYUP, this.onReceiveKeyup.bind(this));
+        // this.on(GameEvent.BAR_POSITION, this.onReceiveKeyup.bind(this));
     }
 
     reset() {
@@ -59,6 +59,7 @@ export class Bar extends EventEmitter {
     }
 
     onReceiveKeydown(keyValue: KeyValue, emitTime: number) {
+        console.log('received keydown');
         let delta = Date.now() - emitTime;
         // console.log(`keyup receive delta = ${delta}`);
         if (keyValue == KeyValue.UP) {

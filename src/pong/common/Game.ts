@@ -6,7 +6,6 @@ import { GameState } from "./GameState";
 
 export abstract class Game extends EventEmitter {
     lastTime: number;
-    time: number;
     timeAccumulated: number;
     state: GameState;
     paused: boolean;
@@ -14,7 +13,6 @@ export abstract class Game extends EventEmitter {
     constructor (state: GameState) {
         super();
         this.lastTime = 0;
-        this.time = 0;
         this.timeAccumulated = 0;
         this.paused = true;
         this.state = state;
@@ -27,7 +25,7 @@ export abstract class Game extends EventEmitter {
         this.on(GameEvent.PAUSE, this.pause.bind(this));
         this.on(GameEvent.UNPAUSE, this.unpause.bind(this));
         this.on(GameEvent.RESET, this.reset.bind(this));
-        this.on(GameEvent.RECEIVE_SET_BALL, this.state.onReceiveSetBall.bind(this.state));
+        this.on(GameEvent.RECEIVE_SET_BALL, this.onReceiveSetBall.bind(this));
 
         // outcomming
         this.state.emit = (event: string, ...args: any[]) => this.emit(event, ...args);
@@ -38,7 +36,6 @@ export abstract class Game extends EventEmitter {
     }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
-        this.time = 0;
         this.timeAccumulated = 0;
         this.paused = true;
         this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
@@ -62,6 +59,13 @@ export abstract class Game extends EventEmitter {
         this.lastTime = Date.now();
     }
 
+    onReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {
+        let elapsed = Date.now() - time;
+        this.state.ball.position.set(x, y, 0);
+        this.state.ball.speed.set(vx, vy, 0);
+        // this.state.ball.update(elapsed);
+    }
+
     frame() {
         if (this.paused)
             return;
@@ -71,7 +75,6 @@ export abstract class Game extends EventEmitter {
         this.lastTime = newTime;
 
         while (this.timeAccumulated >= GSettings.GAME_STEP) {
-            this.time += GSettings.GAME_STEP;
             this.timeAccumulated -= GSettings.GAME_STEP;
             this.state.update(GSettings.GAME_STEP);
             this.emit("update");

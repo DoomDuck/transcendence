@@ -16,12 +16,7 @@ export abstract class GameState extends EventEmitter {
         this.score = [0, 0];
     }
 
-    update(elapsed: number) {
-        this.ball.update(elapsed);
-        this.bars[0].update(elapsed);
-        this.bars[1].update(elapsed);
-        this.ball.handleCollisions(this.bars);
-    }
+    abstract update(elapsed: number): void;
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
         this.ball.reset(ballX, ballY, ballSpeedX, ballSpeedY);
@@ -29,6 +24,4 @@ export abstract class GameState extends EventEmitter {
         this.bars[0].reset();
         this.bars[1].reset();
     }
-
-    abstract onReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number): void;
 }
