@@ -62,6 +62,16 @@ export const RIGHT = Direction.RIGHT;
 
 
 export class GameEvent {
+
+    // enum Send {
+    //     ....
+    // }
+    // enum Receive {
+    //     ....
+    // }
+    // enum FromServer {
+    //     ....
+    // }
     // key: string, time: number
     static readonly SEND_BAR_KEYDOWN = "sendBarKeydown";
     // key: string, y: number
@@ -72,6 +82,10 @@ export class GameEvent {
     static readonly RECEIVE_BAR_KEYDOWN = "receiveBarKeydown";
     // key: string, y: number
     static readonly RECEIVE_BAR_KEYUP = "receiveBarKeyup";
+    // playerId: PlayerID, key: string, y: number
+    static readonly RECEIVE_BAR_KEYDOWN_SERVER = "receiveBarKeydownServer";
+    // playerId: PlayerID, key: string, y: number
+    static readonly RECEIVE_BAR_KEYUP_SERVER = "receiveBarKeyupServer";
     // y: number, time: number
     static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
     // startTime: number
@@ -91,6 +105,13 @@ export class GameEvent {
     // ballSpeedX: number, ballSpeedY: number
     static readonly RESET = "reset";
 }
+
+export type BarKeyDownEvent = [KeyValue, number];                     // keyvalue, time
+export type BarKeyUpEvent = [KeyValue, number];                     // y, time
+// export type BarPositionEvent = [number, number];                  // y, time
+// export type BallEvent = [number, number, number, number, number]; // x, y, speedX, speedY, time
+// export type ResetEvent = [number, number, number, number];        // ballX, ballY, ballSX, ballSY
+// export type GoalEvent = [PlayerID];                               // player
 
 export enum KeyValue {
     UP,

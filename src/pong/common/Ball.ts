@@ -17,7 +17,8 @@ export class Ball extends EventEmitter {
         this.radius = GSettings.BALL_RADIUS;
         this.position = new Vector3();
         this.speed = new Vector3();
-        this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
+        ///
+        // this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
         this.wallCollided = false;
     }
 

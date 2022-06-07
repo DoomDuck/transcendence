@@ -1,6 +1,6 @@
 import { Socket } from "socket.io"
-import { LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from "../../pong/common";
-import { GameEvent, Direction, GSettings } from "../../pong/common/constants";
+import { LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from "../common";
+import { GameEvent, Direction, GSettings } from "../common/constants";
 import { ServerGame } from "./ServerGame";
 import { ServerSynchroTime } from "./ServerSynchroTime";
 import * as socketio from 'socket.io'
@@ -12,14 +12,16 @@ function removeElementByValue<T>(array: T[], item: T) {
         array.splice(index, 1);
 }
 
+type VoidCallback = (...args: any[]) => void;
+
 type GameSockets = {
-    players: [Socket, Socket],
+    players: [Socket?, Socket?],
     playersReady: [boolean, boolean],
-    playersSetBallCallbacks: [(...args: any[]) => void, (...args: any[]) => void];
+    playersSetBallCallbacks: [VoidCallback?, VoidCallback?];
     observers: Socket[],
 };
 
-function delay(duration) {
+function delay(duration: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, duration);
   });
@@ -33,9 +35,9 @@ export class GameManager extends EventEmitter {
     constructor (socketServer: socketio.Namespace) {
         super()
         this.sockets = {
-            players: [null, null],
+            players: [undefined, undefined],
             playersReady: [false, false],
-            playersSetBallCallbacks: [null, null],
+            playersSetBallCallbacks: [undefined, undefined],
             observers: [],
         };
         socketServer.on("connection", this.onConnection.bind(this));
@@ -46,7 +48,7 @@ export class GameManager extends EventEmitter {
         socket.on("disconnect", () => this.onDisconnect(socket));
         this.synchroTimeWithClient(socket);
         socket.on("playerIdSelect", (playerId: number) => {
-            if (playerId < 2 && this.sockets.players[playerId] === null) {
+            if (playerId < 2 && this.sockets.players[playerId] === undefined) {
                 this.sockets.players[playerId] = socket;
                 socket.emit("playerIdConfirmed", playerId);
             }
@@ -65,7 +67,7 @@ export class GameManager extends EventEmitter {
                 }
             }
             console.log(playerId < 2 ? `player ${playerId + 1} joined` : "an observer joined")
-            if (this.sockets.players[PLAYER1] !== null && this.sockets.players[PLAYER2] !== null) {
+            if (this.sockets.players[PLAYER1] !== undefined && this.sockets.players[PLAYER2] !== undefined) {
                 this.game = new ServerGame();
                 this.setupSockets();
                 console.log("both players are present");
@@ -92,7 +94,7 @@ export class GameManager extends EventEmitter {
         for (let i = 0; i < 2; i++) {
             if (socket === this.sockets.players[i]) {
                 console.log(`player ${i + 1} has disconnected`);
-                this.sockets.players[i] = null;
+                this.sockets.players[i] = undefined;
                 this.sockets.playersReady[i] = false;
                 this.resetSockets();
                 return;
@@ -116,12 +118,12 @@ export class GameManager extends EventEmitter {
     }
 
     setupSockets() {
-        this.sockets.players[PLAYER1].on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER1, reason));
-        this.sockets.players[PLAYER2].on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER2, reason));
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER1]);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game.state.bars[PLAYER2]);
-        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER1]);
-        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game.state.bars[PLAYER2]);
+        (this.sockets.players[PLAYER1] as Socket).on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER1, reason));
+        (this.sockets.players[PLAYER2] as Socket).on("disconnect", (reason?: string) => this.handlePlayerDisconnect(PLAYER2, reason));
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP, this.game);
+        this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game);
+        this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN, this.game);
         this.setupSetBallEvents();
         // this.game.state.ball.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
         this.setupSendReceiveEventBroadcast(PLAYER1, GameEvent.SEND_GOAL, GameEvent.RECEIVE_GOAL, this);
@@ -133,7 +135,7 @@ export class GameManager extends EventEmitter {
     resetSockets() {
         this.sockets.players[PLAYER1]?.removeAllListeners();
         this.sockets.players[PLAYER2]?.removeAllListeners();
-        this.sockets.playersSetBallCallbacks = [null, null];
+        this.sockets.playersSetBallCallbacks = [undefined, undefined];
         for (let observer of this.sockets.observers)
             observer?.removeAllListeners();
         this.game?.removeAllListeners();
@@ -143,48 +145,48 @@ export class GameManager extends EventEmitter {
     }
 
     setupSetBallEvents() {
-        this.sockets.playersSetBallCallbacks[PLAYER1] = this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
-        this.sockets.playersSetBallCallbacks[PLAYER2] = this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game.state.ball);
+        this.sockets.playersSetBallCallbacks[PLAYER1] = this.setupSendReceiveEvent(PLAYER1, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game);
+        this.sockets.playersSetBallCallbacks[PLAYER2] = this.setupSendReceiveEvent(PLAYER2, GameEvent.SEND_SET_BALL, GameEvent.RECEIVE_SET_BALL, this.game);
     }
 
     resetSetBallEvents() {
-        this.sockets.players[PLAYER1].removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER1]);
-        this.sockets.players[PLAYER2].removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER2]);
-        this.sockets.playersSetBallCallbacks = [null, null];
+        (this.sockets.players[PLAYER1] as Socket).removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER1] as VoidCallback);
+        (this.sockets.players[PLAYER2] as Socket).removeListener(GameEvent.SEND_SET_BALL, this.sockets.playersSetBallCallbacks[PLAYER2] as VoidCallback);
+        this.sockets.playersSetBallCallbacks = [undefined, undefined];
     }
 
     broadcastEvent(event: string, ...args: any[]) {
         // console.log(`emitting for broadcast: '${event}' with args '${args}'`);
-        this.sockets.players[PLAYER1].emit(event, ...args);
-        this.sockets.players[PLAYER2].emit(event, ...args);
+        (this.sockets.players[PLAYER1] as Socket).emit(event, ...args);
+        (this.sockets.players[PLAYER2] as Socket).emit(event, ...args);
         for (let observerSocket of this.sockets.observers)
             observerSocket.emit(event, ...args);
     }
 
     transmitEvent(receiver: PlayerID, event: string, ...args: any[]) {
-        this.sockets.players[receiver].emit(event, ...args);
+        (this.sockets.players[receiver] as Socket).emit(event, ...args);
         for (let observerSocket of this.sockets.observers)
             observerSocket.emit(event, ...args);
     }
 
-    setupSendReceiveEvent(emitter: PlayerID, sendEvent: string, receiveEvent, thisGameEventEmitter: EventEmitter)
-    : (...args: any[]) => void {
+    setupSendReceiveEvent(emitter: PlayerID, sendEvent: string, receiveEvent: string, thisGameEventEmitter: EventEmitter)
+    : VoidCallback {
         let receiver = this.otherPlayer(emitter);
         let callback = (...args: any[]) => {
             this.transmitEvent(receiver, receiveEvent, ...args);
             thisGameEventEmitter.emit(receiveEvent, ...args);
         };
-        this.sockets.players[emitter].on(sendEvent, callback);
+        (this.sockets.players[emitter] as Socket).on(sendEvent, callback);
         return callback;
     }
 
-    setupSendReceiveEventBroadcast(emitter: PlayerID, sendEvent: string, receiveEvent, thisGameEventEmitter: EventEmitter)
-    : (...args: any[]) => void {
+    setupSendReceiveEventBroadcast(emitter: PlayerID, sendEvent: string, receiveEvent: string, thisGameEventEmitter: EventEmitter)
+    : VoidCallback {
         let callback = (...args: any[]) => {
             this.broadcastEvent(receiveEvent, ...args);
             thisGameEventEmitter.emit(receiveEvent, ...args);
         };
-        this.sockets.players[emitter].on(sendEvent, callback);
+        (this.sockets.players[emitter] as Socket).on(sendEvent, callback);
         return callback;
     }
 
@@ -197,8 +199,8 @@ export class GameManager extends EventEmitter {
 
     start() {
         this.game.start();
-        this.sockets.players[0].emit(GameEvent.START);
-        this.sockets.players[1].emit(GameEvent.START);
+        (this.sockets.players[0] as Socket).emit(GameEvent.START);
+        (this.sockets.players[1] as Socket).emit(GameEvent.START);
     }
 
     reset(ballX: number, ballY: number, ballDirection: Direction) {
@@ -207,8 +209,8 @@ export class GameManager extends EventEmitter {
         let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
         this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-        this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-        this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+        (this.sockets.players[0] as Socket).emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+        (this.sockets.players[1] as Socket).emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         // this.game.reset(ballX, ballY, 0, -1);
         // this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, 0, -1);
         // this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, 0, -1);
@@ -225,6 +227,7 @@ export class GameManager extends EventEmitter {
             .then(() => this.reset(0, 0, ballDirection))
             .then(() => delay(500))
             .then(() => {
+                console.log("server ball: ", this.game.state.ball.position.x, this.game.state.ball.position.y);
                 this.setupSetBallEvents();
                 this.start();
             });

@@ -7,11 +7,15 @@ body {
     overflow: hidden;
     margin: 0px;
 }
+
 canvas {
-    position: relative;
+    /* position: relative;
     left: 50%;
     top: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); */
+    
+    position: absolute;
+    top: 0px;
 }
 
 .game-text {

@@ -31,7 +31,9 @@ module.exports = {
           loader: 'svelte-loader',
           options: {
             emitCss: true,
-            preprocess: svelte_preprocess({}),
+            preprocess: svelte_preprocess({
+              // tsconfigFile: "tsconfig.json",
+            }),
           }
         },
       },

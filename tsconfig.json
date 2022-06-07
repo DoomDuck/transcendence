@@ -1,23 +1,25 @@
 {
+  "extends": "@tsconfig/svelte",
   "compilerOptions": {
-    "strict": true,
-    "sourceMap": false,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "target": "es2018",
-    "lib": ["es2018"],
-    "declaration": true,
-    "skipLibCheck": true,
     "types": [
       "dat.gui",
     	"express",
   		"node",
   		"three",
-      "jest"
+      "jest",
+      "svelte"
     ],
-    "outDir": "build"
+    "outDir": "build",
+
+    "importsNotUsedAsValues": "remove",
+    "allowSyntheticDefaultImports": true,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    "noImplicitAny": true,
+    "strictNullChecks": true,
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules/**/*", "dist", "examples"]
+  "include": ["src/**/*.ts", "src/**/*.svelte"],
+  "exclude": ["src/backend/**/*.ts"]
 }
