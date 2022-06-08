@@ -1,21 +1,15 @@
-<script lang="ts">
-import Timer from './Timer.svelte';
+<script>
+  import Menu from "./Menu.svelte";
+  import StartAGame from './StartAGame.svelte';
+  let status = "menu";
+
 </script>
 
-<header>
-Magic Emma
-</header>
-<div id="clock">
-<Timer/>
-</div>
 
-<style>
-  #clock {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-  }
-</style>
-
+{#if status == "menu"}
+<Menu
+  on:start_game="{() => status = "start_a_game"}"
+/>
+{:else}
+<StartAGame/>
+{/if}
