@@ -2,7 +2,6 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
-	<!-- <link href="https://www.https://www.flaticon.com/fr/icone-premium/editer_4007779?related_id=4007770&origin=search" rel="icon" name="writing"> -->
 </head>
 
 <body>
@@ -39,7 +38,7 @@ img {
 }
 	#bigrectangle{
 	width: 95%;
-	height:70%;
+	height:8%;
 	background: white;
 }
 	#online{
