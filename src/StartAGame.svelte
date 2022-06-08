@@ -11,11 +11,12 @@
 <h4>Invite someone</h4>
 
 <style>
-	
-	body{
+
+body{
 	background-color: #EA0ED4;
 }
-	h4 {
+
+h4 {
 	text-align: center;
 	font-family: 'Press start 2P';
 	font-style: normal;
@@ -23,7 +24,8 @@
 	line-height: 500%;
 	-webkit-text-stroke: 1px #000000
 }
-	h4:hover{
+
+h4:hover{
 	background-color: purple;
 }
 

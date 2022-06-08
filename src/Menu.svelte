@@ -33,11 +33,15 @@ body{
 h1 {
 	line-height: 300%;
 	-webkit-text-stroke: 2px #FF29EA;
+	text-shadow: 4px 4px 4px purple,
+				4px 4px 4px purple;
 }
 
 h4 {
 	line-height: 350%;
 	-webkit-text-stroke: 1px #FF29EA;
+	text-shadow: 4px 4px 4px purple,
+				4px 4px 4px purple;
 }
 
 h4:hover{
