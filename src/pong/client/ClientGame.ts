@@ -27,7 +27,7 @@ export class ClientGame extends Game {
         const bar2 = (playerId == PLAYER2) ? new ClientBarControlled(PLAYER2) : new ClientBar(PLAYER2);
         const gameState = new ClientGameState(ball, bar1, bar2, playerId);
         super(gameState);
-        
+
         // player-realted info
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;

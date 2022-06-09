@@ -38,7 +38,7 @@ export class Ball extends EventEmitter {
     rightX(): number {
         return this.position.x + this.radius;
     }
-    
+
     leftX(): number {
         return this.position.x - this.radius;
     }
@@ -51,14 +51,10 @@ export class Ball extends EventEmitter {
         this.position.y = y - this.radius;
     }
 
-    updatePosition(elapsedTime: number) {
+    update(elapsedTime: number) {
         _v.copy(this.speed);
         _v.multiplyScalar(elapsedTime / 1000);
         this.position.add(_v);
-    }
-
-    update(elapsedTime: number) {
-        this.updatePosition(elapsedTime);
     }
 
     handleBarCollision(bar: Bar) {
@@ -129,8 +125,8 @@ export class Ball extends EventEmitter {
         this.handleWallCollisions();
     }
 
-    handleReceiveSetBall(x: number, y: number, vx: number, vy: number) {
-        this.position.set(x, y, 0);
-        this.speed.set(vx, vy, 0);
-    }
+    // handleReceiveSetBall(x: number, y: number, vx: number, vy: number) {
+    //     this.position.set(x, y, 0);
+    //     this.speed.set(vx, vy, 0);
+    // }
 }

@@ -34,10 +34,6 @@ export class ClientBall extends Ball {
         this.atMyLimit = false;
     }
 
-    // get color(): THREE.Color {
-    //     return (this.mesh.material as THREE.MeshBasicMaterial).color;
-    // }
-
     reset(x: number, y: number, vx: number, vy: number) {
         super.reset(x, y, vx, vy);
         this.color.set(0xffffff);
@@ -45,10 +41,6 @@ export class ClientBall extends Ball {
         this.atLimitPrevious = false;
         this.atMyLimit = false;
         console.log('clientball reset called');
-    }
-
-    emitGoalAtMyLimit() {
-        this.emit(GameEvent.SEND_GOAL, this.playerId == PLAYER1 ? PLAYER2 : PLAYER1);
     }
 
     update(elapsed: number) {
@@ -78,7 +70,7 @@ export class ClientBall extends Ball {
                (this.leftX() > GSettings.GAME_RIGHT && this.playerId == PLAYER2)
             || (this.rightX() < GSettings.GAME_LEFT && this.playerId == PLAYER1))) {
             this.atMyLimit = true;
-            this.emitGoalAtMyLimit();
+            this.emit(GameEvent.SEND_GOAL, this.playerId == PLAYER1 ? PLAYER2 : PLAYER1);
         }
     }
 }

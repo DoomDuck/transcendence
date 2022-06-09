@@ -139,9 +139,6 @@ export class GameManager extends EventEmitter {
         for (let observer of this.sockets.observers)
             observer?.removeAllListeners();
         this.game?.removeAllListeners();
-        this.game?.state?.ball?.removeAllListeners();
-        this.game?.state?.bars[PLAYER1]?.removeAllListeners();
-        this.game?.state?.bars[PLAYER2]?.removeAllListeners();
     }
 
     setupSetBallEvents() {
@@ -211,9 +208,6 @@ export class GameManager extends EventEmitter {
         this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
         (this.sockets.players[0] as Socket).emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         (this.sockets.players[1] as Socket).emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-        // this.game.reset(ballX, ballY, 0, -1);
-        // this.sockets.players[0].emit(GameEvent.RESET, ballX, ballY, 0, -1);
-        // this.sockets.players[1].emit(GameEvent.RESET, ballX, ballY, 0, -1);
     }
 
     handleGoal(playerId: PlayerID) {

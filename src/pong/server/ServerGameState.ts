@@ -11,7 +11,8 @@ export class ServerGameState extends GameState {
         let elapsed = Date.now() - time;
         this.ball.position.set(x, y, 0);
         this.ball.speed.set(vx, vy, 0);
-        this.ball.updatePosition(elapsed);
+        this.ball.update(elapsed);
+        this.ball.handleCollisions(this.bars);
     }
 
     update(elapsed: number) {
