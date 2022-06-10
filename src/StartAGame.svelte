@@ -5,7 +5,7 @@
 </head>
 
 <body>
-	
+<br><br><br>
 <h4>Play</h4>
 <h4>Challenge a friend</h4>
 <h4>Invite someone</h4>

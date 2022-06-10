@@ -15,5 +15,5 @@
 {:else if status == "start_a_game"}
 <StartAGame/>
 {:else}
-<Chat/>
+<Chat on:open_menu="{() =>  status = "menu"}"/>
 {/if}
