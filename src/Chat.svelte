@@ -43,6 +43,7 @@ h1 {
 }
 img {
 	float: right;
+	display: inline-block;
 }
 	.champ{
 	font-family: 'Press Start 2P';
@@ -56,12 +57,8 @@ img {
 	width: 95%;
 	height:8%;
 	background: white;
-
 	display: flex;
-	flex-direction: row;
 	flex-wrap: nowrap;
-	justify-content: flex-start;
-	align-items: center;
 	overflow-x: auto;
 }
 	#online{
@@ -73,13 +70,14 @@ img {
 
 }
 	.roundedImage{
-	overflow:hidden;
+	overflow:hidden; 
 	-webkit-border-radius:50px;
 	-moz-border-radius:50px;
 	border-radius:50px;
 	width:90px;
 	height:90px;
 	margin-left: 2%;
+	flex: 0 0 auto;
 	
 }
 
