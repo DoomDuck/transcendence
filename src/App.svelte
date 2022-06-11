@@ -21,7 +21,7 @@
 
 {#if status == "Menu"}
 <Menu
-  on:start_game={go_to("Menu")}
+  on:start_game={go_to("StartAGame")}
   on:open_chat={go_to("Chat")}
 />
 {:else if status == "StartAGame"}

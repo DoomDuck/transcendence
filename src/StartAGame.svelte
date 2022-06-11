@@ -1,4 +1,3 @@
-
 <div id="start_a_game">
 	<br><br><br>
 	<h4>Play</h4>
