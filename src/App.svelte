@@ -1,19 +1,33 @@
-<script>
+<script lang="ts">
   import Menu from "./Menu.svelte";
   import StartAGame from './StartAGame.svelte';
   import Chat from './Chat.svelte';
-  let status = "menu";
+
+  type Status =  "Menu" | "StartAGame" | "Chat";
+
+  let status : Status = "Menu";
+
+  function go_to(place: Status) {
+    return () => status = place;
+  }
 
 </script>
 
+<svelte:head>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
+</svelte:head>
 
-{#if status == "menu"}
+{#if status == "Menu"}
 <Menu
-  on:start_game="{() => status = "start_a_game"}"
-  on:open_chat="{() => status = "chat"}"
+  on:start_game={go_to("Menu")}
+  on:open_chat={go_to("Chat")}
 />
-{:else if status == "start_a_game"}
+{:else if status == "StartAGame"}
 <StartAGame/>
 {:else}
-<Chat on:open_menu="{() =>  status = "menu"}"/>
+<Chat
+  on:open_menu={go_to("Menu")}
+/>
 {/if}

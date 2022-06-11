@@ -6,23 +6,20 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<head>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
-</head>
-
-<body>
-	
-<h1 class="typography" style="color: {color}">Transcendence</h1>
-<h4 class="typography" style="color: {color}"on:click="{() => dispatch("start_game")}">Start a game</h4>
-<h4 class="typography" style="color: {color}"on:click="{() => dispatch("open_chat")}">Chat</h4>
-<h4 class="typography" style="color: {color}"on:click="{() => dispatch("open_paremeters")}">Parameters</h4>
+<div id="menu">
+	<h1 class="typography" style="color: {color}">Transcendence</h1>
+	<h4 class="typography" style="color: {color}"on:click="{() => dispatch("start_game")}">Start a game</h4>
+	<h4 class="typography" style="color: {color}"on:click="{() => dispatch("open_chat")}">Chat</h4>
+	<h4 class="typography" style="color: {color}"on:click="{() => dispatch("open_paremeters")}">Parameters</h4>
+</div>
 
 <style>
-	
-body{
+
+#menu {
 	background-color: #000000;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 }
 
 .typography {
@@ -51,5 +48,3 @@ h4:hover{
 }
 
 </style>
-	
-</body>

@@ -1,18 +1,15 @@
-<head>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@900&family=Press+Start+2P&display=swap" rel="stylesheet">
-</head>
 
-<body>
-<br><br><br>
-<h4>Play</h4>
-<h4>Challenge a friend</h4>
-<h4>Invite someone</h4>
+<div id="start_a_game">
+	<br><br><br>
+	<h4>Play</h4>
+	<h4>Challenge a friend</h4>
+	<h4>Invite someone</h4>
+</div>
 
 <style>
-
-body{
+#start_a_game {
+	width: 100%;
+	height: 100%;
 	background-color: #EA0ED4;
 }
 
@@ -30,5 +27,3 @@ h4:hover{
 }
 
 </style>
-	
-</body>
