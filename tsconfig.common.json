@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "types": [
+            "dat.gui",
+            "express",
+            "node",
+            "three",
+            "jest",
+            "svelte"
+        ],
+        "outDir": "build",
+
+        "importsNotUsedAsValues": "remove",
+        "allowSyntheticDefaultImports": true,
+
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
+        // "noImplicitAny": true,
+        // "strictNullChecks": true,
+    },
+}

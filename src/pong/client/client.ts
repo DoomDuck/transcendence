@@ -9,7 +9,7 @@ export class ClientContext {
     socket: Socket;
 
     constructor() {
-        this.socket = io();
+        this.socket = io('http://localhost:5000/pong');
 
         ////
         let synchroTime = new ClientSynchroTime(this.socket);

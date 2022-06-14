@@ -8,14 +8,14 @@
 	"scripts": {
 		"front_build": "webpack",
 		"front_build:dev": "webpack --watch",
-		"nest_build": "nest build",
-		"nest_start": "nest start",
-		"nest_start:dev": "nest start --watch",
-		"nest_start:debug": "nest start --debug --watch",
-		"nest_start:prod": "node dist/main",
-        "_pongserv_build": "tsc -p src/pong/server/tsconfig.json",
-        "_pongserv_build:dev": "tsc -p src/pong/server/tsconfig.json -w",
-        "_pongserv_start": "node build/pong-temporary-server/server/server.js"
+		"nest_build": "nest build --path tsconfig.back.json",
+		"nest_start": "nest start --path tsconfig.back.json",
+		"nest_start:dev": "nest start --path tsconfig.back.json --watch",
+		"nest_start:debug": "nest start --path tsconfig.back.json --debug --watch",
+		"nest_start:prod": "node build/back/main.js",
+		"_pongserv_build": "tsc -p src/pong/server/tsconfig.json",
+		"_pongserv_build:dev": "tsc -p src/pong/server/tsconfig.json -w",
+		"_pongserv_start": "node build/pong-temporary-server/server/server.js"
 	},
 	"repository": {
 		"type": "git",
@@ -46,6 +46,7 @@
 		"@nestjs/platform-express": "^8.4.5",
 		"@nestjs/platform-socket.io": "^8.4.5",
 		"@nestjs/schematics": "^8.0.0",
+		"@nestjs/serve-static": "^2.2.2",
 		"@nestjs/testing": "^8.0.0",
 		"@nestjs/typeorm": "^8.0.3",
 		"@nestjs/websockets": "^8.4.5",

@@ -1,14 +1,32 @@
 {
+  "extends": "@tsconfig/nest",
+
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
+    "types": [
+        "dat.gui",
+        "express",
+        "node",
+        "three",
+        "jest",
+        "svelte"
+    ],
+    "outDir": "build/back/",
+
+    "importsNotUsedAsValues": "remove",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+
     "target": "es2017",
     "sourceMap": true,
-    "outDir": "../../dist",
+
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -17,5 +35,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+
+  "include": ["src/back/*.ts"],
 }
