@@ -46,6 +46,8 @@ export class GSettings {
     static readonly BALL_CONTROL_FRONTIER_X_CLIENT = GSettings.BAR_INITIALX - 1/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_CONTROL_FRONTIER_X_SERVER = GSettings.BAR_INITIALX - 2/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_SPEED_AT_LIMIT = GSettings.SCREEN_WIDTH / 20;
+    static readonly BALL_CLIENT_SERVER_LERP_DIST = .05;
+    static readonly BALL_CLIENT_SERVER_LERP_FACTOR = .05;
 }
 
 export enum PlayerID {

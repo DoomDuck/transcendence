@@ -9,6 +9,7 @@ import { GameEvent } from '../common/constants';
 import { PlayersScore } from './PlayersScore';
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
 import { ClientGameState } from './ClientGameState';
+import { ServerBall } from './ServerBall';
 
 export class ClientGame extends Game {
     scene: THREE.Scene;
@@ -21,14 +22,15 @@ export class ClientGame extends Game {
 
     constructor(playerId: PlayerID) {
         // game state
-        const ball = new ClientBall(playerId);
+        const clientBall = new ClientBall(playerId);
+        const serverBall = new ServerBall();
         const [bar1, bar2] = [
             new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
             new ClientBar(PLAYER2, {controllable: playerId == PLAYER2}),
         ]
-        const gameState = new ClientGameState(ball, bar1, bar2, playerId);
+        const gameState = new ClientGameState(serverBall, bar1, bar2, clientBall);
         super(gameState);
-        
+
         // player-realted info
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
@@ -46,7 +48,7 @@ export class ClientGame extends Game {
         // scene
         this.scene = new THREE.Scene();
         this.camera = new Camera();
-        this.scene.add(ball.mesh);
+        this.scene.add(clientBall.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
         // this.scene.add(gameState.serverBallEstimation.mesh);

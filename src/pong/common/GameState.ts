@@ -20,7 +20,6 @@ export abstract class GameState extends EventEmitter {
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
         this.ball.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-        this.ball.speed.set(ballSpeedX, ballSpeedY, 0);
         this.bars[0].reset();
         this.bars[1].reset();
     }
