@@ -10,7 +10,7 @@
         "jest",
         "svelte"
     ],
-    "outDir": "build/back/",
+    "outDir": "build/back",
 
     "importsNotUsedAsValues": "remove",
     "emitDecoratorMetadata": true,
