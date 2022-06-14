@@ -5,7 +5,7 @@ const svelte_preprocess = require('svelte-preprocess');
 module.exports = {
   entry: "./src/front/index.ts",
   output: {
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(__dirname, "build/front/"),
     filename: "./bundle.js",
   },
   mode: "production",
@@ -23,7 +23,12 @@ module.exports = {
     rules: [
       {
           test: /\.ts$/,
-          use: 'ts-loader',
+          use: {
+            loader: 'ts-loader',
+            options: {
+              configFile: "tsconfig.front.json",
+            }
+          }
       },
       {
         test: /\.(html|svelte)$/,
@@ -32,7 +37,7 @@ module.exports = {
           options: {
             emitCss: true,
             preprocess: svelte_preprocess({
-              // tsconfigFile: "tsconfig.json",
+              tsconfigFile: "tsconfig.front.json",
             }),
           }
         },
