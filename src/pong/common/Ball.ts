@@ -11,6 +11,7 @@ export class Ball extends EventEmitter {
     position: Vector3
     speed: Vector3
     wallCollided: boolean;
+    outOfScreenAlreadyReported: boolean;
 
     constructor() {
         super();
@@ -20,11 +21,13 @@ export class Ball extends EventEmitter {
         ///
         // this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
         this.wallCollided = false;
+        this.outOfScreenAlreadyReported = false;
     }
 
     reset(x: number, y: number, vx: number, vy: number) {
         this.position.set(x, y, 0);
         this.speed.set(vx, vy, 0);
+        this.outOfScreenAlreadyReported = false;
     }
 
     topY(): number {
@@ -51,10 +54,28 @@ export class Ball extends EventEmitter {
         this.position.y = y - this.radius;
     }
 
-    update(elapsedTime: number) {
+    gotOutOfScreen(): boolean {
+        if (this.outOfScreenAlreadyReported)
+            return false;
+        if (this.leftX() > GSettings.GAME_RIGHT || this.rightX() < GSettings.GAME_LEFT) {
+            this.outOfScreenAlreadyReported = true;
+            return true;
+        }
+        return false;
+    }
+
+    farthestPlayerSide(): PlayerID {
+        return this.position.x < 0 ? PLAYER2 : PLAYER1;
+    }
+
+    updatePosition(elapsed: number) {
         _v.copy(this.speed);
-        _v.multiplyScalar(elapsedTime / 1000);
+        _v.multiplyScalar(elapsed / 1000);
         this.position.add(_v);
+    }
+
+    update(elapsed: number) {
+        this.updatePosition(elapsed);
     }
 
     handleBarCollision(bar: Bar) {
@@ -124,9 +145,4 @@ export class Ball extends EventEmitter {
         this.handleBarCollision(bars[1]);
         this.handleWallCollisions();
     }
-
-    // handleReceiveSetBall(x: number, y: number, vx: number, vy: number) {
-    //     this.position.set(x, y, 0);
-    //     this.speed.set(vx, vy, 0);
-    // }
 }

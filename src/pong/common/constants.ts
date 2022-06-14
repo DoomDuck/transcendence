@@ -31,6 +31,8 @@ export class GSettings {
     static readonly BAR_INITIALX = 17/40 * GSettings.SCREEN_WIDTH;
     static readonly BAR_INITIALY = 0;
     static readonly BAR_SENSITIVITY = GSettings.SCREEN_WIDTH * 2 / 4;
+    static readonly BAR_UP_KEYS = ['ArrowUp', 'w', 'z'];
+    static readonly BAR_DOWN_KEYS = ['ArrowDown', 's'];
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
@@ -44,6 +46,8 @@ export class GSettings {
     static readonly BALL_CONTROL_FRONTIER_X_CLIENT = GSettings.BAR_INITIALX - 1/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_CONTROL_FRONTIER_X_SERVER = GSettings.BAR_INITIALX - 2/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_SPEED_AT_LIMIT = GSettings.SCREEN_WIDTH / 20;
+    static readonly BALL_CLIENT_SERVER_LERP_DIST = .05;
+    static readonly BALL_CLIENT_SERVER_LERP_FACTOR = .05;
 }
 
 export enum PlayerID {
@@ -99,9 +103,7 @@ export class GameEvent {
     // x: number, y: number, speedX: number, speedY: number, time: number
     static readonly SEND_SET_BALL  = "sendSetBall";
     // playerId: PlayerID
-    static readonly SEND_GOAL = "sendGoal";
-    // playerId: PlayerID
-    static readonly RECEIVE_GOAL = "receiveGoal";
+    static readonly GOAL = "goal";
     // ballSpeedX: number, ballSpeedY: number
     static readonly RESET = "reset";
 }

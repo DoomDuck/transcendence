@@ -2,7 +2,6 @@ import { ClientGame } from './ClientGame';
 import { io, Socket } from 'socket.io-client'
 import { GameEvent, PlayerID } from '../common/constants';
 import { EventEmitter } from 'events';
-import { ClientSynchroTime } from './ClientSynchroTime';
 
 export class ClientContext {
     game?: ClientGame;
@@ -10,13 +9,6 @@ export class ClientContext {
 
     constructor() {
         this.socket = io('http://localhost:5000/pong');
-
-        ////
-        let synchroTime = new ClientSynchroTime(this.socket);
-        synchroTime.connect().then(() => {
-            console.log(`SyncroTime connected: ${synchroTime.connected}`);
-        });
-        ////
 
         this.socket.on("connect", () => {
             console.log("connected to server");
@@ -37,11 +29,6 @@ export class ClientContext {
         this.socket.on("playerIdConfirmed", (playerId: number) => {
             this.startGame(playerId);
         });
-
-        // document.getElementById("launch-0")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 0));
-        // document.getElementById("launch-1")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 1));
-        // document.getElementById("launch-2")?.addEventListener("click", () => this.socket?.emit("playerIdSelect", 2));
-
     }
 
     select(playerId: number) {
@@ -62,8 +49,6 @@ export class ClientContext {
         }
         transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN);
         transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP);
-        transmitEventFromGameToServer(GameEvent.SEND_SET_BALL);
-        transmitEventFromGameToServer(GameEvent.SEND_GOAL);
 
         // incomming events
         const transmitEventFromServerToGame = (event: string) => {
@@ -72,7 +57,7 @@ export class ClientContext {
         transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN);
         transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP);
         transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL);
-        transmitEventFromServerToGame(GameEvent.RECEIVE_GOAL);
+        transmitEventFromServerToGame(GameEvent.GOAL);
         transmitEventFromServerToGame(GameEvent.START);
         transmitEventFromServerToGame(GameEvent.RESET);
         transmitEventFromServerToGame(GameEvent.PAUSE);
