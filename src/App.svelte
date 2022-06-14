@@ -2,8 +2,9 @@
   import Menu from "./Menu.svelte";
   import StartAGame from './StartAGame.svelte';
   import Chat from './Chat.svelte';
+  import Play from './Play.svelte';
 
-  type Status =  "Menu" | "StartAGame" | "Chat";
+  type Status =  "Menu" | "StartAGame" | "Chat" | "Play";
 
   let status : Status = "Menu";
 
@@ -25,7 +26,11 @@
   on:open_chat={go_to("Chat")}
 />
 {:else if status == "StartAGame"}
-<StartAGame/>
+<StartAGame
+on:Play={go_to("Play")}
+/>
+{:else if status == 'Play'}
+<Play/>
 {:else}
 <Chat
   on:open_menu={go_to("Menu")}

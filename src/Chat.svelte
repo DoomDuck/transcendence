@@ -56,6 +56,8 @@ img {
 	font-size: 0.5%;
 	color: white;
 	background-color: #D9D9D9;
+	margin-right: 1%;
+	margin-left: 1%;
 }
 
 #bigrectangle {
@@ -65,6 +67,7 @@ img {
 	display: flex;
 	flex-wrap: nowrap;
 	overflow-x: auto;
+	margin-left: 2%;
 }
 
 #online {
@@ -72,6 +75,7 @@ img {
 	width:95%;
 	height:3%;
 	background: #FF00B8;
+	margin-left: 2%;
 }
 
 .roundedImage {

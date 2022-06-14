@@ -1,8 +1,13 @@
+<script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
+</script>
+
 <div id="start_a_game">
 	<br><br><br>
-	<h4>Play</h4>
+	<h4 on:click="{() => dispatch("Play")}" >Play</h4>
 	<h4>Challenge a friend</h4>
-	<h4>Invite someone</h4>
 </div>
 
 <style>
@@ -18,7 +23,10 @@ h4 {
 	font-style: normal;
 	color: blue;
 	line-height: 500%;
-	-webkit-text-stroke: 1px #000000
+	-webkit-text-stroke: 1px #000000;
+	font-size: 2em;
+	height: 10em; /* hauteur du parent */
+	line-height: 10em; /* hauteur de ligne (identique) */
 }
 
 h4:hover{
