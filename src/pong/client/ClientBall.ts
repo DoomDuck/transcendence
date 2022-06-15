@@ -33,8 +33,7 @@ export class ClientBall extends Ball {
         this.color.set(0xffffff);
     }
 
-    update(elapsed: number) {
-        super.update(elapsed);
+    changeColorAtLimit() {
         let dx = 0;
         let atLimit = false;
         if (this.rightX() > GSettings.GAME_RIGHT) {
@@ -51,5 +50,10 @@ export class ClientBall extends Ball {
             let surfaceRatio = Math.acos(k) - k * Math.sqrt(1 - k ** 2);
             this.color.setRGB(1, 1 - surfaceRatio, 1 - surfaceRatio);
         }
+    }
+
+    update(elapsed: number) {
+        super.update(elapsed);
+        this.changeColorAtLimit();
     }
 }

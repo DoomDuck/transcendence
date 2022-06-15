@@ -62,9 +62,9 @@ export class ClientContext {
         transmitEventFromServerToGame(GameEvent.RESET);
         transmitEventFromServerToGame(GameEvent.PAUSE);
         transmitEventFromServerToGame(GameEvent.UNPAUSE);
-        
+
         this.socket.emit("playerReady");
-        
+
         // Game loop
         let animate = () => {
             requestAnimationFrame(animate);

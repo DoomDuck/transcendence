@@ -76,7 +76,7 @@ export class ClientGame extends Game {
             console.log(`Error loading texture: ${e}`)
         }
         new THREE.TextureLoader().load(
-            "/img/background.jpg",
+            "/public/img/background.jpg",
             onLoad,
             onProgress,
             onError,
