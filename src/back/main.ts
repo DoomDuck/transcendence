@@ -7,8 +7,7 @@ import { INestApplication } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useStaticAssets(join(__dirname, '../..', 'public'), {prefix: "/public"});
-  // console.log(join(__dirname, '../..', 'public'));
   app.useStaticAssets(join(__dirname, '../..', 'build'), {prefix: "/build"});
   await app.listen(5000);
 }
-bootstrap();  
+bootstrap();

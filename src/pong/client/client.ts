@@ -26,8 +26,9 @@ export class ClientContext {
         this.socket.on("playerIdAlreadySelected", (playerId: number) => {
             // alert(`playerId already selected`)
         });
-        this.socket.on("playerIdConfirmed", (playerId: number) => {
+        this.socket.on("playerIdConfirmed", (playerId: number, ready: () => void) => {
             this.startGame(playerId);
+            ready();
         });
     }
 

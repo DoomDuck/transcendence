@@ -10,7 +10,9 @@
         "jest",
         "svelte"
     ],
-    "outDir": "build/back",
+    "outDir": "build/",
+    "rootDir": "src/",
+    "include": ["src/back/*.ts"],
 
     "importsNotUsedAsValues": "remove",
     "emitDecoratorMetadata": true,
@@ -36,6 +38,4 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-
-  "include": ["src/back/*.ts"],
 }
