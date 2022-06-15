@@ -28,9 +28,12 @@
 {:else if status == "StartAGame"}
 <StartAGame
 on:Play={go_to("Play")}
+on:open_menu={go_to("Menu")}
 />
 {:else if status == 'Play'}
-<Play/>
+<Play
+on:start_game={go_to("StartAGame")}
+/>
 {:else}
 <Chat
   on:open_menu={go_to("Menu")}

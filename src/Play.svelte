@@ -1,8 +1,10 @@
-<body>
-	<div id ="conteneur">
-		 <h1> Transcendence </h1>
-	</div>
+<script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 
+	const dispatch = createEventDispatcher();
+</script>
+
+<div id='Play'>
 	<div id='chat'>
 		<name>
 			Joey <img src="https://cdn-icons-png.flaticon.com/512/1632/1632692.png" alt="1" width=30 height=30/>
@@ -11,24 +13,18 @@
 			<input class="champ" type="Chat" value="Search.." >
 		</div> -->
 	</div>
-</body>
-	
+	<br><br>
+	<img on:click="{() => dispatch("start_game")}" src=../src/return.png id="return" alt="return" width=30 height=30/>
+</div>
+
 
 <style>
-	#conteneur {
-		display: flex;
-		justify-content: center;
-	}
-	h1 {
-		color: #FDFF8A;
-		font-size: 4em;
-		-webkit-text-stroke: 2px #6028FF;
-		font-family: 'Press start 2P';
-		font-style: normal;
-		line-height: 300%;
-	}
-	body {
+
+	#Play {
+		width: 100%;
+		height: 100%;
 		background-color: black;
+		overflow: hidden;
 	}
 	img {
 		float: right;
@@ -43,6 +39,11 @@
 		flex-wrap: nowrap;
 		margin-left: auto;
 		margin-right: 2%;
+		margin-top: 15%;
+	}
+	#return{
+		float: left;
+		margin-left: 3%;
 	}
 	/* .champ {
 		height: 5%;
