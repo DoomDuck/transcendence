@@ -22,12 +22,12 @@ export class ClientGame extends Game {
 
     constructor(playerId: PlayerID) {
         // game state
-        const clientBall = new ClientBall(playerId);
-        const serverBall = new ServerBall();
         const [bar1, bar2] = [
             new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
             new ClientBar(PLAYER2, {controllable: playerId == PLAYER2}),
         ]
+        const clientBall = new ClientBall([bar1, bar2], playerId);
+        const serverBall = new ServerBall([bar1, bar2]);
         const gameState = new ClientGameState(serverBall, bar1, bar2, clientBall);
         super(gameState);
 

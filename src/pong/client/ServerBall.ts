@@ -1,12 +1,13 @@
 import * as THREE from 'three'
+import { Bar, NonPhysicBall, PhysicBall } from '../common';
 import { Ball } from "../common/Ball";
 import { GSettings } from "../common/constants";
 
-export class ServerBall extends Ball {
+export class ServerBall extends PhysicBall {
     mesh: THREE.Mesh
 
-    constructor() {
-        super();
+    constructor(bars: [Bar, Bar]) {
+        super(bars);
         const geometry = new THREE.CylinderGeometry(
             GSettings.BALL_RADIUS,
             GSettings.BALL_RADIUS,

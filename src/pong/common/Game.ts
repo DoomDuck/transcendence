@@ -3,7 +3,6 @@ import { GameEvent, GSettings, PlayerID } from "."
 import { KeyValue, PLAYER1, PLAYER2} from "./constants";
 import { GameState } from "./GameState";
 
-
 export abstract class Game extends EventEmitter {
     lastTime: number;
     timeAccumulated: number;

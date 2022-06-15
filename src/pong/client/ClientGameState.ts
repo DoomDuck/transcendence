@@ -31,10 +31,9 @@ export class ClientGameState extends GameState {
     }
 
     update(elapsed: number) {
-        this.clientBall.update(elapsed);
         this.bars[PLAYER1].update(elapsed);
         this.bars[PLAYER2].update(elapsed);
-        this.clientBall.handleCollisions(this.bars);
+        this.clientBall.update(elapsed);
         this.lerpIfTooFar();
   }
 }

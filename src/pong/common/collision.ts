@@ -1,13 +1,27 @@
 import { Vector3 } from 'three';
 import { Ball } from './Ball'
 import { Bar } from './Bar'
+import { GSettings } from './constants';
 
-export type CollisionResultType = {
+export interface CollisionData  {
+    distanceVec: Vector3,
+    distance: number,
+}
+
+export interface BallBarCollisionData extends CollisionData {
     inside: boolean,
     corner: boolean,
     horizontal: boolean,
     vertical: boolean,
-    distanceVec: Vector3,
+}
+
+export interface BallWallCollisionData extends CollisionData {
+
+}
+
+export interface CollisionResult {
+    ignore: boolean,
+    data: CollisionData,
 }
 
 /**
@@ -18,7 +32,7 @@ export type CollisionResultType = {
  * @returns ...
  */
 //
-export function ballBarCollision(ball: Ball, bar: Bar): CollisionResultType {
+export function ballBarCollisionDistanceData(ball: Ball, bar: Bar): BallBarCollisionData {
     let distanceToCenter = new Vector3();
     let inside = false;
     let corner = false;
@@ -67,5 +81,45 @@ export function ballBarCollision(ball: Ball, bar: Bar): CollisionResultType {
         horizontal: horizontal,
         vertical: vertical,
         distanceVec: distanceToCenter,
+        distance: (inside ? -1:1) * distanceToCenter.length(),
     };
+}
+
+export function ballBarCollisionDetection(ball: Ball, bar: Bar): CollisionResult {
+    let data = ballBarCollisionDistanceData(ball, bar);
+    let result: CollisionResult = {
+        ignore: true,
+        data: data,
+    };
+    if (ball.speed.x * bar.collisionEdgeDirection > 0)
+        return result;
+    let collision = ballBarCollisionDistanceData(ball, bar);
+    let distance = collision.distanceVec.length();
+    if (!collision.inside && distance >= ball.radius)
+        return result;
+    if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection < 0)
+        return result;
+    result.ignore = false;
+    return result;
+}
+
+export function ballWallsCollisionDetection(ball: Ball): [CollisionResult, CollisionResult] {
+    let yTop = ball.position.y - GSettings.GAME_TOP;
+    let yBottom = ball.position.y - GSettings.GAME_BOTTOM;
+
+    let resultTop: CollisionResult = {
+        ignore: yTop >= ball.radius,
+        data: {
+            distanceVec: new Vector3(0, Math.abs(yTop), 0),
+            distance: yTop,
+        }
+    }
+    let resultBottom: CollisionResult = {
+        ignore: yBottom <= -ball.radius,
+        data: {
+            distanceVec: new Vector3(0, Math.abs(yBottom), 0),
+            distance: yBottom,
+        }
+    }
+    return [resultTop, resultBottom];
 }

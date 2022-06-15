@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { Vector3 } from 'three';
 import { Bar } from '../common/Bar';
 import { GameEvent, GSettings, KeyValue, PlayerID } from '../common/constants';
+import { EventEmitter } from 'events';
 
 export class ClientBar extends Bar {
     mesh: THREE.Mesh;
@@ -17,7 +18,7 @@ export class ClientBar extends Bar {
         this.mesh = new THREE.Mesh(geometry, material);
         this.position = this.mesh.position;
         this.reset();
-        
+
         if (options['controllable']) {
             window.addEventListener('keydown', this.handleKeydown.bind(this), false);
             window.addEventListener('keyup', this.handleKeyup.bind(this), false);

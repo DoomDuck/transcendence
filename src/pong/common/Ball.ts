@@ -1,26 +1,22 @@
 import { Vector3 } from 'three';
 import { GSettings, PlayerID, PLAYER1, PLAYER2, GameEvent } from './constants'
 import { Bar } from './Bar'
-import { ballBarCollision } from './collision';
+import { ballBarCollisionDistanceData } from './collision';
 import { EventEmitter } from "events";
 
 let _v = new Vector3();
 
-export class Ball extends EventEmitter {
+export abstract class Ball extends EventEmitter {
     radius: number
     position: Vector3
     speed: Vector3
-    wallCollided: boolean;
     outOfScreenAlreadyReported: boolean;
 
-    constructor() {
+    constructor(public bars: [Bar, Bar]) {
         super();
         this.radius = GSettings.BALL_RADIUS;
         this.position = new Vector3();
         this.speed = new Vector3();
-        ///
-        // this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
-        this.wallCollided = false;
         this.outOfScreenAlreadyReported = false;
     }
 
@@ -74,75 +70,5 @@ export class Ball extends EventEmitter {
         this.position.add(_v);
     }
 
-    update(elapsed: number) {
-        this.updatePosition(elapsed);
-    }
-
-    handleBarCollision(bar: Bar) {
-        // detection
-        if (this.speed.x * bar.collisionEdgeDirection > 0)
-            return;
-        let collision = ballBarCollision(this, bar);
-        let distance = collision.distanceVec.length();
-        if (!collision.inside && distance >= this.radius)
-            return;
-        if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection < 0)
-            return;
-        if (collision.vertical && this.wallCollided) {
-            this.speed.y = 0;
-            return;
-        }
-
-        // resolution
-        let posCorrection = collision.distanceVec.clone();
-        if (!collision.inside)
-            posCorrection.setLength(this.radius - distance);
-        else
-            posCorrection.setLength(this.radius + distance);
-        this.position.add(posCorrection);
-
-        // update speed
-        if (collision.horizontal || collision.corner) {
-            // speed.x
-            this.speed.x *= -1;
-            this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
-            if (collision.corner)
-                this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
-            if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
-                this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
-
-            // speed.y
-            let deltaY = this.position.y - bar.position.y;
-            if (collision.corner) {
-                deltaY = Math.sign(deltaY) * bar.height;
-                this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
-            }
-            this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
-        }
-        else if (collision.vertical) {
-            this.speed.y *= -1;
-        }
-    }
-
-    handleWallCollisions() {
-        this.wallCollided = true;
-        if (this.topY() <= GSettings.GAME_TOP) {
-            // top wall
-            this.speed.y = Math.abs(this.speed.y);
-            this.setTopY(GSettings.GAME_TOP);
-        }
-        else if (this.bottomY() >= GSettings.GAME_BOTTOM) {
-            // bottom wall
-            this.speed.y = -Math.abs(this.speed.y);
-            this.setBottomY(GSettings.GAME_BOTTOM);
-        }
-        else
-            this.wallCollided = false;
-    }
-
-    handleCollisions(bars: [Bar, Bar]) {
-        this.handleBarCollision(bars[0]);
-        this.handleBarCollision(bars[1]);
-        this.handleWallCollisions();
-    }
+    abstract update(elapsed: number): void;
 }
