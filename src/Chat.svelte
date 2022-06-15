@@ -20,7 +20,10 @@
 		</a>
 		<div id="demo" class="modal">
 			<div class="modal_content">
-				<h1> Welcome on modal page </h1>
+				<input class='destinataire' type='search' value="to :"/>
+				<input class="message" type='text' value="my message..."/>
+				<br>
+				<img src=../src/send.png alt="send" width='30' height='30'/>
 				<a href="#" class="modal_close">&times;</a>
 			</div>
 		</div>
@@ -64,16 +67,10 @@ h1 {
 	margin-left: 5%;
 }
 
-a {
-	justify-content: right;
-	display: inline-block;
-	margin-right: 5%;
-}
-
 img {
 	justify-content: right;
+	float: right;
 	display: inline-block;
-	margin-right: 5%;
 }
 
 .modal {
@@ -109,6 +106,22 @@ img {
   right: 10px;
   color: grey;
   text-decoration: none;
+}
+
+.destinataire {
+	width: 70%;
+	height: 5%;
+	font-size: 0.5%;
+	color: white;
+	background-color: #D9D9D9;
+}
+
+.message {
+	width: 70%;
+	height: 50%;
+	font-size: 0.5%;
+	color: white;
+	background-color: #D9D9D9;
 }
 
 .champ {
