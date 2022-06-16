@@ -1,16 +1,15 @@
 import * as THREE from 'three'
 import { MeshBasicMaterial } from 'three';
-import { Bar, NonPhysicBall, PhysicBall } from '../common';
 import { Ball } from "../common/Ball";
 import { GameEvent, GSettings, PLAYER1, PLAYER2, PlayerID } from "../common/constants";
 
-export class ClientBall extends PhysicBall {
+export class ClientBall extends Ball {
     mesh: THREE.Mesh;
     color: THREE.Color;
     playerId: PlayerID;
 
-    constructor(bars: [Bar, Bar], playerId: PlayerID) {
-        super(bars);
+    constructor(playerId: PlayerID) {
+        super();
         const geometry = new THREE.CylinderGeometry(
             GSettings.BALL_RADIUS,
             GSettings.BALL_RADIUS,

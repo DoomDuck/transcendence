@@ -6,9 +6,10 @@ export class ServerGameState extends GameState {
     }
 
     update(elapsed: number) {
+        this.ball.update(elapsed);
         this.bars[0].update(elapsed);
         this.bars[1].update(elapsed);
-        this.ball.update(elapsed);
+        this.ball.handleCollisions(this.bars);
         this.emit(GameEvent.SEND_SET_BALL,
             this.ball.position.x,
             this.ball.position.y,
