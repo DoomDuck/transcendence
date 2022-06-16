@@ -1,6 +1,9 @@
 import * as THREE from 'three'
-import { GSettings } from '../common/constants';
+import { GSettings } from '../../common/constants';
 
+/**
+ * Wrapper around THREE.OrthogaphicCamera
+ */
 export class Camera extends THREE.OrthographicCamera {
     constructor() {
         super();

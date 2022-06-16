@@ -1,11 +1,12 @@
 import * as THREE from 'three';
-// import { GSettings } from "../../../common/constants";
-import { GSettings } from "@pong/common/constants";
+import { GSettings } from "../../common/constants";
 
 /**
  * Mesh of the ball using THREE.CylinderGeometry
  */
 export class BallMesh extends THREE.Mesh {
+    color: THREE.Color;
+
     constructor() {
         const geometry = new THREE.CylinderGeometry(
             GSettings.BALL_RADIUS,
@@ -13,14 +14,12 @@ export class BallMesh extends THREE.Mesh {
             1,
             GSettings.BALL_RADIAL_SEGMENTS,
         );
+        const color = new THREE.Color(0xffffff);
         const material = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
+            color: color,
         });
         super(geometry, material);
         this.rotateX(THREE.MathUtils.degToRad(90));
-    }
-
-    get color(): THREE.Color {
-        return this.color;
+        this.color = color
     }
 }

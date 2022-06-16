@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GSettings } from '../../../common/constants';
+import { GSettings } from '../../common/constants';
 
 /**
  * Mesh of the bars using THREE.BoxGeometry

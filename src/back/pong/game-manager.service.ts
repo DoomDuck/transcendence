@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { ServerGame } from '../../pong/server'
-import { PLAYER1, PLAYER2, GameEvent, PlayerID, LEFT, RIGHT, Direction, GSettings } from '../../pong/common'
+import { ServerGame } from '../../pong/server/game'
+import { PLAYER1, PLAYER2, GameEvent, PlayerID, LEFT, RIGHT, Direction, GSettings } from '../../pong/common/constants'
 
 function removeElementByValue<T>(array: T[], item: T) {
     let index = array.indexOf(item);
@@ -21,6 +21,7 @@ export class GameManagerService {
 
     launchGameIfPossible() {
         if (this.waitingClients.length >= 2) {
+            console.log("two clients are waiting for a game");
             const gameInstance = new GameInstance([this.waitingClients[0], this.waitingClients[1]]);
             this.games.push(gameInstance);
             this.waitingClients[0].emit("playerIdConfirmed", 0, () => {

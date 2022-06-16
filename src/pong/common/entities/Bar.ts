@@ -1,7 +1,13 @@
 import { EventEmitter } from 'events';
 import { Vector3 } from 'three';
-import { GameEvent, GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from './constants';
+import { GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../constants';
 
+/**
+ * The Bar class data is about the current physical state of the balr.
+ * Position, state of inputs (implying its speed), size, collision-related direction (only the edge facing the ball collides)
+ * The callbacks for the emition/reception of events are defined here.
+ * Events are about key press / key release of either the up or the down key.
+ */
 export class Bar extends EventEmitter {
     width: number;
     height: number;
@@ -9,7 +15,6 @@ export class Bar extends EventEmitter {
     position: Vector3;
     upPressed: boolean;
     downPressed: boolean;
-
 
     constructor(playerId: PlayerID) {
         super();
@@ -19,10 +24,6 @@ export class Bar extends EventEmitter {
         this.position = new Vector3();
         this.upPressed = false;
         this.downPressed = false;
-        ///
-        // this.on(GameEvent.BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
-        // this.on(GameEvent.BAR_KEYUP, this.onReceiveKeyup.bind(this));
-        // this.on(GameEvent.BAR_POSITION, this.onReceiveKeyup.bind(this));
     }
 
     reset() {
@@ -71,7 +72,6 @@ export class Bar extends EventEmitter {
             this.downPressed = true;
         }
         this.clipPosition();
-        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receiveKeydown' with parameters (keyValue, emitTime) = ${keyValue}, ${emitTime}`)
     }
 
     onReceiveKeyup(keyValue: KeyValue, y: number) {
@@ -82,12 +82,10 @@ export class Bar extends EventEmitter {
             this.downPressed = false;
         }
         this.position.y = y;
-        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receiveKeyup' with parameter keyValue = ${keyValue}, y = ${y}`)
     }
 
     onReceivePosition(y: number) {
         this.position.y = y;
-        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receivePosition' with parameter keyValue = ${keyValue}, y = ${y}`)
     }
 
     speed() {

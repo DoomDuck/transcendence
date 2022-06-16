@@ -1,3 +1,6 @@
+/**
+ * Configuration of the game, data-wise
+ */
 
 export class GSettings {
     // GAME ---->

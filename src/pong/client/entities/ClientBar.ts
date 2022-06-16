@@ -1,7 +1,10 @@
 import { Bar } from '../../common/entities';
 import { GameEvent, GSettings, KeyValue, PlayerID } from '../../common/constants';
-import { BarMesh } from './graphic';
+import { BarMesh } from '../graphic';
 
+/**
+ * Client-only (i.e. event emission) bar behavior
+ */
 export class ClientBar extends Bar {
     mesh: BarMesh;
 

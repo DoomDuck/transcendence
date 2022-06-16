@@ -1,8 +1,13 @@
-import { ClientGame } from './ClientGame';
+import { ClientGame } from './game';
 import { io, Socket } from 'socket.io-client'
 import { GameEvent, PlayerID } from '../common/constants';
-import { EventEmitter } from 'events';
 
+/**
+ * Root of the client code execution
+ * Connect to the server's socket namespace upon creation expose an API
+ * Then waits for server to confirm a game starts, and to tell/confirm the role the client has:
+ * player 1, player 2 or observer (this is only relevant regarding the control the client will have)
+ */
 export class ClientContext {
     game?: ClientGame;
     socket: Socket;
@@ -20,20 +25,11 @@ export class ClientContext {
                 this.game = undefined;
             }
         })
-        this.socket.on("playerIdUnavailable", (playerId: number) => {
-            alert(`playerId ${playerId} is already taken`)
-        });
-        this.socket.on("playerIdAlreadySelected", (playerId: number) => {
-            // alert(`playerId already selected`)
-        });
         this.socket.on("playerIdConfirmed", (playerId: number, ready: () => void) => {
+            console.log(`player ID confirmed (id = ${playerId})`);
             this.startGame(playerId);
             ready();
         });
-    }
-
-    select(playerId: number) {
-        this.socket?.emit("playerIdSelect", playerId)
     }
 
     startGame(playerId: number) {
@@ -63,8 +59,6 @@ export class ClientContext {
         transmitEventFromServerToGame(GameEvent.RESET);
         transmitEventFromServerToGame(GameEvent.PAUSE);
         transmitEventFromServerToGame(GameEvent.UNPAUSE);
-
-        this.socket.emit("playerReady");
 
         // Game loop
         let animate = () => {

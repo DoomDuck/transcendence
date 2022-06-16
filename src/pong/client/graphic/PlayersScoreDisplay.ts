@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../common';
+import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
 
+/**
+ * Display of a score using three's CSS2DRenderer
+ */
 class Score {
     value: number;
     div: HTMLDivElement;
@@ -34,7 +37,10 @@ class Score {
     }
 }
 
-export class PlayersScore {
+/**
+ * Display both players score
+ */
+export class PlayersScoreDisplay {
     player1Score: Score;
     player2Score: Score;
     group: THREE.Group;

@@ -1,11 +1,16 @@
 import { Vector3 } from 'three';
-import { GSettings, PlayerID, PLAYER1, PLAYER2, GameEvent } from './constants'
+import { GSettings, PlayerID, PLAYER1, PLAYER2 } from '../../common/constants'
 import { Bar } from './Bar'
 import { ballBarCollisionDistanceData } from './collision';
 import { EventEmitter } from "events";
+import { updateVectorDeltaT } from '../utils';
 
-let _v = new Vector3();
-
+/**
+ * The Ball class data is about the current physical state of the ball.
+ * Position, speed, radius, collision-related data
+ * It is currectly responsible for handling its collisions (as it is the only entity to collide at all)
+ * Collisions consists of two parts: detection (see common/collision.ts) and resolution
+ */
 export class Ball extends EventEmitter {
     radius: number
     position: Vector3
@@ -18,8 +23,6 @@ export class Ball extends EventEmitter {
         this.radius = GSettings.BALL_RADIUS;
         this.position = new Vector3();
         this.speed = new Vector3();
-        ///
-        // this.on(GameEvent.RECEIVE_SET_BALL, this.handleReceiveSetBall.bind(this));
         this.wallCollided = false;
         this.outOfScreenAlreadyReported = false;
     }
@@ -68,14 +71,8 @@ export class Ball extends EventEmitter {
         return this.position.x < 0 ? PLAYER2 : PLAYER1;
     }
 
-    updatePosition(elapsed: number) {
-        _v.copy(this.speed);
-        _v.multiplyScalar(elapsed / 1000);
-        this.position.add(_v);
-    }
-
     update(elapsed: number) {
-        this.updatePosition(elapsed);
+        updateVectorDeltaT(this.position, this.speed, elapsed);
     }
 
     handleBarCollision(bar: Bar) {

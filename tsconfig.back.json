@@ -12,7 +12,6 @@
     ],
     "outDir": "build/",
     "rootDir": "src/",
-    "include": ["src/back/*.ts"],
 
     "importsNotUsedAsValues": "remove",
     "emitDecoratorMetadata": true,
@@ -29,13 +28,19 @@
     "target": "es2017",
     "sourceMap": true,
 
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "paths": {
+        "pong/*": ["src/pong/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+
   },
+
+  "include": ["src/back/*.ts"],
 }

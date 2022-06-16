@@ -1,16 +1,25 @@
 import { Ball } from "../../common/entities";
 import { GSettings, PlayerID } from "../../common/constants";
-import { BallMesh } from './graphic';
+import { BallMesh } from '../graphic';
+import { Vector3 } from "three";
+import { updateVectorDeltaT } from "../../common/utils";
 
+/**
+ * Client-only (i.e. graphic + server updates handling) ball behavior
+ */
 export class ClientBall extends Ball {
     mesh: BallMesh;
     playerId: PlayerID;
+    serverPosition: Vector3;
+    serverSpeed: Vector3;
 
     constructor(playerId: PlayerID) {
         super();
         this.mesh = new BallMesh();
         this.position = this.mesh.position;
         this.playerId = playerId;
+        this.serverPosition = new Vector3();
+        this.serverSpeed = new Vector3();
     }
 
     reset(x: number, y: number, vx: number, vy: number) {
@@ -37,8 +46,20 @@ export class ClientBall extends Ball {
         }
     }
 
+    handleReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {
+        let elapsed = Date.now() - time;
+        this.serverPosition.set(x, y, 0);
+        this.serverSpeed.set(vx, vy, 0);
+        updateVectorDeltaT(this.serverPosition, this.serverSpeed, elapsed);
+    }
+
     update(elapsed: number) {
         super.update(elapsed);
+        const dist = this.position.distanceTo(this.serverPosition)
+        if (dist > GSettings.BALL_CLIENT_SERVER_LERP_DIST) {
+            this.position.lerp(this.serverPosition, GSettings.BALL_CLIENT_SERVER_LERP_FACTOR);
+            this.speed.copy(this.serverSpeed);
+        }
         this.changeColorAtLimit();
     }
 }

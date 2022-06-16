@@ -1,15 +1,13 @@
 import * as THREE from 'three'
-import { Camera } from './Camera';
-import { GSettings, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../common/constants';
-import { Game } from "../common/Game";
-import { GameState } from '../common/GameState';
-import { ClientBall } from './ClientBall';
-import { ClientBar } from './ClientBar';
-import { GameEvent } from '../common/constants';
-import { PlayersScore } from './PlayersScore';
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { ClientGameState } from './ClientGameState';
-import { ServerBall } from './ServerBall';
+
+import { Camera, PlayersScoreDisplay } from '../graphic';
+import { ClientBall, ClientBar, ClientPlayersScore } from '../entities';
+
+import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
+import { Game } from "../../common/game";
+import { GameEvent } from '../../common/constants';
+import { GameState } from '../../common/entities';
 
 export class ClientGame extends Game {
     scene: THREE.Scene;
@@ -18,17 +16,16 @@ export class ClientGame extends Game {
     camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
-    playersScore: PlayersScore;
 
     constructor(playerId: PlayerID) {
         // game state
-        const clientBall = new ClientBall(playerId);
-        const serverBall = new ServerBall();
+        const ball = new ClientBall(playerId);
         const [bar1, bar2] = [
             new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
             new ClientBar(PLAYER2, {controllable: playerId == PLAYER2}),
-        ]
-        const gameState = new ClientGameState(serverBall, bar1, bar2, clientBall);
+        ];
+        const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
+        const gameState = new GameState(ball, bar1, bar2, playersScore);
         super(gameState);
 
         // player-realted info
@@ -39,6 +36,7 @@ export class ClientGame extends Game {
         let otherBar = this.state.bars[this.otherPlayerId];
         this.on(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
         this.on(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
+        this.on(GameEvent.RECEIVE_SET_BALL, (this.state.ball as ClientBall).handleReceiveSetBall.bind(this.state.ball as ClientBall));
 
         // renderers
         this.renderer = new THREE.WebGLRenderer();
@@ -48,19 +46,13 @@ export class ClientGame extends Game {
         // scene
         this.scene = new THREE.Scene();
         this.camera = new Camera();
-        this.scene.add(clientBall.mesh);
+        this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
-        // this.scene.add(gameState.serverBallEstimation.mesh);
-        this.playersScore = new PlayersScore();
-        this.scene.add(this.playersScore.group);
+        this.scene.add(playersScore.graphicalObject.group);
         this.loadBackground();
 
         // callbacks
-        this.on(GameEvent.GOAL, (playerId: PlayerID) => {
-            console.log("GOAL !!!");
-            this.playersScore.handleGoal(playerId);
-        });
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
     }

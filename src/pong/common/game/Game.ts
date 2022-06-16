@@ -1,8 +1,17 @@
 import { EventEmitter } from "events";
-import { GameEvent, GSettings, PlayerID } from "."
-import { KeyValue, PLAYER1, PLAYER2} from "./constants";
-import { GameState } from "./GameState";
+import { GameEvent, GSettings } from "../constants"
+import { PLAYER1, PLAYER2 } from "../constants";
+import { GameState } from "../entities/GameState";
 
+/**
+ * Game is the environment representing an ongoing game between two players.
+ * It is meant to be the bridge between the 'unanimated' game state and the outside
+ * (i.e. all the communication + game loop and time-related problematics)
+ * To 'animate' a game, call its frame() at each step of the main loop.
+ * frame() will call game.update() a correct number of time depending of the accumulated time
+ * that is 'not yet simulated'.
+ * Game exposes methods to start, reset, pause, unpause the simulation
+ */
 export abstract class Game extends EventEmitter {
     lastTime: number;
     timeAccumulated: number;
@@ -24,9 +33,9 @@ export abstract class Game extends EventEmitter {
         this.on(GameEvent.PAUSE, this.pause.bind(this));
         this.on(GameEvent.UNPAUSE, this.unpause.bind(this));
         this.on(GameEvent.RESET, this.reset.bind(this));
-        this.on(GameEvent.RECEIVE_SET_BALL, this.onReceiveSetBall.bind(this));
+        this.on(GameEvent.GOAL, this.state.playersScore.handleGoal.bind(this.state.playersScore));
 
-        // outcomming
+        // outgoing
         this.state.emit = (event: string, ...args: any[]) => this.emit(event, ...args);
         this.state.ball.emit = (event: string, ...args: any[]) => this.emit(event, ...args);
         this.state.bars[PLAYER1].emit = (event: string, ...args: any[]) => this.emit(event, ...args);
@@ -58,13 +67,6 @@ export abstract class Game extends EventEmitter {
         this.lastTime = Date.now();
     }
 
-    onReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {
-        let elapsed = Date.now() - time;
-        this.state.ball.position.set(x, y, 0);
-        this.state.ball.speed.set(vx, vy, 0);
-        // this.state.ball.update(elapsed);
-    }
-
     frame() {
         if (this.paused)
             return;
@@ -75,10 +77,12 @@ export abstract class Game extends EventEmitter {
 
         while (this.timeAccumulated >= GSettings.GAME_STEP) {
             this.timeAccumulated -= GSettings.GAME_STEP;
-            this.state.update(GSettings.GAME_STEP);
-            this.emit("update");
+            this.update(GSettings.GAME_STEP);
         }
-        this.emit("frame");
+    }
+
+    update(elapsed: number) {
+        this.state.update(elapsed);
     }
 }
 
