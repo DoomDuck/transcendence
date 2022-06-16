@@ -19,8 +19,9 @@ export class ClientGame extends Game {
     playerId: PlayerID;
     otherPlayerId: PlayerID;
     playersScore: PlayersScore;
+    container: HTMLElement;
 
-    constructor(playerId: PlayerID) {
+    constructor(playerId: PlayerID, container: HTMLElement) {
         // game state
         const [bar1, bar2] = [
             new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
@@ -41,9 +42,11 @@ export class ClientGame extends Game {
         this.on(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
 
         // renderers
+        this.container = container;
         this.renderer = new THREE.WebGLRenderer();
+        this.renderer.domElement.id = 'game-screen'
         this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.domElement.className = 'game-text';
+        this.labelRenderer.domElement.id = 'game-text';
 
         // scene
         this.scene = new THREE.Scene();
@@ -85,13 +88,15 @@ export class ClientGame extends Game {
 
     handleDisplayResize() {
         let width, height;
-        if (window.innerWidth / window.innerHeight < GSettings.SCREEN_RATIO) {
-            width = window.innerWidth;
-            height = window.innerWidth / GSettings.SCREEN_RATIO;
+        let availableWidth = this.container.offsetWidth;
+        let availableHeight = this.container.offsetHeight;
+        if (availableWidth / availableHeight < GSettings.SCREEN_RATIO) {
+            width = availableWidth;
+            height = availableWidth / GSettings.SCREEN_RATIO;
         }
         else {
-            width = GSettings.SCREEN_RATIO * window.innerHeight;
-            height = window.innerHeight;
+            width = GSettings.SCREEN_RATIO * availableHeight;
+            height = availableHeight;
         }
         this.renderer.setSize(width, height);
         this.labelRenderer.setSize(width, height);

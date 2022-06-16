@@ -6,17 +6,20 @@ import { EventEmitter } from 'events';
 export class ClientContext {
     game?: ClientGame;
     socket: Socket;
+    containerDiv: HTMLElement;
 
     constructor() {
         this.socket = io('http://localhost:5000/pong');
+        // error if not found ?
+        this.containerDiv = document.getElementById("game-container") as HTMLElement;
 
         this.socket.on("connect", () => {
             console.log("connected to server");
         });
         this.socket.on("disconnect", ()=> {
             if (this.game !== undefined) {
-                document.body.removeChild(this.game.renderer.domElement);
-                document.body.removeChild(this.game.labelRenderer.domElement);
+                this.containerDiv.removeChild(this.game.renderer.domElement);
+                this.containerDiv.removeChild(this.game.labelRenderer.domElement);
                 this.game = undefined;
             }
         })
@@ -38,11 +41,11 @@ export class ClientContext {
 
     startGame(playerId: number) {
         // game
-        let game = new ClientGame(playerId);
+        let game = new ClientGame(playerId, this.containerDiv);
         this.game = game;
 
-        document.body.appendChild(game.renderer.domElement);
-        document.body.appendChild(game.labelRenderer.domElement);
+        this.containerDiv.appendChild(game.renderer.domElement);
+        this.containerDiv.appendChild(game.labelRenderer.domElement);
 
         // // outgoing events
         const transmitEventFromGameToServer = (event: string) => {

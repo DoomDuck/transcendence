@@ -8,19 +8,20 @@ body {
     margin: 0px;
 }
 
-canvas {
-    /* position: relative;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%); */
-    
-    position: absolute;
-    top: 0px;
+#game-container {
+    width: 100%;
+    height: 100%;
 }
 
-.game-text {
+/* ensuring that game text and game screen superpose */
+#game-text {
     position: absolute;
-    top: 0px;
+    top: 0;
+}
+/* ensuring that game text and game screen superpose */
+#game-screen {
+    position: absolute;
+    top: 0;
 }
 
 .player-score {
