@@ -6,15 +6,10 @@
 
 <div id='Play'>
 	<div id='chat'>
-		<name>
-			Joey <img src="https://cdn-icons-png.flaticon.com/512/1632/1632692.png" alt="1" width=30 height=30/>
-		</name>
-		<!-- <div>
-			<input class="champ" type="Chat" value="Search.." >
-		</div> -->
+		<name> Joey <img src="https://cdn-icons-png.flaticon.com/512/1632/1632692.png" alt="1" width=30 height=30/> </name>
 	</div>
 	<br><br>
-	<img on:click="{() => dispatch("start_game")}" src=../src/return.png id="return" alt="return" width=30 height=30/>
+	<img on:click="{() => dispatch("start_game")}" src=../src/img/return.png id="return" alt="return" width=30 height=30/>
 </div>
 
 
@@ -23,7 +18,7 @@
 	#Play {
 		width: 100%;
 		height: 100%;
-		background-color: black;
+		background-image: url("../src/img/starsSky.jpeg");
 		overflow: hidden;
 	}
 	img {
@@ -45,20 +40,6 @@
 		float: left;
 		margin-left: 3%;
 	}
-	/* .champ {
-		height: 5%;
-		width: 100%;
-		font-size: 0.5%;
-		color: white;
-		float : center;
-		background-color: #D9D9D9;
-		margin-right: 1%;
-		margin-left: 1%;
-		margin-bottom: 0%;
-		margin-top: 90%;
-		bottom:0;
-		position:relative;
-} */
 	name {
 		width: 100%;
 		height:5%;

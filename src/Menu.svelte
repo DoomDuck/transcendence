@@ -16,7 +16,7 @@
 <style>
 
 #menu {
-	background-color: #000000;
+	background-image: url("../src/img/starsSky.jpeg");
 	width: 100%;
 	height: 100%;
 	overflow: hidden;

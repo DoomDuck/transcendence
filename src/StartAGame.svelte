@@ -7,17 +7,20 @@
 <div id="start_a_game">
 	<h4 on:click="{() => dispatch("Play")}" >Play</h4>
 	<br>
-	<h4>Challenge a friend</h4>
-	<img on:click="{() => dispatch("open_menu")}" src=../src/return.png alt="return" width=30 height=30/>
+	<h4 on:click="{() => dispatch("see_friends")}" >Challenge a friend</h4>
+	<img on:click="{() => dispatch("open_menu")}" src=../src/img/return.png alt="return" width=30 height=30/>
 </div>
 
 <style>
 
 #start_a_game {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	overflow: hidden;
 	width: 100%;
 	height: 100%;
 	background-color: #EA0ED4;
-	overflow: hidden;
 }
 img {
 	float:left;
@@ -33,7 +36,6 @@ h4 {
 	line-height: 500%;
 	-webkit-text-stroke: 1px #000000;
 	font-size: 2.5em;
-	margin-top: 20%;
 }
 
 h4:hover{

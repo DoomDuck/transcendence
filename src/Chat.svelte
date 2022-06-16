@@ -16,14 +16,15 @@
 			Chat
 		</h1>
 		<a href="#demo"> 
-			<img src=../src/write.png width="40" height="40" alt="write msg"/>
+			<img src=../src/img/write.png width="40" height="40" alt="write msg"/>
 		</a>
 		<div id="demo" class="modal">
 			<div class="modal_content">
-				<input class='destinataire' type='search' value="to :"/>
-				<input class="message" type='text' value="my message..."/>
+				<input class='destinataire' type='search' value="to :" required />
+				<br><br>
+				<textarea class="message" rows="60" cols="80"> </textarea>
 				<br>
-				<img src=../src/send.png alt="send" width='30' height='30'/>
+				<img src=../src/img/send.png alt="send" width='30' height='30'/>
 				<a href="#" class="modal_close">&times;</a>
 			</div>
 		</div>
@@ -33,8 +34,18 @@
 	<div id="online"> <br> Online friends </div>
 	<div id="bigrectangle">
 		{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as _}
-		<img class="roundedImage" src="http://www.animogen.com/wp-content/uploads/2014/02/canard-adoption-choix-alimentation-eau-hygi%C3%A8ne-sant%C3%A9-maintien-caract%C3%A8re-crit%C3%A8re-oiseau-basse-cour-animal-animaux-compagnie-animogen-5.jpg" alt="contact"/>
+		<img class="roundedImage" src=../src/img/canard.jpeg alt="contact"/>
 		{/each}
+	</div>
+	<br>
+	<div class="conv">
+		<img id="roundedImageConv" class="roundedImage" src=../src/img/cars.jpeg alt="contact" />
+		<h5>Flash McQueen</h5>
+		<img class="notif" src=../src/img/notification.png alt="notif" width=35 height=35/>
+	</div>
+	<div class="conv">
+		<img id="roundedImageConv" class="roundedImage" src=../src/img/canard.jpeg alt="contact" />
+		<h5>Joey</h5>
 	</div>
 </div>
 
@@ -50,12 +61,15 @@
 	background-color: #4628FF;
 	overflow: hidden;
 	display:flex;
-	flex-flow: column wrap;
+	flex-direction: column;
 }
 
 #title {
 	display:flex;
 	justify-content: space-between;
+	align-items: center;
+	padding-left: 5%;
+	padding-right: 5%;
 }
 	
 h1 {
@@ -64,13 +78,22 @@ h1 {
 	color: #FF00B8;
 	line-height: 150%;
 	-webkit-text-stroke: 2px #ECF100;
-	margin-left: 5%;
+	font-size:2.5em;
+}
+
+h5 {
+	font-size: 1em;
+	color: #FF00B8;
 }
 
 img {
-	justify-content: right;
-	float: right;
 	display: inline-block;
+	float: right;
+	justify-content: right;
+}
+
+textarea {
+   resize: none;
 }
 
 .modal {
@@ -94,8 +117,8 @@ img {
 .modal_content {
   border-radius: 4px;
   position: relative;
-  width: 500px;
-  max-width: 90%;
+  width: 40%;
+  height: 40%;
   background: white;
   padding: 1.5em 2em;
 }
@@ -118,20 +141,30 @@ img {
 
 .message {
 	width: 70%;
-	height: 50%;
 	font-size: 0.5%;
 	color: white;
 	background-color: #D9D9D9;
+	size: 800;
 }
 
 .champ {
 	height: 40px;
-	width: 98%;
+	width: 95%;
 	font-size: 0.5%;
 	color: white;
 	background-color: #D9D9D9;
-	margin-right: 1%;
-	margin-left: 1%;
+	margin-right: 2%;
+	margin-left: 2%;
+}
+
+.conv {
+	align-items: center;
+	width: 95%;
+	height: 6%;
+	background: white;
+	display: flex;
+	margin-left: 2%;
+	border: 1px solid #FF00B8;
 }
 
 #bigrectangle {
@@ -152,6 +185,11 @@ img {
 	margin-left: 2%;
 }
 
+.notif {
+	margin-left: auto;
+    padding: 5%;
+}
+
 .roundedImage {
 	overflow:hidden; 
 	-webkit-border-radius:50px;
@@ -161,8 +199,22 @@ img {
 	height:90px;
 	margin-left: 2%;
 	margin-right: 1%;
-	margin-top: 1%;
+	margin-top: auto;
+    margin-bottom: auto;
 	flex: 0 0 auto;
+}
+
+#roundedImageConv {
+	overflow:hidden; 
+	-webkit-border-radius:50px;
+	-moz-border-radius:50px;
+	border-radius:30px;
+	width:60px;
+	height:60px;
+	margin-left: 1%;
+	margin-right: 2%;
+	margin-top: auto;
+    margin-bottom: auto;
 }
 
 </style>

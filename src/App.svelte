@@ -3,8 +3,10 @@
   import StartAGame from './StartAGame.svelte';
   import Chat from './Chat.svelte';
   import Play from './Play.svelte';
+  import Friends from './friendsList.svelte'
+  import Waiting from './waitingRoom.svelte'
 
-  type Status =  "Menu" | "StartAGame" | "Chat" | "Play";
+  type Status =  "Menu" | "StartAGame" | "Chat" | "Play" | "Friends" | "Waiting";
 
   let status : Status = "Menu";
 
@@ -29,10 +31,20 @@
 <StartAGame
 on:Play={go_to("Play")}
 on:open_menu={go_to("Menu")}
+on:see_friends={go_to("Friends")}
 />
 {:else if status == 'Play'}
 <Play
 on:start_game={go_to("StartAGame")}
+/>
+{:else if status == 'Friends'}
+<Friends
+on:start_game={go_to("StartAGame")}
+on:start_waiting={go_to("Waiting")}
+/>
+{:else if status == 'Waiting'}
+<Waiting
+
 />
 {:else}
 <Chat

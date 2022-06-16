@@ -1,0 +1,29 @@
+<script lang="ts">
+
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
+
+	function newMessage(){
+		alert('New Message')
+	}
+
+</script>
+
+<div class='waitingRoom'>
+	<img src=../src/img/matchPong.gif alt='waitingPong' width=30% height=20%/>
+</div>
+
+<style>
+	img {
+		text-align:center;
+		margin:auto;
+	}
+	.waitingRoom {
+		/* background-color: #000000; */
+		background-image: url("../src/img/starsSky.jpeg");
+		display:flex;
+		width: 100%;
+		height: 100%;
+	}
+</style>
