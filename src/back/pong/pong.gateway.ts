@@ -1,7 +1,7 @@
 import { SubscribeMessage, WebSocketGateway, type OnGatewayInit, WebSocketServer, OnGatewayConnection } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { GameInstance, GameManagerService } from './game-manager.service';
+import { GameManagerService } from './game-manager.service';
 
 @WebSocketGateway({ namespace: '/pong' })
 export class PongGateway implements OnGatewayConnection {

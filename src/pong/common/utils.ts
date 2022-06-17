@@ -1,5 +1,5 @@
 /**
- * This file is intended for functions not related to the pong specific features
+ * This file is intended for functions not specific to pong
  */
 
 import { Vector3 } from "three";
@@ -10,4 +10,10 @@ export function updateVectorDeltaT(v: Vector3, vspeed: Vector3, elapsed: number)
     _v.copy(vspeed);
     _v.multiplyScalar(elapsed / 1000);
     v.add(_v);
+}
+
+export function delay(duration: number) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, duration);
+    });
 }

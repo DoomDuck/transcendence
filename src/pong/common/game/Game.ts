@@ -4,13 +4,10 @@ import { PLAYER1, PLAYER2 } from "../constants";
 import { GameState } from "../entities/GameState";
 
 /**
- * Game is the environment representing an ongoing game between two players.
+ * Game represents the environment representing an ongoing game between two players.
  * It is meant to be the bridge between the 'unanimated' game state and the outside
- * (i.e. all the communication + game loop and time-related problematics)
- * To 'animate' a game, call its frame() at each step of the main loop.
- * frame() will call game.update() a correct number of time depending of the accumulated time
- * that is 'not yet simulated'.
- * Game exposes methods to start, reset, pause, unpause the simulation
+ * (i.e. all the communication + game loop and time-related problematics).
+ * Extended in the server (ServerGame), as well as in the client (ClientGame).
  */
 export abstract class Game extends EventEmitter {
     lastTime: number;

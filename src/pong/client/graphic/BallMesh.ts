@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GSettings } from "../../common/constants";
 
 /**
- * Mesh of the ball using THREE.CylinderGeometry
+ * Purely graphic component of ClientBall
  */
 export class BallMesh extends THREE.Mesh {
     color: THREE.Color;

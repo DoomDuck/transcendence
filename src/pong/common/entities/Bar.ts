@@ -3,10 +3,8 @@ import { Vector3 } from 'three';
 import { GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../constants';
 
 /**
- * The Bar class data is about the current physical state of the balr.
- * Position, state of inputs (implying its speed), size, collision-related direction (only the edge facing the ball collides)
- * The callbacks for the emition/reception of events are defined here.
- * Events are about key press / key release of either the up or the down key.
+ * Part of the Game's physical state as the player-controlled bars.
+ * Used directly in the server, and extended in the client (ClientBar).
  */
 export class Bar extends EventEmitter {
     width: number;

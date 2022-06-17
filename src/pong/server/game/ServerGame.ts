@@ -4,10 +4,9 @@ import { Bar, Ball, GameState } from "../../common/entities";
 import { PlayersScore } from "../../common/entities";
 
 /**
- * Extension of the common Game features:
- * - In the server the bar events are incomming for both, and need an extra parameter to select which bar
- * - The server need to emit its ball's position
- * - Equally, the server is responsible for the goal detection
+ * Extension of Game for server-specific behavior:
+ * - Need to emit its ball's position
+ * - Is responsible for the goal detection
  */
 export class ServerGame extends Game {
     timeOutHandle: NodeJS.Timeout;

@@ -4,7 +4,7 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
 
 /**
- * Display of a score using three's CSS2DRenderer
+ * Purely graphic component of ClientPlayersScore
  */
 class Score {
     value: number;

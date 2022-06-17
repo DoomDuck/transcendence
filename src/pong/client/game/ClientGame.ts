@@ -9,6 +9,11 @@ import { Game } from "../../common/game";
 import { GameEvent } from '../../common/constants';
 import { GameState } from '../../common/entities';
 
+/**
+ * The game instance on the client's side.
+ * It adds to Game the rendering capability, the handling and transmission
+ * to the server of the client's keyboard input.
+ */
 export class ClientGame extends Game {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
@@ -79,13 +84,15 @@ export class ClientGame extends Game {
 
     handleDisplayResize() {
         let width, height;
-        if (window.innerWidth / window.innerHeight < GSettings.SCREEN_RATIO) {
-            width = window.innerWidth;
-            height = window.innerWidth / GSettings.SCREEN_RATIO;
+        let availableWidth = this.container.offsetWidth;
+        let availableHeight = this.container.offsetHeight;
+        if (availableWidth / availableHeight < GSettings.SCREEN_RATIO) {
+            width = availableWidth;
+            height = availableWidth / GSettings.SCREEN_RATIO;
         }
         else {
-            width = GSettings.SCREEN_RATIO * window.innerHeight;
-            height = window.innerHeight;
+            width = GSettings.SCREEN_RATIO * availableHeight;
+            height = availableHeight;
         }
         this.renderer.setSize(width, height);
         this.labelRenderer.setSize(width, height);

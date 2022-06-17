@@ -1,5 +1,5 @@
 /**
- * Configuration of the game, data-wise
+ * Configuration of the game data
  */
 
 export class GSettings {

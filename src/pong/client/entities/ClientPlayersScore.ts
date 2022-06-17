@@ -2,6 +2,10 @@ import { PlayerID } from "../../common/constants";
 import { PlayersScore } from "../../common/entities";
 import { PlayersScoreDisplay } from "../graphic/PlayersScoreDisplay";
 
+/**
+ * The score values part of a game instance on the client side (ClientGame).
+ * Adds display capability to PlayersScore.
+ */
 export class ClientPlayersScore extends PlayersScore {
     graphicalObject: PlayersScoreDisplay;
 

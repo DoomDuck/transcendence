@@ -6,10 +6,9 @@ import { EventEmitter } from "events";
 import { updateVectorDeltaT } from '../utils';
 
 /**
- * The Ball class data is about the current physical state of the ball.
- * Position, speed, radius, collision-related data
- * It is currectly responsible for handling its collisions (as it is the only entity to collide at all)
- * Collisions consists of two parts: detection (see common/collision.ts) and resolution
+ * Part of the Game's physical state.
+ * Used directly in the server, and extended in the client (ClientBall)
+ * It is responsible for handling its collisions with the bars and the walls.
  */
 export class Ball extends EventEmitter {
     radius: number

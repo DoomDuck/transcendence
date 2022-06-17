@@ -5,7 +5,9 @@ import { Vector3 } from "three";
 import { updateVectorDeltaT } from "../../common/utils";
 
 /**
- * Client-only (i.e. graphic + server updates handling) ball behavior
+ * The ball part of a game instance on the client side (ClientGame).
+ * Adds display capability to Ball, as well as dynamic color.
+ * Also smoothes the position of the server's ball (which is junky due to socket transmission).
  */
 export class ClientBall extends Ball {
     mesh: BallMesh;

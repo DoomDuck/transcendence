@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { GSettings } from '../../common/constants';
 
 /**
- * Wrapper around THREE.OrthogaphicCamera
+ * Camera for rendering the scene
  */
 export class Camera extends THREE.OrthographicCamera {
     constructor() {

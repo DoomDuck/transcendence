@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GSettings } from '../../common/constants';
 
 /**
- * Mesh of the bars using THREE.BoxGeometry
+ * Purely graphic component of ClientBar
  */
 export class BarMesh extends THREE.Mesh {
     constructor() {

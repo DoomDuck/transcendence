@@ -28,13 +28,6 @@ export interface CollisionResult {
     data: CollisionData,
 }
 
-/**
- * Return whether the ball is inside and the distance from the
- * bar to the ball (edges of the rectangle to center)
- * @param {Ball} ball
- * @param {Bar} bar
- * @returns ...
- */
 export function ballBarCollisionDistanceData(ball: Ball, bar: Bar): BallBarCollisionData {
     let distanceToCenter = new Vector3();
     let inside = false;
@@ -89,8 +82,7 @@ export function ballBarCollisionDistanceData(ball: Ball, bar: Bar): BallBarColli
 }
 
 /**
- * Use the collision-agnostic data from ballBarCollisionDistanceData to detect
- * if there is actually a collision with bar
+ * Detect if there is a collision between the ball and a bar
  */
 export function ballBarCollisionDetection(ball: Ball, bar: Bar): CollisionResult {
     let data = ballBarCollisionDistanceData(ball, bar);
@@ -111,7 +103,7 @@ export function ballBarCollisionDetection(ball: Ball, bar: Bar): CollisionResult
 }
 
 /**
- * Determin if the ball collides with a wall (top or below)
+ * Detect if the ball collides with a wall
  */
 export function ballWallsCollisionDetection(ball: Ball): [CollisionResult, CollisionResult] {
     let yTop = ball.position.y - GSettings.GAME_TOP;

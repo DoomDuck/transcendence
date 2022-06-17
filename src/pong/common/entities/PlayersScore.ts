@@ -1,9 +1,9 @@
 import { PlayerID } from '../constants';
 
 /**
- * Simple wrapper around a couple of numbers representing the score.
- * The methods are useful for the score's graphical counterpart in client
- * to be automatically updated (see client/graphic/PlayersScoreDisplay.ts)
+ * A part of the Game's state.
+ * A couple of numbers representing the score.
+ * Used directly in the server, and extended in the client (ClientPlayersScore).
  */
 export class PlayersScore {
     score: [number, number];
