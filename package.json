@@ -7,6 +7,8 @@
     "doc": "doc"
   },
   "scripts": {
+    "format": "prettier --write **/*.ts **/*.svelte",
+    "check_format": "prettier --check **/*.ts **/*.svelte",
     "build": "webpack",
     "build:dev": "webpack --watch"
   },
@@ -34,6 +36,8 @@
   "devDependencies": {
     "css-loader": "^6.7.1",
     "mini-css-extract-plugin": "^2.6.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-svelte": "^2.7.0",
     "svelte": "^3.48.0",
     "svelte-loader": "^3.1.2",
     "svelte-preprocess": "^4.10.6",
