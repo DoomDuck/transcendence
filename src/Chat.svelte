@@ -22,7 +22,7 @@
 			<div class="modal_content">
 				<input class='destinataire' type='search' value="to :" required />
 				<br><br>
-				<textarea class="message" rows="60" cols="80"> </textarea>
+				<textarea class="message" rows="50" cols="80"> </textarea>
 				<br>
 				<img src=../src/img/send.png alt="send" width='30' height='30'/>
 				<a href="#" class="modal_close">&times;</a>
