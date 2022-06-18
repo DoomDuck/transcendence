@@ -7,10 +7,10 @@
     "doc": "doc"
   },
   "scripts": {
-    "format": "prettier --write **/*.ts **/*.svelte",
-    "check_format": "prettier --check **/*.ts **/*.svelte",
     "build": "webpack",
     "build:dev": "webpack --watch"
+    "format": "prettier --write **/*.ts **/*.svelte",
+    "check_format": "prettier --check **/*.ts **/*.svelte",
   },
   "repository": {
     "type": "git",
