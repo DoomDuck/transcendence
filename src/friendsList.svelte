@@ -17,6 +17,10 @@
 			<div id="demo" class="modal">
 				<div class="modal_content">
 					<img class='roundedImageProfile' src=../src/img/cars.jpeg alt='profilePic'/>
+					<br>
+					<h2>
+						Flash McQueen
+					</h2>
 					<a href="#" class="modal_close">&times;</a>
 				</div>
 			</div>
@@ -30,6 +34,10 @@
 			<div id="demo" class="modal">
 				<div class="modal_content">
 					<img class='roundedImageProfile' src=../src/img/canard.jpeg alt='profilepic'/>
+					<br>
+					<h2>
+						Joey
+					</h2>
 					<a href="#" class="modal_close">&times;</a>
 				</div>
 			</div>
@@ -51,6 +59,13 @@ h1 {
 	font-size: 3em;
 	line-height: 300%;
 	text-align: center;
+}
+
+h2 {
+	color: #FF00B8;
+	font-size: 0.7em;
+	text-align: center;
+	
 }
 
 input {
@@ -113,6 +128,10 @@ name {
 	border-radius:30px;
 	width:60px;
 	height:60px;
+	margin-top: 2%;
+	margin-left: auto;
+    margin-right: auto;
+	display: block;
 }
 
 .modal {
@@ -141,7 +160,7 @@ name {
 	width: 40%;
 	height: 40%;
 	background: white;
-	padding: 1.5em 2em;
+	/* padding: 1.5em 2em; */
 }
 
 .modal_close {
