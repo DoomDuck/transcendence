@@ -6,7 +6,7 @@ import { GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '..
  * Part of the Game's physical state as the player-controlled bars.
  * Used directly in the server, and extended in the client (ClientBar).
  */
-export class Bar extends EventEmitter {
+export class Bar {
     width: number;
     height: number;
     collisionEdgeDirection: number;
@@ -15,7 +15,6 @@ export class Bar extends EventEmitter {
     downPressed: boolean;
 
     constructor(playerId: PlayerID) {
-        super();
         this.width = GSettings.BAR_WIDTH;
         this.height = GSettings.BAR_HEIGHT;
         this.collisionEdgeDirection = (playerId == PLAYER1) ? RIGHT : LEFT;

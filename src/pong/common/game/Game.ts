@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
-import { GameEvent, GSettings } from "../constants"
+import { Socket } from "socket.io-client";
+import { GameEvent, GSettings, PlayerID } from "../constants"
 import { PLAYER1, PLAYER2 } from "../constants";
 import { GameState } from "../entities/GameState";
 
@@ -9,35 +10,44 @@ import { GameState } from "../entities/GameState";
  * (i.e. all the communication + game loop and time-related problematics).
  * Extended in the server (ServerGame), as well as in the client (ClientGame).
  */
-export abstract class Game extends EventEmitter {
+export abstract class Game {
     lastTime: number;
     timeAccumulated: number;
     state: GameState;
     paused: boolean;
+    incommingEventsCallback: Map<string, any>;
+    outgoingEventsBallback: Map<string, any>;
 
     constructor (state: GameState) {
-        super();
         this.lastTime = 0;
         this.timeAccumulated = 0;
         this.paused = true;
         this.state = state;
-        this.setupEvents();
+        const eventsCallbackPairs: [string, any][] = [
+            [GameEvent.START, this.start.bind(this)],
+            [GameEvent.PAUSE, this.pause.bind(this)],
+            [GameEvent.UNPAUSE, this.unpause.bind(this)],
+            [GameEvent.RESET, this.reset.bind(this)],
+            [GameEvent.GOAL, this.goal.bind(this)],
+        ]
+        this.incommingEventsCallback = new Map(eventsCallbackPairs);
+        this.outgoingEventsBallback = new Map();
     }
 
-    setupEvents() {
-        // incomming (some specific events are implemented in server and client bars)
-        this.on(GameEvent.START, this.start.bind(this));
-        this.on(GameEvent.PAUSE, this.pause.bind(this));
-        this.on(GameEvent.UNPAUSE, this.unpause.bind(this));
-        this.on(GameEvent.RESET, this.reset.bind(this));
-        this.on(GameEvent.GOAL, this.state.playersScore.handleGoal.bind(this.state.playersScore));
+    onIn(event: string, callback: any) {
+        this.incommingEventsCallback.set(event, callback);
+    }
 
-        // outgoing
-        this.state.emit = (event: string, ...args: any[]) => this.emit(event, ...args);
-        this.state.ball.emit = (event: string, ...args: any[]) => this.emit(event, ...args);
-        this.state.bars[PLAYER1].emit = (event: string, ...args: any[]) => this.emit(event, ...args);
-        this.state.bars[PLAYER2].emit = (event: string, ...args: any[]) => this.emit(event, ...args);
-        ////
+    onOut(event: string, callback: any) {
+        this.outgoingEventsBallback.set(event, callback);
+    }
+
+    emitOut(event: string, ...args: any[]) {
+        this.outgoingEventsBallback.get(event)(...args);
+    }
+
+    emitIn(event: string, ...args: any[]) {
+        this.incommingEventsCallback.get(event)(...args);
     }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
@@ -64,6 +74,10 @@ export abstract class Game extends EventEmitter {
             return;
         this.paused = false;
         this.lastTime = Date.now();
+    }
+
+    goal(playerId: PlayerID) {
+        this.state.playersScore.handleGoal(playerId);
     }
 
     frame() {

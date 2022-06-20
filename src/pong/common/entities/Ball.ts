@@ -10,7 +10,7 @@ import { updateVectorDeltaT } from '../utils';
  * Used directly in the server, and extended in the client (ClientBall)
  * It is responsible for handling its collisions with the bars and the walls.
  */
-export class Ball extends EventEmitter {
+export class Ball {
     radius: number
     position: Vector3
     speed: Vector3
@@ -18,7 +18,6 @@ export class Ball extends EventEmitter {
     outOfScreenAlreadyReported: boolean;
 
     constructor() {
-        super();
         this.radius = GSettings.BALL_RADIUS;
         this.position = new Vector3();
         this.speed = new Vector3();

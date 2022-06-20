@@ -16,8 +16,8 @@ export class GameManager {
         this.setupBarEvent(PLAYER2, GameEvent.SEND_BAR_KEYUP, GameEvent.RECEIVE_BAR_KEYUP);
         this.setupBarEvent(PLAYER1, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN);
         this.setupBarEvent(PLAYER2, GameEvent.SEND_BAR_KEYDOWN, GameEvent.RECEIVE_BAR_KEYDOWN);
-        this.game.on(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
-        this.game.on(GameEvent.SEND_SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.RECEIVE_SET_BALL, ...args));
+        this.game.onOut(GameEvent.GOAL, (playerId: PlayerID) => this.handleGoal(playerId));
+        this.game.onOut(GameEvent.SEND_SET_BALL, (...args: any[]) => this.broadcastEvent(GameEvent.RECEIVE_SET_BALL, ...args));
     }
 
     isReady(playerId: number) {
@@ -40,12 +40,12 @@ export class GameManager {
         let receiver = (emitter == PLAYER1) ? PLAYER2 : PLAYER1;
         this.players[emitter].on(sendEvent, (...args: any[]) => {
             this.players[receiver].emit(receiveEvent, ...args);
-            this.game.emit(receiveEvent, emitter, ...args); // the event on the server has 1 additionnal parameter : the playerId of the owner of the bar
+            this.game.emitIn(receiveEvent, emitter, ...args); // the event on the server has 1 additionnal parameter : the playerId of the owner of the bar
         });
     }
 
     start() {
-        this.game.start();
+        this.game.emitIn(GameEvent.START);
         this.players[0].emit(GameEvent.START);
         this.players[1].emit(GameEvent.START);
     }
@@ -53,7 +53,7 @@ export class GameManager {
     reset(ballX: number, ballY: number, ballDirection: Direction) {
         let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
-        this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);
+        this.game.emitIn(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         this.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         this.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
     }

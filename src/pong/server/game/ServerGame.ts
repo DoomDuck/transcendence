@@ -20,14 +20,14 @@ export class ServerGame extends Game {
             new PlayersScore()
         );
         super(gameState);
-        this.on(GameEvent.RECEIVE_BAR_KEYDOWN, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeydown(...args));
-        this.on(GameEvent.RECEIVE_BAR_KEYUP, (playerId: PlayerID, ...args: BarKeyUpEvent) => this.state.bars[playerId].onReceiveKeyup(...args));
+        this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeydown(...args));
+        this.onIn(GameEvent.RECEIVE_BAR_KEYUP, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeyup(...args));
         // Game loop
         setInterval(this.frame.bind(this), GSettings.GAME_STEP);
     }
 
     emitBallPosition() {
-        this.emit(GameEvent.SEND_SET_BALL,
+        this.emitOut(GameEvent.SEND_SET_BALL,
             this.state.ball.position.x,
             this.state.ball.position.y,
             this.state.ball.speed.x,
@@ -38,7 +38,7 @@ export class ServerGame extends Game {
 
     testGoal() {
         if (this.state.ball.gotOutOfScreen()) {
-            this.emit(GameEvent.GOAL, this.state.ball.farthestPlayerSide());
+            this.emitOut(GameEvent.GOAL, this.state.ball.farthestPlayerSide());
         }
     }
 

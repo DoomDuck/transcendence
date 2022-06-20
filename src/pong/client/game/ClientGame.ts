@@ -27,8 +27,8 @@ export class ClientGame extends Game {
         // game state
         const ball = new ClientBall(playerId);
         const [bar1, bar2] = [
-            new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
-            new ClientBar(PLAYER2, {controllable: playerId == PLAYER2}),
+            new ClientBar(PLAYER1),
+            new ClientBar(PLAYER2),
         ];
         const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
         const gameState = new GameState(ball, bar1, bar2, playersScore);
@@ -40,9 +40,12 @@ export class ClientGame extends Game {
 
         // events specific to ClientGame
         let otherBar = this.state.bars[this.otherPlayerId];
-        this.on(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
-        this.on(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
-        this.on(GameEvent.RECEIVE_SET_BALL, (this.state.ball as ClientBall).handleReceiveSetBall.bind(this.state.ball as ClientBall));
+        this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
+        this.onIn(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
+        this.onIn(GameEvent.RECEIVE_SET_BALL, (this.state.ball as ClientBall).handleReceiveSetBall.bind(this.state.ball as ClientBall));
+        const controllableBar = this.state.bars[playerId] as ClientBar;
+        window.addEventListener('keydown',(e: KeyboardEvent) => controllableBar.handleKeydown(e, this.emitOut.bind(this)), false);
+        window.addEventListener('keyup',(e: KeyboardEvent) => controllableBar.handleKeyup(e, this.emitOut.bind(this)), false);
 
         // renderers
         this.container = container;

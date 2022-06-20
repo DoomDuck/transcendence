@@ -6,13 +6,12 @@ import { PlayersScore } from "./PlayersScore";
 /**
  * Simple wrapper to encapsulate all entities from the exterior (the Game instance).
  */
-export class GameState extends EventEmitter {
+export class GameState {
     ball: Ball;
     bars: [Bar, Bar];
     playersScore: PlayersScore;
 
     constructor(ball: Ball, bar1: Bar, bar2: Bar, playersScore: PlayersScore) {
-        super();
         this.ball = ball;
         this.bars = [bar1, bar2];
         this.playersScore = playersScore;

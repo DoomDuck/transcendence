@@ -112,7 +112,7 @@ export class GameEvent {
 }
 
 export type BarKeyDownEvent = [KeyValue, number];                     // keyvalue, time
-export type BarKeyUpEvent = [KeyValue, number];                     // y, time
+export type BarKeyUpEvent = [KeyValue, number];                     // keyvalue, y
 // export type BarPositionEvent = [number, number];                  // y, time
 // export type BallEvent = [number, number, number, number, number]; // x, y, speedX, speedY, time
 // export type ResetEvent = [number, number, number, number];        // ballX, ballY, ballSX, ballSY

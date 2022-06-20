@@ -44,14 +44,14 @@ export class ClientContext {
 
         // // outgoing events
         const transmitEventFromGameToServer = (event: string) => {
-            game.on(event, (...args: any[]) => { this.socket.emit(event, ...args) });
+            game.onOut(event, (...args: any[]) => { this.socket.emit(event, ...args) });
         }
         transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN);
         transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP);
 
         // incomming events
         const transmitEventFromServerToGame = (event: string) => {
-            this.socket.on(event, (...args: any[]) => { game.emit(event, ...args) });
+            this.socket.on(event, (...args: any[]) => { game.emitIn(event, ...args) });
         }
         transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN);
         transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP);
