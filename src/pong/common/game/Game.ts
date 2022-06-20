@@ -41,12 +41,14 @@ export abstract class Game extends EventEmitter {
     }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
+        console.log('Game reset');
         this.timeAccumulated = 0;
         this.paused = true;
         this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
     }
 
     start() {
+        console.log('Game start');
         this.paused = false;
         this.lastTime = Date.now();
     }

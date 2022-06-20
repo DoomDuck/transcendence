@@ -8,7 +8,7 @@ import { delay } from '../common/utils';
  * Centralize event management by broadcast and transmission
  */
 export class GameManager {
-    private game: ServerGame
+    private game: ServerGame;
     private ready: [boolean, boolean] = [false, false];
     constructor(private players: [Socket, Socket]) {
         this.game = new ServerGame();
@@ -45,16 +45,12 @@ export class GameManager {
     }
 
     start() {
-        console.log('start');
         this.game.start();
         this.players[0].emit(GameEvent.START);
         this.players[1].emit(GameEvent.START);
     }
 
     reset(ballX: number, ballY: number, ballDirection: Direction) {
-        if (this.game === undefined)
-            return;
-        console.log('reset');
         let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
         this.game.reset(ballX, ballY, ballSpeedX, ballSpeedY);

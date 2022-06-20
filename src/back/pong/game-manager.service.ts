@@ -24,12 +24,12 @@ export class GameManagerService {
             const gameInstance = new GameManager([this.waitingClients[0], this.waitingClients[1]]);
             this.games.push(gameInstance);
             this.waitingClients[0].emit("playerIdConfirmed", 0, () => {
-                gameInstance.isReady(0);
                 console.log('player 0 ready');
+                gameInstance.isReady(0);
             });
             this.waitingClients[1].emit("playerIdConfirmed", 1, () => {
-                gameInstance.isReady(1);
                 console.log('player 1 ready');
+                gameInstance.isReady(1);
             });
             this.waitingClients.splice(0, 2);
         }

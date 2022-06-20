@@ -58,7 +58,6 @@ export class Bar extends EventEmitter {
     }
 
     onReceiveKeydown(keyValue: KeyValue, emitTime: number) {
-        console.log('received keydown');
         let delta = Date.now() - emitTime;
         // console.log(`keyup receive delta = ${delta}`);
         if (keyValue == KeyValue.UP) {

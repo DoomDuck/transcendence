@@ -4,7 +4,7 @@ import { GameEvent } from '../common/constants';
 
 /**
  * Root of the client code execution
- * Connect to the server's socket namespace upon creation expose an API
+ * Connect to the server's socket namespace upon creation
  * Then waits for server to confirm a game starts, and to tell/confirm the role the client has:
  * player 1, player 2 or observer (this is only relevant regarding the control the client will have)
  */
