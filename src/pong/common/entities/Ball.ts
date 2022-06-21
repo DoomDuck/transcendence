@@ -69,8 +69,9 @@ export class Ball {
         return this.position.x < 0 ? PLAYER2 : PLAYER1;
     }
 
-    update(elapsed: number) {
+    update(elapsed: number, bars: [Bar, Bar]) {
         updateVectorDeltaT(this.position, this.speed, elapsed);
+        this.handleCollisions(bars);
     }
 
     handleBarCollision(bar: Bar) {

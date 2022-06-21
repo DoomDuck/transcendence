@@ -1,4 +1,4 @@
-import { Ball } from "../../common/entities";
+import { Ball, Bar } from "../../common/entities";
 import { GSettings, PlayerID } from "../../common/constants";
 import { BallMesh } from '../graphic';
 import { Vector3 } from "three";
@@ -55,8 +55,8 @@ export class ClientBall extends Ball {
         updateVectorDeltaT(this.serverPosition, this.serverSpeed, elapsed);
     }
 
-    update(elapsed: number) {
-        super.update(elapsed);
+    update(elapsed: number, bars: [Bar, Bar]) {
+        super.update(elapsed, bars);
         const dist = this.position.distanceTo(this.serverPosition)
         if (dist > GSettings.BALL_CLIENT_SERVER_LERP_DIST) {
             this.position.lerp(this.serverPosition, GSettings.BALL_CLIENT_SERVER_LERP_FACTOR);

@@ -20,6 +20,6 @@ export class BallMesh extends THREE.Mesh {
         });
         super(geometry, material);
         this.rotateX(THREE.MathUtils.degToRad(90));
-        this.color = color
+        this.color = color;
     }
 }
