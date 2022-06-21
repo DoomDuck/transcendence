@@ -2,6 +2,7 @@ import { type BarKeyDownEvent, type BarKeyUpEvent, GameEvent, GSettings, PLAYER1
 import { Game } from "../../common/game";
 import { Bar, Ball, GameState } from "../../common/entities";
 import { PlayersScore } from "../../common/entities";
+import { NonPhysicBall } from "../../common/entities/NonPhysicBall";
 
 /**
  * Extension of Game for server-specific behavior:
@@ -14,7 +15,7 @@ export class ServerGame extends Game {
 
     constructor() {
         const gameState = new GameState(
-            new Ball(),
+            new NonPhysicBall(),
             new Bar(PLAYER1),
             new Bar(PLAYER2),
             new PlayersScore()

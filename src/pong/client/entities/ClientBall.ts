@@ -3,13 +3,14 @@ import { GSettings, PlayerID } from "../../common/constants";
 import { BallMesh } from '../graphic';
 import { Vector3 } from "three";
 import { updateVectorDeltaT } from "../../common/utils";
+import { NonPhysicBall } from "../../common/entities/NonPhysicBall";
 
 /**
  * The ball part of a game instance on the client side (ClientGame).
  * Adds display capability to Ball, as well as dynamic color.
  * Also smoothes the position of the server's ball (which is junky due to socket transmission).
  */
-export class ClientBall extends Ball {
+export class ClientBall extends NonPhysicBall {
     mesh: BallMesh;
     playerId: PlayerID;
     serverPosition: Vector3;

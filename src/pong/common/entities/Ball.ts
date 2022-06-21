@@ -10,7 +10,8 @@ import { updateVectorDeltaT } from '../utils';
  * Used directly in the server, and extended in the client (ClientBall)
  * It is responsible for handling its collisions with the bars and the walls.
  */
-export class Ball {
+// export abstract class Ball<P extends Physic> {
+export abstract class Ball {
     radius: number
     position: Vector3
     speed: Vector3
@@ -69,76 +70,78 @@ export class Ball {
         return this.position.x < 0 ? PLAYER2 : PLAYER1;
     }
 
-    update(elapsed: number, bars: [Bar, Bar]) {
-        updateVectorDeltaT(this.position, this.speed, elapsed);
-        this.handleCollisions(bars);
-    }
+    abstract update(elapsed: number, bars: [Bar, Bar]): void;
 
-    handleBarCollision(bar: Bar) {
-        // detection
-        if (this.speed.x * bar.collisionEdgeDirection > 0)
-            return;
-        let collision = ballBarCollisionDistanceData(this, bar);
-        let distance = collision.distanceVec.length();
-        if (!collision.inside && distance >= this.radius)
-            return;
-        if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection < 0)
-            return;
-        if (collision.vertical && this.wallCollided) {
-            this.speed.y = 0;
-            return;
-        }
+    // update(elapsed: number, bars: [Bar, Bar]) {
+    //     updateVectorDeltaT(this.position, this.speed, elapsed);
+    //     this.handleCollisions(bars);
+    // }
 
-        // resolution
-        let posCorrection = collision.distanceVec.clone();
-        if (!collision.inside)
-            posCorrection.setLength(this.radius - distance);
-        else
-            posCorrection.setLength(this.radius + distance);
-        this.position.add(posCorrection);
+    // handleBarCollision(bar: Bar) {
+    //     // detection
+    //     if (this.speed.x * bar.collisionEdgeDirection > 0)
+    //         return;
+    //     let collision = ballBarCollisionDistanceData(this, bar);
+    //     let distance = collision.distanceVec.length();
+    //     if (!collision.inside && distance >= this.radius)
+    //         return;
+    //     if (!collision.inside && collision.distanceVec.x * bar.collisionEdgeDirection < 0)
+    //         return;
+    //     if (collision.vertical && this.wallCollided) {
+    //         this.speed.y = 0;
+    //         return;
+    //     }
 
-        // update speed
-        if (collision.horizontal || collision.corner) {
-            // speed.x
-            this.speed.x *= -1;
-            this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
-            if (collision.corner)
-                this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
-            if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
-                this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
+    //     // resolution
+    //     let posCorrection = collision.distanceVec.clone();
+    //     if (!collision.inside)
+    //         posCorrection.setLength(this.radius - distance);
+    //     else
+    //         posCorrection.setLength(this.radius + distance);
+    //     this.position.add(posCorrection);
 
-            // speed.y
-            let deltaY = this.position.y - bar.position.y;
-            if (collision.corner) {
-                deltaY = Math.sign(deltaY) * bar.height;
-                this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
-            }
-            this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
-        }
-        else if (collision.vertical) {
-            this.speed.y *= -1;
-        }
-    }
+    //     // update speed
+    //     if (collision.horizontal || collision.corner) {
+    //         // speed.x
+    //         this.speed.x *= -1;
+    //         this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_INCREASE;
+    //         if (collision.corner)
+    //             this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
+    //         if (Math.abs(this.speed.x) > GSettings.BALL_SPEEDX_MAX)
+    //             this.speed.x = Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_MAX;
 
-    handleWallCollisions() {
-        this.wallCollided = true;
-        if (this.topY() <= GSettings.GAME_TOP) {
-            // top wall
-            this.speed.y = Math.abs(this.speed.y);
-            this.setTopY(GSettings.GAME_TOP);
-        }
-        else if (this.bottomY() >= GSettings.GAME_BOTTOM) {
-            // bottom wall
-            this.speed.y = -Math.abs(this.speed.y);
-            this.setBottomY(GSettings.GAME_BOTTOM);
-        }
-        else
-            this.wallCollided = false;
-    }
+    //         // speed.y
+    //         let deltaY = this.position.y - bar.position.y;
+    //         if (collision.corner) {
+    //             deltaY = Math.sign(deltaY) * bar.height;
+    //             this.speed.x += Math.sign(this.speed.x) * GSettings.BALL_SPEEDX_CORNER_BOOST;
+    //         }
+    //         this.speed.y = (deltaY / bar.height) * GSettings.BALL_SPEEDY_MAX;
+    //     }
+    //     else if (collision.vertical) {
+    //         this.speed.y *= -1;
+    //     }
+    // }
 
-    handleCollisions(bars: [Bar, Bar]) {
-        this.handleBarCollision(bars[0]);
-        this.handleBarCollision(bars[1]);
-        this.handleWallCollisions();
-    }
+    // handleWallCollisions() {
+    //     this.wallCollided = true;
+    //     if (this.topY() <= GSettings.GAME_TOP) {
+    //         // top wall
+    //         this.speed.y = Math.abs(this.speed.y);
+    //         this.setTopY(GSettings.GAME_TOP);
+    //     }
+    //     else if (this.bottomY() >= GSettings.GAME_BOTTOM) {
+    //         // bottom wall
+    //         this.speed.y = -Math.abs(this.speed.y);
+    //         this.setBottomY(GSettings.GAME_BOTTOM);
+    //     }
+    //     else
+    //         this.wallCollided = false;
+    // }
+
+    // handleCollisions(bars: [Bar, Bar]) {
+    //     this.handleBarCollision(bars[0]);
+    //     this.handleBarCollision(bars[1]);
+    //     this.handleWallCollisions();
+    // }
 }
