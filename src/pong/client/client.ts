@@ -15,7 +15,6 @@ export class ClientContext {
 
     constructor() {
         this.socket = io('http://localhost:5000/pong');
-        // error if not found ?
         this.containerDiv = document.getElementById("game-container") as HTMLElement;
 
         this.socket.on("connect", () => {
