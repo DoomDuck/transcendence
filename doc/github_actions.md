@@ -49,3 +49,26 @@ jobs:
 
 ## UI
 Actions of a project can be inspected in the *Action* tab in a repository
+
+## Expressions
+Expressions can be used in `if` conditions and `env` descriptions
+They are written as `${{ expression }}` in env
+
+Expressions can be of type `boolean`, `null`, `number`, `string`, `array` or `object`
+
+Various powerful functions are also available
+- `contains`
+- `startsWith`
+- `endsWith`
+- `format`
+- `join`
+- `toJSON`
+- `fromJSON`
+
+The control flow of the jobs can also be edited by `if` conditions using of the functions:
+- `success()`
+- `always()`
+- `cancelled()`
+- `failure()`
+
+Objects and arrays can be filtered with the `.*` syntax
