@@ -21,9 +21,9 @@ export class ClientGame extends Game {
     camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
-    container: HTMLElement;
+    container: HTMLDivElement;
 
-    constructor(playerId: PlayerID, container: HTMLElement) {
+    constructor(playerId: PlayerID, container: HTMLDivElement) {
         // game state
         const ball = new ClientBall(playerId);
         const [bar1, bar2] = [
@@ -51,7 +51,6 @@ export class ClientGame extends Game {
         this.container = container;
         this.renderer = new THREE.WebGLRenderer();
         this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.domElement.className = 'game-text';
 
         // scene
         this.scene = new THREE.Scene();

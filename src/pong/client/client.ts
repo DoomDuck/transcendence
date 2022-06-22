@@ -11,21 +11,24 @@ import { GameEvent } from '../common/constants';
 export class ClientContext {
     game?: ClientGame;
     socket: Socket;
-    containerDiv: HTMLElement;
+    gameContainer: HTMLDivElement;
+    gameRendererContainer: HTMLDivElement;
+    gameLabelRendererContainer: HTMLDivElement;
 
     constructor() {
         this.socket = io('http://localhost:5000/pong');
         // error if not found ?
-        this.containerDiv = document.getElementById("game-container") as HTMLElement;
+        this.gameContainer = document.getElementById("game-container") as HTMLDivElement;
+        this.gameRendererContainer = document.getElementById("game-screen") as HTMLDivElement;
+        this.gameLabelRendererContainer = document.getElementById("game-text") as HTMLDivElement;
 
         this.socket.on("connect", () => {
             console.log("connected to server");
         });
         this.socket.on("disconnect", ()=> {
             if (this.game !== undefined) {
-                this.containerDiv.removeChild(this.game.renderer.domElement);
-                this.containerDiv.removeChild(this.game.labelRenderer.domElement);
-                this.game = undefined;
+                this.gameRendererContainer.removeChild(this.game.renderer.domElement);
+                this.gameLabelRendererContainer.removeChild(this.game.labelRenderer.domElement);
             }
         });
         this.socket.on("playerIdConfirmed", (playerId: number, ready: () => void) => {
@@ -36,11 +39,11 @@ export class ClientContext {
 
     startGame(playerId: number) {
         // game
-        let game = new ClientGame(playerId, this.containerDiv);
+        let game = new ClientGame(playerId, this.gameContainer);
         this.game = game;
 
-        this.containerDiv.appendChild(game.renderer.domElement);
-        this.containerDiv.appendChild(game.labelRenderer.domElement);
+        this.gameRendererContainer.appendChild(game.renderer.domElement);
+        this.gameLabelRendererContainer.appendChild(game.labelRenderer.domElement);
 
         // // outgoing events
         const transmitEventFromGameToServer = (event: string) => {
