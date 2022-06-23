@@ -51,7 +51,6 @@ export class ClientGame extends Game {
         this.container = container;
         this.renderer = new THREE.WebGLRenderer();
         this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.domElement.className = 'game-text';
 
         // scene
         this.scene = new THREE.Scene();
