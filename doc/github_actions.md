@@ -72,3 +72,8 @@ The control flow of the jobs can also be edited by `if` conditions using of the 
 - `failure()`
 
 Objects and arrays can be filtered with the `.*` syntax
+
+## Context
+
+There are various *context*s that can be used to change way jobs execute.
+A list of contexts can be found [here](https://docs.github.com/en/actions/learn-github-actions/contexts)
