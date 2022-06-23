@@ -10,7 +10,7 @@ export class BarMesh extends THREE.Mesh {
             GSettings.BAR_WIDTH, GSettings.BAR_HEIGHT
         );
         const material = new THREE.MeshBasicMaterial({
-            color: 0xd14081,
+            color: GSettings.BAR_COLOR,
         });
         super(geometry, material);
     }

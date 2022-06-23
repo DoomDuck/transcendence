@@ -14,9 +14,8 @@ class Score {
 
     constructor(playerId: PlayerID) {
         this.value = 0;
-        this.div = document.createElement( 'div' );
+        this.div = document.getElementById(`p${playerId + 1}-score`) as HTMLDivElement;
         this.div.textContent = '0';
-        this.div.className = 'player-score';
 
         this.threeObject = new CSS2DObject(this.div);
         const direction = playerId == PLAYER1 ? -1 : 1;

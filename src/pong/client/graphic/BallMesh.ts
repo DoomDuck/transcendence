@@ -14,7 +14,7 @@ export class BallMesh extends THREE.Mesh {
             1,
             GSettings.BALL_RADIAL_SEGMENTS,
         );
-        const color = new THREE.Color(0xffffff);
+        const color = new THREE.Color(GSettings.BALL_COLOR);
         const material = new THREE.MeshBasicMaterial({
             color: color,
         });

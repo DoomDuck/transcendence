@@ -36,6 +36,7 @@ export class GSettings {
     static readonly BAR_SENSITIVITY = GSettings.SCREEN_WIDTH * 2 / 4;
     static readonly BAR_UP_KEYS = ['ArrowUp', 'w', 'z'];
     static readonly BAR_DOWN_KEYS = ['ArrowDown', 's'];
+    static readonly BAR_COLOR = 0xd14081;
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
@@ -51,6 +52,7 @@ export class GSettings {
     static readonly BALL_SPEED_AT_LIMIT = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_CLIENT_SERVER_LERP_DIST = .05;
     static readonly BALL_CLIENT_SERVER_LERP_FACTOR = .05;
+    static readonly BALL_COLOR = 0xffffff;
 }
 
 export enum PlayerID {

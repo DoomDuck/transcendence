@@ -10,9 +10,6 @@ import { NonPhysicBall } from "../../common/entities/NonPhysicBall";
  * - Is responsible for the goal detection
  */
 export class ServerGame extends Game {
-    timeOutHandle: NodeJS.Timeout;
-    playersScore: PlayersScore;
-
     constructor() {
         const gameState = new GameState(
             new NonPhysicBall(),
