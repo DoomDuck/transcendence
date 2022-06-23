@@ -9,9 +9,6 @@ import { PlayersScore } from "../../common/entities";
  * - Is responsible for the goal detection
  */
 export class ServerGame extends Game {
-    timeOutHandle: NodeJS.Timeout;
-    playersScore: PlayersScore;
-
     constructor() {
         const gameState = new GameState(
             new Ball(),

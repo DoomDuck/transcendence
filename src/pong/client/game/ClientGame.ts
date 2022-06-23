@@ -21,9 +21,9 @@ export class ClientGame extends Game {
     camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
-    container: HTMLElement;
+    container: HTMLDivElement;
 
-    constructor(playerId: PlayerID, container: HTMLElement) {
+    constructor(playerId: PlayerID, container: HTMLDivElement) {
         // game state
         const ball = new ClientBall(playerId);
         const [bar1, bar2] = [
