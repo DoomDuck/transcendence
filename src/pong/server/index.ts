@@ -1,1 +1,1 @@
-export { ServerGame } from "./ServerGame";
+export { GameManager } from './GameManager';

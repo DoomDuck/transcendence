@@ -1,33 +1,35 @@
-import { ClientGame } from './ClientGame';
+import { ClientGame } from './game';
 import { io, Socket } from 'socket.io-client'
-import { GameEvent, PlayerID } from '../common/constants';
-import { EventEmitter } from 'events';
+import { GameEvent } from '../common/constants';
 
+/**
+ * Root of the client code execution
+ * Connect to the server's socket namespace upon creation
+ * Then waits for server to confirm a game starts, and to tell/confirm the role the client has:
+ * player 1, player 2 or observer (this is only relevant regarding the control the client will have)
+ */
 export class ClientContext {
     game?: ClientGame;
     socket: Socket;
-    containerDiv: HTMLElement;
+    gameContainer: HTMLDivElement;
+    gameRendererContainer: HTMLDivElement;
+    gameLabelRendererContainer: HTMLDivElement;
 
     constructor() {
         this.socket = io('http://localhost:5000/pong');
         // error if not found ?
-        this.containerDiv = document.getElementById("game-container") as HTMLElement;
+        this.gameContainer = document.getElementById("game-container") as HTMLDivElement;
+        this.gameRendererContainer = document.getElementById("game-screen") as HTMLDivElement;
+        this.gameLabelRendererContainer = document.getElementById("game-text") as HTMLDivElement;
 
         this.socket.on("connect", () => {
             console.log("connected to server");
         });
         this.socket.on("disconnect", ()=> {
             if (this.game !== undefined) {
-                this.containerDiv.removeChild(this.game.renderer.domElement);
-                this.containerDiv.removeChild(this.game.labelRenderer.domElement);
-                this.game = undefined;
+                this.gameRendererContainer.removeChild(this.game.renderer.domElement);
+                this.gameLabelRendererContainer.removeChild(this.game.labelRenderer.domElement);
             }
-        })
-        this.socket.on("playerIdUnavailable", (playerId: number) => {
-            alert(`playerId ${playerId} is already taken`)
-        });
-        this.socket.on("playerIdAlreadySelected", (playerId: number) => {
-            // alert(`playerId already selected`)
         });
         this.socket.on("playerIdConfirmed", (playerId: number, ready: () => void) => {
             this.startGame(playerId);
@@ -35,28 +37,24 @@ export class ClientContext {
         });
     }
 
-    select(playerId: number) {
-        this.socket?.emit("playerIdSelect", playerId)
-    }
-
     startGame(playerId: number) {
         // game
-        let game = new ClientGame(playerId, this.containerDiv);
+        let game = new ClientGame(playerId, this.gameContainer);
         this.game = game;
 
-        this.containerDiv.appendChild(game.renderer.domElement);
-        this.containerDiv.appendChild(game.labelRenderer.domElement);
+        this.gameRendererContainer.appendChild(game.renderer.domElement);
+        this.gameLabelRendererContainer.appendChild(game.labelRenderer.domElement);
 
         // // outgoing events
         const transmitEventFromGameToServer = (event: string) => {
-            game.on(event, (...args: any[]) => { this.socket.emit(event, ...args) });
+            game.onOut(event, (...args: any[]) => { this.socket.emit(event, ...args) });
         }
         transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN);
         transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP);
 
         // incomming events
         const transmitEventFromServerToGame = (event: string) => {
-            this.socket.on(event, (...args: any[]) => { game.emit(event, ...args) });
+            this.socket.on(event, (...args: any[]) => { game.emitIn(event, ...args) });
         }
         transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN);
         transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP);
@@ -66,8 +64,6 @@ export class ClientContext {
         transmitEventFromServerToGame(GameEvent.RESET);
         transmitEventFromServerToGame(GameEvent.PAUSE);
         transmitEventFromServerToGame(GameEvent.UNPAUSE);
-
-        this.socket.emit("playerReady");
 
         // Game loop
         let animate = () => {

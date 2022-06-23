@@ -1,8 +1,12 @@
 import { EventEmitter } from 'events';
 import { Vector3 } from 'three';
-import { GameEvent, GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from './constants';
+import { GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../constants';
 
-export class Bar extends EventEmitter {
+/**
+ * Part of the Game's physical state as the player-controlled bars.
+ * Used directly in the server, and extended in the client (ClientBar).
+ */
+export class Bar {
     width: number;
     height: number;
     collisionEdgeDirection: number;
@@ -10,19 +14,13 @@ export class Bar extends EventEmitter {
     upPressed: boolean;
     downPressed: boolean;
 
-
     constructor(playerId: PlayerID) {
-        super();
         this.width = GSettings.BAR_WIDTH;
         this.height = GSettings.BAR_HEIGHT;
         this.collisionEdgeDirection = (playerId == PLAYER1) ? RIGHT : LEFT;
         this.position = new Vector3();
         this.upPressed = false;
         this.downPressed = false;
-        ///
-        // this.on(GameEvent.BAR_KEYDOWN, this.onReceiveKeydown.bind(this));
-        // this.on(GameEvent.BAR_KEYUP, this.onReceiveKeyup.bind(this));
-        // this.on(GameEvent.BAR_POSITION, this.onReceiveKeyup.bind(this));
     }
 
     reset() {
@@ -59,7 +57,6 @@ export class Bar extends EventEmitter {
     }
 
     onReceiveKeydown(keyValue: KeyValue, emitTime: number) {
-        console.log('received keydown');
         let delta = Date.now() - emitTime;
         // console.log(`keyup receive delta = ${delta}`);
         if (keyValue == KeyValue.UP) {
@@ -71,7 +68,6 @@ export class Bar extends EventEmitter {
             this.downPressed = true;
         }
         this.clipPosition();
-        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receiveKeydown' with parameters (keyValue, emitTime) = ${keyValue}, ${emitTime}`)
     }
 
     onReceiveKeyup(keyValue: KeyValue, y: number) {
@@ -82,12 +78,10 @@ export class Bar extends EventEmitter {
             this.downPressed = false;
         }
         this.position.y = y;
-        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receiveKeyup' with parameter keyValue = ${keyValue}, y = ${y}`)
     }
 
     onReceivePosition(y: number) {
         this.position.y = y;
-        // console.log(`bar ${this.collisionEdgeDirection == RIGHT ? PLAYER1 : PLAYER2} received the event 'receivePosition' with parameter keyValue = ${keyValue}, y = ${y}`)
     }
 
     speed() {

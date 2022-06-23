@@ -1,13 +1,17 @@
 import { Vector3 } from 'three';
-import { Ball } from './Ball'
-import { Bar } from './Bar'
-import { GSettings } from './constants';
+import { Ball, Bar } from '.';
+import { GSettings } from '../constants';
+
 
 export interface CollisionData  {
     distanceVec: Vector3,
     distance: number,
 }
 
+/**
+ * For the standard pong, collision is hardcoded, hence we need to know which edge
+ * of the bar the ball has collided with
+ */
 export interface BallBarCollisionData extends CollisionData {
     inside: boolean,
     corner: boolean,
@@ -15,23 +19,15 @@ export interface BallBarCollisionData extends CollisionData {
     vertical: boolean,
 }
 
-export interface BallWallCollisionData extends CollisionData {
-
-}
-
+/**
+ * For factorization with the physics-based pong, CollisionResult sums up relevant data
+ * for both worlds.
+ */
 export interface CollisionResult {
     ignore: boolean,
     data: CollisionData,
 }
 
-/**
- * Return whether the ball is inside and the distance from the
- * bar to the ball (edges of the rectangle to center)
- * @param {Ball} ball
- * @param {Bar} bar
- * @returns ...
- */
-//
 export function ballBarCollisionDistanceData(ball: Ball, bar: Bar): BallBarCollisionData {
     let distanceToCenter = new Vector3();
     let inside = false;
@@ -85,6 +81,9 @@ export function ballBarCollisionDistanceData(ball: Ball, bar: Bar): BallBarColli
     };
 }
 
+/**
+ * Detect if there is a collision between the ball and a bar
+ */
 export function ballBarCollisionDetection(ball: Ball, bar: Bar): CollisionResult {
     let data = ballBarCollisionDistanceData(ball, bar);
     let result: CollisionResult = {
@@ -103,6 +102,9 @@ export function ballBarCollisionDetection(ball: Ball, bar: Bar): CollisionResult
     return result;
 }
 
+/**
+ * Detect if the ball collides with a wall
+ */
 export function ballWallsCollisionDetection(ball: Ball): [CollisionResult, CollisionResult] {
     let yTop = ball.position.y - GSettings.GAME_TOP;
     let yBottom = ball.position.y - GSettings.GAME_BOTTOM;

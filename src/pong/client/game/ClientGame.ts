@@ -1,16 +1,19 @@
 import * as THREE from 'three'
-import { Camera } from './Camera';
-import { GSettings, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../common/constants';
-import { Game } from "../common/Game";
-import { GameState } from '../common/GameState';
-import { ClientBall } from './ClientBall';
-import { ClientBar } from './ClientBar';
-import { GameEvent } from '../common/constants';
-import { PlayersScore } from './PlayersScore';
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
-import { ClientGameState } from './ClientGameState';
-import { ServerBall } from './ServerBall';
 
+import { Camera, PlayersScoreDisplay } from '../graphic';
+import { ClientBall, ClientBar, ClientPlayersScore } from '../entities';
+
+import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
+import { Game } from "../../common/game";
+import { GameEvent } from '../../common/constants';
+import { GameState } from '../../common/entities';
+
+/**
+ * The game instance on the client's side.
+ * It adds to Game the rendering capability, the handling and transmission
+ * to the server of the client's keyboard input.
+ */
 export class ClientGame extends Game {
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
@@ -18,18 +21,17 @@ export class ClientGame extends Game {
     camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
-    playersScore: PlayersScore;
-    container: HTMLElement;
+    container: HTMLDivElement;
 
-    constructor(playerId: PlayerID, container: HTMLElement) {
+    constructor(playerId: PlayerID, container: HTMLDivElement) {
         // game state
+        const ball = new ClientBall(playerId);
         const [bar1, bar2] = [
-            new ClientBar(PLAYER1, {controllable: playerId == PLAYER1}),
-            new ClientBar(PLAYER2, {controllable: playerId == PLAYER2}),
-        ]
-        const clientBall = new ClientBall([bar1, bar2], playerId);
-        const serverBall = new ServerBall([bar1, bar2]);
-        const gameState = new ClientGameState(serverBall, bar1, bar2, clientBall);
+            new ClientBar(PLAYER1),
+            new ClientBar(PLAYER2),
+        ];
+        const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
+        const gameState = new GameState(ball, bar1, bar2, playersScore);
         super(gameState);
 
         // player-realted info
@@ -38,32 +40,28 @@ export class ClientGame extends Game {
 
         // events specific to ClientGame
         let otherBar = this.state.bars[this.otherPlayerId];
-        this.on(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
-        this.on(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
+        this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
+        this.onIn(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
+        this.onIn(GameEvent.RECEIVE_SET_BALL, (this.state.ball as ClientBall).handleReceiveSetBall.bind(this.state.ball as ClientBall));
+        const controllableBar = this.state.bars[playerId] as ClientBar;
+        window.addEventListener('keydown',(e: KeyboardEvent) => controllableBar.handleKeydown(e, this.emitOut.bind(this)), false);
+        window.addEventListener('keyup',(e: KeyboardEvent) => controllableBar.handleKeyup(e, this.emitOut.bind(this)), false);
 
         // renderers
         this.container = container;
         this.renderer = new THREE.WebGLRenderer();
-        this.renderer.domElement.id = 'game-screen'
         this.labelRenderer = new CSS2DRenderer();
-        this.labelRenderer.domElement.id = 'game-text';
 
         // scene
         this.scene = new THREE.Scene();
         this.camera = new Camera();
-        this.scene.add(clientBall.mesh);
+        this.scene.add(ball.mesh);
         this.scene.add(bar1.mesh);
         this.scene.add(bar2.mesh);
-        // this.scene.add(gameState.serverBallEstimation.mesh);
-        this.playersScore = new PlayersScore();
-        this.scene.add(this.playersScore.group);
+        this.scene.add(playersScore.graphicalObject.group);
         this.loadBackground();
 
         // callbacks
-        this.on(GameEvent.GOAL, (playerId: PlayerID) => {
-            console.log("GOAL !!!");
-            this.playersScore.handleGoal(playerId);
-        });
         window.addEventListener("resize", () => this.handleDisplayResize());
         this.handleDisplayResize();
     }

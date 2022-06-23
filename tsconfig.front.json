@@ -20,8 +20,13 @@
 
     "noImplicitAny": true,
     "strictNullChecks": true,
+
+    "baseUrl": ".",
+    "paths": {
+        "pong/*": ["src/pong/*"]
+    },
   },
 
   "include": ["src/**/*.ts", "src/**/*.svelte"],
-  "exclude": ["src/back/**/*.ts"]
+  "exclude": ["src/back/**/*.ts", "src/pong/server/*.ts"]
 }

@@ -16,7 +16,7 @@ module.exports = {
       svelte: path.resolve('node_modules', 'svelte')
     },
     extensions: ['.mjs', '.js', '.svelte', '.ts'],
-    mainFields: ['svelte', 'browser', 'module', 'main']
+    mainFields: ['svelte', 'browser', 'module', 'main'],
   },
 
   module: {
