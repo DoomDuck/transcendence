@@ -12,10 +12,7 @@
 		"nest_start": "nest start --path tsconfig.back.json",
 		"nest_start:dev": "nest start --path tsconfig.back.json --watch",
 		"nest_start:debug": "nest start --path tsconfig.back.json --debug --watch",
-		"nest_start:prod": "node build/back/main.js",
-		"_pongserv_build": "tsc -p src/pong/server/tsconfig.json",
-		"_pongserv_build:dev": "tsc -p src/pong/server/tsconfig.json -w",
-		"_pongserv_start": "node build/pong-temporary-server/server/server.js"
+		"nest_start:prod": "node build/back/main.js"
 	},
 	"repository": {
 		"type": "git",

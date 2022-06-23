@@ -43,12 +43,12 @@ export function ballBarCollisionDistanceData(ball: Ball, bar: Bar): BallBarColli
     let y = Math.abs(distanceToCenter.y) - bar.height / 2;
     distanceToCenter.x -= signX * (bar.width / 2)
     distanceToCenter.y -= signY * (bar.height / 2)
-    if (x > 0 && y < 0) {
+    if (x > 0 && y <= 0) {
         // lateral face
         distanceToCenter.y = 0;
         horizontal = true;
     }
-    else if (x < 0 && y > 0) {
+    else if (x <= 0 && y > 0) {
         // upper/lower face
         distanceToCenter.x = 0;
         vertical = true;
