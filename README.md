@@ -45,3 +45,16 @@ npm run build:dev
 # Open the page on browser
 open public/index.html
 ```
+
+## Git hooks
+
+```bash
+# To add checks before each commit
+./scripts/hooks/setup.sh
+
+# To skip checks for a quick commit
+git commit --no-verify
+
+# To remove checks
+./scripts/hooks/remove.sh
+```
