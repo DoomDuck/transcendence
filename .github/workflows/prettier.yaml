@@ -1,0 +1,17 @@
+name: prettier
+on: [pull_request]
+jobs:
+  check_style:
+    runs-on: ubuntu-lastest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+
+      - name: Install prettier
+        run: npm install --no-save --no-optional prettier
+
+      - name: Check format
+        run: npm run check_format
