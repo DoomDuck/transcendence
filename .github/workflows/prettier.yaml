@@ -2,7 +2,7 @@ name: prettier
 on: [pull_request]
 jobs:
   check_style:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
