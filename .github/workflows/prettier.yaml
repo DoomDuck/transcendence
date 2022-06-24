@@ -10,8 +10,5 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
 
-      - name: Install prettier
-        run: npm install --no-save --no-optional prettier
-
       - name: Check format
-        run: npm run check_format
+        run:  ./scripts/check_format.sh
