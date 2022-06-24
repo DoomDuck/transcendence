@@ -10,7 +10,9 @@
     "build": "webpack",
     "build:dev": "webpack --watch",
     "format": "prettier --write **/*.ts **/*.svelte",
-    "check_format": "prettier --check **/*.ts **/*.svelte"
+    "check_format": "prettier --check **/*.ts **/*.svelte",
+    "setup_hooks": "./scripts/hooks/setup.sh",
+    "remove_hooks": "./scripts/hooks/remove.sh"
   },
   "repository": {
     "type": "git",
