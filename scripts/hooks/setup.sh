@@ -13,8 +13,8 @@ setup_hooks() {
 }
 
 show_help() {
-  echo "Could not setup hook!"
-  echo "It might allready exist or you might not be at the project root"
+  echo 2>&1 "Could not setup hook!"
+  echo 2>&1 "It might allready exist or you might not be at the project root"
 }
 
 setup_hooks || show_help

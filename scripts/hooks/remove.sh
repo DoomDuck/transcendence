@@ -9,8 +9,8 @@ remove_hook() {
 }
 
 show_help() {
-  echo "Could not remove hook!"
-  echo "It might not exist or you might not be at the project root"
+  echo 2>&1 "Could not remove hook!"
+  echo 2>&1 "It might not exist or you might not be at the project root"
 }
 
 remove_hook || show_help
