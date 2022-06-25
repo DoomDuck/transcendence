@@ -8,7 +8,11 @@
   },
   "scripts": {
     "build": "webpack",
-    "build:dev": "webpack --watch"
+    "build:dev": "webpack --watch",
+    "format": "./scripts/format.sh",
+    "check_format": "./scripts/check_format.sh",
+    "setup_hooks": "./scripts/hooks/setup.sh",
+    "remove_hooks": "./scripts/hooks/remove.sh"
   },
   "repository": {
     "type": "git",
@@ -34,6 +38,8 @@
   "devDependencies": {
     "css-loader": "^6.7.1",
     "mini-css-extract-plugin": "^2.6.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-svelte": "^2.7.0",
     "svelte": "^3.48.0",
     "svelte-loader": "^3.1.2",
     "svelte-preprocess": "^4.10.6",

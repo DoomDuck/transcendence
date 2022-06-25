@@ -1,9 +1,9 @@
 <script lang="ts">
-import Timer from './Timer.svelte';
+  import Timer from "./Timer.svelte";
 </script>
 
 <div id="clock">
-<Timer/>
+  <Timer />
 </div>
 
 <style>
@@ -15,4 +15,3 @@ import Timer from './Timer.svelte';
     justify-content: space-around;
   }
 </style>
-
