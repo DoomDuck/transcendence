@@ -1,12 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { removeElementByValue } from '../../pong/common/utils';
 import { GameManager } from '../../pong/server'
-
-function removeElementByValue<T>(array: T[], item: T) {
-    let index = array.indexOf(item);
-    if (index !== -1)
-        array.splice(index, 1);
-}
 
 @Injectable()
 export class GameManagerService {

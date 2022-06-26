@@ -1,8 +1,6 @@
-import { EventEmitter } from "events";
-import { Socket } from "socket.io-client";
-import { GameEvent, GSettings, PlayerID } from "../constants"
-import { PLAYER1, PLAYER2 } from "../constants";
-import { GameState } from "../entities/GameState";
+import { GameEvent, GSettings, PlayerID } from "../constants";
+import { PlayersScore } from ".";
+import { GameState } from "../entities";
 
 /**
  * Game represents the environment representing an ongoing game between two players.
@@ -17,12 +15,14 @@ export abstract class Game {
     paused: boolean;
     incommingEventsCallback: Map<string, any>;
     outgoingEventsBallback: Map<string, any>;
+    playersScore: PlayersScore;
 
-    constructor (state: GameState) {
+    constructor (state: GameState, playersScore: PlayersScore) {
+        this.state = state;
+        this.playersScore = playersScore;
         this.lastTime = 0;
         this.timeAccumulated = 0;
         this.paused = true;
-        this.state = state;
         const eventsCallbackPairs: [string, any][] = [
             [GameEvent.START, this.start.bind(this)],
             [GameEvent.PAUSE, this.pause.bind(this)],
@@ -77,7 +77,7 @@ export abstract class Game {
     }
 
     goal(playerId: PlayerID) {
-        this.state.playersScore.handleGoal(playerId);
+        this.playersScore.handleGoal(playerId);
     }
 
     frame() {

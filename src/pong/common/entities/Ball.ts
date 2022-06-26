@@ -1,9 +1,7 @@
 import { Vector3 } from 'three';
-import { GSettings, PlayerID, PLAYER1, PLAYER2 } from '../../common/constants'
-import { Bar } from './Bar'
-import { ballBarCollisionDistanceData } from './collision';
-import { EventEmitter } from "events";
+import { GSettings, PlayerID, PLAYER1, PLAYER2 } from '../../common/constants';
 import { updateVectorDeltaT } from '../utils';
+import { type IEntity } from '.';
 
 /**
  * Part of the Game's physical state.
@@ -11,7 +9,7 @@ import { updateVectorDeltaT } from '../utils';
  * It is responsible for handling its collisions with the bars and the walls.
  */
 // export abstract class Ball<P extends Physic> {
-export abstract class Ball {
+export class Ball implements IEntity {
     radius: number
     position: Vector3
     speed: Vector3
@@ -26,10 +24,13 @@ export abstract class Ball {
         this.outOfScreenAlreadyReported = false;
     }
 
-    reset(x: number, y: number, vx: number, vy: number) {
+    reset() {
+        this.outOfScreenAlreadyReported = false;
+    }
+
+    setPositionSpeed(x: number, y: number, vx: number, vy: number) {
         this.position.set(x, y, 0);
         this.speed.set(vx, vy, 0);
-        this.outOfScreenAlreadyReported = false;
     }
 
     topY(): number {
@@ -70,7 +71,9 @@ export abstract class Ball {
         return this.position.x < 0 ? PLAYER2 : PLAYER1;
     }
 
-    abstract update(elapsed: number, bars: [Bar, Bar]): void;
+    update(elapsed: number) {
+        updateVectorDeltaT(this.position, this.speed, elapsed);
+    }
 
     // update(elapsed: number, bars: [Bar, Bar]) {
     //     updateVectorDeltaT(this.position, this.speed, elapsed);

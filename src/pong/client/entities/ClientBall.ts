@@ -3,14 +3,13 @@ import { GSettings, PlayerID } from "../../common/constants";
 import { BallMesh } from '../graphic';
 import { Vector3 } from "three";
 import { updateVectorDeltaT } from "../../common/utils";
-import { NonPhysicBall } from "../../common/entities/NonPhysicBall";
 
 /**
  * The ball part of a game instance on the client side (ClientGame).
  * Adds display capability to Ball, as well as dynamic color.
  * Also smoothes the position of the server's ball (which is junky due to socket transmission).
  */
-export class ClientBall extends NonPhysicBall {
+export class ClientBall extends Ball {
     mesh: BallMesh;
     playerId: PlayerID;
     serverPosition: Vector3;
@@ -25,8 +24,13 @@ export class ClientBall extends NonPhysicBall {
         this.serverSpeed = new Vector3();
     }
 
-    reset(x: number, y: number, vx: number, vy: number) {
-        super.reset(x, y, vx, vy);
+    setPositionSpeed(x: number, y: number, vx: number, vy: number): void {
+        super.setPositionSpeed(x, y, vx, vy);
+        this.serverPosition.set(x, y, 0);
+        this.serverSpeed.set(vx, vy, 0);
+    }
+
+    reset() {
         this.mesh.color.set(0xffffff);
     }
 
@@ -56,8 +60,8 @@ export class ClientBall extends NonPhysicBall {
         updateVectorDeltaT(this.serverPosition, this.serverSpeed, elapsed);
     }
 
-    update(elapsed: number, bars: [Bar, Bar]) {
-        super.update(elapsed, bars);
+    update(elapsed: number) {
+        super.update(elapsed);
         const dist = this.position.distanceTo(this.serverPosition)
         if (dist > GSettings.BALL_CLIENT_SERVER_LERP_DIST) {
             this.position.lerp(this.serverPosition, GSettings.BALL_CLIENT_SERVER_LERP_FACTOR);

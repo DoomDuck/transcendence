@@ -7,7 +7,8 @@ import { ClientBall, ClientBar, ClientPlayersScore } from '../entities';
 import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
 import { Game } from "../../common/game";
 import { GameEvent } from '../../common/constants';
-import { GameState } from '../../common/entities';
+import { Bar, GameState } from '../../common/entities';
+import { StandardPhysics } from '../../common/physics';
 
 /**
  * The game instance on the client's side.
@@ -26,24 +27,25 @@ export class ClientGame extends Game {
     constructor(playerId: PlayerID, container: HTMLDivElement) {
         // game state
         const ball = new ClientBall(playerId);
-        const [bar1, bar2] = [
+        const bars: [ClientBar, ClientBar] = [
             new ClientBar(PLAYER1),
             new ClientBar(PLAYER2),
         ];
         const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
-        const gameState = new GameState(ball, bar1, bar2, playersScore);
-        super(gameState);
+        const physics = new StandardPhysics(ball, bars)
+        const gameState = new GameState(physics, [ball, bars[0], bars[1]]);
+        super(gameState, playersScore);
 
         // player-realted info
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
 
         // events specific to ClientGame
-        let otherBar = this.state.bars[this.otherPlayerId];
+        let otherBar = bars[this.otherPlayerId];
         this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
         this.onIn(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
-        this.onIn(GameEvent.RECEIVE_SET_BALL, (this.state.ball as ClientBall).handleReceiveSetBall.bind(this.state.ball as ClientBall));
-        const controllableBar = this.state.bars[playerId] as ClientBar;
+        this.onIn(GameEvent.RECEIVE_SET_BALL, (ball as ClientBall).handleReceiveSetBall.bind(ball as ClientBall));
+        const controllableBar = bars[playerId];
         window.addEventListener('keydown',(e: KeyboardEvent) => controllableBar.handleKeydown(e, this.emitOut.bind(this)), false);
         window.addEventListener('keyup',(e: KeyboardEvent) => controllableBar.handleKeyup(e, this.emitOut.bind(this)), false);
 
@@ -56,8 +58,8 @@ export class ClientGame extends Game {
         this.scene = new THREE.Scene();
         this.camera = new Camera();
         this.scene.add(ball.mesh);
-        this.scene.add(bar1.mesh);
-        this.scene.add(bar2.mesh);
+        this.scene.add(bars[0].mesh);
+        this.scene.add(bars[1].mesh);
         this.scene.add(playersScore.graphicalObject.group);
         this.loadBackground();
 

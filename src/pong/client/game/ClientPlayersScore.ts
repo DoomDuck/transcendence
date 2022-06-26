@@ -1,5 +1,5 @@
 import { PlayerID } from "../../common/constants";
-import { PlayersScore } from "../../common/entities";
+import { PlayersScore } from "../../common/game";
 import { PlayersScoreDisplay } from "../graphic/PlayersScoreDisplay";
 
 /**

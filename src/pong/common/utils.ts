@@ -17,3 +17,9 @@ export function delay(duration: number) {
         setTimeout(resolve, duration);
     });
 }
+
+export function removeElementByValue<T>(array: T[], item: T) {
+    let index = array.indexOf(item);
+    if (index !== -1)
+        array.splice(index, 1);
+}

@@ -1,12 +1,13 @@
 import { EventEmitter } from 'events';
 import { Vector3 } from 'three';
 import { GSettings, KeyValue, LEFT, PLAYER1, PLAYER2, PlayerID, RIGHT } from '../constants';
+import { type IEntity } from '.';
 
 /**
  * Part of the Game's physical state as the player-controlled bars.
  * Used directly in the server, and extended in the client (ClientBar).
  */
-export class Bar {
+export class Bar implements IEntity {
     width: number;
     height: number;
     collisionEdgeDirection: number;

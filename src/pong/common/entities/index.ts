@@ -1,4 +1,5 @@
 export { Ball } from './Ball';
 export { Bar } from './Bar';
 export { GameState } from './GameState';
-export { PlayersScore } from './PlayersScore';
+export { type IEntity } from './IEntity';
+export { type IPositionSpeedSettable, isPositionSpeedSettable } from './IPositionSpeedSettable';

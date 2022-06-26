@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import { Ball, Bar } from '.';
+import { Ball, Bar } from '../entities';
 import { GSettings } from '../constants';
 
 
