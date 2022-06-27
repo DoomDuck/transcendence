@@ -19,7 +19,7 @@ export class ServerGame extends Game {
             new Bar(PLAYER2)
         ];
         const playersScore = new PlayersScore();
-        const physics = new ExtendedPhysics(ball, bars);
+        const physics = new StandardPhysics(ball, bars);
         const gameState = new GameState(
             physics, [ball, bars[0], bars[1]]
         );

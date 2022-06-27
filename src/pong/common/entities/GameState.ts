@@ -3,7 +3,7 @@ import { type Physics } from "../physics";
 
 export class GameState {
     positionSpeedSettables: IPositionSpeedSettable[] = [];
-    constructor(private physics: Physics, private entities: IEntity[]) {
+    constructor(public physics: Physics, public entities: IEntity[]) {
         for (let entity of entities) {
             if (isPositionSpeedSettable(entity))
                 this.positionSpeedSettables.push(entity);

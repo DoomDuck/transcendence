@@ -36,7 +36,8 @@ export class GSettings {
     static readonly BAR_SENSITIVITY = GSettings.SCREEN_WIDTH * 2 / 4;
     static readonly BAR_UP_KEYS = ['ArrowUp', 'w', 'z'];
     static readonly BAR_DOWN_KEYS = ['ArrowDown', 's'];
-    static readonly BAR_COLOR = 0xd14081;
+    static readonly BAR_COLOR = '0xd14081';
+    // static readonly BAR_COLOR = 0xd14081;
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;

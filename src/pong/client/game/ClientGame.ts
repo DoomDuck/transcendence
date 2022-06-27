@@ -1,14 +1,45 @@
-import * as THREE from 'three'
-import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer';
-
-import { Camera, PlayersScoreDisplay } from '../graphic';
-import { ClientBall, ClientBar, ClientPlayersScore } from '../entities';
+// import { PlayersScoreDisplay } from '../graphic';
+import { ClientBall, ClientBar } from '../entities';
 
 import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
-import { Game } from "../../common/game";
+import { Game, PlayersScore } from "../../common/game";
 import { GameEvent } from '../../common/constants';
-import { Bar, GameState } from '../../common/entities';
+import { Ball, Bar, GameState } from '../../common/entities';
 import { ExtendedPhysics, StandardPhysics } from '../../common/physics';
+
+function createBackground(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): ImageData {
+    const width = canvas.width;
+    const height = canvas.height;
+    const blockSize = canvas.height / 20;
+
+    context.fillStyle = `rgb(0, 0, 0)`;
+    context.fillRect(0, 0, width, height);
+    
+    context.fillStyle = `rgb(173, 173, 173)`;
+    context.fillRect(0, 0, width, blockSize);
+    context.fillRect(0, height - blockSize, width, blockSize);
+    
+    for (let step = 1; step < 20; step += 2) {
+        context.fillRect(width - blockSize / 2, step * blockSize, blockSize, blockSize);
+    }
+    return context.getImageData(0, 0, width, height);
+}
+
+function gameToCanvasCoord(canvas: HTMLCanvasElement, ratio: number, gameX: number, gameY: number): [number, number] {
+    return [ratio * gameX + canvas.width/2, ratio * gameY + canvas.height/2];
+}
+function drawBall(canvas: HTMLCanvasElement, ratio: number, context: CanvasRenderingContext2D, ball: Ball) {
+    context.fillStyle = 'rgb(255, 255, 255)';
+    const [x, y] = gameToCanvasCoord(canvas, ratio, ball.position.x, ball.position.y);
+    context.ellipse(x, y, 0, ball.radius * ratio, ball.radius * ratio, 0, 2*Math.PI);
+}
+function drawBar(canvas: HTMLCanvasElement, ratio: number, context: CanvasRenderingContext2D, bar: Bar) {
+    context.fillStyle = GSettings.BAR_COLOR;
+    const [x1, y1] = gameToCanvasCoord(canvas, ratio, bar.leftX(), bar.topY());
+    const [x2, y2] = gameToCanvasCoord(canvas, ratio, bar.rightX(), bar.bottomY());
+    context.fillRect(x1, y1, x2, y2);
+}
+
 
 /**
  * The game instance on the client's side.
@@ -16,23 +47,24 @@ import { ExtendedPhysics, StandardPhysics } from '../../common/physics';
  * to the server of the client's keyboard input.
  */
 export class ClientGame extends Game {
-    scene: THREE.Scene;
-    renderer: THREE.WebGLRenderer;
-    labelRenderer: CSS2DRenderer;
-    camera: Camera;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
     container: HTMLDivElement;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    background: ImageData;
+    ratio: number;
 
-    constructor(playerId: PlayerID, container: HTMLDivElement) {
+    constructor(playerId: PlayerID) {
         // game state
         const ball = new ClientBall(playerId);
         const bars: [ClientBar, ClientBar] = [
             new ClientBar(PLAYER1),
             new ClientBar(PLAYER2),
         ];
-        const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
-        const physics = new ExtendedPhysics(ball, bars)
+        // const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
+        const playersScore = new PlayersScore();
+        const physics = new StandardPhysics(ball, bars)
         const gameState = new GameState(physics, [ball, bars[0], bars[1]]);
         super(gameState, playersScore);
 
@@ -49,41 +81,20 @@ export class ClientGame extends Game {
         window.addEventListener('keydown',(e: KeyboardEvent) => controllableBar.handleKeydown(e, this.emitOut.bind(this)), false);
         window.addEventListener('keyup',(e: KeyboardEvent) => controllableBar.handleKeyup(e, this.emitOut.bind(this)), false);
 
-        // renderers
-        this.container = container;
-        this.renderer = new THREE.WebGLRenderer();
-        this.labelRenderer = new CSS2DRenderer();
+        // HTML
+        this.container = document.getElementById('game-container') as HTMLDivElement;
+        this.canvas = document.getElementById('game-screen') as HTMLCanvasElement;
+        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 
         // scene
-        this.scene = new THREE.Scene();
-        this.camera = new Camera();
-        this.scene.add(ball.mesh);
-        this.scene.add(bars[0].mesh);
-        this.scene.add(bars[1].mesh);
-        this.scene.add(playersScore.graphicalObject.group);
-        this.loadBackground();
+        this.handleDisplayResize();
 
         // callbacks
         window.addEventListener("resize", () => this.handleDisplayResize());
-        this.handleDisplayResize();
     }
 
-    loadBackground() {
-        const onLoad = (texture: THREE.Texture) => {
-            this.scene.background = texture;
-            console.log('Texture loaded');
-            this.render();
-        }
-        const onProgress = () => {}
-        const onError = (e: ErrorEvent) => {
-            console.log(`Error loading texture: ${e}`)
-        }
-        new THREE.TextureLoader().load(
-            "/public/img/background.jpg",
-            onLoad,
-            onProgress,
-            onError,
-        );
+    clearCanvas() {
+        this.context.putImageData(this.background, 0, 0);
     }
 
     handleDisplayResize() {
@@ -98,13 +109,20 @@ export class ClientGame extends Game {
             width = GSettings.SCREEN_RATIO * availableHeight;
             height = availableHeight;
         }
-        this.renderer.setSize(width, height);
-        this.labelRenderer.setSize(width, height);
-        this.render();
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.ratio = width / GSettings.GAME_WIDTH;
+        this.background = createBackground(this.canvas, this.context);
     }
 
     render() {
-        this.renderer.render(this.scene, this.camera);
-        this.labelRenderer.render(this.scene, this.camera);
+        for (let entity of this.state.entities) {
+            if (entity instanceof Ball) {
+                drawBall(this.canvas, this.ratio, this.context, entity);
+            }
+            else if (entity instanceof Bar) {
+                drawBar(this.canvas, this.ratio, this.context, entity);
+            }
+        }
     }
 }

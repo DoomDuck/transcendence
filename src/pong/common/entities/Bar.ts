@@ -50,6 +50,14 @@ export class Bar implements IEntity {
         return this.position.y + this.height / 2;
     }
 
+    leftX(): number {
+        return this.position.x - this.width / 2;
+    }
+
+    rightX(): number {
+        return this.position.x + this.width / 2;
+    }
+
     clipPosition() {
         if (this.topY() < GSettings.GAME_TOP)
             this.setTopY(GSettings.GAME_TOP);

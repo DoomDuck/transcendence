@@ -1,6 +1,6 @@
 import { Bar } from '../../common/entities';
 import { GSettings, KeyValue, PlayerID, GameEvent } from '../../common/constants';
-import { BarMesh } from '../graphic';
+// import { BarMesh } from '../graphic';
 
 /**
  * Each of the two bars part of a game instance on the client side (ClientGame).
@@ -9,12 +9,12 @@ import { BarMesh } from '../graphic';
  * (i.e. its playerId matches the playerId of the ClientGame).
  */
 export class ClientBar extends Bar {
-    mesh: BarMesh;
+    // mesh: BarMesh;
 
     constructor(playerId: PlayerID) {
         super(playerId);
-        this.mesh = new BarMesh();
-        this.position = this.mesh.position;
+        // this.mesh = new BarMesh();
+        // this.position = this.mesh.position;
         this.reset();
     }
 
