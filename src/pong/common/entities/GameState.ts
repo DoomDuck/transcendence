@@ -1,4 +1,4 @@
-import { type IEntity, type IPositionSpeedSettable, isPositionSpeedSettable } from ".";
+import { type IEntity, type IPositionSpeedSettable, isPositionSpeedSettable, Ball } from ".";
 import { type Physics } from "../physics";
 
 export class GameState {
@@ -8,6 +8,8 @@ export class GameState {
             if (isPositionSpeedSettable(entity))
                 this.positionSpeedSettables.push(entity);
         }
+        if (isPositionSpeedSettable(physics))
+            this.positionSpeedSettables.push(physics);
     }
 
     update(elapsed: number) {
@@ -15,6 +17,10 @@ export class GameState {
             this.physics.apply(elapsed);
         for (let entity of this.entities) {
             entity.update(elapsed);
+            // if (entity instanceof Ball) {
+            //     console.log('position:', entity.position);
+            //     console.log('speed:', entity.speed);
+            // }
         }
         this.physics.resolve();
     }

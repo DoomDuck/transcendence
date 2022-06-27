@@ -1,6 +1,6 @@
-import { Vector3 } from "three";
+import { DepthFormat, Vector3 } from "three";
 import { type Physics } from ".";
-import { Ball, Bar, type IPositionSpeedSettable } from "../entities";
+import { Ball, Bar, isDeformable, type IDeformable, type IPositionSpeedSettable } from "../entities";
 import { ballBarCollisionDetection, ballWallsCollisionDetection, type CollisionResult } from "./collision";
 
 const BALL_ELASTIC_COEF = 1;
@@ -17,7 +17,7 @@ export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
         this.totalSpeed = 0;
         this.collisions = [];
     }
-    
+
     setPositionSpeed(x: number, y: number, vx: number, vy: number) {
         this.totalSpeed = Math.sqrt(vx ** 2 + vy ** 2);
     }
@@ -32,7 +32,7 @@ export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
 
     updateForces(collisions: CollisionResult[]) {
         this.totalForces.set(0, 0, 0);
-        for (let collision of collisions) {
+        for (let collision of collisions.filter(collision => collision.data.distance > 0)) {
             _v1.copy(collision.data.distanceVec);
             _v1.setLength(this.repulsionForce(collision.data.distance));
             this.totalForces.add(_v1);
@@ -62,7 +62,7 @@ export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
         }
     }
 
-    resolve() {
+    rigidResolve() {
         const ball = this.ball;
         for (let collision of this.collisions) {
             if (collision.data.distance < COLLISION_DISTANCE_MIN) {
@@ -74,5 +74,24 @@ export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
         if (this.collisions.length == 0) {
             ball.speed.setLength(this.totalSpeed);
         }
+
+    }
+
+    deform(deformable: IDeformable) {
+        if (this.collisions.length > 0) {
+            var distanceVecMin = this.collisions
+                .map(collision => collision.data.distanceVec)
+                .reduce((vecMin, vec) => vecMin.length() < vec.length() ? vecMin : vec);
+            deformable.deform(distanceVecMin);
+        }
+        else {
+            deformable.resetForm();
+        }
+    }
+
+    resolve() {
+        this.rigidResolve();
+        if (isDeformable(this.ball))
+            this.deform(this.ball);
     }
 }

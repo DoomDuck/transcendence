@@ -8,7 +8,6 @@ import { type IEntity } from '.';
  * Used directly in the server, and extended in the client (ClientBall)
  * It is responsible for handling its collisions with the bars and the walls.
  */
-// export abstract class Ball<P extends Physic> {
 export class Ball implements IEntity {
     radius: number
     position: Vector3
@@ -69,6 +68,13 @@ export class Ball implements IEntity {
 
     farthestPlayerSide(): PlayerID {
         return this.position.x < 0 ? PLAYER2 : PLAYER1;
+    }
+
+    handleReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {
+        this.position.set(x, y, 0);
+        this.position.set(vx, vy, 0);
+        let elapsed = Date.now() - time;
+        updateVectorDeltaT(this.position, this.speed, elapsed);
     }
 
     update(elapsed: number) {

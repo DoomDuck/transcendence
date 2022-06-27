@@ -119,8 +119,8 @@ export function ballWallsCollisionDetection(ball: Ball): [CollisionResult, Colli
     let resultBottom: CollisionResult = {
         ignore: yBottom <= -ball.radius,
         data: {
-            distanceVec: new Vector3(0, Math.abs(yBottom), 0),
-            distance: yBottom,
+            distanceVec: new Vector3(0, -Math.abs(yBottom), 0),
+            distance: -yBottom,
         }
     }
     return [resultTop, resultBottom];

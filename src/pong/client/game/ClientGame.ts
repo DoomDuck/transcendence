@@ -8,7 +8,7 @@ import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
 import { Game } from "../../common/game";
 import { GameEvent } from '../../common/constants';
 import { Bar, GameState } from '../../common/entities';
-import { StandardPhysics } from '../../common/physics';
+import { ExtendedPhysics, StandardPhysics } from '../../common/physics';
 
 /**
  * The game instance on the client's side.
@@ -32,7 +32,7 @@ export class ClientGame extends Game {
             new ClientBar(PLAYER2),
         ];
         const playersScore = new ClientPlayersScore(new PlayersScoreDisplay());
-        const physics = new StandardPhysics(ball, bars)
+        const physics = new ExtendedPhysics(ball, bars)
         const gameState = new GameState(physics, [ball, bars[0], bars[1]]);
         super(gameState, playersScore);
 
@@ -44,7 +44,7 @@ export class ClientGame extends Game {
         let otherBar = bars[this.otherPlayerId];
         this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
         this.onIn(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
-        this.onIn(GameEvent.RECEIVE_SET_BALL, (ball as ClientBall).handleReceiveSetBall.bind(ball as ClientBall));
+        this.onIn(GameEvent.RECEIVE_SET_BALL, ball.handleReceiveSetBall.bind(ball));
         const controllableBar = bars[playerId];
         window.addEventListener('keydown',(e: KeyboardEvent) => controllableBar.handleKeydown(e, this.emitOut.bind(this)), false);
         window.addEventListener('keyup',(e: KeyboardEvent) => controllableBar.handleKeyup(e, this.emitOut.bind(this)), false);

@@ -2,7 +2,7 @@ import { type BarKeyDownEvent, type BarKeyUpEvent, GameEvent, GSettings, PLAYER1
 import { Game } from "../../common/game";
 import { Bar, Ball, GameState } from "../../common/entities";
 import { PlayersScore } from "../../common/game";
-import { StandardPhysics } from "../../common/physics";
+import { ExtendedPhysics, StandardPhysics } from "../../common/physics";
 
 /**
  * Extension of Game for server-specific behavior:
@@ -11,6 +11,7 @@ import { StandardPhysics } from "../../common/physics";
  */
 export class ServerGame extends Game {
     ball: Ball;
+    emitPositionCounter: number;
     constructor() {
         const ball = new Ball();
         const bars: [Bar, Bar] = [
@@ -18,12 +19,13 @@ export class ServerGame extends Game {
             new Bar(PLAYER2)
         ];
         const playersScore = new PlayersScore();
-        const physics = new StandardPhysics(ball, bars);
+        const physics = new ExtendedPhysics(ball, bars);
         const gameState = new GameState(
             physics, [ball, bars[0], bars[1]]
         );
         super(gameState, playersScore);
         this.ball = ball;
+        this.emitPositionCounter = 0;
         this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, (playerId: PlayerID, ...args: BarKeyDownEvent) => bars[playerId].onReceiveKeydown(...args));
         this.onIn(GameEvent.RECEIVE_BAR_KEYUP, (playerId: PlayerID, ...args: BarKeyDownEvent) => bars[playerId].onReceiveKeyup(...args));
         // Game loop
@@ -48,7 +50,10 @@ export class ServerGame extends Game {
 
     update(elapsed: number) {
         super.update(elapsed);
-        this.emitBallPosition();
+        if (this.emitPositionCounter % 4 == 0) {
+            this.emitBallPosition();
+        }
+        this.emitPositionCounter++;
         this.testGoal();
     }
 }

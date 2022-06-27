@@ -1,15 +1,17 @@
-import { Ball, Bar } from "../../common/entities";
+import { Ball, Bar, type IDeformable } from "../../common/entities";
 import { GSettings, PlayerID } from "../../common/constants";
 import { BallMesh } from '../graphic';
 import { Vector3 } from "three";
 import { updateVectorDeltaT } from "../../common/utils";
+
+const _ux = new Vector3(1, 0, 0);
 
 /**
  * The ball part of a game instance on the client side (ClientGame).
  * Adds display capability to Ball, as well as dynamic color.
  * Also smoothes the position of the server's ball (which is junky due to socket transmission).
  */
-export class ClientBall extends Ball {
+export class ClientBall extends Ball implements IDeformable {
     mesh: BallMesh;
     playerId: PlayerID;
     serverPosition: Vector3;
@@ -34,6 +36,23 @@ export class ClientBall extends Ball {
         this.mesh.color.set(0xffffff);
     }
 
+    handleReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {
+        this.serverPosition.set(x, y, 0);
+        this.serverSpeed.set(vx, vy, 0);
+        let elapsed = Date.now() - time;
+        updateVectorDeltaT(this.serverPosition, this.serverSpeed, elapsed);
+    }
+
+    update(elapsed: number) {
+        super.update(elapsed);
+        const dist = this.position.distanceTo(this.serverPosition)
+        if (dist > GSettings.BALL_CLIENT_SERVER_LERP_DIST) {
+            this.position.lerp(this.serverPosition, GSettings.BALL_CLIENT_SERVER_LERP_FACTOR);
+            this.speed.copy(this.serverSpeed);
+        }
+        this.changeColorAtLimit();
+    }
+
     changeColorAtLimit() {
         let dx = 0;
         let atLimit = false;
@@ -53,20 +72,17 @@ export class ClientBall extends Ball {
         }
     }
 
-    handleReceiveSetBall(x: number, y: number, vx: number, vy: number, time: number) {
-        let elapsed = Date.now() - time;
-        this.serverPosition.set(x, y, 0);
-        this.serverSpeed.set(vx, vy, 0);
-        updateVectorDeltaT(this.serverPosition, this.serverSpeed, elapsed);
+    resetForm() {
+        this.mesh.scale.x = 1;
+        this.mesh.rotation.y = 0;
     }
 
-    update(elapsed: number) {
-        super.update(elapsed);
-        const dist = this.position.distanceTo(this.serverPosition)
-        if (dist > GSettings.BALL_CLIENT_SERVER_LERP_DIST) {
-            this.position.lerp(this.serverPosition, GSettings.BALL_CLIENT_SERVER_LERP_FACTOR);
-            this.speed.copy(this.serverSpeed);
-        }
-        this.changeColorAtLimit();
+    deform(distanceVectorMin: Vector3) {
+        var dist = distanceVectorMin.length();
+        var distDir = new Vector3();
+        distDir.copy(distanceVectorMin).normalize();
+        this.mesh.scale.x = dist / this.radius;
+        var signY = Math.sign(distanceVectorMin.y);
+        this.mesh.rotation.y = signY * distanceVectorMin.angleTo(_ux);
     }
 }
