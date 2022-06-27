@@ -7,6 +7,7 @@ const BALL_ELASTIC_COEF = 1;
 const COLLISION_DISTANCE_MIN = .01;
 
 const _v1 = new Vector3();
+let cpt = 0;
 export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
     totalForces: Vector3;
     totalSpeed: number;
@@ -32,7 +33,7 @@ export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
 
     updateForces(collisions: CollisionResult[]) {
         this.totalForces.set(0, 0, 0);
-        for (let collision of collisions.filter(collision => collision.data.distance > 0)) {
+        for (let collision of collisions.filter(collision => collision.data.distance >= COLLISION_DISTANCE_MIN)) {
             _v1.copy(collision.data.distanceVec);
             _v1.setLength(this.repulsionForce(collision.data.distance));
             this.totalForces.add(_v1);
@@ -66,9 +67,27 @@ export class ExtendedPhysics implements Physics, IPositionSpeedSettable {
         const ball = this.ball;
         for (let collision of this.collisions) {
             if (collision.data.distance < COLLISION_DISTANCE_MIN) {
-                ball.position.sub(collision.data.distanceVec);
-                collision.data.distanceVec.setLength(COLLISION_DISTANCE_MIN);
-                ball.position.add(collision.data.distanceVec);
+                if (cpt < 100) {
+                    console.log('position', ball.position);
+                    console.log('speed', ball.speed);
+                    console.log('distanceVec', collision.data.distanceVec);
+                    console.log('distance', collision.data.distance);
+                }
+                if (collision.data.distance > 0)
+                    ball.position.sub(collision.data.distanceVec);
+                else
+                    ball.position.add(collision.data.distanceVec);
+                _v1.copy(collision.data.distanceVec);
+                _v1.setLength(COLLISION_DISTANCE_MIN);
+                ball.position.add(_v1);
+                _v1.setLength(1);
+                let ballSpeedPara = _v1.dot(ball.speed);
+                _v1.multiplyScalar(ballSpeedPara);
+                ball.speed.sub(_v1);
+                if (cpt < 100) {
+                    console.log('new position', ball.position);
+                    console.log('new speed', ball.speed);
+                }
             }
         }
         if (this.collisions.length == 0) {

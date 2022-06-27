@@ -53,8 +53,8 @@ export class GameManager {
     reset(ballX: number, ballY: number, ballDirection: Direction) {
         // let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
         // let ballSpeedY = (2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX / 3;
-        let ballSpeedX = 0;
-        let ballSpeedY = GSettings.BALL_SPEEDY_MAX;
+        let ballSpeedX = GSettings.BALL_SPEEDX_MAX;
+        let ballSpeedY = 0;
         this.game.emitIn(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         this.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
         this.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
