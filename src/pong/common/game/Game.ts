@@ -1,5 +1,4 @@
 import { GameEvent, GSettings, PlayerID } from "../constants";
-import { PlayersScore } from ".";
 import { GameState } from "../entities";
 
 /**
@@ -9,17 +8,16 @@ import { GameState } from "../entities";
  * Extended in the server (ServerGame), as well as in the client (ClientGame).
  */
 export abstract class Game {
-    lastTime: number;
-    timeAccumulated: number;
-    state: GameState;
-    paused: boolean;
+    state: GameState = new GameState();
+    lastTime: number = 0;
+    timeAccumulated: number = 0;
+    paused: boolean = true;
+    score: [number, number] = [0, 0];
     incommingEventsCallback: Map<string, any>;
     outgoingEventsBallback: Map<string, any>;
-    playersScore: PlayersScore;
 
-    constructor (state: GameState, playersScore: PlayersScore) {
-        this.state = state;
-        this.playersScore = playersScore;
+    constructor () {
+        this.state;
         this.lastTime = 0;
         this.timeAccumulated = 0;
         this.paused = true;
@@ -77,7 +75,7 @@ export abstract class Game {
     }
 
     goal(playerId: PlayerID) {
-        this.playersScore.handleGoal(playerId);
+        this.score[playerId]++;
     }
 
     frame() {
@@ -88,14 +86,14 @@ export abstract class Game {
         this.timeAccumulated += dt;
         this.lastTime = newTime;
 
-        while (this.timeAccumulated >= GSettings.GAME_STEP) {
-            this.timeAccumulated -= GSettings.GAME_STEP;
-            this.update(GSettings.GAME_STEP);
+        while (this.timeAccumulated >= GSettings.GAME_STEP_MS) {
+            this.timeAccumulated -= GSettings.GAME_STEP_MS;
+            this.update();
         }
     }
 
-    update(elapsed: number) {
-        this.state.update(elapsed);
+    update() {
+        this.state.update();
     }
 }
 

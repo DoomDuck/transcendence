@@ -24,20 +24,24 @@ export class GSettings {
 
     // PHYSIC -->
     // static readonly DELTA_T = 1000 / 60;
-    static readonly GAME_STEP = 1000 / 60;
+    static readonly GAME_STEP_MS = 1000 / 60;
+    static readonly GAME_STEP_S = 1 / 60;
     static readonly SERVER_EMIT_INTERVAL = 2;
 
     // Initial values
     // BAR ----->
     static readonly BAR_WIDTH = GSettings.SCREEN_WIDTH / 40;
     static readonly BAR_HEIGHT = GSettings.SCREEN_WIDTH / 10;
+    static readonly BAR_WIDTH_HALF = GSettings.BAR_WIDTH / 2;
+    static readonly BAR_HEIGHT_HALF = GSettings.BAR_HEIGHT / 2;
     static readonly BAR_INITIALX = 17/40 * GSettings.SCREEN_WIDTH;
     static readonly BAR_INITIALY = 0;
     static readonly BAR_SENSITIVITY = GSettings.SCREEN_WIDTH * 2 / 4;
     static readonly BAR_UP_KEYS = ['ArrowUp', 'w', 'z'];
     static readonly BAR_DOWN_KEYS = ['ArrowDown', 's'];
-    static readonly BAR_COLOR = '0xd14081';
-    // static readonly BAR_COLOR = 0xd14081;
+    // static readonly BAR_COLOR = '0xd14081';
+    static readonly BAR_COLOR = 'rgb(209, 64, 129)';
+    static readonly BAR_COLLISION_EDGE = GSettings.BAR_INITIALX - GSettings.BAR_WIDTH / 2;
 
     // BALL ---->
     static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
@@ -53,7 +57,15 @@ export class GSettings {
     static readonly BALL_SPEED_AT_LIMIT = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_CLIENT_SERVER_LERP_DIST = .05;
     static readonly BALL_CLIENT_SERVER_LERP_FACTOR = .05;
-    static readonly BALL_COLOR = 0xffffff;
+    static readonly BALL_COLOR = 'rgb(255, 255, 255)';
+    static readonly COLLISION_VY_RATIO = GSettings.BALL_SPEEDY_MAX / (GSettings.BAR_HEIGHT / 2 + GSettings.BALL_RADIUS);
+
+    // GRAVITON ->
+    static readonly GRAVITON_LIFESPAN = 100;
+    static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 40;
+    static readonly GRAVITON_LENGTH_HALF = GSettings.GRAVITON_SIZE / 2;
+    static readonly GRAVITON_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 8;
+    static readonly GRAVITON_MAX_FORCE = .1;
 }
 
 export enum PlayerID {

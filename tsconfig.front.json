@@ -6,7 +6,6 @@
         "dat.gui",
         "express",
         "node",
-        "three",
         "jest",
         "svelte"
     ],
@@ -22,11 +21,8 @@
     "strictNullChecks": true,
 
     "baseUrl": ".",
-    "paths": {
-        "pong/*": ["src/pong/*"]
-    },
   },
 
   "include": ["src/**/*.ts", "src/**/*.svelte"],
-  "exclude": ["src/back/**/*.ts", "src/pong/server/*.ts"]
+  "exclude": ["src/back/**/*.ts", "src/pong/server/**/*.ts"]
 }
