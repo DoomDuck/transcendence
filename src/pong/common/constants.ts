@@ -61,11 +61,11 @@ export class GSettings {
     static readonly COLLISION_VY_RATIO = GSettings.BALL_SPEEDY_MAX / (GSettings.BAR_HEIGHT / 2 + GSettings.BALL_RADIUS);
 
     // GRAVITON ->
-    static readonly GRAVITON_LIFESPAN = 100;
-    static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 40;
-    static readonly GRAVITON_LENGTH_HALF = GSettings.GRAVITON_SIZE / 2;
-    static readonly GRAVITON_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 8;
-    static readonly GRAVITON_MAX_FORCE = .1;
+    static readonly GRAVITON_LIFESPAN = 10000;
+    static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 10;
+    static readonly GRAVITON_FORCE_WIDTH_HALF = GSettings.SCREEN_WIDTH / 10;
+    static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 8;
+    static readonly GRAVITON_MAX_FORCE = 10;
 }
 
 export enum PlayerID {

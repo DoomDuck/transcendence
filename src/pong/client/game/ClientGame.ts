@@ -58,11 +58,7 @@ export class ClientGame extends Game {
         this.renderer.handleResize(width, height);
         console.log(this.canvas.width, this.canvas.height);
     }
-
     render() {
         this.renderer.render();
-        // for (let graviton of this.state.data.gravitonsNow) {
-        //     this.renderer.drawGraviton(graviton);
-        // }
     }
 }

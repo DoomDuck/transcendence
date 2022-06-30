@@ -1,6 +1,4 @@
 import { GSettings } from "../constants";
-import { type InternEvent } from "../game/events";
-
 
 export class BallData {
     x: number = 0;
@@ -26,12 +24,14 @@ export class BarData {
     }
 }
 export class GravitonData {
-    x: number = 0;
-    y: number = 0;
-    age: number = 0;
 
-    clone(): GravitonData {
-        return {...this};
+    constructor(public x: number = 0, public y: number = 0, public age: number = 0) {
+        this.x = x;
+        this.y = y;
+        this.age = age;
+    }
+    static clone(other: GravitonData): GravitonData {
+        return new GravitonData(other.x, other.y, other.age);
     }
 }
 
@@ -40,7 +40,7 @@ export class DataBuffer {
     barsDataArray: [BarData[], BarData[]] = [
         Array.from({length: 100}, () => new BarData(0)),
         Array.from({length: 100}, () => new BarData(1))];
-    gravitonsDataArray: GravitonData[][] = Array.from({length: 100}, () => []);
+    gravitonsDataArray: Map<number, GravitonData>[] = Array.from({length: 100}, () => new Map());
     nowIndex: number = 0;
     now: number = 0;
 
@@ -48,10 +48,8 @@ export class DataBuffer {
     ballThen: BallData;
     barsNow: [BarData, BarData];
     barsThen: [BarData, BarData];
-    gravitonsNow: GravitonData[];
-    gravitonsThen: GravitonData[];
-
-    producedEvents: InternEvent[] = [];
+    gravitonsNow: Map<number, GravitonData>;
+    gravitonsThen: Map<number, GravitonData>;
 
     constructor() {
         this.updateNowThenReferences();
@@ -74,31 +72,26 @@ export class DataBuffer {
         this.now++;
         this.nowIndex = (this.nowIndex + 1) % 100;
         this.updateNowThenReferences();
-        this.producedEvents = [];
     }
     reset() {
         this.ballNow = new BallData();
         this.barsNow = [new BarData(0), new BarData(1)];
-        this.gravitonsNow = [];
-        this.producedEvents = [];
+        this.gravitonsNow.clear();
     }
 
-    ballData(time: number): BallData {
-        return this.ballDataArray[time];
+    ballData(timeIndex: number): BallData {
+        return this.ballDataArray[timeIndex];
     }
-    barData(time: number, id: number): BarData {
-        return this.barsDataArray[id][time];
+    barData(timeIndex: number, id: number): BarData {
+        return this.barsDataArray[id][timeIndex];
     }
-    getGravitonData(time: number, id: number): GravitonData {
-        return this.gravitonsDataArray[id][time];
+    getGravitonData(timeIndex: number, id: number): GravitonData {
+        return this.gravitonsDataArray[timeIndex].get(id) as GravitonData;
     }
-    addGraviton(time: number, id: number, x: number, y: number): void {
+    addGraviton(timeIndex: number, id: number, x: number, y: number): void {
         let graviton = new GravitonData();
         graviton.x = x;
         graviton.y = y;
-        this.gravitonsDataArray[time][id] = graviton;
-    }
-    produceEvent(event: InternEvent) {
-        this.producedEvents.push(event);
+        this.gravitonsDataArray[timeIndex].set(id, graviton);
     }
 }

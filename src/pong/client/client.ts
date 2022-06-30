@@ -1,6 +1,7 @@
 import { ClientGame } from './game';
 import { io, Socket } from 'socket.io-client'
 import { GameEvent, GSettings } from '../common/constants';
+import { delay } from '../common/utils';
 
 /**
  * Root of the client code execution
@@ -38,6 +39,9 @@ export class ClientContext {
         /////
         this.game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, GSettings.BALL_SPEEDY_MAX);
         this.game.start();
+        delay(500).then(() => {
+            this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, 0, 0, 0);
+        })
 
         // // // outgoing events
         // const transmitEventFromGameToServer = (event: string) => {
@@ -60,11 +64,11 @@ export class ClientContext {
         // transmitEventFromServerToGame(GameEvent.UNPAUSE);
 
         // Game loop
-        let animate = () => {
+        let animate = (time: DOMHighResTimeStamp) => {
             requestAnimationFrame(animate);
             this.game?.frame();
             this.game?.render();
         }
-        animate();
+        animate(Date.now());
     }
 }

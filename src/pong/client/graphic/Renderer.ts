@@ -1,5 +1,6 @@
 import { GSettings } from "../../common/constants";
 import { BallData, BarData, DataBuffer, GravitonData } from "../../common/entities/data";
+import { AnimatedSprite } from "./AnimatedSprite";
 
 export class Renderer {
     context: CanvasRenderingContext2D;
@@ -9,9 +10,14 @@ export class Renderer {
     ballRadius: number;
     barWidth: number;
     barHeight: number;
+    gravitonSize: number;
+    gravitonAnimationOpening: AnimatedSprite;
+    gravitonAnimationPulling: AnimatedSprite;
 
     constructor(public canvas: HTMLCanvasElement, public data: DataBuffer) {
         this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        this.gravitonAnimationOpening = new AnimatedSprite("/public/img/graviton_opening.png", 128, 128, 10);
+        this.gravitonAnimationPulling = new AnimatedSprite("/public/img/graviton_pulling.png", 128, 128, 9);
     }
 
     handleResize(width: number, height: number) {
@@ -21,6 +27,7 @@ export class Renderer {
         this.ballRadius = this.ratio * GSettings.BALL_RADIUS;
         this.barWidth = this.ratio * GSettings.BAR_WIDTH;
         this.barHeight = this.ratio * GSettings.BAR_HEIGHT;
+        this.gravitonSize = this.ratio * GSettings.GRAVITON_SIZE;
         this.imageData = this.context.getImageData(0, 0, width, height);
         this.createBackground();
     }
@@ -68,17 +75,69 @@ export class Renderer {
         this.context.stroke();
     }
     drawGraviton(graviton: GravitonData) {
-
+        const [x, y] = this.gameToCanvasCoord(graviton.x - GSettings.GRAVITON_SIZE / 2, graviton.y - GSettings.GRAVITON_SIZE / 2);
+        let iFrame = Math.floor(graviton.age / 5)
+        if (iFrame < this.gravitonAnimationOpening.nFrames) {
+            this.gravitonAnimationOpening.draw(
+                this.context,
+                x, y,
+                this.gravitonSize, this.gravitonSize,
+                iFrame
+            );
+        }
+        else {
+            this.gravitonAnimationPulling.draw(
+                this.context,
+                x, y,
+                this.gravitonSize, this.gravitonSize,
+                iFrame - this.gravitonAnimationOpening.nFrames
+            );
+        }
     }
+
     render() {
         this.context.fillStyle = 'black';
         this.context.beginPath();
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         // this.drawBackground();
         this.context.stroke();
+
         this.drawBall(this.data.ballNow);
         this.drawBar(this.data.barsNow[0]);
         this.drawBar(this.data.barsNow[1]);
+        for (let graviton of this.data.gravitonsNow.values()) {
+            this.drawGraviton(graviton);
+        }
     }
 }
 
+// class VictoryAnimation {
+//     firstTime: number;
+//     lastTime: number;
+//     frameCalled: boolean = false;
+//     previousRadius: number;
+//     constructor(public context: CanvasRenderingContext2D, public data: DataBuffer, ballRadius: number) {
+//         this.previousRadius = ballRadius;
+
+//     }
+//     frame(time: number) {
+//         let elapsed;
+//         if (!this.frameCalled) {
+//             this.firstTime = time;
+//             this.frameCalled = true;
+//             elapsed = 0;
+//         }
+//         else if (time - this.firstTime > VICTORY_ANIMATION_DURATION)
+//             end();
+//         else
+//             elapsed = time - this.lastTime
+//         this.lastTime = time;
+//         let nextRadius = elapsed * VICTORY_ANIMATION_SPEED + this.previousRadius;
+//         this.context.beginPath();
+//         this.context.fillStyle = VICTORY_ANIMATION_COLOR;
+//         this.context.ellipse(this.data.ballNow.x, this.data.ballNow.x, this.previousRadius, this.previousRadius, 0, 0, 2 * Math.PI);
+//         this.context.ellipse(this.data.ballNow.x, this.data.ballNow.x, nextRadius, nextRadius, 0, 0, 2 * Math.PI);
+//         this.context.fill();
+//         this.previousRadius = nextRadius;
+//     }
+// }

@@ -1,5 +1,9 @@
 import { GameEvent, GSettings, PlayerID } from "../constants";
 import { GameState } from "../entities";
+import { delay } from "../utils";
+import { registerEvent } from "./events";
+// import { BallOutEvent } from "./events";
+
 
 /**
  * Game represents the environment representing an ongoing game between two players.
@@ -30,6 +34,12 @@ export abstract class Game {
         ]
         this.incommingEventsCallback = new Map(eventsCallbackPairs);
         this.outgoingEventsBallback = new Map();
+        registerEvent("ballOut", (time: number, playerId: number) => {
+            this.pause();
+            delay(500)
+                .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
+                .then(() => this.start());
+        })
     }
 
     onIn(event: string, callback: any) {

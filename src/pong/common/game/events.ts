@@ -19,12 +19,53 @@ export class BarInputEvent implements ExternEvent {
     }
 }
 
-type Callback = (...args: any[]) => any;
-export interface InternEvent {
-    callbacks: Callback[];
+// type BallOutArgs = [time: number, playerId: number];
+// type BallOutCallback = (...args: BallOutArgs) => void;
+// export class BallOutEvent {
+//     static callbacks: BallOutCallback[];
+//     static addCallback(callback: BallOutCallback) {
+//         BallOutEvent.callbacks.push(callback);
+//     }
+//     static events: BallOutArgs[];
+//     static produceEvent(...args: BallOutArgs) {
+//         BallOutEvent.events.push(args);
+//     }
+//     static fireEvents() {
+//         for (let event of BallOutEvent.events) {
+//             for (let callback of BallOutEvent.callbacks) {
+//                 callback(...event);
+//             }
+//         }
+//     }
+// }
+
+// export function fireAllEvents() {
+//     BallOutEvent.fireEvents();
+// }
+
+
+const allEventsCallbacks: Map<string, Function[]> = new Map();
+export function registerEvent(name: string, callback: Function) {
+    if (! allEventsCallbacks.has(name))
+        allEventsCallbacks.set(name, [callback]);
+    else
+        allEventsCallbacks.get(name)?.push(callback);
 }
 
-export class BallOutEvent {
-    static callbacks: Callback[]
-    constructor(public time: number, public playerId: number) {}
+const allEvents: Map<string, any[][]> = new Map();
+export function produceEvent(name: string, ...args: any[]) {
+    if (!allEvents.has(name))
+        allEvents.set(name, [args]);
+    else
+        allEvents.get(name)?.push(args);
+}
+
+export function fireAllEvents() {
+    for (let name of allEventsCallbacks.keys()) {
+        allEvents.get(name)?.forEach((args: any[]) => {
+            allEventsCallbacks.get(name)?.forEach((callback: Function) => callback(...args));
+        })
+        allEvents.set(name, []);
+    }
+
 }
