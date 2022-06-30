@@ -76,23 +76,24 @@ export class Renderer {
     }
     drawGraviton(graviton: GravitonData) {
         const [x, y] = this.gameToCanvasCoord(graviton.x - GSettings.GRAVITON_SIZE / 2, graviton.y - GSettings.GRAVITON_SIZE / 2);
-        let iFrame = Math.floor(graviton.age / 5)
+        let iFrame = Math.floor(graviton.age / 5);
         if (iFrame < this.gravitonAnimationOpening.nFrames) {
-            this.gravitonAnimationOpening.draw(
-                this.context,
-                x, y,
-                this.gravitonSize, this.gravitonSize,
-                iFrame
-            );
+            this.drawGravitonOpening(x, y, iFrame);
+            return;
         }
-        else {
-            this.gravitonAnimationPulling.draw(
-                this.context,
-                x, y,
-                this.gravitonSize, this.gravitonSize,
-                iFrame - this.gravitonAnimationOpening.nFrames
-            );
+        iFrame -= this.gravitonAnimationOpening.nFrames;
+        if (GSettings.GRAVITON_LIFESPAN - graviton.age >= 5 * this.gravitonAnimationOpening.nFrames) {
+            this.drawGravitonPulling(x, y, iFrame);
+            return;
         }
+        iFrame = Math.floor((GSettings.GRAVITON_LIFESPAN - graviton.age) / 5);
+        this.drawGravitonOpening(x, y, iFrame);
+    }
+    drawGravitonOpening(x: number, y: number, iFrame: number) {
+        this.gravitonAnimationOpening.draw(this.context, x, y, this.gravitonSize, this.gravitonSize, iFrame);
+    }
+    drawGravitonPulling(x: number, y: number, iFrame: number) {
+        this.gravitonAnimationPulling.draw(this.context, x, y, this.gravitonSize, this.gravitonSize, iFrame);
     }
 
     render() {

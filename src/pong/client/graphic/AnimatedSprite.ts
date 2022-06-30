@@ -13,8 +13,6 @@ export class AnimatedSprite {
         this.img.src = src;
         this.img.onload = () => {
             this.imgReady = true;
-            console.log("image w:", this.img.width);
-            console.log("image h:", this.img.height);
         };
         this.img.onerror = function() {
             console.log(`Error loading ${src}`);

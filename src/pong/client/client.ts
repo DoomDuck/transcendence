@@ -37,7 +37,7 @@ export class ClientContext {
         let game = new ClientGame(playerId);
         this.game = game;
         /////
-        this.game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, GSettings.BALL_SPEEDY_MAX);
+        this.game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
         this.game.start();
         delay(500).then(() => {
             this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, 0, 0, 0);

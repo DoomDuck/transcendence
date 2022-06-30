@@ -53,10 +53,7 @@ export class ClientGame extends Game {
             width = GSettings.SCREEN_RATIO * availableHeight;
             height = availableHeight;
         }
-        console.log(width, height);
-        console.log(this.canvas.width, this.canvas.height);
         this.renderer.handleResize(width, height);
-        console.log(this.canvas.width, this.canvas.height);
     }
     render() {
         this.renderer.render();

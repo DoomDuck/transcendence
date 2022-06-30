@@ -48,23 +48,24 @@ export class GSettings {
     static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
     // static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_RADIAL_SEGMENTS = 100;
-    static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 40;
+    static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_SPEEDX_CORNER_BOOST = GSettings.BALL_SPEEDX_INCREASE * 2;
     static readonly BALL_SPEEDX_MAX = GSettings.SCREEN_WIDTH;
-    static readonly BALL_SPEEDY_MAX = GSettings.SCREEN_WIDTH / 2;
+    static readonly BALL_SPEEDY_MAX = GSettings.SCREEN_WIDTH * 12 / 20;
+    static readonly BALL_SPEEDY_COLLISION_MAX = GSettings.BALL_SPEEDY_MAX * 2 / 3;
+    static readonly BALL_COLLISION_VY_RATIO = GSettings.BALL_SPEEDY_COLLISION_MAX / (GSettings.BAR_HEIGHT / 2 + GSettings.BALL_RADIUS);
     static readonly BALL_CONTROL_FRONTIER_X_CLIENT = GSettings.BAR_INITIALX - 1/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_CONTROL_FRONTIER_X_SERVER = GSettings.BAR_INITIALX - 2/10 * GSettings.SCREEN_WIDTH;
     static readonly BALL_SPEED_AT_LIMIT = GSettings.SCREEN_WIDTH / 20;
     static readonly BALL_CLIENT_SERVER_LERP_DIST = .05;
     static readonly BALL_CLIENT_SERVER_LERP_FACTOR = .05;
     static readonly BALL_COLOR = 'rgb(255, 255, 255)';
-    static readonly COLLISION_VY_RATIO = GSettings.BALL_SPEEDY_MAX / (GSettings.BAR_HEIGHT / 2 + GSettings.BALL_RADIUS);
 
     // GRAVITON ->
-    static readonly GRAVITON_LIFESPAN = 10000;
+    static readonly GRAVITON_LIFESPAN = 500;
     static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 10;
     static readonly GRAVITON_FORCE_WIDTH_HALF = GSettings.SCREEN_WIDTH / 10;
-    static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 8;
+    static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 4;
     static readonly GRAVITON_MAX_FORCE = 10;
 }
 

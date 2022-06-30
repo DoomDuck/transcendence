@@ -40,7 +40,7 @@ export class DataBuffer {
     barsDataArray: [BarData[], BarData[]] = [
         Array.from({length: 100}, () => new BarData(0)),
         Array.from({length: 100}, () => new BarData(1))];
-    gravitonsDataArray: Map<number, GravitonData>[] = Array.from({length: 100}, () => new Map());
+    gravitonsDataArray: Set<GravitonData>[] = Array.from({length: 100}, () => new Set());
     nowIndex: number = 0;
     now: number = 0;
 
@@ -48,8 +48,8 @@ export class DataBuffer {
     ballThen: BallData;
     barsNow: [BarData, BarData];
     barsThen: [BarData, BarData];
-    gravitonsNow: Map<number, GravitonData>;
-    gravitonsThen: Map<number, GravitonData>;
+    gravitonsNow: Set<GravitonData>;
+    gravitonsThen: Set<GravitonData>;
 
     constructor() {
         this.updateNowThenReferences();
@@ -85,13 +85,10 @@ export class DataBuffer {
     barData(timeIndex: number, id: number): BarData {
         return this.barsDataArray[id][timeIndex];
     }
-    getGravitonData(timeIndex: number, id: number): GravitonData {
-        return this.gravitonsDataArray[timeIndex].get(id) as GravitonData;
-    }
     addGraviton(timeIndex: number, id: number, x: number, y: number): void {
         let graviton = new GravitonData();
         graviton.x = x;
         graviton.y = y;
-        this.gravitonsDataArray[timeIndex].set(id, graviton);
+        this.gravitonsDataArray[timeIndex].add(graviton);
     }
 }

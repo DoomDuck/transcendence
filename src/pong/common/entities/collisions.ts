@@ -1,7 +1,7 @@
 import { GSettings } from "../constants";
 import { produceEvent } from "../game/events";
 // import { BallOutEvent } from "../game/events";
-import { DataBuffer } from "./data";
+import { BallData, DataBuffer } from "./data";
 
 function ballWallTopCollision(data: DataBuffer) {
     let ballTop = data.ballThen.y - GSettings.BALL_RADIUS;
@@ -22,7 +22,6 @@ function ballWallBottomCollision(data: DataBuffer) {
 function applyWallCollision(data: DataBuffer, dtCollision: number) {
     data.ballThen.y = data.ballNow.y + (2 * dtCollision - GSettings.GAME_STEP_S) * data.ballThen.vy;
     data.ballThen.vy = -data.ballNow.vy;
-    console.log(data.ballNow.vy, data.ballThen.vy);
 }
 
 function ballBar1Collision(data: DataBuffer) {
@@ -52,8 +51,9 @@ function applyBarCollision(data: DataBuffer, dtCollision: number, barId: number)
     let dYCollision = yBallCollision - yBarCollision;
     if (Math.abs(dYCollision) < GSettings.BALL_RADIUS + GSettings.BAR_HEIGHT / 2) {
         //emitcollision
-        data.ballThen.vx = -data.ballNow.vx;
-        let newVy = dYCollision * GSettings.COLLISION_VY_RATIO;
+        data.ballThen.vx = -(data.ballNow.vx + Math.sign(data.ballNow.vx) * GSettings.BALL_SPEEDX_INCREASE);
+        clipBallSpeedX(data.ballThen);
+        let newVy = dYCollision * GSettings.BALL_COLLISION_VY_RATIO;
         data.ballThen.x = data.ballNow.x + (2 * dtCollision - GSettings.GAME_STEP_S) * data.ballThen.vx;
         data.ballThen.y = data.ballNow.y + dtCollision * data.ballThen.vy + (GSettings.GAME_STEP_S - dtCollision) * newVy;
         data.ballThen.vy = newVy;
@@ -61,6 +61,17 @@ function applyBarCollision(data: DataBuffer, dtCollision: number, barId: number)
     else {
         //emitnocollision
     }
+}
+
+export function clipBallSpeedX(ball: BallData) {
+    let sign = Math.sign(ball.vx);
+    if (sign * ball.vx > GSettings.BALL_SPEEDX_MAX)
+        ball.vx = sign * GSettings.BALL_SPEEDX_MAX;
+}
+export function clipBallSpeedY(ball: BallData) {
+    let sign = Math.sign(ball.vy);
+    if (sign * ball.vy > GSettings.BALL_SPEEDY_MAX)
+        ball.vy = sign * GSettings.BALL_SPEEDY_MAX;
 }
 
 function clipBarPosition(data: DataBuffer, barId: number) {
