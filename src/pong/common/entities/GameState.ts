@@ -1,32 +1,9 @@
 import { fireAllEvents, type ExternEvent } from "../game/events";
-import { GSettings } from "../constants";
-import { Vector2 } from "../utils";
-import { collisions } from "./collisions";
-import { DataBuffer, GravitonData } from "./data";
-import { clipBallSpeedY } from "./collisions";
-import { applyForces, applySpeed, propagateBarInputs, updateGravitons } from "./update";
+import { DataBuffer } from "./data";
+import { updateOneStep } from "./update";
 
 export class GameState {
     data: DataBuffer = new DataBuffer();
-    events: ExternEvent[] = [];
-
-    registerEvent(event: ExternEvent) {
-        this.events.push(event);
-    }
-
-    update() {
-        for (let event of this.events) {
-            event.process(this.data);
-        }
-        this.events = [];
-        propagateBarInputs(this.data);
-        updateGravitons(this.data);
-        applyForces(this.data);
-        applySpeed(this.data);
-        collisions(this.data);
-        this.data.advance();
-        fireAllEvents();
-    }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
         this.data.reset();
@@ -34,5 +11,37 @@ export class GameState {
         this.data.ballNow.y = ballY;
         this.data.ballNow.vx = ballSpeedX;
         this.data.ballNow.vy = ballSpeedY;
+    }
+
+    update() {
+        updateOneStep(this.data);
+        fireAllEvents();
+    }
+
+    // TODO: Future events
+    registerEvent(event: ExternEvent): boolean {
+        if (event.time - this.data.now >= 100) {
+            // too old, discard
+            return false;
+        }
+        else if (event.time == this.data.now) {
+            this.data.eventsNow.push(event);
+            return true;
+        }
+        else {
+            let timeIndex = (event.time - this.data.now + this.data.nowIndex + 100) % 100;
+            this.data.eventsDataArray[timeIndex].push(event);
+            this.computeSince(timeIndex);
+            return true;
+        }
+    }
+
+    computeSince(timeIndex: number) {
+        const targetIndex = this.data.nowIndex;
+        this.data.nowIndex = timeIndex;
+        this.data.thenIndex = (timeIndex + 1) % 100;
+        while (this.data.nowIndex != targetIndex) {
+            this.update();
+        }
     }
 }

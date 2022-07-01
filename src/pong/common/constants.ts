@@ -60,6 +60,8 @@ export class GSettings {
     static readonly BALL_CLIENT_SERVER_LERP_DIST = .05;
     static readonly BALL_CLIENT_SERVER_LERP_FACTOR = .05;
     static readonly BALL_COLOR = 'rgb(255, 255, 255)';
+    static readonly BALL_POS_ERROR_MAX = .05 * GSettings.SCREEN_WIDTH;
+    static readonly BALL_SPEED_ERROR_MAX = .05 * GSettings.SCREEN_WIDTH;
 
     // GRAVITON ->
     static readonly GRAVITON_LIFESPAN = 500;

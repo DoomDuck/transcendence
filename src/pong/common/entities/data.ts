@@ -1,4 +1,5 @@
 import { GSettings } from "../constants";
+import { type ExternEvent } from "../game/events";
 
 export class BallData {
     x: number = 0;
@@ -11,6 +12,7 @@ export class BarData {
     y: number = 0;
     upPressed: boolean = false;
     downPressed: boolean = false;
+
     constructor(barId: number) {
         this.x = (barId == 0 ? -1: 1) * GSettings.BAR_INITIALX;
     }
@@ -24,12 +26,12 @@ export class BarData {
     }
 }
 export class GravitonData {
-
     constructor(public x: number = 0, public y: number = 0, public age: number = 0) {
         this.x = x;
         this.y = y;
         this.age = age;
     }
+
     static clone(other: GravitonData): GravitonData {
         return new GravitonData(other.x, other.y, other.age);
     }
@@ -41,7 +43,10 @@ export class DataBuffer {
         Array.from({length: 100}, () => new BarData(0)),
         Array.from({length: 100}, () => new BarData(1))];
     gravitonsDataArray: Set<GravitonData>[] = Array.from({length: 100}, () => new Set());
+    eventsDataArray: ExternEvent[][] = Array.from({length: 100}, () => []);
+
     nowIndex: number = 0;
+    thenIndex: number = 1;
     now: number = 0;
 
     ballNow: BallData;
@@ -50,6 +55,8 @@ export class DataBuffer {
     barsThen: [BarData, BarData];
     gravitonsNow: Set<GravitonData>;
     gravitonsThen: Set<GravitonData>;
+    eventsNow: ExternEvent[];
+    eventsThen: ExternEvent[];
 
     constructor() {
         this.updateNowThenReferences();
@@ -62,15 +69,14 @@ export class DataBuffer {
         this.barsThen = [this.barsDataArray[0][this.thenIndex], this.barsDataArray[1][this.thenIndex]];
         this.gravitonsNow = this.gravitonsDataArray[this.nowIndex];
         this.gravitonsThen = this.gravitonsDataArray[this.thenIndex];
-    }
-
-    get thenIndex(): number {
-        return (this.nowIndex + 1) % 100;
+        this.eventsNow = this.eventsDataArray[this.nowIndex];
+        this.eventsThen = this.eventsDataArray[this.thenIndex];
     }
 
     advance() {
         this.now++;
-        this.nowIndex = (this.nowIndex + 1) % 100;
+        this.nowIndex = this.thenIndex;
+        this.thenIndex = (this.thenIndex + 1) % 100;
         this.updateNowThenReferences();
     }
     reset() {
@@ -79,16 +85,11 @@ export class DataBuffer {
         this.gravitonsNow.clear();
     }
 
-    ballData(timeIndex: number): BallData {
-        return this.ballDataArray[timeIndex];
-    }
-    barData(timeIndex: number, id: number): BarData {
-        return this.barsDataArray[id][timeIndex];
-    }
     addGraviton(timeIndex: number, id: number, x: number, y: number): void {
         let graviton = new GravitonData();
         graviton.x = x;
         graviton.y = y;
         this.gravitonsDataArray[timeIndex].add(graviton);
     }
+
 }

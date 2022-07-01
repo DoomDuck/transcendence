@@ -1,5 +1,5 @@
-import { KeyValue } from "../constants";
-import { DataBuffer } from "../entities/data";
+import { GSettings, KeyValue } from "../constants";
+import { BallData, DataBuffer } from "../entities/data";
 import { Game } from "./Game";
 
 export interface ExternEvent {
@@ -16,6 +16,29 @@ export class BarInputEvent implements ExternEvent {
             data.barsNow[this.barId].upPressed = this.pressed;
         else
             data.barsNow[this.barId].downPressed = this.pressed;
+    }
+}
+
+function ballErrors(ball: BallData, x: number, y: number, vx: number, vy: number) {
+    return [
+        Math.sqrt((ball.x - x) ** 2 + (ball.y - y) ** 2),
+        Math.sqrt((ball.vx - vx) ** 2 + (ball.vy - vy) ** 2)
+    ]
+}
+export class SetBallEvent implements ExternEvent {
+    constructor(public time: number, public x: number, public y: number, public vx: number, public vy: number) {}
+
+    process(data: DataBuffer) {
+        let [posError, speedError] = ballErrors(data.ballNow, this.x, this.y, this.vx, this.vy);
+        if (posError > GSettings.BALL_POS_ERROR_MAX || speedError > GSettings.BALL_SPEED_ERROR_MAX) {
+            data.ballNow.x = this.x;
+            data.ballNow.y = this.y;
+            data.ballNow.vx = this.vx;
+            data.ballNow.vy = this.vy;
+
+            // return ["ball"];
+        }
+        // return undefined;
     }
 }
 

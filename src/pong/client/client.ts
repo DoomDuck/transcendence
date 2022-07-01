@@ -39,9 +39,15 @@ export class ClientContext {
         /////
         this.game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
         this.game.start();
-        delay(500).then(() => {
-            this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, 0, 0, 0);
-        })
+        // delay(500).then(() => {
+        //     this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, 0, 0, 0);
+        // })
+        let cpt = 0;
+        setInterval(() => {
+            let x = Math.random() * GSettings.GAME_WIDTH / 2 - GSettings.GAME_WIDTH / 4;
+            let y = Math.random() * GSettings.GAME_HEIGHT - GSettings.GAME_HEIGHT / 2;
+            this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, cpt++, x, y);
+        }, 3000)
 
         // // // outgoing events
         // const transmitEventFromGameToServer = (event: string) => {
@@ -68,6 +74,8 @@ export class ClientContext {
             requestAnimationFrame(animate);
             this.game?.frame();
             this.game?.render();
+            // if (this.game)
+            //     this.game.pause();
         }
         animate(Date.now());
     }
