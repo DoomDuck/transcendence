@@ -1,6 +1,7 @@
 import { GSettings } from "../../common/constants";
 import { BallData, BarData, DataBuffer, GravitonData } from "../../common/entities/data";
 import { AnimatedSprite } from "./AnimatedSprite";
+import { VictoryAnimation } from "./animation";
 
 export class Renderer {
     context: CanvasRenderingContext2D;
@@ -13,6 +14,7 @@ export class Renderer {
     gravitonSize: number;
     gravitonAnimationOpening: AnimatedSprite;
     gravitonAnimationPulling: AnimatedSprite;
+    victoryAnimation?: VictoryAnimation;
 
     constructor(public canvas: HTMLCanvasElement, public data: DataBuffer) {
         this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -95,8 +97,19 @@ export class Renderer {
     drawGravitonPulling(x: number, y: number, iFrame: number) {
         this.gravitonAnimationPulling.draw(this.context, x, y, this.gravitonSize, this.gravitonSize, iFrame);
     }
+    startVictoryAnimation(thenCallback: () => any) {
+        this.victoryAnimation = new VictoryAnimation(this, () => {
+            this.victoryAnimation = undefined;
+            thenCallback();
+        });
+    }
+    startVictoryAnimationAsync(): Promise<void> {
+        return new Promise((resolve) => {
+            this.startVictoryAnimation(resolve);
+        })
+    }
 
-    render() {
+    render(time: number) {
         this.context.fillStyle = 'black';
         this.context.beginPath();
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -109,36 +122,8 @@ export class Renderer {
         for (let graviton of this.data.gravitonsNow.values()) {
             this.drawGraviton(graviton);
         }
+
+        this.victoryAnimation?.frame(time)
     }
 }
 
-// class VictoryAnimation {
-//     firstTime: number;
-//     lastTime: number;
-//     frameCalled: boolean = false;
-//     previousRadius: number;
-//     constructor(public context: CanvasRenderingContext2D, public data: DataBuffer, ballRadius: number) {
-//         this.previousRadius = ballRadius;
-
-//     }
-//     frame(time: number) {
-//         let elapsed;
-//         if (!this.frameCalled) {
-//             this.firstTime = time;
-//             this.frameCalled = true;
-//             elapsed = 0;
-//         }
-//         else if (time - this.firstTime > VICTORY_ANIMATION_DURATION)
-//             end();
-//         else
-//             elapsed = time - this.lastTime
-//         this.lastTime = time;
-//         let nextRadius = elapsed * VICTORY_ANIMATION_SPEED + this.previousRadius;
-//         this.context.beginPath();
-//         this.context.fillStyle = VICTORY_ANIMATION_COLOR;
-//         this.context.ellipse(this.data.ballNow.x, this.data.ballNow.x, this.previousRadius, this.previousRadius, 0, 0, 2 * Math.PI);
-//         this.context.ellipse(this.data.ballNow.x, this.data.ballNow.x, nextRadius, nextRadius, 0, 0, 2 * Math.PI);
-//         this.context.fill();
-//         this.previousRadius = nextRadius;
-//     }
-// }

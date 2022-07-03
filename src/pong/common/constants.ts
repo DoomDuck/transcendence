@@ -69,6 +69,11 @@ export class GSettings {
     static readonly GRAVITON_FORCE_WIDTH_HALF = GSettings.SCREEN_WIDTH / 10;
     static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 4;
     static readonly GRAVITON_MAX_FORCE = 10;
+
+    // ANIMATION
+    static readonly VICTORY_ANIMATION_DURATION_MS = 1500
+    static readonly VICTORY_ANIMATION_SPEED = GSettings.BALL_SPEEDY_MAX;
+    static readonly VICTORY_ANIMATION_COLOR = 'rgb(255, 0, 0)'
 }
 
 export enum PlayerID {

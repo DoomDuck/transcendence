@@ -34,12 +34,12 @@ export abstract class Game {
         ]
         this.incommingEventsCallback = new Map(eventsCallbackPairs);
         this.outgoingEventsBallback = new Map();
-        registerEvent("ballOut", (time: number, playerId: number) => {
-            this.pause();
-            delay(500)
-                .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
-                .then(() => this.start());
-        })
+        // registerEvent("ballOut", (time: number, playerId: number) => {
+        //     this.pause();
+        //     delay(500)
+        //         .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
+        //         .then(() => this.start());
+        // });
     }
 
     onIn(event: string, callback: any) {

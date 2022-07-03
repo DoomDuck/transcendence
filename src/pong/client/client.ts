@@ -73,7 +73,7 @@ export class ClientContext {
         let animate = (time: DOMHighResTimeStamp) => {
             requestAnimationFrame(animate);
             this.game?.frame();
-            this.game?.render();
+            this.game?.render(time);
             // if (this.game)
             //     this.game.pause();
         }
