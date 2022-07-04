@@ -31,7 +31,7 @@ settings:
   svelte3/typescript: true
 
 # Add more checks here
-rules:
+rules: {}
 
 # Configure for the web
 env:
