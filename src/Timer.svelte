@@ -3,7 +3,7 @@
 
   let start = new Date();
   let now: Date = start;
-  let interval_id = null;
+  let interval_id: ReturnType<typeof setInterval> | null = null;
 
   let duration: number;
   $: duration = Math.floor((now.getTime() - start.getTime()) / 1000);
@@ -22,7 +22,7 @@
   }
 
   function stop_timer() {
-    if (!interval_id) return;
+    if (interval_id == null) return;
     clearInterval(interval_id);
     interval_id = null;
   }
@@ -43,7 +43,7 @@
   </div>
 
   <div id="buttons">
-    {#if !interval_id}
+    {#if interval_id == null}
       <div style="background-color: olive;" on:click={start_timer}>START</div>
     {:else}
       <div style="background-color: darkcyan" on:click={stop_timer}>STOP</div>

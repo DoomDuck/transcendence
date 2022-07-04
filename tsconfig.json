@@ -1,5 +1,6 @@
 {
-  "include":["src/**/*.ts"],
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include":["src/**/*.ts", "src/**/*.svelte"],
   
   "compilerOptions": {
     "strictNullChecks": true

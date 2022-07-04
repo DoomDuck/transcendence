@@ -1,15 +1,36 @@
 root: true
+
 extends:
   - "eslint:recommended"
   - "plugin:@typescript-eslint/recommended"
+  - "plugin:@typescript-eslint/recommended-requiring-type-checking"
+
 parser: "@typescript-eslint/parser"
+
 parserOptions:
   project:
     - ./tsconfig.json
+  extraFileExtensions:
+    - .svelte
+
+env:
+  es6: true
+  browser: true
+
 plugins:
     - "@typescript-eslint"
+    - svelte3
+
+overrides:
+  - processor: svelte3/svelte3
+    files:
+      - "**/*.svelte"
+
 rules:
   "@typescript-eslint/strict-boolean-expressions":
     - 2
     - allowString: false
       allowNumber: false
+
+settings:
+  svelte3/typescript: true
