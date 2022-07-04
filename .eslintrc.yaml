@@ -1,3 +1,4 @@
+# This config is the base config
 root: true
 
 extends:
@@ -5,32 +6,34 @@ extends:
   - "plugin:@typescript-eslint/recommended"
   - "plugin:@typescript-eslint/recommended-requiring-type-checking"
 
+# Typescript + Svelte support
 parser: "@typescript-eslint/parser"
 
+# Configure parsers
 parserOptions:
   project:
     - ./tsconfig.json
   extraFileExtensions:
     - .svelte
 
-env:
-  es6: true
-  browser: true
-
 plugins:
     - "@typescript-eslint"
     - svelte3
 
+# Use others checks for Svelte
 overrides:
   - processor: svelte3/svelte3
     files:
       - "**/*.svelte"
 
-rules:
-  "@typescript-eslint/strict-boolean-expressions":
-    - 2
-    - allowString: false
-      allowNumber: false
-
+# Have Svelte linter use typescript
 settings:
   svelte3/typescript: true
+
+# Add more checks here
+rules:
+
+# Configure for the web
+env:
+  es6: true
+  browser: true
