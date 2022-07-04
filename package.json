@@ -10,6 +10,7 @@
     "build": "webpack",
     "build:dev": "webpack --watch",
     "format": "./scripts/format.sh",
+    "lint": "eslint",
     "check_format": "./scripts/check_format.sh",
     "setup_hooks": "./scripts/hooks/setup.sh",
     "remove_hooks": "./scripts/hooks/remove.sh"
