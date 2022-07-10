@@ -1,6 +1,6 @@
 import { fireAllEvents, type ExternEvent } from "../game/events";
 import { DataBuffer } from "./data";
-import { updateOneStep } from "./update";
+import { updateOneStep, updateOneStepNoErasure } from "./update";
 
 export class GameState {
     data: DataBuffer = new DataBuffer();
@@ -18,30 +18,33 @@ export class GameState {
         fireAllEvents();
     }
 
+    reUpdate() {
+        updateOneStepNoErasure(this.data);
+    }
+
     // TODO: Future events
     registerEvent(event: ExternEvent): boolean {
-        if (event.time - this.data.now >= 100) {
-            // too old, discard
+        if (Math.abs(event.time - this.data.now) >= 100) {
+            // too old or too far, discard
             return false;
         }
         else if (event.time == this.data.now) {
             this.data.eventsNow.push(event);
             return true;
         }
-        else {
-            let timeIndex = (event.time - this.data.now + this.data.nowIndex + 100) % 100;
-            this.data.eventsDataArray[timeIndex].push(event);
-            this.computeSince(timeIndex);
+        else if (event.time < this.data.now) {
+            // past event
+            let now = this.data.now;
+            this.data.goBackTo(event.time);
+            this.data.eventsNow.push(event);
+            while (this.data.now != now) {
+                this.reUpdate();
+            }
             return true;
         }
-    }
-
-    computeSince(timeIndex: number) {
-        const targetIndex = this.data.nowIndex;
-        this.data.nowIndex = timeIndex;
-        this.data.thenIndex = (timeIndex + 1) % 100;
-        while (this.data.nowIndex != targetIndex) {
-            this.update();
+        else {
+            // future event
+            return true;
         }
     }
 }

@@ -29,13 +29,15 @@ export class SetBallEvent implements ExternEvent {
     constructor(public time: number, public x: number, public y: number, public vx: number, public vy: number) {}
 
     process(data: DataBuffer) {
+
         let [posError, speedError] = ballErrors(data.ballNow, this.x, this.y, this.vx, this.vy);
+        console.log(`set ball event: posError = ${posError}, speedError = ${speedError}`);
         if (posError > GSettings.BALL_POS_ERROR_MAX || speedError > GSettings.BALL_SPEED_ERROR_MAX) {
             data.ballNow.x = this.x;
             data.ballNow.y = this.y;
             data.ballNow.vx = this.vx;
             data.ballNow.vy = this.vy;
-
+            console.log('correcting ball');
             // return ["ball"];
         }
         // return undefined;

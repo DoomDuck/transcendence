@@ -5,7 +5,6 @@ import { VictoryAnimation } from "./animation";
 
 export class Renderer {
     context: CanvasRenderingContext2D;
-    imageData: ImageData;
     ratio: number;
     background: ImageData;
     ballRadius: number;
@@ -30,7 +29,6 @@ export class Renderer {
         this.barWidth = this.ratio * GSettings.BAR_WIDTH;
         this.barHeight = this.ratio * GSettings.BAR_HEIGHT;
         this.gravitonSize = this.ratio * GSettings.GRAVITON_SIZE;
-        this.imageData = this.context.getImageData(0, 0, width, height);
         this.createBackground();
     }
 
@@ -39,22 +37,31 @@ export class Renderer {
         const height = this.canvas.height;
         const blockSize = this.canvas.height / 20;
 
-        this.context.fillStyle = `rgb(0, 0, 0)`;
+        this.context.fillStyle = `rgb(0, 0, 0, 255)`;
+        this.context.beginPath();
         this.context.fillRect(0, 0, width, height);
+        this.context.stroke();
 
         this.context.fillStyle = `rgb(173, 173, 173)`;
+        this.context.beginPath();
         this.context.fillRect(0, 0, width, blockSize);
+        this.context.stroke();
+        this.context.beginPath();
         this.context.fillRect(0, height - blockSize, width, blockSize);
+        this.context.stroke();
 
         for (let step = 1; step < 20; step += 2) {
+            this.context.beginPath();
             this.context.fillRect(width / 2 - blockSize / 2, step * blockSize, blockSize, blockSize);
+            this.context.stroke();
         }
-        this.background = this.context.createImageData(width, height);
-        this.background.data.set(this.context.getImageData(0, 0, width, height).data);
+        this.background = this.context.getImageData(0, 0, width, height);
     }
 
     drawBackground() {
-        this.imageData.data.set(this.background.data);
+        // this.imageData.data.set(this.background.data);
+        // this.context.getImageData(0, 0, this.canvas.width, this.canvas.height).data.set(this.background.data);
+        this.context.putImageData(this.background, 0, 0);
     }
 
     gameToCanvasCoord(x: number, y: number) {
@@ -110,11 +117,12 @@ export class Renderer {
     }
 
     render(time: number) {
+        if (this.victoryAnimation) {
+            this.victoryAnimation.frame(time);
+            return;
+        }
         this.context.fillStyle = 'black';
-        this.context.beginPath();
-        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.drawBackground();
-        this.context.stroke();
+        this.drawBackground();
 
         this.drawBall(this.data.ballNow);
         this.drawBar(this.data.barsNow[0]);
@@ -122,8 +130,6 @@ export class Renderer {
         for (let graviton of this.data.gravitonsNow.values()) {
             this.drawGraviton(graviton);
         }
-
-        this.victoryAnimation?.frame(time)
     }
 }
 

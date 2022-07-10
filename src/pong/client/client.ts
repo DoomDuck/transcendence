@@ -2,6 +2,8 @@ import { ClientGame } from './game';
 import { io, Socket } from 'socket.io-client'
 import { GameEvent, GSettings } from '../common/constants';
 import { delay } from '../common/utils';
+import { SetBallEvent } from '../common/game/events';
+import { BallData } from '../common/entities/data';
 
 /**
  * Root of the client code execution
@@ -39,15 +41,18 @@ export class ClientContext {
         /////
         this.game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
         this.game.start();
-        // delay(500).then(() => {
-        //     this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, 0, 0, 0);
-        // })
         let cpt = 0;
         setInterval(() => {
             let x = Math.random() * GSettings.GAME_WIDTH / 2 - GSettings.GAME_WIDTH / 4;
             let y = Math.random() * GSettings.GAME_HEIGHT - GSettings.GAME_HEIGHT / 2;
             this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, cpt++, x, y);
-        }, 3000)
+        }, 3000);
+        // simple testing
+        // setInterval(() => {
+        //     let ball = this.game?.state.data.ballNow as BallData;
+        //     if (Math.abs(ball.x) < 2 / 3 * GSettings.GAME_WIDTH && this.game?.state.data.now as number > 100)
+        //         this.game?.state.registerEvent(new SetBallEvent(this.game?.state.data.now - 50, ball.x + GSettings.BALL_POS_ERROR_MAX * 1.1, ball.y, ball.vx, ball.vy));
+        // }, 1000);
 
         // // // outgoing events
         // const transmitEventFromGameToServer = (event: string) => {

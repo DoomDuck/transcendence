@@ -6,8 +6,17 @@ import { collisions } from "./collisions";
 
 export function updateOneStep(data: DataBuffer) {
     processExternEvents(data);
+    eraseExternEventsThen(data);
     propagateBarInputs(data);
     updateGravitons(data);
+    applyForces(data);
+    applySpeed(data);
+    collisions(data);
+    data.advance();
+}
+
+export function updateOneStepNoErasure(data: DataBuffer) {
+    processExternEvents(data);
     applyForces(data);
     applySpeed(data);
     collisions(data);
@@ -18,6 +27,9 @@ function processExternEvents(data: DataBuffer) {
     for (let event of data.eventsNow) {
         event.process(data);
     }
+}
+
+function eraseExternEventsThen(data: DataBuffer) {
     data.eventsThen.splice(0, data.eventsThen.length);
 }
 

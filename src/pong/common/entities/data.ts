@@ -80,6 +80,10 @@ export class DataBuffer {
         this.updateNowThenReferences();
     }
     reset() {
+        this.now = 0;
+        this.nowIndex = 0;
+        this.thenIndex = 0;
+        this.updateNowThenReferences();
         this.ballNow = new BallData();
         this.barsNow = [new BarData(0), new BarData(1)];
         this.gravitonsNow.clear();
@@ -92,4 +96,11 @@ export class DataBuffer {
         this.gravitonsDataArray[timeIndex].add(graviton);
     }
 
+    goBackTo(time: number) {
+        let timeIndex = (time - this.now + this.nowIndex + 100) % 100;
+        this.now = time;
+        this.nowIndex = timeIndex;
+        this.thenIndex = (timeIndex + 1) % 100;
+        this.updateNowThenReferences();
+    }
 }

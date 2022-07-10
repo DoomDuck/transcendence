@@ -2,7 +2,6 @@ import { GameEvent, GSettings, PlayerID } from "../constants";
 import { GameState } from "../entities";
 import { delay } from "../utils";
 import { registerEvent } from "./events";
-// import { BallOutEvent } from "./events";
 
 
 /**
@@ -17,46 +16,40 @@ export abstract class Game {
     timeAccumulated: number = 0;
     paused: boolean = true;
     score: [number, number] = [0, 0];
-    incommingEventsCallback: Map<string, any>;
-    outgoingEventsBallback: Map<string, any>;
+    // incommingEventsCallback: Map<string, any>;
+    // outgoingEventsBallback: Map<string, any>;
 
     constructor () {
         this.state;
         this.lastTime = 0;
         this.timeAccumulated = 0;
         this.paused = true;
-        const eventsCallbackPairs: [string, any][] = [
-            [GameEvent.START, this.start.bind(this)],
-            [GameEvent.PAUSE, this.pause.bind(this)],
-            [GameEvent.UNPAUSE, this.unpause.bind(this)],
-            [GameEvent.RESET, this.reset.bind(this)],
-            [GameEvent.GOAL, this.goal.bind(this)],
-        ]
-        this.incommingEventsCallback = new Map(eventsCallbackPairs);
-        this.outgoingEventsBallback = new Map();
-        // registerEvent("ballOut", (time: number, playerId: number) => {
-        //     this.pause();
-        //     delay(500)
-        //         .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
-        //         .then(() => this.start());
-        // });
+        // const eventsCallbackPairs: [string, any][] = [
+        //     [GameEvent.START, this.start.bind(this)],
+        //     [GameEvent.PAUSE, this.pause.bind(this)],
+        //     [GameEvent.UNPAUSE, this.unpause.bind(this)],
+        //     [GameEvent.RESET, this.reset.bind(this)],
+        //     [GameEvent.GOAL, this.goal.bind(this)],
+        // ]
+        // this.incommingEventsCallback = new Map(eventsCallbackPairs);
+        // this.outgoingEventsBallback = new Map();
     }
 
-    onIn(event: string, callback: any) {
-        this.incommingEventsCallback.set(event, callback);
-    }
+    // onIn(event: string, callback: any) {
+    //     this.incommingEventsCallback.set(event, callback);
+    // }
 
-    onOut(event: string, callback: any) {
-        this.outgoingEventsBallback.set(event, callback);
-    }
+    // onOut(event: string, callback: any) {
+    //     this.outgoingEventsBallback.set(event, callback);
+    // }
 
-    emitOut(event: string, ...args: any[]) {
-        this.outgoingEventsBallback.get(event)(...args);
-    }
+    // emitOut(event: string, ...args: any[]) {
+    //     this.outgoingEventsBallback.get(event)(...args);
+    // }
 
-    emitIn(event: string, ...args: any[]) {
-        this.incommingEventsCallback.get(event)(...args);
-    }
+    // emitIn(event: string, ...args: any[]) {
+    //     this.incommingEventsCallback.get(event)(...args);
+    // }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
         console.log('Game reset');

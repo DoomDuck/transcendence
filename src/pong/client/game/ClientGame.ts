@@ -44,9 +44,9 @@ export class ClientGame extends Game {
         registerEvent("ballOut", (time: number, playerId: number) => {
             this.pause();
             this.renderer.startVictoryAnimationAsync()
-                .then(() => delay(500))
-                .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
-                .then(() => this.start());
+            .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
+            .then(() => delay(500))
+            .then(() => this.start());
         });
     }
 
