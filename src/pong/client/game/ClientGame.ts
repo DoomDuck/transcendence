@@ -64,6 +64,7 @@ export class ClientGame extends Game {
         }
         this.renderer.handleResize(width, height);
     }
+
     render(time: number) {
         this.renderer.render(time);
     }

@@ -2,17 +2,16 @@ import { GSettings } from "../../common/constants";
 import { DataBuffer } from "../../common/entities/data";
 import { Renderer } from "./Renderer";
 
-export class VictoryAnimation {
+export abstract class Animation {
     firstTime: number;
     lastTime: number;
     frameCalled: boolean = false;
-    previousRadius: number;
     ended: boolean = false;
-    constructor(public renderer: Renderer, public thenCallback: () => any) {
-        this.previousRadius = renderer.ballRadius;
-    }
+
+    constructor(public renderer: Renderer, public duration: number, public thenCallback: () => any) {}
+
     frame(time: number) {
-        if (time - this.firstTime > GSettings.VICTORY_ANIMATION_DURATION_MS) {
+        if (time - this.firstTime > this.duration) {
             if (!this.ended)
                 this.thenCallback();
             this.ended = true;
@@ -27,6 +26,19 @@ export class VictoryAnimation {
         else
             elapsed = time - this.lastTime;
         this.lastTime = time;
+        this.draw(elapsed);
+    }
+
+    abstract draw(elapsed: number): void;
+}
+
+export class VictoryAnimation extends Animation {
+    previousRadius: number;
+    constructor(renderer: Renderer, thenCallback: () => any) {
+        super(renderer, GSettings.VICTORY_ANIMATION_DURATION_MS, thenCallback);
+        this.previousRadius = renderer.ballRadius;
+    }
+    draw(elapsed: number) {
         let nextRadius = elapsed * GSettings.VICTORY_ANIMATION_SPEED + this.previousRadius;
         this.renderer.context.beginPath();
         this.renderer.context.fillStyle = GSettings.VICTORY_ANIMATION_COLOR;
