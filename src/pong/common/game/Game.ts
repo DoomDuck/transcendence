@@ -8,9 +8,9 @@ import { registerEvent } from "./events";
  * Game represents the environment representing an ongoing game between two players.
  * It is meant to be the bridge between the 'unanimated' game state and the outside
  * (i.e. all the communication + game loop and time-related problematics).
- * Extended in the server (ServerGame), as well as in the client (ClientGame).
+ * Instanciated by both client (in ClientGameManager) and server (in ServerGameManager)
  */
-export abstract class Game {
+export class Game {
     state: GameState = new GameState();
     lastTime: number = 0;
     timeAccumulated: number = 0;

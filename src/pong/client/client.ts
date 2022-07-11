@@ -1,4 +1,4 @@
-import { ClientGame } from './game';
+import { ClientGameManager } from './game';
 import { io, Socket } from 'socket.io-client'
 import { GameEvent, GSettings } from '../common/constants';
 import { delay } from '../common/utils';
@@ -12,7 +12,7 @@ import { BallData } from '../common/entities/data';
  * player 1, player 2 or observer (this is only relevant regarding the control the client will have)
  */
 export class ClientContext {
-    game?: ClientGame;
+    gameManager?: ClientGameManager;
     socket: Socket;
     gameContainer: HTMLDivElement;
     gameRendererContainer: HTMLDivElement;
@@ -36,22 +36,24 @@ export class ClientContext {
 
     startGame(playerId: number) {
         // game
-        let game = new ClientGame(playerId);
-        this.game = game;
+        this.gameManager = new ClientGameManager(playerId);
+        let game = this.gameManager.game;
         /////
-        this.game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
-        this.game.start();
+        game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
+        game.start();
         let cpt = 0;
+        let spawnWidth = GSettings.GAME_WIDTH / 2;
+        let spawnHeight = GSettings.GAME_HEIGHT - GSettings.GRAVITON_SIZE;
         setInterval(() => {
-            let x = Math.random() * GSettings.GAME_WIDTH / 2 - GSettings.GAME_WIDTH / 4;
-            let y = Math.random() * GSettings.GAME_HEIGHT - GSettings.GAME_HEIGHT / 2;
-            this.game?.state.data.addGraviton(this.game?.state.data.nowIndex, cpt++, x, y);
+            let x = Math.random() * spawnWidth - spawnWidth / 2;
+            let y = Math.random() * spawnHeight - spawnHeight / 2;
+            game.state.data.addGraviton(game.state.data.nowIndex, cpt++, x, y);
         }, 3000);
         // simple testing
         // setInterval(() => {
-        //     let ball = this.game?.state.data.ballNow as BallData;
-        //     if (Math.abs(ball.x) < 2 / 3 * GSettings.GAME_WIDTH && this.game?.state.data.now as number > 100)
-        //         this.game?.state.registerEvent(new SetBallEvent(this.game?.state.data.now - 50, ball.x + GSettings.BALL_POS_ERROR_MAX * 1.1, ball.y, ball.vx, ball.vy));
+        //     let ball = this.game.state.data.ballNow as BallData;
+        //     if (Math.abs(ball.x) < 2 / 3 * GSettings.GAME_WIDTH && this.game.state.data.now as number > 100)
+        //         this.game.state.registerEvent(new SetBallEvent(this.game.state.data.now - 50, ball.x + GSettings.BALL_POS_ERROR_MAX * 1.1, ball.y, ball.vx, ball.vy));
         // }, 1000);
 
         // // // outgoing events
@@ -77,10 +79,8 @@ export class ClientContext {
         // Game loop
         let animate = (time: DOMHighResTimeStamp) => {
             requestAnimationFrame(animate);
-            this.game?.frame();
-            this.game?.render(time);
-            // if (this.game)
-            //     this.game.pause();
+            game.frame();
+            this.gameManager?.render(time);
         }
         animate(Date.now());
     }

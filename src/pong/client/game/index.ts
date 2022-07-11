@@ -1,1 +1,1 @@
-export { ClientGame } from "./ClientGame";
+export { ClientGameManager } from "./ClientGameManager";

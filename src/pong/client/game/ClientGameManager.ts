@@ -10,7 +10,8 @@ import { delay } from '../../common/utils';
  * It adds to Game the rendering capability, the handling and transmission
  * to the server of the client's keyboard input.
  */
-export class ClientGame extends Game {
+export class ClientGameManager {
+    game: Game;
     playerId: PlayerID;
     otherPlayerId: PlayerID;
     container: HTMLDivElement;
@@ -18,7 +19,7 @@ export class ClientGame extends Game {
     renderer: Renderer;
 
     constructor(playerId: PlayerID) {
-        super();
+        this.game = new Game();
         // player-realted info
         this.playerId = playerId;
         this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
@@ -28,13 +29,13 @@ export class ClientGame extends Game {
         // this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
         // this.onIn(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
         // this.onIn(GameEvent.RECEIVE_SET_BALL, ball.handleReceiveSetBall.bind(ball));
-        window.addEventListener('keydown',(e: KeyboardEvent) => handleKeydown(e, this.state), false);
-        window.addEventListener('keyup',(e: KeyboardEvent) => handleKeyup(e, this.state), false);
+        window.addEventListener('keydown',(e: KeyboardEvent) => handleKeydown(e, this.game.state), false);
+        window.addEventListener('keyup',(e: KeyboardEvent) => handleKeyup(e, this.game.state), false);
 
         // HTML
         this.container = document.getElementById('game-container') as HTMLDivElement;
         this.canvas = document.getElementById('game-screen') as HTMLCanvasElement;
-        this.renderer = new Renderer(this.canvas, this.state.data);
+        this.renderer = new Renderer(this.canvas, this.game.state.data);
 
         // scene
         this.handleDisplayResize();
@@ -42,12 +43,12 @@ export class ClientGame extends Game {
         // callbacks
         window.addEventListener("resize", () => this.handleDisplayResize());
         registerEvent("ballOut", (time: number, playerId: number) => {
-            this.pause();
+            this.game.pause();
             this.renderer.startVictoryAnimationAsync()
-            .then(() => this.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
+            .then(() => this.game.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))
             .then(() => this.renderer.scorePanels.increment(playerId))
             .then(() => delay(500))
-            .then(() => this.start());
+            .then(() => this.game.start());
         });
     }
 
