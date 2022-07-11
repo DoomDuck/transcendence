@@ -18,10 +18,14 @@ export class GSettings {
     static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
     static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
 
-    // UID
+    // UID ----->
     static readonly SCORE_SIZE = GSettings.SCREEN_WIDTH / 30;
-    static readonly SCORE_X = GSettings.SCREEN_WIDTH / 10;
+    static readonly SCORE_X = GSettings.SCREEN_WIDTH / 20;
     static readonly SCORE_Y = -GSettings.GAME_HEIGHT * (1 / 2 - 1 / 10);
+    static readonly SCORE_PANEL_CANVAS_WIDTH = 200;
+    static readonly SCORE_PANEL_CANVAS_HEIGHT = 100;
+    static readonly SCORE_PANEL_CANVAS_FILLSTYLE = "white";
+    static readonly SCORE_PANEL_CANVAS_FONT = "64px Avenir Medium";
 
     // PHYSIC -->
     // static readonly DELTA_T = 1000 / 60;
@@ -71,10 +75,14 @@ export class GSettings {
     static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 4;
     static readonly GRAVITON_MAX_FORCE = 10;
 
-    // ANIMATION
-    static readonly VICTORY_ANIMATION_DURATION_MS = 1500
+    // ANIMATION >
+    static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
     static readonly VICTORY_ANIMATION_SPEED = GSettings.BALL_SPEEDY_MAX;
-    static readonly VICTORY_ANIMATION_COLOR = 'rgb(255, 0, 0)'
+    static readonly VICTORY_ANIMATION_COLOR = 'rgb(255, 0, 0)';
+
+    // BACKGROUND
+    static readonly BACKGROUND_COLOR_GREY = 'rgb(173, 173, 173)';
+    static readonly BACKGROUND_N_SUBDIVISIONS = 25;
 }
 
 export enum PlayerID {

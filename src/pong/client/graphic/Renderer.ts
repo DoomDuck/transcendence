@@ -1,8 +1,8 @@
 import { GSettings } from "../../common/constants";
 import { BallData, BarData, DataBuffer, GravitonData } from "../../common/entities/data";
-import { AnimatedSprite } from "./AnimatedSprite";
+import { MultiframeSprite } from "./MultiframeSprite";
 import { VictoryAnimation } from "./animation";
-import { SingleNumberPanel } from "./score";
+import { ScorePanels } from "./score";
 
 export class Renderer {
     context: CanvasRenderingContext2D;
@@ -12,19 +12,17 @@ export class Renderer {
     barWidth: number;
     barHeight: number;
     gravitonSize: number;
-    gravitonAnimationOpening: AnimatedSprite;
-    gravitonAnimationPulling: AnimatedSprite;
+    gravitonAnimationOpening: MultiframeSprite;
+    gravitonAnimationPulling: MultiframeSprite;
     scoreSize: number;
     victoryAnimation?: VictoryAnimation;
-    score1Panel: SingleNumberPanel;
-    score2Panel: SingleNumberPanel;
+    scorePanels: ScorePanels;
 
     constructor(public canvas: HTMLCanvasElement, public data: DataBuffer) {
         this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        this.gravitonAnimationOpening = new AnimatedSprite("/public/img/graviton_opening.png", 128, 128, 10);
-        this.gravitonAnimationPulling = new AnimatedSprite("/public/img/graviton_pulling.png", 128, 128, 9);
-        this.score1Panel = new SingleNumberPanel();
-        this.score2Panel = new SingleNumberPanel();
+        this.gravitonAnimationOpening = new MultiframeSprite("/public/img/graviton_opening.png", 128, 128, 10);
+        this.gravitonAnimationPulling = new MultiframeSprite("/public/img/graviton_pulling.png", 128, 128, 9);
+        this.scorePanels = new ScorePanels();
     }
 
     handleResize(width: number, height: number) {
@@ -42,26 +40,22 @@ export class Renderer {
     createBackground() {
         const width = this.canvas.width;
         const height = this.canvas.height;
-        const blockSize = this.canvas.height / 20;
+        const blockSize = this.canvas.height / GSettings.BACKGROUND_N_SUBDIVISIONS;
 
-        this.context.fillStyle = `rgb(0, 0, 0, 255)`;
-        this.context.beginPath();
+        this.context.fillStyle = 'rgb(0, 0, 0, 255)';
         this.context.fillRect(0, 0, width, height);
 
-        this.context.fillStyle = `rgb(173, 173, 173)`;
+        this.context.fillStyle = GSettings.BACKGROUND_COLOR_GREY;
         this.context.fillRect(0, 0, width, blockSize);
         this.context.fillRect(0, height - blockSize, width, blockSize);
 
-        for (let step = 1; step < 20; step += 2) {
+        for (let step = 1; step < GSettings.BACKGROUND_N_SUBDIVISIONS; step += 2) {
             this.context.fillRect(width / 2 - blockSize / 2, step * blockSize, blockSize, blockSize);
         }
-        this.context.stroke();
         this.background = this.context.getImageData(0, 0, width, height);
     }
 
     drawBackground() {
-        // this.imageData.data.set(this.background.data);
-        // this.context.getImageData(0, 0, this.canvas.width, this.canvas.height).data.set(this.background.data);
         this.context.putImageData(this.background, 0, 0);
     }
 
@@ -72,7 +66,6 @@ export class Renderer {
     drawBall(ball: BallData) {
         this.context.fillStyle = GSettings.BALL_COLOR;
         const [x, y] = this.gameToCanvasCoord(ball.x, ball.y);
-        // this.context.ellipse(x, y, this.ballRadius, this.ballRadius, 0, 0, 2 * Math.PI);
         this.context.beginPath();
         this.context.ellipse(x, y, this.ballRadius, this.ballRadius, 0, 0, 2 * Math.PI);
         this.context.fill();
@@ -81,9 +74,7 @@ export class Renderer {
     drawBar(bar: BarData) {
         this.context.fillStyle = GSettings.BAR_COLOR;
         const [x1, y1] = this.gameToCanvasCoord(bar.x - GSettings.BAR_WIDTH / 2, bar.y - GSettings.BAR_HEIGHT / 2);
-        this.context.beginPath();
         this.context.fillRect(x1, y1, this.barWidth, this.barHeight);
-        this.context.stroke();
     }
 
     drawGraviton(graviton: GravitonData) {
@@ -110,11 +101,9 @@ export class Renderer {
         this.gravitonAnimationPulling.draw(this.context, x, y, this.gravitonSize, this.gravitonSize, iFrame);
     }
 
-    drawScore(x: number = GSettings.SCORE_X, y: number = GSettings.SCORE_Y, scale: number = 1) {
-        const [x1, y1] = this.gameToCanvasCoord(-x, y);
-        const [x2, y2] = this.gameToCanvasCoord(x, y);
-        this.score1Panel.draw(this.context, x1, y1, this.scoreSize * scale);
-        this.score2Panel.draw(this.context, x2, y2, this.scoreSize * scale);
+    drawScore(xGame: number = GSettings.SCORE_X, yGame: number = GSettings.SCORE_Y, scale: number = 1) {
+        const [x, y] = this.gameToCanvasCoord(xGame, yGame);
+        this.scorePanels.draw(this.context, x, y, this.scoreSize * scale);
     }
 
     startVictoryAnimation(thenCallback: () => any) {

@@ -1,6 +1,4 @@
-import { Renderer } from "./Renderer";
-
-export class AnimatedSprite {
+export class MultiframeSprite {
     img: HTMLImageElement;
     imgReady: boolean = false;
 

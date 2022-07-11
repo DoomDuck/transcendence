@@ -40,12 +40,12 @@ export class VictoryAnimation extends Animation {
     }
     draw(elapsed: number) {
         let nextRadius = elapsed * GSettings.VICTORY_ANIMATION_SPEED + this.previousRadius;
-        this.renderer.context.beginPath();
-        this.renderer.context.fillStyle = GSettings.VICTORY_ANIMATION_COLOR;
         let [x, y] = this.renderer.gameToCanvasCoord(this.renderer.data.ballNow.x, this.renderer.data.ballNow.y)
-        this.renderer.context.ellipse(x, y, this.previousRadius, this.previousRadius, 0, 0, 2 * Math.PI);
+        this.renderer.context.fillStyle = GSettings.VICTORY_ANIMATION_COLOR;
+        this.renderer.context.beginPath();
         this.renderer.context.ellipse(x, y, nextRadius, nextRadius, 0, 0, 2 * Math.PI);
         this.renderer.context.fill();
+        this.renderer.drawBall(this.renderer.data.ballNow);
         this.previousRadius = nextRadius;
     }
 }
