@@ -1,6 +1,11 @@
-import { Bar } from '../../common/entities';
-import { GSettings, KeyValue, PlayerID, GameEvent } from '../../common/constants';
-import { BarMesh } from '../graphic';
+import { Bar } from "../../common/entities";
+import {
+  GSettings,
+  KeyValue,
+  PlayerID,
+  GameEvent,
+} from "../../common/constants";
+import { BarMesh } from "../graphic";
 
 /**
  * Each of the two bars part of a game instance on the client side (ClientGame).
@@ -9,38 +14,40 @@ import { BarMesh } from '../graphic';
  * (i.e. its playerId matches the playerId of the ClientGame).
  */
 export class ClientBar extends Bar {
-    mesh: BarMesh;
+  mesh: BarMesh;
 
-    constructor(playerId: PlayerID) {
-        super(playerId);
-        this.mesh = new BarMesh();
-        this.position = this.mesh.position;
-        this.reset();
-    }
+  constructor(playerId: PlayerID) {
+    super(playerId);
+    this.mesh = new BarMesh();
+    this.position = this.mesh.position;
+    this.reset();
+  }
 
-    handleKeydown(e: KeyboardEvent, emitFunction: (event: string, ...args: any[]) => void) {
-        if (GSettings.BAR_UP_KEYS.includes(e.key)) {
-            if (this.upPressed)
-                return;
-            this.upPressed = true;
-            emitFunction(GameEvent.SEND_BAR_KEYDOWN, KeyValue.UP, Date.now());
-        }
-        else if (GSettings.BAR_DOWN_KEYS.includes(e.key)) {
-            if (this.downPressed)
-                return;
-            this.downPressed = true;
-            emitFunction(GameEvent.SEND_BAR_KEYDOWN, KeyValue.DOWN, Date.now());
-        }
+  handleKeydown(
+    e: KeyboardEvent,
+    emitFunction: (event: string, ...args: any[]) => void
+  ) {
+    if (GSettings.BAR_UP_KEYS.includes(e.key)) {
+      if (this.upPressed) return;
+      this.upPressed = true;
+      emitFunction(GameEvent.SEND_BAR_KEYDOWN, KeyValue.UP, Date.now());
+    } else if (GSettings.BAR_DOWN_KEYS.includes(e.key)) {
+      if (this.downPressed) return;
+      this.downPressed = true;
+      emitFunction(GameEvent.SEND_BAR_KEYDOWN, KeyValue.DOWN, Date.now());
     }
+  }
 
-    handleKeyup(e: KeyboardEvent, emitFunction: (event: string, ...args: any[]) => void) {
-        if (GSettings.BAR_UP_KEYS.includes(e.key)) {
-            this.upPressed = false;
-            emitFunction(GameEvent.SEND_BAR_KEYUP, KeyValue.UP, this.position.y);
-        }
-        else if (GSettings.BAR_DOWN_KEYS.includes(e.key)) {
-            this.downPressed = false;
-            emitFunction(GameEvent.SEND_BAR_KEYUP, KeyValue.DOWN, this.position.y);
-        }
+  handleKeyup(
+    e: KeyboardEvent,
+    emitFunction: (event: string, ...args: any[]) => void
+  ) {
+    if (GSettings.BAR_UP_KEYS.includes(e.key)) {
+      this.upPressed = false;
+      emitFunction(GameEvent.SEND_BAR_KEYUP, KeyValue.UP, this.position.y);
+    } else if (GSettings.BAR_DOWN_KEYS.includes(e.key)) {
+      this.downPressed = false;
+      emitFunction(GameEvent.SEND_BAR_KEYUP, KeyValue.DOWN, this.position.y);
     }
+  }
 }

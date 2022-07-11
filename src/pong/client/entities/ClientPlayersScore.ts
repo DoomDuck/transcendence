@@ -7,20 +7,20 @@ import { PlayersScoreDisplay } from "../graphic/PlayersScoreDisplay";
  * Adds display capability to PlayersScore.
  */
 export class ClientPlayersScore extends PlayersScore {
-    graphicalObject: PlayersScoreDisplay;
+  graphicalObject: PlayersScoreDisplay;
 
-    constructor(graphicalObject: PlayersScoreDisplay) {
-        super();
-        this.graphicalObject = graphicalObject;
-    }
+  constructor(graphicalObject: PlayersScoreDisplay) {
+    super();
+    this.graphicalObject = graphicalObject;
+  }
 
-    handleGoal(playerId: PlayerID): void {
-        super.handleGoal(playerId);
-        this.graphicalObject.handleGoal(playerId);
-    }
+  handleGoal(playerId: PlayerID): void {
+    super.handleGoal(playerId);
+    this.graphicalObject.handleGoal(playerId);
+  }
 
-    reset() {
-        super.reset();
-        this.graphicalObject.reset();
-    }
+  reset() {
+    super.reset();
+    this.graphicalObject.reset();
+  }
 }

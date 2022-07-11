@@ -1,5 +1,5 @@
 <script lang="ts">
-import Pong from "./Pong.svelte";
+  import Pong from "./Pong.svelte";
 </script>
 
-<Pong/>
+<Pong />

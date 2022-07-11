@@ -1,4 +1,4 @@
-import { PlayerID } from '../constants';
+import { PlayerID } from "../constants";
 
 /**
  * A part of the Game's state.
@@ -7,17 +7,17 @@ import { PlayerID } from '../constants';
  * Used directly in the server and extended in client (ClientPlayersScore).
  */
 export class PlayersScore {
-    score: [number, number];
+  score: [number, number];
 
-    constructor() {
-        this.score = [0, 0];
-    }
+  constructor() {
+    this.score = [0, 0];
+  }
 
-    handleGoal(playerId: PlayerID) {
-        this.score[playerId]++;
-    }
+  handleGoal(playerId: PlayerID) {
+    this.score[playerId]++;
+  }
 
-    reset() {
-        this.score = [0, 0];
-    }
+  reset() {
+    this.score = [0, 0];
+  }
 }
