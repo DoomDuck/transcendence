@@ -5,7 +5,7 @@ set -e
 
 setup_hooks() {
   ln -s \
-    ./scripts/check_format.sh \
+     ../../scripts/check_format.sh \
     .git/hooks/pre-commit \
     1>&2 2>/dev/null || return 1
 
