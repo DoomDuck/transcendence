@@ -8,9 +8,10 @@ import { AlertGateway } from "./alert/alert.gateway";
 import { AlertController } from "./alert/alert.controller";
 import { PongGateway } from "./pong/pong.gateway";
 import { GameManagerService } from "./pong/game-manager.service";
+import { ChannelManagerModule } from "./channel_manager/channel_manager.module";
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config), userModule],
+  imports: [TypeOrmModule.forRoot(config), userModule, ChannelManagerModule],
   // imports: [CarModule],
   controllers: [AlertController],
   providers: [ChatGateway, AlertGateway, PongGateway, GameManagerService],

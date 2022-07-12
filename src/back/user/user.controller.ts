@@ -14,7 +14,6 @@ import { UserDto } from "./user.dto";
 
 @Controller("user")
 export class userController {
-
   private logger: Logger = new Logger("User");
   constructor(private userService: userService) {}
   @Get()
@@ -39,8 +38,8 @@ export class userController {
 
   // @Put(":id")
   // public async putuserById(@Param("id") id: number, @Query() query) {
-    // const propertyName = query.property_name;
-    // const propertyValue = query.property_value;
-    // return this.userService.putuserById(id, propertyName, propertyValue);
+  // const propertyName = query.property_name;
+  // const propertyValue = query.property_value;
+  // return this.userService.putuserById(id, propertyName, propertyValue);
   // }
 }

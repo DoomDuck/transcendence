@@ -17,6 +17,7 @@ export class ChatGateway implements OnGatewayInit {
   }
   @SubscribeMessage("chatToServer")
   handleMessage(client: Socket, message: { sender: string; message: string }) {
+    this.logger.log("chat gateway handle message");
     this.wss.emit("chatToClient", message);
   }
 }
