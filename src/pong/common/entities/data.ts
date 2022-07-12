@@ -1,5 +1,5 @@
 import { GSettings } from "../constants";
-import { type ExternEvent } from "../game/events";
+import { type DataChangerEvent } from "../game/events";
 
 export class BallData {
     x: number = 0;
@@ -43,7 +43,7 @@ export class DataBuffer {
         Array.from({length: 100}, () => new BarData(0)),
         Array.from({length: 100}, () => new BarData(1))];
     gravitonsDataArray: Set<GravitonData>[] = Array.from({length: 100}, () => new Set());
-    eventsDataArray: ExternEvent[][] = Array.from({length: 100}, () => []);
+    eventsDataArray: DataChangerEvent[][] = Array.from({length: 100}, () => []);
 
     nowIndex: number = 0;
     thenIndex: number = 1;
@@ -55,8 +55,8 @@ export class DataBuffer {
     barsThen: [BarData, BarData];
     gravitonsNow: Set<GravitonData>;
     gravitonsThen: Set<GravitonData>;
-    eventsNow: ExternEvent[];
-    eventsThen: ExternEvent[];
+    eventsNow: DataChangerEvent[];
+    eventsThen: DataChangerEvent[];
 
     constructor() {
         this.updateNowThenReferences();

@@ -2,7 +2,7 @@ import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
 import { Game } from "../../common/game";
 import { handleKeydown, handleKeyup } from './keyboardInput';
 import { Renderer } from '../graphic/Renderer';
-import { registerEvent } from '../../common/game/events';
+import { GameProducedEvent } from '../../common/game/events';
 import { delay } from '../../common/utils';
 
 /**
@@ -42,7 +42,7 @@ export class ClientGameManager {
 
         // callbacks
         window.addEventListener("resize", () => this.handleDisplayResize());
-        registerEvent("ballOut", (time: number, playerId: number) => {
+        GameProducedEvent.registerEvent("ballOut", (time: number, playerId: number) => {
             this.game.pause();
             this.renderer.startVictoryAnimationAsync()
             .then(() => this.game.reset(0, 0, (playerId == 0 ? -1: 1) * GSettings.BALL_INITIAL_SPEEDX, 0))

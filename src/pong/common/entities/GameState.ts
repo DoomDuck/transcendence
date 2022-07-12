@@ -1,4 +1,4 @@
-import { fireAllEvents, type ExternEvent } from "../game/events";
+import { GameProducedEvent, type DataChangerEvent } from "../game/events";
 import { DataBuffer } from "./data";
 import { updateOneStep, updateOneStepNoErasure } from "./update";
 
@@ -15,7 +15,7 @@ export class GameState {
 
     update() {
         updateOneStep(this.data);
-        fireAllEvents();
+        GameProducedEvent.fireAllEvents();
     }
 
     reUpdate() {
@@ -23,7 +23,7 @@ export class GameState {
     }
 
     // TODO: Future events
-    registerEvent(event: ExternEvent): boolean {
+    registerEvent(event: DataChangerEvent): boolean {
         if (Math.abs(event.time - this.data.now) >= 100) {
             // too old or too far, discard
             return false;

@@ -1,7 +1,6 @@
 import { GameEvent, GSettings, PlayerID } from "../constants";
 import { GameState } from "../entities";
 import { delay } from "../utils";
-import { registerEvent } from "./events";
 
 
 /**
