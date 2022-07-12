@@ -6,7 +6,7 @@ set -e
 HOOK_PATH=.git/hooks/pre-commit
 
 check_hook_is_link() {
-  [[ ! -f $HOOK_PATH ]] && return 0
+  [[ ! -f $HOOK_PATH ]] || return 0
   echo 1>&2 "Error: Hook script is not a link" && exit 1
 }
 
@@ -15,7 +15,7 @@ remove_hook() {
 }
 
 success() {
-  echo "Hook has been remove to install again run ./scripts/hooks/remove.sh"
+  echo "Hook has been removed to install again run ./scripts/hooks/setup.sh"
 }
 
 show_help() {

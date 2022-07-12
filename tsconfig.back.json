@@ -1,0 +1,46 @@
+{
+  "extends": "@tsconfig/nest",
+
+  "compilerOptions": {
+    "types": [
+        "dat.gui",
+        "express",
+        "node",
+        "three",
+        "jest",
+        "svelte"
+    ],
+    "outDir": "build/",
+    "rootDir": "src/",
+
+    "importsNotUsedAsValues": "remove",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+
+    "target": "es2017",
+    "sourceMap": true,
+
+    "baseUrl": ".",
+    "paths": {
+        "pong/*": ["src/pong/*"]
+    },
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+
+  },
+
+  "include": ["src/back/*.ts"],
+}
