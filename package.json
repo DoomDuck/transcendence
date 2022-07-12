@@ -13,9 +13,10 @@
 		"nest_start:dev": "nest start --path tsconfig.back.json --watch",
 		"nest_start:debug": "nest start --path tsconfig.back.json --debug --watch",
 		"nest_start:prod": "node build/back/main.js",
-    "check_format": "./scripts/check_format.sh",
-    "setup_hooks": "./scripts/hooks/setup.sh",
-    "remove_hooks": "./scripts/hooks/remove.sh"
+		"check_format": "./scripts/check_format.sh",
+		"format": "./scripts/format.sh",
+		"setup_hooks": "./scripts/hooks/setup.sh",
+		"remove_hooks": "./scripts/hooks/remove.sh"
 	},
 	"repository": {
 		"type": "git",
@@ -78,7 +79,7 @@
 	"devDependencies": {
 		"@types/supertest": "^2.0.11",
 		"supertest": "^6.1.3",
-    "prettier": "^2.7.1",
-    "prettier-plugin-svelte": "^2.7.0"
+		"prettier": "^2.7.1",
+		"prettier-plugin-svelte": "^2.7.0"
 	}
 }
