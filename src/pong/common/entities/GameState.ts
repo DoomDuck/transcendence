@@ -18,6 +18,21 @@ export class GameState {
         GameProducedEvent.fireAllEvents();
     }
 
+    // updateUntil(time: GameTime) {
+    //     if (time < this.data.now)
+    //         throw new Error("cannot call GameState.updateUntil with a past instant as parameter")
+    //     while (this.data.now < time)
+    //         updateOneStep(this.data);
+    // }
+
+    // canRewind(time: GameTime): boolean {
+    //     return time <= this.data.now && (this.data.now - time) < 100;
+    // }
+
+    // rewindTo(time: GameTime) {
+
+    // }
+
     reUpdate() {
         updateOneStepNoErasure(this.data);
     }

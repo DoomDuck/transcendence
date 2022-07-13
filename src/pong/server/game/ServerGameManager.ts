@@ -1,6 +1,5 @@
-// import { type BarKeyDownEvent, type BarKeyUpEvent, GameEvent, GSettings, PLAYER1, PLAYER2, PlayerID } from "../../common/constants";
-import { GSettings } from "../../common/constants";
-import { Game } from "../../common/game";
+import { GameEvent, GSettings, PlayerID } from "../../common/constants";
+import { BarInputEvent, Game } from "../../common/game";
 // import { Bar, Ball, GameState } from "../../common/entities";
 // import { PlayersScore } from "../../common/entities";
 
@@ -11,11 +10,8 @@ import { Game } from "../../common/game";
  */
 export class ServerGameManager {
     game: Game = new Game();
-    score: [number, number] = [0, 0];
 
     constructor() {
-        // this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeydown(...args));
-        // this.onIn(GameEvent.RECEIVE_BAR_KEYUP, (playerId: PlayerID, ...args: BarKeyDownEvent) => this.state.bars[playerId].onReceiveKeyup(...args));
         // Game loop
         setInterval(this.game.frame.bind(this), GSettings.GAME_STEP_MS);
     }

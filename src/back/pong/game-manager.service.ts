@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { removeElementByValue } from '../../pong/common/utils';
-import { GameManager } from '../../pong/server'
+import { ServerGameContext } from '../../pong/server'
 
 @Injectable()
 export class GameManagerService {
     private waitingClients: Socket[] = [];
-    private games: GameManager[] = [];
+    private games: ServerGameContext[] = [];
 	private logger: Logger = new Logger('GameManagerService');
 
     add(socket: Socket) {
@@ -17,7 +17,7 @@ export class GameManagerService {
     launchGameIfPossible() {
         if (this.waitingClients.length >= 2) {
             this.logger.log("two clients are waiting for a game");
-            const gameInstance = new GameManager([this.waitingClients[0], this.waitingClients[1]]);
+            const gameInstance = new ServerGameContext([this.waitingClients[0], this.waitingClients[1]]);
             this.games.push(gameInstance);
             this.waitingClients[0].emit("playerIdConfirmed", 0, () => {
                 this.logger.log('player 0 ready');

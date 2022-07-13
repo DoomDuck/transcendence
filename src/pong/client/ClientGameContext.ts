@@ -2,7 +2,7 @@ import { ClientGameManager } from './game';
 import { io, Socket } from 'socket.io-client'
 import { GameEvent, GSettings, PlayerID } from '../common/constants';
 import { delay } from '../common/utils';
-import { SetBallEvent } from '../common/game/events';
+import { BarInputEvent, SetBallEvent } from '../common/game/events';
 import { BallData } from '../common/entities/data';
 
 /**
@@ -18,7 +18,7 @@ export class ClientGameContext {
 
     constructor(public online: boolean) {
         if (this.online) {
-            // this.socket = io('http://localhost:5000/pong');
+            this.socket = io('http://localhost:5000/pong');
 
             // this.socket.on("connect", () => {
             //     console.log("connected to server");
@@ -26,10 +26,10 @@ export class ClientGameContext {
             // this.socket.on("disconnect", ()=> {
             //     this.game?.clearCanvas();
             // });
-            // this.socket.on("playerIdConfirmed", (playerId: number, ready: () => void) => {
-            //     this.startGame(playerId);
-            //     ready();
-            // });
+            this.socket.on("playerIdConfirmed", (playerId: PlayerID, ready: () => void) => {
+                this.startGame(playerId);
+                ready();
+            });
         }
         else
             this.startGame();
@@ -37,9 +37,18 @@ export class ClientGameContext {
 
     startGame(playerId?: PlayerID) {
         // game
-        this.gameManager = new ClientGameManager(playerId);
+        if (this.online)
+            this.gameManager = new ClientGameManager({playerId: playerId!, socket: this.socket});
+        else
+            this.gameManager = new ClientGameManager();
         let game = this.gameManager.game;
-        if (!this.online) {
+
+        // online
+        if (this.online) {
+
+        }
+        // offline
+        else {
             game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
             game.start();
             let cpt = 0;
@@ -54,23 +63,21 @@ export class ClientGameContext {
 
         // // // outgoing events
         // const transmitEventFromGameToServer = (event: string) => {
-        //     game.onOut(event, (...args: any[]) => { this.socket.emit(event, ...args) });
+        //     game.on(event, (...args: any[]) => { this.socket.emit(event, ...args) });
         // }
-        // transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYDOWN);
-        // transmitEventFromGameToServer(GameEvent.SEND_BAR_KEYUP);
+        // transmitEventFromGameToServer(BarInputEvent.type);
 
-        // // incomming events
-        // const transmitEventFromServerToGame = (event: string) => {
-        //     this.socket.on(event, (...args: any[]) => { game.emitIn(event, ...args) });
-        // }
-        // transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYDOWN);
-        // transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_KEYUP);
-        // transmitEventFromServerToGame(GameEvent.RECEIVE_SET_BALL);
-        // transmitEventFromServerToGame(GameEvent.GOAL);
-        // transmitEventFromServerToGame(GameEvent.START);
-        // transmitEventFromServerToGame(GameEvent.RESET);
-        // transmitEventFromServerToGame(GameEvent.PAUSE);
-        // transmitEventFromServerToGame(GameEvent.UNPAUSE);
+        if (this.online) {
+            // // incomming events
+            const transmitEventFromServerToGame = (event: string) => {
+                this.socket.on(event, (...args: any[]) => { game.emit(event, ...args); console.log(args); });
+            }
+            transmitEventFromServerToGame(BarInputEvent.type);
+            transmitEventFromServerToGame(GameEvent.GOAL);
+            transmitEventFromServerToGame(GameEvent.START);
+            transmitEventFromServerToGame(GameEvent.RESET);
+            transmitEventFromServerToGame(GameEvent.PAUSE);
+        }
 
         // Game loop
         let animate = (time: DOMHighResTimeStamp) => {

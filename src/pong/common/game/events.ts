@@ -14,10 +14,12 @@ export interface DataChangerEvent {
 }
 
 export class BarInputEvent implements DataChangerEvent {
+    public static type = "barInputEvent";
     constructor(public time: number, public barId: number, public key: KeyValue, public pressed: boolean) {}
 
     // for now ignore time ...
     process(data: DataBuffer) {
+        console.log(`Processing BarinputEvent(${this.time}, ${this.barId}, ${this.key}, ${this.pressed})`)
         if (this.key == KeyValue.UP)
             data.barsNow[this.barId].upPressed = this.pressed;
         else

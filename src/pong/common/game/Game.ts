@@ -1,53 +1,42 @@
 import { GameEvent, GSettings, PlayerID } from "../constants";
 import { GameState } from "../entities";
 import { delay } from "../utils";
-
+import { BarInputEvent, GameProducedEvent } from "./events";
 
 /**
  * Game represents the environment representing an ongoing game between two players.
  * It is meant to be the bridge between the 'unanimated' game state and the outside
  * (i.e. all the communication + game loop and time-related problematics).
- * Instanciated by both client (in ClientGameManager) and server (in ServerGameManager)
+ * Instanciated by both client (in ClientGameManager) and server (in ServerGameContext)
  */
 export class Game {
     state: GameState = new GameState();
+    startTime: number = 0;
+    pauseTime: number = 0;
+    pauseOffetEarly: number = 0;
     lastTime: number = 0;
     timeAccumulated: number = 0;
     paused: boolean = true;
     score: [number, number] = [0, 0];
-    // incommingEventsCallback: Map<string, any>;
-    // outgoingEventsBallback: Map<string, any>;
+    incommingEventsCallback: Map<string, any>;
 
     constructor () {
-        this.lastTime = 0;
-        this.timeAccumulated = 0;
-        this.paused = true;
-        // const eventsCallbackPairs: [string, any][] = [
-        //     [GameEvent.START, this.start.bind(this)],
-        //     [GameEvent.PAUSE, this.pause.bind(this)],
-        //     [GameEvent.UNPAUSE, this.unpause.bind(this)],
-        //     [GameEvent.RESET, this.reset.bind(this)],
-        //     [GameEvent.GOAL, this.goal.bind(this)],
-        // ]
-        // this.incommingEventsCallback = new Map(eventsCallbackPairs);
-        // this.outgoingEventsBallback = new Map();
+        const eventsCallbackPairs: [string, any][] = [
+            [GameEvent.START, this.start.bind(this)],
+            [GameEvent.PAUSE, this.pause.bind(this)],
+            [GameEvent.RESET, this.reset.bind(this)],
+            [BarInputEvent.type, this.state.registerEvent.bind(this.state)]
+        ]
+        this.incommingEventsCallback = new Map(eventsCallbackPairs);
     }
 
-    // onIn(event: string, callback: any) {
-    //     this.incommingEventsCallback.set(event, callback);
-    // }
+    on(event: string, callback: any) {
+        this.incommingEventsCallback.set(event, callback);
+    }
 
-    // onOut(event: string, callback: any) {
-    //     this.outgoingEventsBallback.set(event, callback);
-    // }
-
-    // emitOut(event: string, ...args: any[]) {
-    //     this.outgoingEventsBallback.get(event)(...args);
-    // }
-
-    // emitIn(event: string, ...args: any[]) {
-    //     this.incommingEventsCallback.get(event)(...args);
-    // }
+    emit(event: string, ...args: any[]) {
+        this.incommingEventsCallback.get(event)(...args);
+    }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
         console.log('Game reset');
@@ -56,23 +45,24 @@ export class Game {
         this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
     }
 
-    start() {
-        console.log('Game start');
+    start(startTime?: number) {
+        if (startTime === undefined)
+            startTime = Date.now();
+        console.log(`Game start at ${startTime}`);
         this.paused = false;
-        this.lastTime = Date.now();
+        this.startTime = startTime + this.pauseOffetEarly;
+        this.lastTime = this.startTime;
+        this.pauseOffetEarly = 0;
     }
 
-    pause() {
-        if (this.paused)
-            return;
+    pause(pauseTime?: number) {
+        if (pauseTime === undefined)
+            pauseTime = Date.now();
+        else
+            this.pauseOffetEarly = Math.max(Date.now() - pauseTime, 0);
+        this.pauseTime = pauseTime;
+        console.log(`Game pause at ${pauseTime}`);
         this.paused = true;
-    }
-
-    unpause() {
-        if (!this.paused)
-            return;
-        this.paused = false;
-        this.lastTime = Date.now();
     }
 
     goal(playerId: PlayerID) {
@@ -80,21 +70,18 @@ export class Game {
     }
 
     frame() {
-        if (this.paused)
+        const now = Date.now();
+        if ((this.paused && now >= this.pauseTime) || (!this.paused && Date.now() < this.startTime))
             return;
-        let newTime = Date.now();
-        let dt = newTime - this.lastTime;
+        const newTime = now;
+        const dt = newTime - this.lastTime;
         this.timeAccumulated += dt;
         this.lastTime = newTime;
 
         while (this.timeAccumulated >= GSettings.GAME_STEP_MS) {
             this.timeAccumulated -= GSettings.GAME_STEP_MS;
-            this.update();
+            this.state.update();
         }
-    }
-
-    update() {
-        this.state.update();
     }
 }
 

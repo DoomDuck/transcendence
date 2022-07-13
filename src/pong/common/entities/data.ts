@@ -88,6 +88,7 @@ export class DataBuffer {
         this.barsNow = [new BarData(0), new BarData(1)];
         this.gravitonsNow.clear();
     }
+    
 
     addGraviton(timeIndex: number, id: number, x: number, y: number): void {
         let graviton = new GravitonData();

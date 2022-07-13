@@ -5,7 +5,8 @@ import {onMount} from 'svelte';
 import {ClientGameContext} from "../pong/client";
 
 onMount(() => {
-    const ctx = new ClientGameContext(false);
+    // const ctx = new ClientGameContext(false); // offline
+    const ctx = new ClientGameContext(true); // online
     ctx.startGame();
 })
 

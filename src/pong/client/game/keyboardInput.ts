@@ -1,6 +1,7 @@
 import { DOWN, KeyValue, PlayerID, UP } from "../../common/constants";
 import { GameState } from "../../common/entities";
 import { BarInputEvent } from "../../common/game/events";
+import { ClientGameManager } from "./ClientGameManager";
 
 // Offline
 const P1_UPKEYS = ['e'];
@@ -39,16 +40,26 @@ function barIdAndKeyFromEventOffline(e: KeyboardEvent): [number, KeyValue] | nul
         return null;
 }
 
-export function handleKeydownOnline(e: KeyboardEvent, state: GameState, playerId: PlayerID) {
+export function handleKeydownOnline(e: KeyboardEvent, state: GameState, gameManager: ClientGameManager) {
+    let event;
     if (UPKEYS.includes(e.key))
-        state.registerEvent(new BarInputEvent(state.data.now, playerId, UP, true));
+        event = new BarInputEvent(state.data.now, gameManager.playerId!, UP, true);
     else if (DOWNKEYS.includes(e.key))
-        state.registerEvent(new BarInputEvent(state.data.now, playerId, DOWN, true));
+        event = new BarInputEvent(state.data.now, gameManager.playerId!, DOWN, true);
+    else
+        return;
+    state.registerEvent(event);
+    gameManager.socket!.emit(BarInputEvent.type, event);
 }
 
-export function handleKeyupOnline(e: KeyboardEvent, state: GameState, playerId: PlayerID) {
+export function handleKeyupOnline(e: KeyboardEvent, state: GameState, gameManager: ClientGameManager) {
+    let event;
     if (UPKEYS.includes(e.key))
-        state.registerEvent(new BarInputEvent(state.data.now, playerId, UP, false));
+        event = new BarInputEvent(state.data.now, gameManager.playerId!, UP, false);
     else if (DOWNKEYS.includes(e.key))
-        state.registerEvent(new BarInputEvent(state.data.now, playerId, DOWN, false));
+        event = new BarInputEvent(state.data.now, gameManager.playerId!, DOWN, false);
+    else
+        return;
+    state.registerEvent(event);
+    gameManager.socket!.emit(BarInputEvent.type, event);
 }
