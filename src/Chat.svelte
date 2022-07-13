@@ -1,12 +1,16 @@
 <script lang="ts">
 
 	import { createEventDispatcher } from 'svelte';
+	import ChatConversation from './ChatConversation.svelte';
 
 	const dispatch = createEventDispatcher();
 
 	function newMessage(){
 		alert('New Message')
 	}
+
+	let profilePic = "../src/img/canard.jpeg" ;
+	let onlineFriends = [];
 
 </script>
 
@@ -25,28 +29,24 @@
 				<textarea class="message" rows="50" cols="80"> </textarea>
 				<br>
 				<img src=../src/img/send.png alt="send" width='30' height='30'/>
-				<a href="#" class="modal_close">&times;</a>
+				<a href='#' class="modal_close">&times;</a>
 			</div>
 		</div>
 	</div>
 
 	<input class="champ" type="search" value="Search.." > <br> <br> <br>
 	<div id="online"> <br> Online friends </div>
-	<div id="bigrectangle">
-		{#each [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as _}
-		<img class="roundedImage" src=../src/img/canard.jpeg alt="contact"/>
+	<div id="onlineFriends">
+		{#each onlineFriends as friend}
+		<img class="roundedImage" src={friend.profilePic} alt="contact"/>
 		{/each}
 	</div>
 	<br>
-	<div class="conv">
-		<img id="roundedImageConv" class="roundedImage" src=../src/img/cars.jpeg alt="contact" />
-		<h5>Flash McQueen</h5>
-		<img class="notif" src=../src/img/notification.png alt="notif" width=35 height=35/>
-	</div>
-	<div class="conv">
-		<img id="roundedImageConv" class="roundedImage" src=../src/img/canard.jpeg alt="contact" />
-		<h5>Joey</h5>
-	</div>
+
+	<ChatConversation/>
+	<ChatConversation name="Joey" image="../src/img/canard.jpeg" has_new_message={true}/>
+
+
 </div>
 
 <style>
@@ -81,10 +81,6 @@ h1 {
 	font-size:2.5em;
 }
 
-h5 {
-	font-size: 1em;
-	color: #FF00B8;
-}
 
 img {
 	display: inline-block;
@@ -157,17 +153,8 @@ textarea {
 	margin-left: 2%;
 }
 
-.conv {
-	align-items: center;
-	width: 95%;
-	height: 6%;
-	background: white;
-	display: flex;
-	margin-left: 2%;
-	border: 1px solid #FF00B8;
-}
 
-#bigrectangle {
+#onlineFriends {
 	width: 95%;
 	height:8%;
 	background: white;
@@ -185,11 +172,6 @@ textarea {
 	margin-left: 2%;
 }
 
-.notif {
-	margin-left: auto;
-    padding: 5%;
-}
-
 .roundedImage {
 	overflow:hidden; 
 	-webkit-border-radius:50px;
@@ -204,17 +186,5 @@ textarea {
 	flex: 0 0 auto;
 }
 
-#roundedImageConv {
-	overflow:hidden; 
-	-webkit-border-radius:50px;
-	-moz-border-radius:50px;
-	border-radius:30px;
-	width:60px;
-	height:60px;
-	margin-left: 1%;
-	margin-right: 2%;
-	margin-top: auto;
-    margin-bottom: auto;
-}
 
 </style>
