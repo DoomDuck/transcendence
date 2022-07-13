@@ -20,7 +20,6 @@
 		margin:auto;
 	}
 	.waitingRoom {
-		/* background-color: #000000; */
 		background-image: url("../src/img/starsSky.jpeg");
 		display:flex;
 		width: 100%;
