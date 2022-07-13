@@ -3,9 +3,9 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const svelte_preprocess = require('svelte-preprocess');
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "./src/front/index.ts",
   output: {
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(__dirname, "build/front/"),
     filename: "./bundle.js",
   },
   mode: "production",
@@ -15,19 +15,30 @@ module.exports = {
     alias: {
       svelte: path.resolve('node_modules', 'svelte')
     },
-    extensions: ['.mjs', '.js', '.svelte'],
-    mainFields: ['svelte', 'browser', 'module', 'main']
+    extensions: ['.mjs', '.js', '.svelte', '.ts'],
+    mainFields: ['svelte', 'browser', 'module', 'main'],
   },
 
   module: {
     rules: [
+      {
+          test: /\.ts$/,
+          use: {
+            loader: 'ts-loader',
+            options: {
+              configFile: "tsconfig.front.json",
+            }
+          }
+      },
       {
         test: /\.(html|svelte)$/,
         use: {
           loader: 'svelte-loader',
           options: {
             emitCss: true,
-            preprocess: svelte_preprocess({}),
+            preprocess: svelte_preprocess({
+              tsconfigFile: "tsconfig.front.json",
+            }),
           }
         },
       },
@@ -46,7 +57,7 @@ module.exports = {
       },
     ]
   },
-  
+
   plugins: [
     new MiniCssExtractPlugin({ filename: 'styles.css' }),
   ]
