@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { userService } from "./user.service";
 import { UserDto } from "./user.dto";
+import { FriendRequestDto } from "./friendRequest.dto";
 
 @Controller("user")
 export class userController {
@@ -24,6 +25,14 @@ export class userController {
   public postuser(@Body() user: UserDto) {
     // this.logger.log(user.name);
     return this.userService.addOne(user);
+  }
+  @Post("friendReqest")
+  public addfriend(@Body() friendRequest: FriendRequestDto) {
+    // this.logger.log(user.name);
+    return this.userService.addFriend(
+      friendRequest.sender,
+      friendRequest.target
+    );
   }
 
   @Get(":id")

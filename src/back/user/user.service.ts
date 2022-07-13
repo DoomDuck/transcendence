@@ -4,6 +4,7 @@ import { user } from "./user.entity";
 import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { AppDataSource } from "./../data-source";
 export class activeUser {
   name: string;
   pending_invite: boolean;
@@ -27,33 +28,49 @@ export class userService {
   }
   addOne(userDto: UserDto): Promise<user> {
     const newUser = new user();
-    newUser.id = userDto.id;
     newUser.name = userDto.name;
     return this.usersRepository.save(newUser);
   }
-  isOnline(name: string): boolean {
-    const found = this.array_active_User.find(
-      (activeUser) => activeUser.name === name
-    );
-    if (found === undefined) return false;
-    else return true;
-  }
+  //surement nul a chier mais je test des trucs
+  async addFriend(sender: number, target: number) {
+    const tempUser = await AppDataSource.getRepository(user)
+      .createQueryBuilder("user")
+      .where("user.id = :sender", { sender })
+      .getOne();
 
-  isPending(name: string): boolean {
-    const found = this.array_active_User.find(
-      (activeUser) => activeUser.name === name
-    );
-    if (found === undefined) return false;
-    else return found.pending_invite;
-  }
-  isIngame(name: string): boolean {
-    const found = this.array_active_User.find(
-      (activeUser) => activeUser.name === name
-    );
-    if (found === undefined) return false;
-    else return found.ingame;
+    let temp = tempUser.friendlist;
+    temp.friendlist.push(target);
+    await AppDataSource.createQueryBuilder()
+      .update(user)
+      .set({ friendlist: temp })
+      .where("user.id = :sender", { sender })
+      .execute();
   }
 }
+//////////////// check by id or name ? sync database user and active user ?///////////////////////
+// isOnline(id: numbers): boolean {
+// const found = this.array_active_User.find(
+// (activeUser) => activeUser.id === name
+// );
+// if (found === undefined) return false;
+// else return true;
+// }
+
+// isPending(name: string): boolean {
+// const found = this.array_active_User.find(
+// (activeUser) => activeUser.name === name
+// );
+// if (found === undefined) return false;
+// else return found.pending_invite;
+// }
+// isIngame(name: string): boolean {
+// const found = this.array_active_User.find(
+// (activeUser) => activeUser.name === name
+// );
+// if (found === undefined) return false;
+// else return found.ingame;
+// }
+// }
 //USER PART WITHOUT DATABASE
 // private users = users;
 // public async getusers() {
