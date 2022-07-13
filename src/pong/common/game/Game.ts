@@ -19,7 +19,6 @@ export class Game {
     // outgoingEventsBallback: Map<string, any>;
 
     constructor () {
-        this.state;
         this.lastTime = 0;
         this.timeAccumulated = 0;
         this.paused = true;

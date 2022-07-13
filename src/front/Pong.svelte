@@ -2,10 +2,11 @@
 
 import {onMount} from 'svelte';
 
-import {ClientContext} from "../pong/client/client";
+import {ClientGameContext} from "../pong/client";
 
 onMount(() => {
-    const ctx = new ClientContext();
+    const ctx = new ClientGameContext(false);
+    ctx.startGame();
 })
 
 </script>

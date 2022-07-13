@@ -1,5 +1,5 @@
 import { GSettings } from "../constants";
-import { produceEvent } from "../game/events";
+import { GameProducedEvent } from "../game/events";
 // import { BallOutEvent } from "../game/events";
 import { BallData, DataBuffer } from "./data";
 
@@ -50,13 +50,13 @@ function applyBallBarCollision(data: DataBuffer, dtCollision: number, barId: num
     let yBallCollision = data.ballNow.y + dtCollision * data.ballNow.vy;
     let dYCollision = yBallCollision - yBarCollision;
     if (Math.abs(dYCollision) < GSettings.BALL_RADIUS + GSettings.BAR_HEIGHT / 2) {
-        //emitcollision
         data.ballThen.vx = -(data.ballNow.vx + Math.sign(data.ballNow.vx) * GSettings.BALL_SPEEDX_INCREASE);
         clipBallSpeedX(data.ballThen);
         let newVy = dYCollision * GSettings.BALL_COLLISION_VY_RATIO;
         data.ballThen.x = data.ballNow.x + (2 * dtCollision - GSettings.GAME_STEP_S) * data.ballThen.vx;
         data.ballThen.y = data.ballNow.y + dtCollision * data.ballThen.vy + (GSettings.GAME_STEP_S - dtCollision) * newVy;
         data.ballThen.vy = newVy;
+        //emitcollision
     }
     else {
         //emitnocollision
@@ -85,7 +85,7 @@ function clipBarPosition(data: DataBuffer, barId: number) {
 function ballWallGameEdgeCollision(data: DataBuffer) {
     const ballEdge = Math.abs(data.ballThen.x) + GSettings.BALL_RADIUS;
     if (ballEdge > GSettings.GAME_RIGHT)
-        produceEvent("ballOut", data.now, data.ballThen.x > 0 ? 1 : 0);
+        GameProducedEvent.produceEvent("ballOut", data.now, data.ballThen.x > 0 ? 1 : 0);
 }
 
 export function collisions(data: DataBuffer) {

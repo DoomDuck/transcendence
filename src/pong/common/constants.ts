@@ -125,26 +125,30 @@ export class GameEvent {
     static readonly RECEIVE_BAR_KEYDOWN_SERVER = "receiveBarKeydownServer";
     // playerId: PlayerID, key: string, y: number
     static readonly RECEIVE_BAR_KEYUP_SERVER = "receiveBarKeyupServer";
-    // y: number, time: number
-    static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
+    // // y: number, time: number
+    // static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
     // startTime: number
     static readonly START = "start";
     // pauseTime: number
     static readonly PAUSE = "pause";
     // unpauseTime: number
     static readonly UNPAUSE = "unpause";
-    // x: number, y: number, speedX: number, speedY: number, time: number
+    // time: number, x: number, y: number, speedX: number, speedY: number
     static readonly RECEIVE_SET_BALL  = "receiveSetBall";
-    // x: number, y: number, speedX: number, speedY: number, time: number
+    // time: number, x: number, y: number, speedX: number, speedY: number
     static readonly SEND_SET_BALL  = "sendSetBall";
     // playerId: PlayerID
     static readonly GOAL = "goal";
     // ballSpeedX: number, ballSpeedY: number
     static readonly RESET = "reset";
+    // time: number
+    static readonly NO_BALL_BAR_COLLISION = "noBallBarCollision"
+    // time: number, x: number, y: number, speedX: number, speedY: number
+    static readonly BALL_BAR_COLLISION = "ballBarCollision"
 }
 
-export type BarKeyDownEvent = [KeyValue, number];                     // keyvalue, time
-export type BarKeyUpEvent = [KeyValue, number];                     // keyvalue, y
+// export type BarKeyDownEvent = [KeyValue, number];
+// export type BarKeyUpEvent = [KeyValue, number];
 // export type BarPositionEvent = [number, number];                  // y, time
 // export type BallEvent = [number, number, number, number, number]; // x, y, speedX, speedY, time
 // export type ResetEvent = [number, number, number, number];        // ballX, ballY, ballSX, ballSY

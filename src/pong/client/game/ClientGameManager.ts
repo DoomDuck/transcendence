@@ -1,36 +1,45 @@
 import { GSettings, PLAYER1, PLAYER2, PlayerID } from '../../common/constants';
 import { Game } from "../../common/game";
-import { handleKeydown, handleKeyup } from './keyboardInput';
+import { handleKeydownOnline, handleKeyupOnline, handleKeydownOffline, handleKeyupOffline } from './keyboardInput';
 import { Renderer } from '../graphic/Renderer';
 import { GameProducedEvent } from '../../common/game/events';
 import { delay } from '../../common/utils';
 
 /**
- * The game instance on the client's side.
- * It adds to Game the rendering capability, the handling and transmission
- * to the server of the client's keyboard input.
+ * Holds the game instance on the client's side.
+ * It adds to Game the rendering capability, the handling
+ * of the client's keyboard inputs and its transmission to the server.
  */
 export class ClientGameManager {
     game: Game;
-    playerId: PlayerID;
-    otherPlayerId: PlayerID;
+    online: boolean;
+    playerId?: PlayerID;
+    otherPlayerId?: PlayerID;
     container: HTMLDivElement;
     canvas: HTMLCanvasElement;
     renderer: Renderer;
 
-    constructor(playerId: PlayerID) {
+    constructor(playerId?: PlayerID) {
         this.game = new Game();
+        this.online = (playerId !== undefined)
         // player-realted info
         this.playerId = playerId;
-        this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
+        if (playerId !== undefined)
+            this.otherPlayerId = (playerId == PLAYER1) ? PLAYER2 : PLAYER1;
 
         // events specific to ClientGame
         // let otherBar = bars[this.otherPlayerId];
         // this.onIn(GameEvent.RECEIVE_BAR_KEYDOWN, otherBar.onReceiveKeydown.bind(otherBar));
         // this.onIn(GameEvent.RECEIVE_BAR_KEYUP, otherBar.onReceiveKeyup.bind(otherBar));
         // this.onIn(GameEvent.RECEIVE_SET_BALL, ball.handleReceiveSetBall.bind(ball));
-        window.addEventListener('keydown',(e: KeyboardEvent) => handleKeydown(e, this.game.state), false);
-        window.addEventListener('keyup',(e: KeyboardEvent) => handleKeyup(e, this.game.state), false);
+        if (playerId !== undefined) {
+            window.addEventListener('keydown', (e: KeyboardEvent) => handleKeydownOnline(e, this.game.state, playerId), false);
+            window.addEventListener('keyup', (e: KeyboardEvent) => handleKeyupOnline(e, this.game.state, playerId), false);
+        }
+        else {
+            window.addEventListener('keydown', (e: KeyboardEvent) => handleKeydownOffline(e, this.game.state), false);
+            window.addEventListener('keyup', (e: KeyboardEvent) => handleKeyupOffline(e, this.game.state), false);
+        }
 
         // HTML
         this.container = document.getElementById('game-container') as HTMLDivElement;

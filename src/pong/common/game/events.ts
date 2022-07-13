@@ -5,7 +5,8 @@ import { Game } from "./Game";
 /**
  * Such events operate on the Game's data.
  * Theire registration is handled in GameState which may result in
- * discarding (too far in the past) or re-computation (recent past)
+ * discarding (too far in the past) or re-computation (recent past).
+ * From their point of view, they process the data as if they happen in the present.
  */
 export interface DataChangerEvent {
     time: number;
