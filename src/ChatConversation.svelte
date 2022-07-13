@@ -1,11 +1,11 @@
 <script lang="ts">
 import { invalid_attribute_name_character } from "svelte/internal";
 
-
 	export let name = "Falsh McQueen";
 	export let image = "../src/img/cars.jpeg";
 
 	export let has_new_message = false;
+
 </script>
 
 <div class="conv">
@@ -41,7 +41,7 @@ img {
 
 .notif {
 	margin-left: auto;
-    padding: 5%;
+	padding: 5%;
 }
 
 .roundedImageConv {
@@ -54,7 +54,7 @@ img {
 	margin-left: 1%;
 	margin-right: 2%;
 	margin-top: auto;
-    margin-bottom: auto;
+	margin-bottom: auto;
 }
 
 </style>
