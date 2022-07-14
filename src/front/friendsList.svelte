@@ -36,12 +36,6 @@
     text-align: center;
   }
 
-  h2 {
-    color: #ff00b8;
-    font-size: 0.7em;
-    text-align: center;
-  }
-
   input {
     height: 3%;
     width: 94%;
