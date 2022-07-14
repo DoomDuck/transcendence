@@ -1,24 +1,27 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import Modal from './Modal.svelte';
+
   const dispatch = createEventDispatcher();
+
+  let isOpenModal = false;
 
   export let image = "img/canard.jpeg";
   export let friendName = "Joey";
+
+  function openModal() {
+    isOpenModal = true;
+    }
+
+function closeModal() {
+    isOpenModal = false;
+  }
 </script>
 
 <div class="friend">
-  <a href="#demo">
-    <img class="roundedImageFriend" src={image} alt="profilePic" />
-  </a>
+    <img class="roundedImageFriend" src={image} alt="profilePic" on:click={openModal}/>
+    <Modal isOpenModal={isOpenModal} friendName={friendName} image={image} on:closeModal={closeModal} />
   <name> {friendName} </name>
-  <div id="demo" class="modal">
-    <div class="modal_content">
-      <img class="roundedImageProfile" src={image} alt="profilepic" />
-      <br />
-      <h2>{friendName}</h2>
-      <a href="#" class="modal_close">&times;</a>
-    </div>
-  </div>
   <img
     on:click={() => dispatch("start_waiting")}
     class="play"
@@ -44,19 +47,6 @@
     padding: 5%;
   }
 
-  .roundedImageProfile {
-    overflow: hidden;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 30px;
-    width: 60px;
-    height: 60px;
-    margin-top: 2%;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-  }
-
   .roundedImageFriend {
     overflow: hidden;
     -webkit-border-radius: 50px;
@@ -74,42 +64,4 @@
     color: #ff00b8;
   }
 
-  .modal {
-    visibility: hidden;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(77, 77, 77, 0.7);
-    transition: all 0.4s;
-    padding: auto;
-  }
-
-  .modal:target {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  .modal_content {
-    flex-direction: column;
-    border-radius: 4px;
-    position: relative;
-    width: 40%;
-    height: 40%;
-    background: white;
-    /* padding: 1.5em 2em; */
-  }
-
-  .modal_close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: grey;
-    text-decoration: none;
-  }
 </style>
