@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalid_attribute_name_character } from "svelte/internal";
 
-  export let name = "Falsh McQueen";
+  export let name = "Flash McQueen";
   export let image = "img/cars.jpeg";
 
   export let has_new_message = false;
