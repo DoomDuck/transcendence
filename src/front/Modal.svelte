@@ -1,9 +1,11 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import Profile from './Profile.svelte'
+  import SendMessage from './SendNewMessage.svelte'
 
   const dispatch = createEventDispatcher();
 
+  export let type = 'Profile';
   export let isOpenModal;
   export let friendName = '';
 
@@ -17,7 +19,12 @@
 
 <div id="background" style="--display: {isOpenModal ? 'block' : 'none'};" on:click={closeModal}></div>
 <div id="modal" style="--display: {isOpenModal ? 'block' : 'none'};">
-  <Profile image={image} friendName={friendName}/>
+  {#if {type} == 'Profile'}
+    <Profile image={image} friendName={friendName}/>
+  {:else if {type} == 'SendMessage'}
+    <SendMessage/>
+  {/if}
+
 </div>
 
 <style>
