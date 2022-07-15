@@ -3,20 +3,21 @@
  */
 
 export class GSettings {
-    // GAME ---->
-    static readonly SCREEN_RATIO = 2;
-    static readonly SCREEN_WIDTH = 4;
-    static readonly SCREEN_HEIGHT = GSettings.SCREEN_WIDTH / GSettings.SCREEN_RATIO;
-    static readonly SCREEN_TOP = -GSettings.SCREEN_HEIGHT / 2;
-    static readonly SCREEN_BOTTOM = GSettings.SCREEN_HEIGHT / 2;
-    static readonly SCREEN_LEFT = -GSettings.SCREEN_WIDTH / 2;
-    static readonly SCREEN_RIGHT = GSettings.SCREEN_WIDTH / 2;
-    static readonly GAME_WIDTH = 4;
-    static readonly GAME_HEIGHT = GSettings.SCREEN_HEIGHT * 23 / 25;
-    static readonly GAME_TOP = -GSettings.GAME_HEIGHT / 2;
-    static readonly GAME_BOTTOM = GSettings.GAME_HEIGHT / 2;
-    static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
-    static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
+  // GAME ---->
+  static readonly SCREEN_RATIO = 2;
+  static readonly SCREEN_WIDTH = 4;
+  static readonly SCREEN_HEIGHT =
+    GSettings.SCREEN_WIDTH / GSettings.SCREEN_RATIO;
+  static readonly SCREEN_TOP = -GSettings.SCREEN_HEIGHT / 2;
+  static readonly SCREEN_BOTTOM = GSettings.SCREEN_HEIGHT / 2;
+  static readonly SCREEN_LEFT = -GSettings.SCREEN_WIDTH / 2;
+  static readonly SCREEN_RIGHT = GSettings.SCREEN_WIDTH / 2;
+  static readonly GAME_WIDTH = 4;
+  static readonly GAME_HEIGHT = (GSettings.SCREEN_HEIGHT * 23) / 25;
+  static readonly GAME_TOP = -GSettings.GAME_HEIGHT / 2;
+  static readonly GAME_BOTTOM = GSettings.GAME_HEIGHT / 2;
+  static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
+  static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
 
     // UID ----->
     static readonly SCORE_SIZE = GSettings.SCREEN_WIDTH / 30;
@@ -86,73 +87,71 @@ export class GSettings {
 }
 
 export enum PlayerID {
-    PLAYER1 = 0,
-    PLAYER2 = 1,
+  PLAYER1 = 0,
+  PLAYER2 = 1,
 }
 export const PLAYER1 = PlayerID.PLAYER1;
 export const PLAYER2 = PlayerID.PLAYER2;
 
 export enum Direction {
-    LEFT = -1,
-    RIGHT = 1,
+  LEFT = -1,
+  RIGHT = 1,
 }
 export const LEFT = Direction.LEFT;
 export const RIGHT = Direction.RIGHT;
 
-
 export class GameEvent {
-
-    // enum Send {
-    //     ....
-    // }
-    // enum Receive {
-    //     ....
-    // }
-    // enum FromServer {
-    //     ....
-    // }
-    // key: string, time: number
-    static readonly SEND_BAR_KEYDOWN = "sendBarKeydown";
-    // key: string, y: number
-    static readonly SEND_BAR_KEYUP = "sendBarKeyup";
-    // y: number, time: number
-    static readonly SEND_BAR_POSITION = "sendBarPosition";
-    // key: string, time: number
-    static readonly RECEIVE_BAR_KEYDOWN = "receiveBarKeydown";
-    // key: string, y: number
-    static readonly RECEIVE_BAR_KEYUP = "receiveBarKeyup";
-    // playerId: PlayerID, key: string, y: number
-    static readonly RECEIVE_BAR_KEYDOWN_SERVER = "receiveBarKeydownServer";
-    // playerId: PlayerID, key: string, y: number
-    static readonly RECEIVE_BAR_KEYUP_SERVER = "receiveBarKeyupServer";
-    // y: number, time: number
-    static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
-    // startTime: number
-    static readonly START = "start";
-    // pauseTime: number
-    static readonly PAUSE = "pause";
-    // unpauseTime: number
-    static readonly UNPAUSE = "unpause";
-    // x: number, y: number, speedX: number, speedY: number, time: number
-    static readonly RECEIVE_SET_BALL  = "receiveSetBall";
-    // x: number, y: number, speedX: number, speedY: number, time: number
-    static readonly SEND_SET_BALL  = "sendSetBall";
-    // playerId: PlayerID
-    static readonly GOAL = "goal";
-    // ballSpeedX: number, ballSpeedY: number
-    static readonly RESET = "reset";
+  // enum Send {
+  //     ....
+  // }
+  // enum Receive {
+  //     ....
+  // }
+  // enum FromServer {
+  //     ....
+  // }
+  // key: string, time: number
+  static readonly SEND_BAR_KEYDOWN = "sendBarKeydown";
+  // key: string, y: number
+  static readonly SEND_BAR_KEYUP = "sendBarKeyup";
+  // y: number, time: number
+  static readonly SEND_BAR_POSITION = "sendBarPosition";
+  // key: string, time: number
+  static readonly RECEIVE_BAR_KEYDOWN = "receiveBarKeydown";
+  // key: string, y: number
+  static readonly RECEIVE_BAR_KEYUP = "receiveBarKeyup";
+  // playerId: PlayerID, key: string, y: number
+  static readonly RECEIVE_BAR_KEYDOWN_SERVER = "receiveBarKeydownServer";
+  // playerId: PlayerID, key: string, y: number
+  static readonly RECEIVE_BAR_KEYUP_SERVER = "receiveBarKeyupServer";
+  // y: number, time: number
+  static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
+  // startTime: number
+  static readonly START = "start";
+  // pauseTime: number
+  static readonly PAUSE = "pause";
+  // unpauseTime: number
+  static readonly UNPAUSE = "unpause";
+  // x: number, y: number, speedX: number, speedY: number, time: number
+  static readonly RECEIVE_SET_BALL = "receiveSetBall";
+  // x: number, y: number, speedX: number, speedY: number, time: number
+  static readonly SEND_SET_BALL = "sendSetBall";
+  // playerId: PlayerID
+  static readonly GOAL = "goal";
+  // ballSpeedX: number, ballSpeedY: number
+  static readonly RESET = "reset";
 }
 
-export type BarKeyDownEvent = [KeyValue, number];                     // keyvalue, time
-export type BarKeyUpEvent = [KeyValue, number];                     // keyvalue, y
+export type BarKeyDownEvent = [KeyValue, number]; // keyvalue, time
+export type BarKeyUpEvent = [KeyValue, number]; // keyvalue, y
 // export type BarPositionEvent = [number, number];                  // y, time
 // export type BallEvent = [number, number, number, number, number]; // x, y, speedX, speedY, time
 // export type ResetEvent = [number, number, number, number];        // ballX, ballY, ballSX, ballSY
 // export type GoalEvent = [PlayerID];                               // player
 
 export enum KeyValue {
-    UP,
-    DOWN,
+  UP,
+  DOWN,
 }
 export const UP = KeyValue.UP;
 export const DOWN = KeyValue.DOWN;

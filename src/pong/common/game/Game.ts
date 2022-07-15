@@ -50,43 +50,40 @@ export class Game {
     //     this.incommingEventsCallback.get(event)(...args);
     // }
 
-    reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
-        console.log('Game reset');
-        this.timeAccumulated = 0;
-        this.paused = true;
-        this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-    }
+  reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
+    console.log("Game reset");
+    this.timeAccumulated = 0;
+    this.paused = true;
+    this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
+  }
 
-    start() {
-        console.log('Game start');
-        this.paused = false;
-        this.lastTime = Date.now();
-    }
+  start() {
+    console.log("Game start");
+    this.paused = false;
+    this.lastTime = Date.now();
+  }
 
-    pause() {
-        if (this.paused)
-            return;
-        this.paused = true;
-    }
+  pause() {
+    if (this.paused) return;
+    this.paused = true;
+  }
 
-    unpause() {
-        if (!this.paused)
-            return;
-        this.paused = false;
-        this.lastTime = Date.now();
-    }
+  unpause() {
+    if (!this.paused) return;
+    this.paused = false;
+    this.lastTime = Date.now();
+  }
 
     goal(playerId: PlayerID) {
         this.score[playerId]++;
     }
 
-    frame() {
-        if (this.paused)
-            return;
-        let newTime = Date.now();
-        let dt = newTime - this.lastTime;
-        this.timeAccumulated += dt;
-        this.lastTime = newTime;
+  frame() {
+    if (this.paused) return;
+    let newTime = Date.now();
+    let dt = newTime - this.lastTime;
+    this.timeAccumulated += dt;
+    this.lastTime = newTime;
 
         while (this.timeAccumulated >= GSettings.GAME_STEP_MS) {
             this.timeAccumulated -= GSettings.GAME_STEP_MS;
@@ -98,4 +95,3 @@ export class Game {
         this.state.update();
     }
 }
-

@@ -1,36 +1,42 @@
-import { Controller, Get, Post,Delete,Put, Body, Param, Query } from '@nestjs/common';
-import {CarService} from './car.service'
-import {CarDto} from './car.dto'
+import {
+  Controller,
+  Get,
+  Post,
+  Delete,
+  Put,
+  Body,
+  Param,
+  Query,
+} from "@nestjs/common";
+import { CarService } from "./car.service";
+import { CarDto } from "./car.dto";
 
-@Controller('car')
+@Controller("car")
 export class CarController {
-constructor (private carService: CarService) {}
-	@Get()
-	async getCars()
-	{
-		return this.carService.getCars();
-	}
-	@Post()
-	public  postCar(@Body() car: CarDto){
-		return this.carService.postCar(car);
-	}
+  constructor(private carService: CarService) {}
+  @Get()
+  async getCars() {
+    return this.carService.getCars();
+  }
+  @Post()
+  public postCar(@Body() car: CarDto) {
+    return this.carService.postCar(car);
+  }
 
-	@Get(':id')
-	public async getCarById(@Param('id')id: number){
-		return this.carService.getCarById(id);
-	}
+  @Get(":id")
+  public async getCarById(@Param("id") id: number) {
+    return this.carService.getCarById(id);
+  }
 
+  @Delete(":id")
+  public async deleteCardById(@Param("id") id: number) {
+    return this.carService.deleteCarById(id);
+  }
 
-	@Delete(':id')
-	public async deleteCardById(@Param('id')id: number){
-		return this.carService.deleteCarById(id);
-	}
-
-	@Put(':id')
-	public async putCarById(@Param('id')id: number, @Query() query){
-		const propertyName = query.property_name;
-		const propertyValue = query.property_value;
-		return this.carService.putCarById(id, propertyName,propertyValue);
-
-	}
+  @Put(":id")
+  public async putCarById(@Param("id") id: number, @Query() query) {
+    const propertyName = query.property_name;
+    const propertyValue = query.property_value;
+    return this.carService.putCarById(id, propertyName, propertyValue);
+  }
 }

@@ -1,5 +1,5 @@
 import { GSettings } from "../constants";
-import { produceEvent } from "../game/events";
+import { GameProducedEvent } from "../game/events";
 // import { BallOutEvent } from "../game/events";
 import { BallData, DataBuffer } from "./data";
 
@@ -85,7 +85,7 @@ function clipBarPosition(data: DataBuffer, barId: number) {
 function ballWallGameEdgeCollision(data: DataBuffer) {
     const ballEdge = Math.abs(data.ballThen.x) + GSettings.BALL_RADIUS;
     if (ballEdge > GSettings.GAME_RIGHT)
-        produceEvent("ballOut", data.now, data.ballThen.x > 0 ? 1 : 0);
+        GameProducedEvent.produceEvent("ballOut", data.now, data.ballThen.x > 0 ? 1 : 0);
 }
 
 export function collisions(data: DataBuffer) {

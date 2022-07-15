@@ -1,24 +1,31 @@
 <script lang="ts">
+  import { onMount } from "svelte";
 
-import {onMount} from 'svelte';
+  import { ClientContext } from "../pong/client/client";
 
-import {ClientContext} from "../pong/client/client";
-
-onMount(() => {
+  onMount(() => {
     const ctx = new ClientContext();
-})
-
+  });
 </script>
 
 <style>
+#game-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width:70%;
+    height:70%;
+    background-image: url("../../public/img/fond_ecran_jeu.png");
+}
 #game-container {
-    width: 100%;
-    height: 100%;
+    width:90%;
+    height:90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #game-screen {
-    /* position: absolute;
-    top: 0;
-    z-index: 0; */
+    border: 1px solid white;
 }
 /* .player-score {
     color: rgb(255, 255, 255);
@@ -26,7 +33,8 @@ onMount(() => {
     background: rgba(0, 0, 0, 0);
 } */
 </style>
-
-<div id="game-container">
-    <canvas id="game-screen"></canvas>
+<div id="game-full">
+    <div id="game-container">
+        <canvas id="game-screen"></canvas>
+    </div>
 </div>
