@@ -85,12 +85,8 @@ export class GSettings {
     static readonly BACKGROUND_N_SUBDIVISIONS = 25;
 }
 
-export enum PlayerID {
-    PLAYER1 = 0,
-    PLAYER2 = 1,
-}
-export const PLAYER1 = PlayerID.PLAYER1;
-export const PLAYER2 = PlayerID.PLAYER2;
+export const PLAYER1 = 0;
+export const PLAYER2 = 1;
 
 export enum Direction {
     LEFT = -1,
@@ -112,14 +108,16 @@ export class GameEvent {
     //     ....
     // }
     // key: string, time: GameTime
-    static readonly BAR_EVENT = "barEvent";
+    static readonly SEND_BAR_EVENT = "sendBarEvent";
+    // key: string, time: GameTime
+    static readonly RECEIVE_BAR_EVENT = "receiveBarEvent";
     // startTime: number
     static readonly START = "start";
     // pauseTime: number
     static readonly PAUSE = "pause";
     // time: number, x: number, y: number, speedX: number, speedY: number
     static readonly SET_BALL  = "receiveSetBall";
-    // playerId: PlayerID
+    // playerId: number
     static readonly GOAL = "goal";
     // ballSpeedX: number, ballSpeedY: number
     static readonly RESET = "reset";
@@ -134,7 +132,7 @@ export class GameEvent {
 // export type BarPositionEvent = [number, number];
 // export type BallEvent = [number, number, number, number, number];
 // export type ResetEvent = [number, number, number, number];
-// export type GoalEvent = [PlayerID];
+// export type GoalEvent = [number];
 
 export enum KeyValue {
     UP,

@@ -126,10 +126,10 @@ export class Renderer {
         }
         this.drawBackground();
 
-        this.drawBall(this.data.ballNow);
-        this.drawBar(this.data.barsNow[0]);
-        this.drawBar(this.data.barsNow[1]);
-        for (let graviton of this.data.gravitonsNow.values()) {
+        this.drawBall(this.data.ballCurrent);
+        this.drawBar(this.data.barsCurrent[0]);
+        this.drawBar(this.data.barsCurrent[1]);
+        for (let graviton of this.data.gravitonsCurrent.values()) {
             this.drawGraviton(graviton);
         }
         this.drawScore();

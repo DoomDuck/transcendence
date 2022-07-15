@@ -1,10 +1,10 @@
 import { ServerGameManager } from './game'
-import { PLAYER1, PLAYER2, GameEvent, PlayerID, LEFT, RIGHT, Direction, GSettings } from '../common/constants';
+import { PLAYER1, PLAYER2, GameEvent, LEFT, RIGHT, Direction, GSettings } from '../common/constants';
 import { Socket } from 'socket.io';
 import { delay } from '../common/utils';
 import { BarInputEvent, Game } from '../common/game';
 import { EventEmitter } from 'stream';
-import { DataChangerEvent, GameProducedEvent } from '../common/game/events';
+import { BarInputEventStruct, DataChangerEvent, GameProducedEvent } from '../common/game/events';
 
 /**
  * Manage a full game session between two players (sockets) in the server
@@ -17,15 +17,13 @@ export class ServerGameContext {
 
     constructor(private players: [Socket, Socket]) {
         this.game = new Game();
-        const setupEventForTransmission = <EventType extends DataChangerEvent>(eventName: string) => {
-            for (let [emitter, receiver] of [[PLAYER1, PLAYER2], [PLAYER2, PLAYER1]]) {
-                this.players[emitter].on(eventName, (event: EventType) => {
-                    this.players[receiver].emit(eventName, event);
-                    this.game.state.registerEvent(event);
-                });
-            }
+        for (let [emitter, receiver] of [[PLAYER1, PLAYER2], [PLAYER2, PLAYER1]]) {
+            this.players[emitter].on(GameEvent.SEND_BAR_EVENT, (...args: BarInputEventStruct) => {
+                this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
+                this.game.state.registerEvent(new BarInputEvent(...args));
+            });
         }
-        setupEventForTransmission<BarInputEvent>(BarInputEvent.type);
+        // setupEventForTransmission<BarInputEvent>(GameEvent.SEND_BAR_EVENT, GameEvent.RECEIVE_BAR_EVENT);
         // setupEventForTransmission: GameEvent.BALL_BAR_COLLISION,
         // setupEventForTransmission: GameEvent.NO_BALL_BAR_COLLISION,
 
@@ -51,15 +49,6 @@ export class ServerGameContext {
         this.players[PLAYER2].emit(event, ...args);
     }
 
-
-    setupBarEvents(emitter: PlayerID) {
-        let receiver = (emitter == PLAYER1) ? PLAYER2 : PLAYER1;
-        this.players[emitter].on(GameEvent.BAR_EVENT, (event: BarInputEvent) => {
-            this.players[receiver].emit(GameEvent.BAR_EVENT, event);
-            this.game.state.registerEvent(event);
-        });
-    }
-
     start(delay: number) {
         const startTime = Date.now() + delay;
         this.game.start(startTime);
@@ -82,7 +71,7 @@ export class ServerGameContext {
         this.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
     }
 
-    handleGoal(playerId: PlayerID) {
+    handleGoal(playerId: number) {
         console.log("GOAL !!!");
         this.broadcastEvent(GameEvent.GOAL, playerId);
         let ballDirection = (playerId == PLAYER1) ? LEFT : RIGHT;

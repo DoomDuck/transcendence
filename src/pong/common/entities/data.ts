@@ -1,5 +1,5 @@
 import { GSettings } from "../constants";
-import { type DataChangerEvent } from "../game/events";
+import { type DataChanger, type DataChangerEvent } from "../game/events";
 
 export class BallData {
     x: number = 0;
@@ -38,70 +38,84 @@ export class GravitonData {
 }
 
 export class DataBuffer {
-    ballDataArray: BallData[] = Array.from({length: 100}, () => new BallData());
-    barsDataArray: [BarData[], BarData[]] = [
+    ballArray: BallData[] = Array.from({length: 100}, () => new BallData());
+    barsArray: [BarData[], BarData[]] = [
         Array.from({length: 100}, () => new BarData(0)),
         Array.from({length: 100}, () => new BarData(1))];
-    gravitonsDataArray: Set<GravitonData>[] = Array.from({length: 100}, () => new Set());
-    eventsDataArray: DataChangerEvent[][] = Array.from({length: 100}, () => []);
+    gravitonsArray: Set<GravitonData>[] = Array.from({length: 100}, () => new Set());
+    eventsArray: DataChanger[][] = [];
 
-    nowIndex: number = 0;
-    thenIndex: number = 1;
-    now: number = 0;
+    currentIndex: number = 0;
+    nextIndex: number = 1;
+    currentTime: number = 0;
+    actualNow: number = 0;
 
-    ballNow: BallData;
-    ballThen: BallData;
-    barsNow: [BarData, BarData];
-    barsThen: [BarData, BarData];
-    gravitonsNow: Set<GravitonData>;
-    gravitonsThen: Set<GravitonData>;
-    eventsNow: DataChangerEvent[];
-    eventsThen: DataChangerEvent[];
+    ballCurrent: BallData;
+    ballNext: BallData;
+    barsCurrent: [BarData, BarData];
+    barsNext: [BarData, BarData];
+    gravitonsCurrent: Set<GravitonData>;
+    gravitonsNext: Set<GravitonData>;
+    // eventsNow: DataChangerEvent[];
+    // eventsThen: DataChangerEvent[];
 
     constructor() {
         this.updateNowThenReferences();
     }
 
+    get eventsNow(): DataChanger[] | null {
+        return this.currentTime in this.eventsArray ? this.eventsArray[this.currentTime] : null;
+    }
+
+    addEventNow(event: DataChangerEvent) {
+        const dataChanger = event.process.bind(event);
+        if (!(this.currentTime in this.eventsArray))
+            this.eventsArray[this.currentTime] = [dataChanger];
+        else
+            this.eventsArray[this.currentTime].push(dataChanger);
+    }
+
     updateNowThenReferences() {
-        this.ballNow = this.ballDataArray[this.nowIndex];
-        this.ballThen = this.ballDataArray[this.thenIndex];
-        this.barsNow = [this.barsDataArray[0][this.nowIndex], this.barsDataArray[1][this.nowIndex]];
-        this.barsThen = [this.barsDataArray[0][this.thenIndex], this.barsDataArray[1][this.thenIndex]];
-        this.gravitonsNow = this.gravitonsDataArray[this.nowIndex];
-        this.gravitonsThen = this.gravitonsDataArray[this.thenIndex];
-        this.eventsNow = this.eventsDataArray[this.nowIndex];
-        this.eventsThen = this.eventsDataArray[this.thenIndex];
+        this.ballCurrent = this.ballArray[this.currentIndex];
+        this.ballNext = this.ballArray[this.nextIndex];
+        this.barsCurrent = [this.barsArray[0][this.currentIndex], this.barsArray[1][this.currentIndex]];
+        this.barsNext = [this.barsArray[0][this.nextIndex], this.barsArray[1][this.nextIndex]];
+        this.gravitonsCurrent = this.gravitonsArray[this.currentIndex];
+        this.gravitonsNext = this.gravitonsArray[this.nextIndex];
     }
 
     advance() {
-        this.now++;
-        this.nowIndex = this.thenIndex;
-        this.thenIndex = (this.thenIndex + 1) % 100;
+        this.currentTime++;
+        this.currentIndex = this.nextIndex;
+        this.nextIndex = (this.nextIndex + 1) % 100;
         this.updateNowThenReferences();
     }
+
     reset() {
-        this.now = 0;
-        this.nowIndex = 0;
-        this.thenIndex = 0;
+        this.currentTime = 0;
+        this.actualNow = 0;
+        this.currentIndex = 0;
+        this.nextIndex = 0;
         this.updateNowThenReferences();
-        this.ballNow = new BallData();
-        this.barsNow = [new BarData(0), new BarData(1)];
-        this.gravitonsNow.clear();
+        this.ballCurrent = new BallData();
+        this.barsCurrent = [new BarData(0), new BarData(1)];
+        this.gravitonsCurrent.clear();
+        this.eventsArray = [];
     }
-    
+
 
     addGraviton(timeIndex: number, id: number, x: number, y: number): void {
         let graviton = new GravitonData();
         graviton.x = x;
         graviton.y = y;
-        this.gravitonsDataArray[timeIndex].add(graviton);
+        this.gravitonsArray[timeIndex].add(graviton);
     }
 
     goBackTo(time: number) {
-        let timeIndex = (time - this.now + this.nowIndex + 100) % 100;
-        this.now = time;
-        this.nowIndex = timeIndex;
-        this.thenIndex = (timeIndex + 1) % 100;
+        let timeIndex = (time - this.currentTime + this.currentIndex + 100) % 100;
+        this.currentTime = time;
+        this.currentIndex = timeIndex;
+        this.nextIndex = (timeIndex + 1) % 100;
         this.updateNowThenReferences();
     }
 }

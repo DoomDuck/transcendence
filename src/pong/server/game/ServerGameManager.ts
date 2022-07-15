@@ -1,4 +1,4 @@
-import { GameEvent, GSettings, PlayerID } from "../../common/constants";
+import { GameEvent, GSettings } from "../../common/constants";
 import { BarInputEvent, Game } from "../../common/game";
 // import { Bar, Ball, GameState } from "../../common/entities";
 // import { PlayersScore } from "../../common/entities";

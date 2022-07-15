@@ -5,9 +5,20 @@ import {onMount} from 'svelte';
 import {ClientGameContext} from "../pong/client";
 
 onMount(() => {
-    // const ctx = new ClientGameContext(false); // offline
-    const ctx = new ClientGameContext(true); // online
-    ctx.startGame();
+    // offline
+    // const ctx = new ClientGameContext(false);
+    // ctx.startGame();
+    // online
+
+    this.socket = io('http://localhost:5000/pong');
+    this.socket.on("connect", () => {
+        console.log("connected to server");
+    });
+    this.socket.on("disconnect", ()=> {
+        console.log("disconnected from server");
+    });
+    const ctx = new ClientGameContext(true);
+    ctx.configureSocket(socket)
 })
 
 </script>

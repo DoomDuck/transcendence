@@ -1,7 +1,7 @@
-import { GameEvent, GSettings, PlayerID } from "../constants";
+import { GameEvent, GSettings } from "../constants";
 import { GameState } from "../entities";
 import { delay } from "../utils";
-import { BarInputEvent, GameProducedEvent } from "./events";
+import { BarInputEvent, type BarInputEventStruct, GameProducedEvent } from "./events";
 
 /**
  * Game represents the environment representing an ongoing game between two players.
@@ -25,7 +25,11 @@ export class Game {
             [GameEvent.START, this.start.bind(this)],
             [GameEvent.PAUSE, this.pause.bind(this)],
             [GameEvent.RESET, this.reset.bind(this)],
-            [BarInputEvent.type, this.state.registerEvent.bind(this.state)]
+            [GameEvent.RECEIVE_BAR_EVENT,
+             (...eventArgs: BarInputEventStruct) => {
+                console.log(` -> received ${eventArgs[0]}, ${eventArgs[1]}, ${eventArgs[2]}, ${eventArgs[3]}`);
+                this.state.registerEvent(new BarInputEvent(...eventArgs));
+            }]
         ]
         this.incommingEventsCallback = new Map(eventsCallbackPairs);
     }
@@ -39,7 +43,7 @@ export class Game {
     }
 
     reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
-        console.log('Game reset');
+        // console.log('Game reset');
         this.timeAccumulated = 0;
         this.paused = true;
         this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
@@ -48,7 +52,7 @@ export class Game {
     start(startTime?: number) {
         if (startTime === undefined)
             startTime = Date.now();
-        console.log(`Game start at ${startTime}`);
+        // console.log(`Game start at ${startTime}`);
         this.paused = false;
         this.startTime = startTime + this.pauseOffetEarly;
         this.lastTime = this.startTime;
@@ -61,11 +65,11 @@ export class Game {
         else
             this.pauseOffetEarly = Math.max(Date.now() - pauseTime, 0);
         this.pauseTime = pauseTime;
-        console.log(`Game pause at ${pauseTime}`);
+        // console.log(`Game pause at ${pauseTime}`);
         this.paused = true;
     }
 
-    goal(playerId: PlayerID) {
+    goal(playerId: number) {
         this.score[playerId]++;
     }
 
