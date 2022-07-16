@@ -19,6 +19,9 @@
 
 <div id="background" style="--display: {isOpenModal ? 'block' : 'none'};" on:click={closeModal}></div>
 <div id="modal" style="--display: {isOpenModal ? 'block' : 'none'};">
+  <p>{type}</p>
+  <p>{type}</p>
+  <p>{type}</p>
   {#if {type} == 'Profile'}
     <Profile image={image} friendName={friendName}/>
   {:else if {type} == 'SendMessage'}
