@@ -9,7 +9,13 @@
     <h4 on:click={() => dispatch("Play")}>Play</h4>
     <h4 on:click={() => dispatch("see_friends")}>Challenge a friend</h4>
   </div>
-  <img on:click={() => dispatch("open_menu")} src="img/return.png" alt="return" width="30" height="30"/>
+  <img
+    on:click={() => dispatch("open_menu")}
+    src="img/return.png"
+    alt="return"
+    width="30"
+    height="30"
+  />
 </div>
 
 <style>
@@ -21,9 +27,8 @@
     width: 100%;
     height: 100%;
     background-color: #ea0ed4;
-    
   }
-  #game{
+  #game {
     display: flex;
     flex-direction: column;
     justify-content: center;

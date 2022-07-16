@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import Modal from './Modal.svelte';
+  import Modal from "./Modal.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -11,16 +11,21 @@
 
   function openModal() {
     isOpenModal = true;
-    }
+  }
 
-function closeModal() {
+  function closeModal() {
     isOpenModal = false;
   }
 </script>
 
 <div class="friend">
-    <img class="roundedImageFriend" src={image} alt="profilePic" on:click={openModal}/>
-    <Modal isOpenModal={isOpenModal} friendName={friendName} image={image} on:closeModal={closeModal} />
+  <img
+    class="roundedImageFriend"
+    src={image}
+    alt="profilePic"
+    on:click={openModal}
+  />
+  <Modal {isOpenModal} {friendName} {image} on:closeModal={closeModal} />
   <name> {friendName} </name>
   <img
     on:click={() => dispatch("start_waiting")}
@@ -63,5 +68,4 @@ function closeModal() {
   name {
     color: #ff00b8;
   }
-
 </style>
