@@ -5,16 +5,11 @@
 </script>
 
 <div id="start_a_game">
-  <h4 on:click={() => dispatch("Play")}>Play</h4>
-  <br />
-  <h4 on:click={() => dispatch("see_friends")}>Challenge a friend</h4>
-  <img
-    on:click={() => dispatch("open_menu")}
-    src="img/return.png"
-    alt="return"
-    width="30"
-    height="30"
-  />
+  <div id="game">
+    <h4 on:click={() => dispatch("Play")}>Play</h4>
+    <h4 on:click={() => dispatch("see_friends")}>Challenge a friend</h4>
+  </div>
+  <img on:click={() => dispatch("open_menu")} src="img/return.png" alt="return" width="30" height="30"/>
 </div>
 
 <style>
@@ -26,11 +21,18 @@
     width: 100%;
     height: 100%;
     background-color: #ea0ed4;
+    
+  }
+  #game{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   img {
     float: left;
     margin-left: 3%;
-    margin-top: 20%;
+    margin-bottom: 3%;
   }
 
   h4 {
@@ -40,10 +42,11 @@
     color: blue;
     line-height: 500%;
     -webkit-text-stroke: 1px #000000;
-    font-size: 2.5em;
+    font-size: 3em;
   }
 
   h4:hover {
     background-color: purple;
+    background-size: 100%;
   }
 </style>
