@@ -12,6 +12,10 @@ A short descript of the project architecture can be found in README.md
 
 Changes should not be made directly to main but should be passed through pull requests to prevent having errors
 
+## Language
+
+Through out the project's comments, pull requests, variable names all should be made in English
+
 ## Code convention
 
 Naming:
@@ -25,4 +29,3 @@ Declaration:
 
 Indentation:
 - prettier format
-
