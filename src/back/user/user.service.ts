@@ -1,51 +1,69 @@
-import { Injectable, HttpException } from "@nestjs/common";
-import { users } from "./users.mock";
-import { user } from "./user.entity";
+import { Injectable/*, HttpException*/ } from "@nestjs/common";
+import { User } from "./user.entity";
 import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { AppDataSource } from "./../data-source";
-export class activeUser {
+// import { AppDataSource } from "./../data-source";
+import DatabaseFilesService from "./databaseFiles.service";
+// import { Logger } from "@nestjs/common";
+export class ActiveUser {
   name: string;
   pending_invite: boolean;
   ingame: boolean;
 }
 @Injectable()
-export class userService {
-  array_active_User: activeUser[];
+export class UserService {
+  // private logger: Logger = new Logger("UserService");
+  array_active_User: ActiveUser[];
   constructor(
-    @InjectRepository(user)
-    private usersRepository: Repository<user>
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+	private readonly databaseFilesService: DatabaseFilesService,
   ) {}
-  findAll(): Promise<user[]> {
+  findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
-  findOne(id: number): Promise<user> {
+
+  findOne(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
   async remove(id: number): Promise<void> {
     await this.usersRepository.delete(id);
   }
-  addOne(userDto: UserDto): Promise<user> {
-    const newUser = new user();
+  addOne(userDto: UserDto): Promise<User> {
+    const newUser = new User();
     newUser.name = userDto.name;
+	newUser.friendlist= [];
     return this.usersRepository.save(newUser);
   }
   //surement nul a chier mais je test des trucs
-  // async addFriend(sender: number, target: number) {
-    // const tempUser = await AppDataSource.getRepository(user)
-      // .createQueryBuilder("user")
-      // .where("user.id = :sender", { sender })
-      // .getOne();
-//
-    // let temp = tempUser.friendlist;
-    // temp.friendlist.push(target);
-    // await AppDataSource.createQueryBuilder()
-      // .update(user)
-      // .set({ friendlist: temp })
-      // .where("user.id = :sender", { sender })
-      // .execute();
-  // }
+  async addFriend(sender: number, target: number) {
+    let tempSender = await this.usersRepository
+      .createQueryBuilder("User")
+      .where("User.id = :sender", { sender })
+      .getOne();
+	let tempTarget = await this.usersRepository
+      .createQueryBuilder("User")
+      .where("User.id = :sender", { sender })
+      .getOne();
+    if (tempSender === null)
+		return "Sender does not exist";
+	if (tempTarget === null)
+		return "Target does not exist";
+	if (tempSender.friendlist.find(element => element ===target) === undefined){      	
+		tempSender.friendlist.push(target);
+    	return this.usersRepository.save(tempSender);
+		}
+	else
+		return "Already friends";
+  }
+	async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
+    const avatar = await this.databaseFilesService.uploadDatabaseFile(imageBuffer, filename);
+    await this.usersRepository.update(userId, {
+      avatarId: avatar.id
+    });
+    return avatar;
+  }
 }
 //////////////// check by id or name ? sync database user and active user ?///////////////////////
 // isOnline(id: numbers): boolean {

@@ -1,14 +1,24 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
-@Entity("user")
-export class user {
+import { Entity, Column,JoinColumn ,OneToOne,PrimaryGeneratedColumn } from "typeorm";
+import DatabaseFile from './databaseFile.entity';
+@Entity("User")
+export class User {
   @PrimaryGeneratedColumn()
-  id?: number;
+  id: number;
   @Column({ type: "varchar", length: 100, nullable: false })
   name: string;
 
-  // @Column({ type: "number", length: 100, nullable: false })
-  // @Column()
-  // friendlist: number[];
+  @Column("int", { array: true, nullable: false })
+  friendlist: number[];
   // @Column({ type: "varchar", length: 100, nullable: false })
   // domain: string;
+  @JoinColumn({ name: 'avatarId' })
+  @OneToOne(
+    () => DatabaseFile,
+    {
+      nullable: true
+    }
+  )
+	public avatar?: DatabaseFile;
+	@Column({ nullable: true })
+  public avatarId?: number;
 }
