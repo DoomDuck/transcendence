@@ -32,20 +32,20 @@ export class userService {
     return this.usersRepository.save(newUser);
   }
   //surement nul a chier mais je test des trucs
-  async addFriend(sender: number, target: number) {
-    const tempUser = await AppDataSource.getRepository(user)
-      .createQueryBuilder("user")
-      .where("user.id = :sender", { sender })
-      .getOne();
-
-    let temp = tempUser.friendlist;
-    temp.friendlist.push(target);
-    await AppDataSource.createQueryBuilder()
-      .update(user)
-      .set({ friendlist: temp })
-      .where("user.id = :sender", { sender })
-      .execute();
-  }
+  // async addFriend(sender: number, target: number) {
+    // const tempUser = await AppDataSource.getRepository(user)
+      // .createQueryBuilder("user")
+      // .where("user.id = :sender", { sender })
+      // .getOne();
+//
+    // let temp = tempUser.friendlist;
+    // temp.friendlist.push(target);
+    // await AppDataSource.createQueryBuilder()
+      // .update(user)
+      // .set({ friendlist: temp })
+      // .where("user.id = :sender", { sender })
+      // .execute();
+  // }
 }
 //////////////// check by id or name ? sync database user and active user ?///////////////////////
 // isOnline(id: numbers): boolean {

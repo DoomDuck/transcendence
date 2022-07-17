@@ -7,8 +7,8 @@ export class user {
   name: string;
 
   // @Column({ type: "number", length: 100, nullable: false })
-  @Column()
-  friendlist: number[];
+  // @Column()
+  // friendlist: number[];
   // @Column({ type: "varchar", length: 100, nullable: false })
   // domain: string;
 }

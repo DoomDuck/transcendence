@@ -26,14 +26,14 @@ export class userController {
     // this.logger.log(user.name);
     return this.userService.addOne(user);
   }
-  @Post("friendReqest")
-  public addfriend(@Body() friendRequest: FriendRequestDto) {
-    // this.logger.log(user.name);
-    return this.userService.addFriend(
-      friendRequest.sender,
-      friendRequest.target
-    );
-  }
+  // @Post("friendReqest")
+  // public addfriend(@Body() friendRequest: FriendRequestDto) {
+    // // this.logger.log(user.name);
+    // return this.userService.addFriend(
+      // friendRequest.sender,
+      // friendRequest.target
+    // );
+  // }
 
   @Get(":id")
   public async getuserById(@Param("id") id: number) {
