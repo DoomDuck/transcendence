@@ -12,6 +12,7 @@ import {
   processExternEvents,
   propagateBarInputs,
   updateGravitons,
+  updatePortal,
 } from "./update";
 
 export class GameState {
@@ -40,6 +41,7 @@ export class GameState {
     processExternEvents(this.data);
     propagateBarInputs(this.data);
     updateGravitons(this.data);
+    updatePortal(this.data);
     applyForces(this.data);
     applySpeed(this.data);
     collisions(this.data);

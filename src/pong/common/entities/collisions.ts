@@ -1,7 +1,7 @@
 import { GameEvent, GSettings } from "../constants";
 import { GameProducedEvent } from "../game/events";
 // import { BallOutEvent } from "../game/events";
-import { BallData, DataBuffer } from "./data";
+import { BallData, DataBuffer, PortalData, PortalHalfData } from "./data";
 
 function ballWallTopCollision(data: DataBuffer) {
   let ballTop = data.ballNext.y - GSettings.BALL_RADIUS;
@@ -121,7 +121,7 @@ function clipBarPosition(data: DataBuffer, barId: number) {
     bar.y = GSettings.GAME_BOTTOM - GSettings.BAR_HEIGHT_HALF;
 }
 
-function ballWallGameEdgeCollision(data: DataBuffer) {
+function ballGameEdgeCollision(data: DataBuffer) {
   const ballEdge = Math.abs(data.ballNext.x) + GSettings.BALL_RADIUS;
   if (ballEdge > GSettings.GAME_RIGHT) {
     GameProducedEvent.produceEvent(
@@ -132,12 +132,38 @@ function ballWallGameEdgeCollision(data: DataBuffer) {
   }
 }
 
+function ballPortalCollision(data: DataBuffer) {
+  for (let portal of data.portalsCurrent.values()) {
+    ballPortalCollisionOne(data, portal);
+  }
+}
+
+function ballPortalCollisionOne(data: DataBuffer, portal: PortalData) {
+  if (
+    data.ballCurrent.vx > 0 &&
+    portal.parts[0].ballIsLeft(data.ballCurrent) &&
+    portal.parts[0].ballIsRight(data.ballNext)
+  ) {
+    data.ballNext.x += portal.transportX;
+    data.ballNext.y += portal.transportY;
+  }
+  else if (
+    data.ballCurrent.vx < 0 &&
+    portal.parts[1].ballIsRight(data.ballCurrent) &&
+    portal.parts[1].ballIsLeft(data.ballNext)
+  ) {
+    data.ballNext.x -= portal.transportX;
+    data.ballNext.y -= portal.transportY;
+  }
+}
+
 export function collisions(data: DataBuffer) {
   ballWallTopCollision(data);
   ballWallBottomCollision(data);
-  ballWallGameEdgeCollision(data);
+  ballGameEdgeCollision(data);
   clipBarPosition(data, 0);
   clipBarPosition(data, 1);
   ballBar1Collision(data);
   ballBar2Collision(data);
+  ballPortalCollision(data);
 }

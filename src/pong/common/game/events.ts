@@ -92,6 +92,16 @@ export class SpawnGravitonEvent implements DataChangerEvent {
   }
 }
 
+
+export type SpawnPortalEventStruct = [number, number, number];
+export class SpawnPortalEvent implements DataChangerEvent {
+  constructor(public time: number, public x1: number, public y1: number, public x2: number, public y2: number) {}
+
+  process(data: DataBuffer) {
+    data.addPortal(this.x1, this.y1, this.x2, this.y2);
+  }
+}
+
 /**
  * The following define events produced during the update of GameState
  * that can be handled outside (ClientGameManager, ServerGameManager)

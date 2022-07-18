@@ -7,6 +7,7 @@ export class BallData {
   vx: number = 0;
   vy: number = 0;
 }
+
 export class BarData {
   x: number;
   y: number = 0;
@@ -25,19 +26,46 @@ export class BarData {
     this.upPressed = bar.upPressed;
   }
 }
+
 export class GravitonData {
   constructor(
-    public x: number = 0,
-    public y: number = 0,
-    public age: number = 0
+    public x: number,
+    public y: number,
+    public age: number
+  ) {}
+}
+
+export class PortalHalfData {
+  yTop: number;
+  yBottom: number;
+
+  constructor(
+    public x: number,
+    public y: number,
   ) {
-    this.x = x;
-    this.y = y;
-    this.age = age;
+    this.yTop = y - GSettings.PORTAL_HEIGHT / 2;
+    this.yBottom = y + GSettings.PORTAL_HEIGHT / 2;
   }
 
-  static clone(other: GravitonData): GravitonData {
-    return new GravitonData(other.x, other.y, other.age);
+  ballIsLeft(ball: BallData) {
+    return ball.x <= this.x && ball.y >= this.yTop && ball.y <= this.yBottom;
+  }
+  ballIsRight(ball: BallData) {
+    return ball.x > this.x && ball.y >= this.yTop && ball.y <= this.yBottom;
+  }
+}
+export class PortalData {
+  parts: [PortalHalfData, PortalHalfData];
+  transportX: number;
+  transportY: number;
+
+  constructor(x1: number, y1: number, x2: number, y2: number, public age: number) {
+    this.parts = [
+      new PortalHalfData(x1, y1),
+      new PortalHalfData(x2, y2),
+    ];
+    this.transportX = x2 - x1;
+    this.transportY = y2 - y1;
   }
 }
 
@@ -52,6 +80,7 @@ export class DataBuffer {
     () => new Set()
   );
   eventsArray: DataChanger[][] = [];
+  portalsArray: Set<PortalData>[] = Array.from({ length: 100 }, () => new Set());
 
   currentIndex: number = 0;
   nextIndex: number = 1;
@@ -64,8 +93,8 @@ export class DataBuffer {
   barsNext: [BarData, BarData];
   gravitonsCurrent: Set<GravitonData>;
   gravitonsNext: Set<GravitonData>;
-  // eventsNow: DataChangerEvent[];
-  // eventsThen: DataChangerEvent[];
+  portalsCurrent: Set<PortalData>;
+  portalsNext: Set<PortalData>;
 
   constructor() {
     this.updateNowThenReferences();
@@ -100,6 +129,8 @@ export class DataBuffer {
     ];
     this.gravitonsCurrent = this.gravitonsArray[this.currentIndex];
     this.gravitonsNext = this.gravitonsArray[this.nextIndex];
+    this.portalsCurrent = this.portalsArray[this.currentIndex];
+    this.portalsNext = this.portalsArray[this.nextIndex];
   }
 
   advance() {
@@ -118,14 +149,18 @@ export class DataBuffer {
     this.ballCurrent = new BallData();
     this.barsCurrent = [new BarData(0), new BarData(1)];
     this.gravitonsCurrent.clear();
+    this.portalsCurrent.clear();
     this.eventsArray = [];
   }
 
   addGraviton(x: number, y: number): void {
-    let graviton = new GravitonData();
-    graviton.x = x;
-    graviton.y = y;
+    let graviton = new GravitonData(x, y, 0);
     this.gravitonsArray[this.currentIndex].add(graviton);
+  }
+
+  addPortal(x1: number, y1: number, x2: number, y2: number): void {
+    let portal = new PortalData(x1, y1, x2, y2, 0);
+    this.portalsArray[this.currentIndex].add(portal);
   }
 
   goBackTo(time: number) {

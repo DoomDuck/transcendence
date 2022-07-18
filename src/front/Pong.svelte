@@ -7,12 +7,12 @@
 
   onMount(() => {
     // offline
-    // const ctx = new ClientGameContextOffline();
-    // ctx.startGame();
-    // online
-    const ctx = new ClientGameContextOnline();
-    ctx.connect();
+    const ctx = new ClientGameContextOffline();
     ctx.startGame();
+    // online
+    // const ctx = new ClientGameContextOnline();
+    // ctx.connect();
+    // ctx.startGame();
   });
 </script>
 

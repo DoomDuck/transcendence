@@ -1,9 +1,11 @@
-import { GSettings } from "../../common/constants";
+import { Direction, GSettings, LEFT, RIGHT } from "../../common/constants";
 import {
   BallData,
   BarData,
   DataBuffer,
   GravitonData,
+  PortalData,
+  PortalHalfData,
 } from "../../common/entities/data";
 import { MultiframeSprite } from "./MultiframeSprite";
 import { VictoryAnimation } from "./animation";
@@ -19,6 +21,7 @@ export class Renderer {
   gravitonSize: number;
   gravitonAnimationOpening: MultiframeSprite;
   gravitonAnimationPulling: MultiframeSprite;
+  portalHeight: number;
   scoreSize: number;
   victoryAnimation?: VictoryAnimation;
   scorePanels: ScorePanels;
@@ -48,6 +51,7 @@ export class Renderer {
     this.barWidth = this.ratio * GSettings.BAR_WIDTH;
     this.barHeight = this.ratio * GSettings.BAR_HEIGHT;
     this.gravitonSize = this.ratio * GSettings.GRAVITON_SIZE;
+    this.portalHeight = this.ratio * GSettings.PORTAL_HEIGHT;
     this.scoreSize = this.ratio * GSettings.SCORE_SIZE;
     this.createBackground();
   }
@@ -155,6 +159,21 @@ export class Renderer {
     );
   }
 
+  drawPortal(portal: PortalData) {
+    this.drawPortalHalf(portal.parts[0], LEFT);
+    this.drawPortalHalf(portal.parts[1], RIGHT);
+  }
+
+  drawPortalHalf(portalHalf: PortalHalfData, side: Direction) {
+    const width = .2 * this.portalHeight;
+    const [x, y] = this.gameToCanvasCoord(
+      portalHalf.x - .2 * GSettings.PORTAL_HEIGHT / 2,
+      portalHalf.y - GSettings.PORTAL_HEIGHT / 2
+    );
+    this.context.fillStyle = "rgb(255, 255, 255)";
+    this.context.fillRect(x, y, width, this.portalHeight);
+  }
+
   drawScore(
     xGame: number = GSettings.SCORE_X,
     yGame: number = GSettings.SCORE_Y,
@@ -189,6 +208,9 @@ export class Renderer {
     this.drawBar(this.data.barsCurrent[1]);
     for (let graviton of this.data.gravitonsCurrent.values()) {
       this.drawGraviton(graviton);
+    }
+    for (let portal of this.data.portalsCurrent.values()) {
+      this.drawPortal(portal);
     }
     this.drawScore();
   }

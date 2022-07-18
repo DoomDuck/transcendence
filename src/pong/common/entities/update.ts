@@ -12,11 +12,6 @@ export function processExternEvents(data: DataBuffer) {
   }
 }
 
-// export function eraseOldExternEvents(data: DataBuffer) {
-//     if (data.now >= 100)
-//         delete data.eventsDataArray[data.now - 100];
-// }
-
 export function propagateBarInputs(data: DataBuffer) {
   data.barsNext[0].copyKeysState(data.barsCurrent[0]);
   data.barsNext[1].copyKeysState(data.barsCurrent[1]);
@@ -27,9 +22,20 @@ export function updateGravitons(data: DataBuffer) {
   data.gravitonsNext.clear();
   data.gravitonsCurrent.forEach((graviton) => {
     if (graviton.age < GSettings.GRAVITON_LIFESPAN) {
-      let gravitonThen = GravitonData.clone(graviton);
-      gravitonThen.age++;
-      data.gravitonsNext.add(gravitonThen);
+      let gravitonNext = Object.assign({}, graviton);
+      gravitonNext.age++;
+      data.gravitonsNext.add(gravitonNext);
+    }
+  });
+}
+
+export function updatePortal(data: DataBuffer) {
+  data.portalsNext.clear();
+  data.portalsCurrent.forEach((portal) => {
+    if (portal.age < GSettings.PORTAL_LIFESPAN) {
+      let portalNext = Object.assign({}, portal);
+      portalNext.age++;
+      data.portalsNext.add(portalNext);
     }
   });
 }

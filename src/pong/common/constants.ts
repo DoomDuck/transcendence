@@ -86,6 +86,10 @@ export class GSettings {
     GSettings.GAME_HEIGHT - GSettings.GRAVITON_SIZE;
   static readonly GRAVITON_ONLINE_SPAWN_DELAY = 10;
 
+  // PORTAL
+  static readonly PORTAL_LIFESPAN = 1000;
+  static readonly PORTAL_HEIGHT = GSettings.SCREEN_WIDTH / 8;
+
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
   static readonly VICTORY_ANIMATION_SPEED = GSettings.BALL_SPEEDY_MAX;
