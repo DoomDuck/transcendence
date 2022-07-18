@@ -1,10 +1,10 @@
-import { Injectable/*, HttpException*/ } from "@nestjs/common";
+import { Injectable /*, HttpException*/ } from "@nestjs/common";
 import { User } from "./user.entity";
 import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 // import { AppDataSource } from "./../data-source";
-import DatabaseFilesService from "./databaseFiles.service";
+import { DatabaseFilesService } from "./databaseFiles.service";
 // import { Logger } from "@nestjs/common";
 export class ActiveUser {
   name: string;
@@ -18,7 +18,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-	private readonly databaseFilesService: DatabaseFilesService,
+    private readonly databaseFilesService: DatabaseFilesService
   ) {}
   findAll(): Promise<User[]> {
     return this.usersRepository.find();
@@ -33,7 +33,7 @@ export class UserService {
   addOne(userDto: UserDto): Promise<User> {
     const newUser = new User();
     newUser.name = userDto.name;
-	newUser.friendlist= [];
+    newUser.friendlist = [];
     return this.usersRepository.save(newUser);
   }
   //surement nul a chier mais je test des trucs
@@ -42,27 +42,28 @@ export class UserService {
       .createQueryBuilder("User")
       .where("User.id = :sender", { sender })
       .getOne();
-	let tempTarget = await this.usersRepository
+    let tempTarget = await this.usersRepository
       .createQueryBuilder("User")
       .where("User.id = :sender", { sender })
       .getOne();
-    if (tempSender === null)
-		return "Sender does not exist";
-	if (tempTarget === null)
-		return "Target does not exist";
-	if (tempSender.friendlist.find(element => element ===target) === undefined){      	
-		tempSender.friendlist.push(target);
-    	return this.usersRepository.save(tempSender);
-		}
-	else
-		return "Already friends";
+    if (tempSender === null) return "Sender does not exist";
+    if (tempTarget === null) return "Target does not exist";
+    if (
+      tempSender.friendlist.find((element) => element === target) === undefined
+    ) {
+      tempSender.friendlist.push(target);
+      return this.usersRepository.save(tempSender);
+    } else return "Already friends";
   }
-	async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
-    const avatar = await this.databaseFilesService.uploadDatabaseFile(imageBuffer, filename);
+  async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
+    const avatar = await this.databaseFilesService.uploadDatabaseFile(
+      imageBuffer,
+      filename
+    );
     await this.usersRepository.update(userId, {
-      avatarId: avatar.id
+      avatarId: avatar.id,
     });
-    return avatar;
+    return 1;
   }
 }
 //////////////// check by id or name ? sync database user and active user ?///////////////////////

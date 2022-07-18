@@ -1,17 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
- 
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
 @Entity()
-class DatabaseFile {
+export class DatabaseFile {
   @PrimaryGeneratedColumn()
   public id: number;
- 
+
   @Column()
   filename: string;
- 
+
   @Column({
-    type: 'bytea',
+    type: "bytea",
   })
   data: Uint8Array;
 }
- 
-export default DatabaseFile;

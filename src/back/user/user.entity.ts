@@ -1,5 +1,11 @@
-import { Entity, Column,JoinColumn ,OneToOne,PrimaryGeneratedColumn } from "typeorm";
-import DatabaseFile from './databaseFile.entity';
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { DatabaseFile } from "./databaseFile.entity";
 @Entity("User")
 export class User {
   @PrimaryGeneratedColumn()
@@ -11,14 +17,11 @@ export class User {
   friendlist: number[];
   // @Column({ type: "varchar", length: 100, nullable: false })
   // domain: string;
-  @JoinColumn({ name: 'avatarId' })
-  @OneToOne(
-    () => DatabaseFile,
-    {
-      nullable: true
-    }
-  )
-	public avatar?: DatabaseFile;
-	@Column({ nullable: true })
+  @JoinColumn({ name: "avatarId" })
+  @OneToOne(() => DatabaseFile, {
+    nullable: true,
+  })
+  public avatar?: DatabaseFile;
+  @Column({ nullable: true })
   public avatarId?: number;
 }

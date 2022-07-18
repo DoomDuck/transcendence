@@ -2,7 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { channelDto } from "./channel.dto";
 
 export class channel {
-  constructor(_name:string, _priv:boolean, _protect:boolean, _password:string, creator:string) {
+  constructor(
+    _name: string,
+    _priv: boolean,
+    _protect: boolean,
+    _password: string,
+    creator: string
+  ) {
     this.name = _name;
     this.priv = _priv;
     this.protect = _protect;

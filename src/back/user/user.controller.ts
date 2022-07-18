@@ -12,10 +12,11 @@ import {
 import { UserService } from "./user.service";
 import { UserDto } from "./user.dto";
 import { FriendRequestDto } from "./friendRequest.dto";
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
-import {  Req, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { Multer } from 'multer';
+import { FileInterceptor } from "@nestjs/platform-express";
+import { Express } from "express";
+import { Req, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Multer } from "multer";
+import RequestWithUser from "./requestWithUser.interface";
 @Controller("user")
 export class userController {
   private logger: Logger = new Logger("User");
@@ -47,10 +48,18 @@ export class userController {
   public async deleteuserdById(@Param("id") id: number) {
     return this.userService.remove(id);
   }
-	@Post('avatar')
-  @UseInterceptors(FileInterceptor('file'))
-  async addAvatar(@Req() request: RequestWithUser, @UploadedFile() file: Express.Multer.File) {
-    return this.userService.addAvatar(request.user.id, file.buffer, file.originalname);
+  @Post("avatar")
+  @UseInterceptors(FileInterceptor("file"))
+  async addAvatar(
+    /*@Req()*/ @Body() request: UserDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    this.logger.log(request.id);
+    return this.userService.addAvatar(
+      request.id,
+      file.buffer,
+      file.originalname
+    );
   }
 
   // @Put(":id")
