@@ -1,18 +1,12 @@
 <script>
   import { createEventDispatcher } from "svelte";
+  import SendMessage from "./SendNewMessage.svelte";
   import Modal from "./Modal.svelte";
 
   const dispatch = createEventDispatcher();
 
-  let isOpenModal = false;
+  let sendingMessage = false;
 
-  function openModal() {
-    isOpenModal = true;
-  }
-
-  function closeModal() {
-    isOpenModal = false;
-  }
 </script>
 
 <img
@@ -20,9 +14,14 @@
   width="40"
   height="40"
   alt="write msg"
-  on:click={openModal}
-/>
-<Modal {isOpenModal} type="SendMessage" on:closeModal={closeModal} />
+  on:click={() => sendingMessage = true}
+  />
+
+  {#if sendingMessage}
+    <Modal on:close={() => sendingMessage = false}>
+      <SendMessage/>
+    </Modal>
+  {/if}
 
 <style>
   img {
