@@ -13,7 +13,7 @@
     style="color: {color}"
     on:click={() => dispatch("start_game")}
   >
-    Start a game
+    Game
   </h4>
   <h4
     class="typography"
