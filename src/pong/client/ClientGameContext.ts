@@ -1,4 +1,4 @@
-import { ClientGameManager } from './game';
+import { ClientGameManager } from "./game";
 
 /**
  * Root of the client code execution
@@ -7,13 +7,13 @@ import { ClientGameManager } from './game';
  * player 1, player 2 or observer (this is only relevant regarding the control the client will have)
  */
 export abstract class ClientGameContext {
-    gameManager: ClientGameManager;
+  gameManager: ClientGameManager;
 
-    abstract startGame(): void;
+  abstract startGame(): void;
 
-    animate(time: DOMHighResTimeStamp) {
-        requestAnimationFrame(this.animate.bind(this));
-        this.gameManager.game.frame();
-        this.gameManager.render(time);
-    }
+  animate(time: DOMHighResTimeStamp) {
+    requestAnimationFrame(this.animate.bind(this));
+    this.gameManager.game.frame();
+    this.gameManager.render(time);
+  }
 }

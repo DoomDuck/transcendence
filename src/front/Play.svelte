@@ -1,12 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import Pong from './Pong.svelte'
+  import Pong from "./Pong.svelte";
   const dispatch = createEventDispatcher();
 </script>
 
 <div id="Play">
-    <Pong/>
-    <img
+  <Pong />
+  <img
     on:click={() => dispatch("start_game")}
     src="img/return.png"
     id="return"
