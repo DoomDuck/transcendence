@@ -1,11 +1,18 @@
 <script lang="ts">
-  import { onMount } from "svelte";
 
-  import { ClientContext } from "../pong/client/client";
+import { onMount } from "svelte";
+import {ClientGameContextOffline, ClientGameContextOnline} from "../pong/client";
 
-  onMount(() => {
-    const ctx = new ClientContext();
-  });
+onMount(() => {
+    // offline
+    const ctx = new ClientGameContextOffline();
+    ctx.startGame();
+    // online
+    // const ctx = new ClientGameContextOnline();
+    // ctx.connect();
+    // ctx.startGame();
+})
+
 </script>
 
 <style>
@@ -15,7 +22,6 @@
     justify-content: center;
     width:70%;
     height:70%;
-    background-image: url("../../public/img/fond_ecran_jeu.png");
 }
 #game-container {
     width:90%;
@@ -25,7 +31,6 @@
     justify-content: center;
 }
 #game-screen {
-    border: 1px solid white;
 }
 /* .player-score {
     color: rgb(255, 255, 255);

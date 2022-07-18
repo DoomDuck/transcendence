@@ -25,7 +25,7 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    background-image: url("../../public/img/starsSky.jpeg");
+    background-image: url("../../public/img/gameBackground.png");
     overflow: hidden;
   }
   img {

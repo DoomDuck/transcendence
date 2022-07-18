@@ -79,19 +79,15 @@ export class GSettings {
     // ANIMATION >
     static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
     static readonly VICTORY_ANIMATION_SPEED = GSettings.BALL_SPEEDY_MAX;
-    static readonly VICTORY_ANIMATION_COLOR = 'rgb(255, 0, 0)';
+    static readonly VICTORY_ANIMATION_COLOR = 'rgba(255, 0, 0)';
 
     // BACKGROUND
     static readonly BACKGROUND_COLOR_GREY = 'rgb(173, 173, 173)';
     static readonly BACKGROUND_N_SUBDIVISIONS = 25;
 }
 
-export enum PlayerID {
-  PLAYER1 = 0,
-  PLAYER2 = 1,
-}
-export const PLAYER1 = PlayerID.PLAYER1;
-export const PLAYER2 = PlayerID.PLAYER2;
+export const PLAYER1 = 0;
+export const PLAYER2 = 1;
 
 export enum Direction {
   LEFT = -1,
@@ -101,53 +97,42 @@ export const LEFT = Direction.LEFT;
 export const RIGHT = Direction.RIGHT;
 
 export class GameEvent {
-  // enum Send {
-  //     ....
-  // }
-  // enum Receive {
-  //     ....
-  // }
-  // enum FromServer {
-  //     ....
-  // }
-  // key: string, time: number
-  static readonly SEND_BAR_KEYDOWN = "sendBarKeydown";
-  // key: string, y: number
-  static readonly SEND_BAR_KEYUP = "sendBarKeyup";
-  // y: number, time: number
-  static readonly SEND_BAR_POSITION = "sendBarPosition";
-  // key: string, time: number
-  static readonly RECEIVE_BAR_KEYDOWN = "receiveBarKeydown";
-  // key: string, y: number
-  static readonly RECEIVE_BAR_KEYUP = "receiveBarKeyup";
-  // playerId: PlayerID, key: string, y: number
-  static readonly RECEIVE_BAR_KEYDOWN_SERVER = "receiveBarKeydownServer";
-  // playerId: PlayerID, key: string, y: number
-  static readonly RECEIVE_BAR_KEYUP_SERVER = "receiveBarKeyupServer";
-  // y: number, time: number
-  static readonly RECEIVE_BAR_POSITION = "receiveBarPosition";
-  // startTime: number
-  static readonly START = "start";
-  // pauseTime: number
-  static readonly PAUSE = "pause";
-  // unpauseTime: number
-  static readonly UNPAUSE = "unpause";
-  // x: number, y: number, speedX: number, speedY: number, time: number
-  static readonly RECEIVE_SET_BALL = "receiveSetBall";
-  // x: number, y: number, speedX: number, speedY: number, time: number
-  static readonly SEND_SET_BALL = "sendSetBall";
-  // playerId: PlayerID
-  static readonly GOAL = "goal";
-  // ballSpeedX: number, ballSpeedY: number
-  static readonly RESET = "reset";
+
+    // enum Send {
+    //     ....
+    // }
+    // enum Receive {
+    //     ....
+    // }
+    // enum FromServer {
+    //     ....
+    // }
+    // key: string, time: GameTime
+    static readonly SEND_BAR_EVENT = "sendBarEvent";
+    // key: string, time: GameTime
+    static readonly RECEIVE_BAR_EVENT = "receiveBarEvent";
+    // startTime: number
+    static readonly START = "start";
+    // pauseTime: number
+    static readonly PAUSE = "pause";
+    // time: number, x: number, y: number, speedX: number, speedY: number
+    static readonly SET_BALL  = "receiveSetBall";
+    // playerId: number
+    static readonly GOAL = "goal";
+    // ballSpeedX: number, ballSpeedY: number
+    static readonly RESET = "reset";
+    // time: number
+    static readonly NO_BALL_BAR_COLLISION = "noBallBarCollision"
+    // time: number, x: number, y: number, speedX: number, speedY: number
+    static readonly BALL_BAR_COLLISION = "ballBarCollision"
 }
 
-export type BarKeyDownEvent = [KeyValue, number]; // keyvalue, time
-export type BarKeyUpEvent = [KeyValue, number]; // keyvalue, y
-// export type BarPositionEvent = [number, number];                  // y, time
-// export type BallEvent = [number, number, number, number, number]; // x, y, speedX, speedY, time
-// export type ResetEvent = [number, number, number, number];        // ballX, ballY, ballSX, ballSY
-// export type GoalEvent = [PlayerID];                               // player
+// export type BarKeyDownEvent = [KeyValue, number];
+// export type BarKeyUpEvent = [KeyValue, number];
+// export type BarPositionEvent = [number, number];
+// export type BallEvent = [number, number, number, number, number];
+// export type ResetEvent = [number, number, number, number];
+// export type GoalEvent = [number];
 
 export enum KeyValue {
   UP,
@@ -155,3 +140,5 @@ export enum KeyValue {
 }
 export const UP = KeyValue.UP;
 export const DOWN = KeyValue.DOWN;
+
+export type GameTime = number;

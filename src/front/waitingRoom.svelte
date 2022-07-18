@@ -18,7 +18,7 @@
     margin: auto;
   }
   .waitingRoom {
-    background-image: url("../../public/img/starsSky.jpeg");
+    background-image: url("../../public/img/starsSky.png");
     display: flex;
     width: 100%;
     height: 100%;

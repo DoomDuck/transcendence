@@ -25,8 +25,6 @@ export class SingleNumberPanel {
         this.context.fillText(value.toString(), 0, 0);
         this.width = this.context.measureText(value.toString()).width;
         this.ratio = this.width / this.height;
-        console.log('height =', this.height);
-        console.log('width =', this.width);
         this.value = value;
     }
 
