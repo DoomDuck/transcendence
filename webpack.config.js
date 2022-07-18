@@ -8,7 +8,7 @@ module.exports = {
     path: path.resolve(__dirname, "build/front/"),
     filename: "./bundle.js",
   },
-  mode: "production",
+  mode: "development",
 
   resolve: {
     // Prevent multiple Svelte copies
