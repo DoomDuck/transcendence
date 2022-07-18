@@ -15,8 +15,6 @@
   }
   .roundedImageProfile {
     overflow: hidden;
-    -webkit-border-radius: 8em;
-    -moz-border-radius: 8em;
     border-radius: 6em;
     width: 8em;
     height: 8em;
