@@ -15,8 +15,7 @@ export class User {
 
   @Column("int", { array: true, nullable: false })
   friendlist: number[];
-  // @Column({ type: "varchar", length: 100, nullable: false })
-  // domain: string;
+
   @JoinColumn({ name: "avatarId" })
   @OneToOne(() => DatabaseFile, {
     nullable: true,

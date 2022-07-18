@@ -22,6 +22,7 @@ export class DatabaseFilesService {
   async getFileById(id: number) {
     const file = await this.databaseFilesRepository.findOneBy({ id });
     if (!file) {
+		// need change for consistency
       throw new NotFoundException();
     }
     return file;

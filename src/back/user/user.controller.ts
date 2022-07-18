@@ -3,20 +3,17 @@ import {
   Get,
   Post,
   Delete,
-  Put,
   Body,
   Param,
   Logger,
-  Query,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UserDto } from "./user.dto";
 import { FriendRequestDto } from "./friendRequest.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Express } from "express";
-import { Req, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { UploadedFile, UseInterceptors } from "@nestjs/common";
 import { Multer } from "multer";
-import RequestWithUser from "./requestWithUser.interface";
 @Controller("user")
 export class userController {
   private logger: Logger = new Logger("User");
@@ -28,7 +25,7 @@ export class userController {
   @Post()
   public postuser(@Body() user: UserDto) {
     // this.logger.log(user.name);
-    return this.userService.addOne(user);
+ return this.userService.addOne(user);
   }
   @Post("friendRequest")
   public addfriend(@Body() friendRequest: FriendRequestDto) {
@@ -51,21 +48,14 @@ export class userController {
   @Post("avatar")
   @UseInterceptors(FileInterceptor("file"))
   async addAvatar(
-    /*@Req()*/ @Body() request: UserDto,
+     @Body() userDto: UserDto,
     @UploadedFile() file: Express.Multer.File
   ) {
-    this.logger.log(request.id);
+    this.logger.log(userDto.id);
     return this.userService.addAvatar(
-      request.id,
+      userDto.id,
       file.buffer,
       file.originalname
     );
   }
-
-  // @Put(":id")
-  // public async putuserById(@Param("id") id: number, @Query() query) {
-  // const propertyName = query.property_name;
-  // const propertyValue = query.property_value;
-  // return this.userService.putuserById(id, propertyName, propertyValue);
-  // }
 }

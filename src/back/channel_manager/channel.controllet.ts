@@ -13,15 +13,15 @@ import { channelDto } from "./channel.dto";
 
 @Controller("channel")
 export class channelController {
-  constructor(private channel_manager_service: Channel_Manager_Service) {}
+  constructor(private channel_manager_service: ChannelManagerService) {}
   // @Get()
   // async getChannel() {
   // return this.carService.getCars();
   // }
-  @Post()
-  public createChan(@Body() car: CarDto) {
-    return this.channel_manager_service.create_chan(car);
-  }
+  // @Post()
+  // public createChan(@Body() car: CarDto) {
+    // return this.channel_manager_service.create_chan(car);
+  // }
 
   // @Get(":id")
   // public async getCarById(@Param("id") id: number) {
