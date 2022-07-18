@@ -1,1 +1,1 @@
-export { ClientGameContext } from './ClientGameContext'
+export { ClientGameContextOnline, ClientGameContextOffline } from './ClientGameContext'

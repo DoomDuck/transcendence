@@ -22,6 +22,7 @@ export class ServerGameContext {
                 this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
                 this.game.state.registerEvent(new BarInputEvent(...args));
             });
+            
         }
         // setupEventForTransmission<BarInputEvent>(GameEvent.SEND_BAR_EVENT, GameEvent.RECEIVE_BAR_EVENT);
         // setupEventForTransmission: GameEvent.BALL_BAR_COLLISION,
