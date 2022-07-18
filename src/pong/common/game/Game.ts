@@ -31,7 +31,9 @@ export class Game {
       [GameEvent.RESET, this.reset.bind(this)],
       [
         GameEvent.RECEIVE_BAR_EVENT,
-        (...eventArgs: BarInputEventStruct) => { this.state.registerEvent(new BarInputEvent(...eventArgs)); },
+        (...eventArgs: BarInputEventStruct) => {
+          this.state.registerEvent(new BarInputEvent(...eventArgs));
+        },
       ],
     ];
     this.incommingEventsCallback = new Map(eventsCallbackPairs);

@@ -9,10 +9,7 @@ import {
 } from "../common/constants";
 import { Socket } from "socket.io";
 import { BarInputEvent, Game } from "../common/game";
-import {
-  BarInputEventStruct,
-  GameProducedEvent,
-} from "../common/game/events";
+import { BarInputEventStruct, GameProducedEvent } from "../common/game/events";
 
 /**
  * Manage a full game session between two players (sockets) in the server

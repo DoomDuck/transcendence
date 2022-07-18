@@ -32,14 +32,11 @@ export class ClientGameContextOnline extends ClientGameContext {
     transmitEventFromServerToGame(GameEvent.RESET);
     transmitEventFromServerToGame(GameEvent.PAUSE);
     this.socket.on(GameEvent.GOAL, (playerId: number) => {
-        game.pause();
-        this.gameManager.renderer
-          .startVictoryAnimationAsync()
-          .then(() => this.gameManager.renderer.scorePanels.goalAgainst(playerId))
-          .then(() =>
-            this.socket.emit(GameEvent.READY)
-          )
-
+      game.pause();
+      this.gameManager.renderer
+        .startVictoryAnimationAsync()
+        .then(() => this.gameManager.renderer.scorePanels.goalAgainst(playerId))
+        .then(() => this.socket.emit(GameEvent.READY));
     });
   }
 
