@@ -1,4 +1,3 @@
-import { ServerGameManager } from "./game";
 import {
   PLAYER1,
   PLAYER2,
@@ -9,12 +8,9 @@ import {
   GSettings,
 } from "../common/constants";
 import { Socket } from "socket.io";
-import { delay } from "../common/utils";
 import { BarInputEvent, Game } from "../common/game";
-import { EventEmitter } from "stream";
 import {
   BarInputEventStruct,
-  DataChangerEvent,
   GameProducedEvent,
 } from "../common/game/events";
 
@@ -26,6 +22,7 @@ export class ServerGameContext {
   private game: Game;
   private ready: [boolean, boolean] = [false, false];
   score: [number, number] = [0, 0];
+  ballDirection: number = LEFT;
 
   constructor(private players: [Socket, Socket]) {
     this.game = new Game();
@@ -40,6 +37,7 @@ export class ServerGameContext {
           this.game.state.registerEvent(new BarInputEvent(...args));
         }
       );
+      this.players[emitter].on(GameEvent.READY, () => this.isReady(emitter));
     }
     // setupEventForTransmission<BarInputEvent>(GameEvent.SEND_BAR_EVENT, GameEvent.RECEIVE_BAR_EVENT);
     // setupEventForTransmission: GameEvent.BALL_BAR_COLLISION,
@@ -48,21 +46,32 @@ export class ServerGameContext {
     // ?? GameProducedEvent.registerEvent(/* NO_COLLISION */, this.handleGoal.bind(this));
 
     // ??? GameProducedEvent.registerEvent(/* MID_FIELD */, this.broadcastEvent.bind(this));
+    GameProducedEvent.registerEvent(
+      "ballOut",
+      (time: number, playerId: number) => {
+        this.game.pause();
+        this.handleGoal(playerId);
+      }
+    );
 
-    setInterval(this.game.frame.bind(this), GSettings.GAME_STEP_MS);
+    setInterval(this.game.frame.bind(this.game), GSettings.GAME_STEP_MS);
+    // setInterval(() => {
+    //   this.game.frame();
+    //   console.log(this.game.state.data.ballCurrent.x);
+    // }, GSettings.GAME_STEP_MS);
   }
 
   isReady(playerId: number) {
     this.ready[playerId] = true;
     if (this.ready[0] && this.ready[1]) {
       console.log("both players are ready, starting");
-      this.reset(0, 0, LEFT);
+      this.ready = [false, false];
+      this.reset(0, 0, this.ballDirection);
       this.start(500);
     }
   }
 
   broadcastEvent(event: string, ...args: any[]) {
-    // console.log(`emitting for broadcast: '${event}' with args '${args}'`);
     this.players[PLAYER1].emit(event, ...args);
     this.players[PLAYER2].emit(event, ...args);
   }
@@ -84,19 +93,17 @@ export class ServerGameContext {
   reset(ballX: number, ballY: number, ballDirection: Direction) {
     let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
     let ballSpeedY = ((2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX) / 3;
-    // this.game.emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+    this.game.emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
     this.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
     this.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
   }
 
   handleGoal(playerId: number) {
-    console.log("GOAL !!!");
+    // console.log("GOAL !!!");
     this.broadcastEvent(GameEvent.GOAL, playerId);
-    let ballDirection = playerId == PLAYER1 ? LEFT : RIGHT;
-    // the timer is important because it ensures any SEND_SET_BALL event of the previous point
-    // doesn't interfere with the next one
-    delay(500)
-      .then(() => this.reset(0, 0, ballDirection))
-      .then(() => this.start(500));
+    this.ballDirection = playerId == PLAYER1 ? RIGHT : LEFT;
+    // delay(500)
+    //   .then(() => this.reset(0, 0, ballDirection))
+    //   .then(() => this.start(500));
   }
 }

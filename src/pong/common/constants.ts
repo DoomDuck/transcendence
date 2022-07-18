@@ -130,6 +130,8 @@ export class GameEvent {
   static readonly NO_BALL_BAR_COLLISION = "noBallBarCollision";
   // time: number, x: number, y: number, speedX: number, speedY: number
   static readonly BALL_BAR_COLLISION = "ballBarCollision";
+  //
+  static readonly READY = "ready";
 }
 
 // export type BarKeyDownEvent = [KeyValue, number];

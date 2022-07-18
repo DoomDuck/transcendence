@@ -93,7 +93,7 @@ export class SetBallEvent implements DataChangerEvent {
  * that can be handled outside (ClientGameManager, ServerGameManager)
  */
 export namespace GameProducedEvent {
-  const allEventsCallbacks: Map<string, Function[]> = new Map();
+  export const allEventsCallbacks: Map<string, Function[]> = new Map();
   export function registerEvent(name: string, callback: Function) {
     if (!allEventsCallbacks.has(name)) allEventsCallbacks.set(name, [callback]);
     else allEventsCallbacks.get(name)?.push(callback);
