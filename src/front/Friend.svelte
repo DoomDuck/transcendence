@@ -24,7 +24,7 @@
     </Modal>
   {/if}
 
-  <name> {friendName} </name>
+  <p class='name'> {friendName} </p>
   <img
     on:click={() => dispatch("start_waiting")}
     class="play"
@@ -63,7 +63,7 @@
     margin-bottom: auto;
   }
 
-  name {
+  .name {
     color: #ff00b8;
   }
 </style>
