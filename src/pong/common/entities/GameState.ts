@@ -48,12 +48,12 @@ export class GameState {
 
   handleEvent(event: DataChangerEvent) {
     if (event.time < 0) return;
-    if (Math.abs(event.time - this.data.actualNow) >= 100) {
-      // too old or too far, discard
+    if (this.data.actualNow - event.time >= 100) {
+      // too old, discard
       return;
     }
-    if (event.time == this.data.currentTime) {
-      this.data.addEventNow(event);
+    if (event.time >= this.data.currentTime) {
+      this.data.addEvent(event.time, event);
       return;
     }
     if (event.time < this.data.currentTime) {

@@ -81,6 +81,10 @@ export class GSettings {
   static readonly GRAVITON_FORCE_WIDTH_HALF = GSettings.SCREEN_WIDTH / 10;
   static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 4;
   static readonly GRAVITON_MAX_FORCE = 10;
+  static readonly GRAVITON_SPAWN_WIDTH = GSettings.GAME_WIDTH / 2;
+  static readonly GRAVITON_SPAWN_HEIGHT =
+    GSettings.GAME_HEIGHT - GSettings.GRAVITON_SIZE;
+  static readonly GRAVITON_ONLINE_SPAWN_DELAY = 10;
 
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
@@ -132,6 +136,8 @@ export class GameEvent {
   static readonly BALL_BAR_COLLISION = "ballBarCollision";
   //
   static readonly READY = "ready";
+  // time: number, x: number, y: number
+  static readonly SPAWN_GRAVITON = "spawnGraviton";
 }
 
 // export type BarKeyDownEvent = [KeyValue, number];

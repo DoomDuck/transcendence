@@ -1,10 +1,10 @@
 import { GameEvent, GSettings } from "../constants";
 import { GameState } from "../entities";
-import { delay } from "../utils";
 import {
   BarInputEvent,
   type BarInputEventStruct,
-  GameProducedEvent,
+  type SpawnGravitonEventStruct,
+  SpawnGravitonEvent,
 } from "./events";
 
 /**
@@ -33,6 +33,12 @@ export class Game {
         GameEvent.RECEIVE_BAR_EVENT,
         (...eventArgs: BarInputEventStruct) => {
           this.state.registerEvent(new BarInputEvent(...eventArgs));
+        },
+      ],
+      [
+        GameEvent.SPAWN_GRAVITON,
+        (...eventArgs: SpawnGravitonEventStruct) => {
+          this.state.registerEvent(new SpawnGravitonEvent(...eventArgs));
         },
       ],
     ];

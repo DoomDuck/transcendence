@@ -9,7 +9,11 @@ import {
 } from "../common/constants";
 import { Socket } from "socket.io";
 import { BarInputEvent, Game } from "../common/game";
-import { BarInputEventStruct, GameProducedEvent } from "../common/game/events";
+import {
+  BarInputEventStruct,
+  GameProducedEvent,
+  SpawnGravitonEvent,
+} from "../common/game/events";
 
 /**
  * Manage a full game session between two players (sockets) in the server
@@ -52,6 +56,7 @@ export class ServerGameContext {
     );
 
     setInterval(this.game.frame.bind(this.game), GSettings.GAME_STEP_MS);
+    setInterval(this.spawnEye.bind(this), 3000);
     // setInterval(() => {
     //   this.game.frame();
     //   console.log(this.game.state.data.ballCurrent.x);
@@ -93,6 +98,16 @@ export class ServerGameContext {
     this.game.emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
     this.players[0].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
     this.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+  }
+
+  spawnEye() {
+    const time =
+      this.game.state.data.actualNow + GSettings.GRAVITON_ONLINE_SPAWN_DELAY;
+    let x = GSettings.GRAVITON_SPAWN_WIDTH * (Math.random() - 0.5);
+    let y = GSettings.GRAVITON_SPAWN_HEIGHT * (Math.random() - 0.5);
+    this.players[0].emit(GameEvent.SPAWN_GRAVITON, time, x, y);
+    this.players[1].emit(GameEvent.SPAWN_GRAVITON, time, x, y);
+    this.game.emit(GameEvent.SPAWN_GRAVITON, time, x, y);
   }
 
   handleGoal(playerId: number) {

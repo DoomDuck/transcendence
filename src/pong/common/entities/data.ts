@@ -78,10 +78,13 @@ export class DataBuffer {
   }
 
   addEventNow(event: DataChangerEvent) {
+    this.addEvent(this.currentTime, event);
+  }
+
+  addEvent(time: number, event: DataChangerEvent) {
     const dataChanger = event.process.bind(event);
-    if (!(this.currentTime in this.eventsArray))
-      this.eventsArray[this.currentTime] = [dataChanger];
-    else this.eventsArray[this.currentTime].push(dataChanger);
+    if (!(time in this.eventsArray)) this.eventsArray[time] = [dataChanger];
+    else this.eventsArray[time].push(dataChanger);
   }
 
   updateNowThenReferences() {
@@ -118,11 +121,11 @@ export class DataBuffer {
     this.eventsArray = [];
   }
 
-  addGraviton(timeIndex: number, id: number, x: number, y: number): void {
+  addGraviton(x: number, y: number): void {
     let graviton = new GravitonData();
     graviton.x = x;
     graviton.y = y;
-    this.gravitonsArray[timeIndex].add(graviton);
+    this.gravitonsArray[this.currentIndex].add(graviton);
   }
 
   goBackTo(time: number) {

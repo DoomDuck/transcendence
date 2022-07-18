@@ -31,6 +31,7 @@ export class ClientGameContextOnline extends ClientGameContext {
     transmitEventFromServerToGame(GameEvent.START);
     transmitEventFromServerToGame(GameEvent.RESET);
     transmitEventFromServerToGame(GameEvent.PAUSE);
+    transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.socket.on(GameEvent.GOAL, (playerId: number) => {
       game.pause();
       this.gameManager.renderer

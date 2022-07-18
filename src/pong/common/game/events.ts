@@ -30,9 +30,6 @@ export class BarInputEvent implements DataChangerEvent {
 
   // for now ignore time ...
   process(data: DataBuffer) {
-    console.log(
-      `Processing BarinputEvent(${this.time}, ${this.barId}, ${this.key}, ${this.pressed})`
-    );
     if (this.key == KeyValue.UP)
       data.barsCurrent[this.barId].upPressed = this.pressed;
     else data.barsCurrent[this.barId].downPressed = this.pressed;
@@ -52,8 +49,6 @@ function ballErrors(
   ];
 }
 export class SetBallEvent implements DataChangerEvent {
-  public static type = "setBallEvent";
-  public type = SetBallEvent.type;
   constructor(
     public time: number,
     public x: number,
@@ -85,6 +80,15 @@ export class SetBallEvent implements DataChangerEvent {
       // return ["ball"];
     }
     // return undefined;
+  }
+}
+
+export type SpawnGravitonEventStruct = [number, number, number];
+export class SpawnGravitonEvent implements DataChangerEvent {
+  constructor(public time: number, public x: number, public y: number) {}
+
+  process(data: DataBuffer) {
+    data.addGraviton(this.x, this.y);
   }
 }
 
