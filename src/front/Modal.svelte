@@ -1,36 +1,15 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import Profile from "./Profile.svelte";
-  import SendMessage from "./SendNewMessage.svelte";
 
   const dispatch = createEventDispatcher();
-
-  export let type = "Profile";
-  export let isOpenModal;
-  export let friendName = "";
-
-  export let image = "";
-
-  function closeModal() {
-    isOpenModal = false;
-    dispatch("closeModal", { isOpenModal });
-  }
 </script>
 
 <div
   id="background"
-  style="--display: {isOpenModal ? 'block' : 'none'};"
-  on:click={closeModal}
+  on:click={() => dispatch('close')}
 />
-<div id="modal" style="--display: {isOpenModal ? 'block' : 'none'};">
-  <p>{type}</p>
-  <p>{type}</p>
-  <p>{type}</p>
-  {#if { type } == "Profile"}
-    <Profile {image} {friendName} />
-  {:else if { type } == "SendMessage"}
-    <SendMessage />
-  {/if}
+<div id="modal">
+  <slot></slot>
 </div>
 
 <style>
@@ -42,6 +21,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
+    background-color: rgba(0,0,0,0.7);
   }
 
   #modal {
