@@ -1,15 +1,23 @@
 <script lang="ts">
   import { invalid_attribute_name_character } from "svelte/internal";
+  import Profile from './Profile.svelte'
+  import Modal from "./Modal.svelte";
+  
+  export let friendName;
+  export let image;
 
-  export let name = "Flash McQueen";
-  export let image = "img/cars.jpeg";
-
+  let showProfile = false; 
   export let has_new_message = false;
 </script>
 
 <div class="conv">
-  <img class="roundedImageConv" src={image} alt="contact" />
-  <h5>{name}</h5>
+  <img class="roundedImageConv" src={image} alt="contact" on:click={() => showProfile = true}/>
+  <h5>{friendName}</h5>
+  {#if showProfile}
+  <Modal on:close={() => showProfile = false}>
+    <Profile {image} {friendName}/>
+  </Modal>
+  {/if}
   {#if has_new_message}
     <img
       class="notif"

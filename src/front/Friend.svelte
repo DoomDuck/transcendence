@@ -1,21 +1,15 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from "svelte";
+  import Profile from './Profile.svelte'
   import Modal from "./Modal.svelte";
 
   const dispatch = createEventDispatcher();
 
-  let isOpenModal = false;
+  let showProfile = false;
 
-  export let image = "img/canard.jpeg";
-  export let friendName = "Joey";
+  export let image: string;
+  export let friendName: string;
 
-  function openModal() {
-    isOpenModal = true;
-  }
-
-  function closeModal() {
-    isOpenModal = false;
-  }
 </script>
 
 <div class="friend">
@@ -23,9 +17,14 @@
     class="roundedImageFriend"
     src={image}
     alt="profilePic"
-    on:click={openModal}
+    on:click={() => showProfile = true}
   />
-  <Modal {isOpenModal} {friendName} {image} on:closeModal={closeModal} />
+  {#if showProfile}
+  <Modal on:close={() => showProfile = false}>
+    <Profile {image} {friendName}/>
+  </Modal>
+  {/if}
+
   <name> {friendName} </name>
   <img
     on:click={() => dispatch("start_waiting")}
