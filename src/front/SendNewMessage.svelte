@@ -1,45 +1,50 @@
-<script>
-  import { createEventDispatcher } from "svelte";
-  import Modal from "./Modal.svelte";
-
-  const dispatch = createEventDispatcher();
-
-  let isOpenModal = false;
-
-  function openModal() {
-    isOpenModal = true;
-  }
-
-  function closeModal() {
-    isOpenModal = false;
-  }
+<script lang='ts'>
+  export let sendMessage;
+  export let newText : string;
 </script>
 
-<input class="destinataire" type="search" value="to :" required />
-<br />
-<br />
-<textarea class="message" rows="50" cols="80" />
-<br />
-<img src="img/send.png" alt="send" width="30" height="30" />
+<form on:submit|preventDefault={sendMessage}>
+  <div id="formContainer">
+    <input
+      id="destinataire"
+      type="search"
+      placeholder="To :"
+      required/> <br/>
+    <textarea
+      id="message"
+      type="text"
+      placeholder="Type a message..."
+      bind:value={newText} /> <!-- input go in newText -->
+      <button>
+      <img src="img/send.png" alt="send message"/>
+    </button>
+  </div>
+</form>
 
 <style>
-  .destinataire {
-    width: 70%;
-    height: 5%;
-    font-size: 0.5%;
-    color: white;
-    background-color: #d9d9d9;
+  #formContainer{
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  .message {
-    width: 70%;
-    font-size: 0.5%;
-    color: white;
-    background-color: #d9d9d9;
-    size: 800;
+  #destinataire {
+    width: 100%;
+    height: 5em;
   }
 
+  #message {
+    width: 100%;
+    height: 5em;
+  }
+
+  img{
+    width: 2em;
+    height: 2em;
+
+  }
   textarea {
     resize: none;
   }
+
 </style>
