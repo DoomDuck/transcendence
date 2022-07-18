@@ -20,10 +20,14 @@
 
   <OnlineFriends onlineFriends={friends} />
 
-  <ChatConversation />
+  <ChatConversation
+    friendName="Flash McQueen"
+    image="img/cars.jpeg"
+    has_new_message={true}
+  />
 
   <ChatConversation
-    name="Joey"
+    friendName="Joey"
     image="img/canard.jpeg"
     has_new_message={true}
   />
