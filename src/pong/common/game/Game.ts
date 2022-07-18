@@ -68,7 +68,13 @@ export class Game {
     this.startTime = startTime + this.pauseOffetEarly;
     this.lastTime = this.startTime;
     this.pauseOffetEarly = 0;
-    setTimeout(() => this.state.registerEvent(new SpawnPortalEvent(this.state.data.currentTime, -.3, 0, .3, 0)), 100);
+    setTimeout(
+      () =>
+        this.state.registerEvent(
+          new SpawnPortalEvent(this.state.data.currentTime, -0.3, 0, 0.3, 0)
+        ),
+      100
+    );
   }
 
   pause(pauseTime?: number) {

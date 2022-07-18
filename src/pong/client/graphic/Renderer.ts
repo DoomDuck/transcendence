@@ -165,9 +165,9 @@ export class Renderer {
   }
 
   drawPortalHalf(portalHalf: PortalHalfData, side: Direction) {
-    const width = .2 * this.portalHeight;
+    const width = 0.2 * this.portalHeight;
     const [x, y] = this.gameToCanvasCoord(
-      portalHalf.x - .2 * GSettings.PORTAL_HEIGHT / 2,
+      portalHalf.x - (0.2 * GSettings.PORTAL_HEIGHT) / 2,
       portalHalf.y - GSettings.PORTAL_HEIGHT / 2
     );
     this.context.fillStyle = "rgb(255, 255, 255)";

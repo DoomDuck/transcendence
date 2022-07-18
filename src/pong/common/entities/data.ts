@@ -28,21 +28,14 @@ export class BarData {
 }
 
 export class GravitonData {
-  constructor(
-    public x: number,
-    public y: number,
-    public age: number
-  ) {}
+  constructor(public x: number, public y: number, public age: number) {}
 }
 
 export class PortalHalfData {
   yTop: number;
   yBottom: number;
 
-  constructor(
-    public x: number,
-    public y: number,
-  ) {
+  constructor(public x: number, public y: number) {
     this.yTop = y - GSettings.PORTAL_HEIGHT / 2;
     this.yBottom = y + GSettings.PORTAL_HEIGHT / 2;
   }
@@ -59,11 +52,14 @@ export class PortalData {
   transportX: number;
   transportY: number;
 
-  constructor(x1: number, y1: number, x2: number, y2: number, public age: number) {
-    this.parts = [
-      new PortalHalfData(x1, y1),
-      new PortalHalfData(x2, y2),
-    ];
+  constructor(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    public age: number
+  ) {
+    this.parts = [new PortalHalfData(x1, y1), new PortalHalfData(x2, y2)];
     this.transportX = x2 - x1;
     this.transportY = y2 - y1;
   }
@@ -80,7 +76,10 @@ export class DataBuffer {
     () => new Set()
   );
   eventsArray: DataChanger[][] = [];
-  portalsArray: Set<PortalData>[] = Array.from({ length: 100 }, () => new Set());
+  portalsArray: Set<PortalData>[] = Array.from(
+    { length: 100 },
+    () => new Set()
+  );
 
   currentIndex: number = 0;
   nextIndex: number = 1;

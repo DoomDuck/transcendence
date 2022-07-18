@@ -146,8 +146,7 @@ function ballPortalCollisionOne(data: DataBuffer, portal: PortalData) {
   ) {
     data.ballNext.x += portal.transportX;
     data.ballNext.y += portal.transportY;
-  }
-  else if (
+  } else if (
     data.ballCurrent.vx < 0 &&
     portal.parts[1].ballIsRight(data.ballCurrent) &&
     portal.parts[1].ballIsLeft(data.ballNext)
