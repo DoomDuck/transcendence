@@ -24,7 +24,7 @@
     </Modal>
   {/if}
 
-  <p class='name'> {friendName} </p>
+  <p class="name">{friendName}</p>
   <img
     on:click={() => dispatch("start_waiting")}
     class="play"
