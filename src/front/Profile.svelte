@@ -10,16 +10,16 @@
 <style>
   h1 {
     color: #ff00b8;
-    font-size: 0.7em;
+    font-size: 1em;
     text-align: center;
   }
   .roundedImageProfile {
     overflow: hidden;
-    -webkit-border-radius: 50px;
-    -moz-border-radius: 50px;
-    border-radius: 30px;
-    width: 60px;
-    height: 60px;
+    -webkit-border-radius: 8em;
+    -moz-border-radius: 8em;
+    border-radius: 6em;
+    width: 8em;
+    height: 8em;
     margin-top: 2%;
     margin-left: auto;
     margin-right: auto;
