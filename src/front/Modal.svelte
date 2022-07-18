@@ -4,12 +4,9 @@
   const dispatch = createEventDispatcher();
 </script>
 
-<div
-  id="background"
-  on:click={() => dispatch('close')}
-/>
+<div id="background" on:click={() => dispatch("close")} />
 <div id="modal">
-  <slot></slot>
+  <slot />
 </div>
 
 <style>
@@ -21,7 +18,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0, 0, 0, 0.7);
   }
 
   #modal {
