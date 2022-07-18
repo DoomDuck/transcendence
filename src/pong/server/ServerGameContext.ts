@@ -56,7 +56,7 @@ export class ServerGameContext {
     );
 
     setInterval(this.game.frame.bind(this.game), GSettings.GAME_STEP_MS);
-    setInterval(this.spawnEye.bind(this), 3000);
+    setInterval(this.spawnGraviton.bind(this), 3000);
     // setInterval(() => {
     //   this.game.frame();
     //   console.log(this.game.state.data.ballCurrent.x);
@@ -100,7 +100,7 @@ export class ServerGameContext {
     this.players[1].emit(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
   }
 
-  spawnEye() {
+  spawnGraviton() {
     const time =
       this.game.state.data.actualNow + GSettings.GRAVITON_ONLINE_SPAWN_DELAY;
     let x = GSettings.GRAVITON_SPAWN_WIDTH * (Math.random() - 0.5);
