@@ -1,4 +1,4 @@
-import { GSettings } from "../constants";
+import { GameEvent, GSettings } from "../constants";
 import { GameProducedEvent } from "../game/events";
 // import { BallOutEvent } from "../game/events";
 import { BallData, DataBuffer } from "./data";
@@ -56,14 +56,20 @@ function applyBallBarCollision(data: DataBuffer, dtCollision: number, barId: num
         data.ballNext.x = data.ballCurrent.x + (2 * dtCollision - GSettings.GAME_STEP_S) * data.ballNext.vx;
         data.ballNext.y = data.ballCurrent.y + dtCollision * data.ballNext.vy + (GSettings.GAME_STEP_S - dtCollision) * newVy;
         data.ballNext.vy = newVy;
-        //emitcollision
-        // console.log("--- COLLISION ---");
-        // console.log(`current.vx = ${data.ballCurrent.vx}`);
-        // console.log(`next.vx = ${data.ballNext.vx}`);
-        // console.log("---     -     ---");
+        GameProducedEvent.produceEvent(
+            GameEvent.BALL_BAR_COLLISION,
+            barId,
+            data.currentTime + 1,
+            data.ballNext.x, data.ballNext.y,
+            data.ballNext.vx, data.ballNext.vy
+        );
     }
     else {
-        //emitnocollision
+        GameProducedEvent.produceEvent(
+            GameEvent.NO_BALL_BAR_COLLISION,
+            barId,
+            data.currentTime + 1,
+        );
     }
 }
 

@@ -1,4 +1,4 @@
-import { GSettings, PLAYER1, PLAYER2 } from '../../common/constants';
+import { GameEvent, GSettings, PLAYER1, PLAYER2 } from '../../common/constants';
 import { Game } from "../../common/game";
 import { handleKeydownOffline, handleKeyupOffline, handleKeyOnline } from './keyboardInput';
 import { Renderer } from '../graphic/Renderer';
@@ -138,6 +138,8 @@ export class ClientGameManagerOffline extends ClientGameManager {
                 .then(() => delay(500))
                 .then(() => this.game.start());
         });
+
+        // GameProducedEvent.registerEvent(GameEvent.)
     }
 }
 
