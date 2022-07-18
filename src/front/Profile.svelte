@@ -1,21 +1,6 @@
-<script>
-  import { createEventDispatcher } from "svelte";
-  import Modal from "./Modal.svelte";
-
-  const dispatch = createEventDispatcher();
-
-  let isOpenModal = false;
-
-  export let image = "img/canard.jpeg";
-  export let friendName = "Joey";
-
-  function openModal() {
-    isOpenModal = true;
-  }
-
-  function closeModal() {
-    isOpenModal = false;
-  }
+<script lang="ts">
+  export let image: string;
+  export let friendName: string;
 </script>
 
 <img class="roundedImageProfile" src={image} alt="profilepic" />
