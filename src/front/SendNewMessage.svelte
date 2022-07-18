@@ -1,28 +1,26 @@
-<script lang='ts'>
+<script lang="ts">
   export let sendMessage;
-  export let newText : string;
+  export let newText: string;
 </script>
 
 <form on:submit|preventDefault={sendMessage}>
   <div id="formContainer">
-    <input
-      id="destinataire"
-      type="search"
-      placeholder="To :"
-      required/> <br/>
+    <input id="destinataire" type="search" placeholder="To :" required /> <br />
     <textarea
       id="message"
       type="text"
       placeholder="Type a message..."
-      bind:value={newText} /> <!-- input go in newText -->
-      <button>
-      <img src="img/send.png" alt="send message"/>
+      bind:value={newText}
+    />
+    <!-- input go in newText -->
+    <button>
+      <img src="img/send.png" alt="send message" />
     </button>
   </div>
 </form>
 
 <style>
-  #formContainer{
+  #formContainer {
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -38,13 +36,11 @@
     height: 5em;
   }
 
-  img{
+  img {
     width: 2em;
     height: 2em;
-
   }
   textarea {
     resize: none;
   }
-
 </style>
