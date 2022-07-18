@@ -16,16 +16,10 @@ onMount(() => {
 </script>
 
 <style>
-#game-full {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width:70%;
-    height:70%;
-}
+
 #game-container {
-    width:90%;
-    height:90%;
+    width:67%;
+    height:67%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -38,8 +32,6 @@ onMount(() => {
     background: rgba(0, 0, 0, 0);
 } */
 </style>
-<div id="game-full">
-    <div id="game-container">
-        <canvas id="game-screen"></canvas>
-    </div>
+<div id="game-container">
+    <canvas id="game-screen"></canvas>
 </div>
