@@ -48,11 +48,10 @@
 
   .conv {
     align-items: center;
-    width: 95%;
-    height: 6%;
+    width: 95vw;
+    height: 70px;
     background: white;
     display: flex;
-    margin-left: 2%;
     border: 1px solid #ff00b8;
   }
 

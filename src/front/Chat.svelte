@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import ChatConversation from "./ChatConversation.svelte";
   import OnlineFriends from "./OnlineFriends.svelte";
-  import WriteNewMsg from "./NewChatMessage.svelte";
+  import WriteNewMsg from "./WriteNewMsg.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -16,21 +16,24 @@
     <WriteNewMsg />
   </div>
 
-  <input class="champ" type="search" value="Search.." /> <br /> <br /> <br />
-
-  <OnlineFriends onlineFriends={friends} />
-
-  <ChatConversation
-    friendName="Flash McQueen"
-    image="img/cars.jpeg"
-    has_new_message={true}
-  />
-
-  <ChatConversation
-    friendName="Joey"
-    image="img/canard.jpeg"
-    has_new_message={true}
-  />
+  <div id="mainContainer">
+    <input class="champ" type="search" value="Search.." /> 
+  
+    <OnlineFriends onlineFriends={friends} />
+    <div>
+      <ChatConversation
+        friendName="Flash McQueen"
+        image="img/cars.jpeg"
+        has_new_message={true}
+      />
+    
+      <ChatConversation
+        friendName="Joey"
+        image="img/canard.jpeg"
+        has_new_message={true}
+      />
+    </div>
+  </div>
 </div>
 
 <style>
@@ -45,6 +48,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
   }
 
   #title {
@@ -53,6 +57,13 @@
     align-items: center;
     padding-left: 5%;
     padding-right: 5%;
+  }
+
+  #mainContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
 
   h1 {

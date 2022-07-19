@@ -3,11 +3,13 @@
   export let profilePic = "img/canard.jpeg";
 </script>
 
-<div id="online"><br /> Online friends</div>
-<div class="onlineFriends">
-  {#each onlineFriends as friend}
-    <img class="roundedImage" src={profilePic} alt="contact" />
-  {/each}
+<div>
+  <div id="online"><br /> Online friends</div>
+  <div class="onlineFriends">
+    {#each onlineFriends as friend}
+      <img class="roundedImage" src={profilePic} alt="contact" />
+    {/each}
+  </div>
 </div>
 
 <style>
@@ -26,20 +28,18 @@
   }
 
   .onlineFriends {
-    width: 95%;
-    height: 8%;
+    width: 95vw;
+    height: 80px;
     background: white;
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    margin-left: 2%;
   }
 
   #online {
     color: white;
-    width: 95%;
-    height: 3%;
+    width: 95vw;
+    height: 40px;
     background: #ff00b8;
-    margin-left: 2%;
   }
 </style>
