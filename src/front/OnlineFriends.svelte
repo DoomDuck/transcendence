@@ -6,7 +6,7 @@
 <div id="online"><br /> Online friends</div>
 <div class="onlineFriends">
   {#each onlineFriends as friend}
-    <img class="roundedImage" src={friend.profilePic} alt="contact" />
+    <img class="roundedImage" src={profilePic} alt="contact" />
   {/each}
 </div>
 
