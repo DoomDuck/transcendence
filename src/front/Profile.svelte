@@ -7,12 +7,11 @@
 <div id="Profile">
   <img class="roundedImageProfile" src={image} alt="profilepic" />
   <h3>{friendName}</h3>
-  <p> iD: {iD}</p>
-  
+  <p>iD: {iD}</p>
 </div>
 
 <style>
-  #Profile{
+  #Profile {
     display: flex;
     flex-direction: column;
     justify-content: center;

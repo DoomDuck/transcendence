@@ -1,9 +1,7 @@
 <script lang="ts">
-
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
-
 </script>
 
 <div id="background" on:click={() => dispatch("close")} />
