@@ -17,8 +17,8 @@
   </div>
 
   <div id="mainContainer">
-    <input class="champ" type="search" value="Search.." /> 
-  
+    <input class="champ" type="search" value="Search.." />
+
     <OnlineFriends onlineFriends={friends} />
     <div>
       <ChatConversation
@@ -26,7 +26,7 @@
         image="img/cars.jpeg"
         has_new_message={true}
       />
-    
+
       <ChatConversation
         friendName="Joey"
         image="img/canard.jpeg"
@@ -59,7 +59,7 @@
     padding-right: 5%;
   }
 
-  #mainContainer{
+  #mainContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
