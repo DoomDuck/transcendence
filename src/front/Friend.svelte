@@ -30,15 +30,15 @@
     class="play"
     src="img/console.png"
     alt="play"
-    width="50"
-    height="50"
+    width=50px
+    height=50px
   />
 </div>
 
 <style>
   .friend {
-    width: 94%;
-    height: 6%;
+    width: 95vw;
+    height: 70px;
     background: white;
     display: flex;
     align-items: center;
