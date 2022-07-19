@@ -30,8 +30,8 @@
     class="play"
     src="img/console.png"
     alt="play"
-    width=50px
-    height=50px
+    width="50px"
+    height="50px"
   />
 </div>
 

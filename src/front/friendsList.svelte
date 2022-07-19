@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import Friend from "./Friend.svelte";
-  
+
   export let friendNameSearch;
   const dispatch = createEventDispatcher();
 </script>
@@ -30,7 +30,7 @@
   * {
     font-family: "Press Start 2P";
   }
-  #mainContainer{
+  #mainContainer {
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
@@ -53,7 +53,7 @@
     height: 40px;
     width: 95vw;
     color: white;
-    background-color:aliceblue;
+    background-color: aliceblue;
   }
 
   .friendsList {
@@ -61,5 +61,4 @@
     width: 100%;
     height: 100%;
   }
-
 </style>
