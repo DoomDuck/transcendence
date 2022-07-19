@@ -1,4 +1,5 @@
+import { idnumber } from "../customType";
 export class FriendRequestDto {
-  readonly sender: number;
-  readonly target: number;
+  readonly sender: idnumber;
+  readonly target: idnumber;
 }

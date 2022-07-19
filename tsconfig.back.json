@@ -16,8 +16,8 @@
     "importsNotUsedAsValues": "remove",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-
+    "noImplicitReturns": true,
+	"allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,

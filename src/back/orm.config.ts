@@ -1,5 +1,4 @@
 import { type TypeOrmModuleOptions } from "@nestjs/typeorm";
-// import {  car } from "./car/car.entity";
 import { User } from "./user/user.entity";
 import { DatabaseFile } from "./user/databaseFile.entity";
 

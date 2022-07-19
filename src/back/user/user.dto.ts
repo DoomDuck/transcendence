@@ -1,4 +1,5 @@
+import { idnumber } from "../customType";
 export class UserDto {
-  readonly id: number;
+  readonly id: idnumber;
   readonly name: string;
 }

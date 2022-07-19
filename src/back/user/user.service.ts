@@ -3,9 +3,11 @@ import { User } from "./user.entity";
 import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { DatabaseFilesService } from "./databaseFiles.service";
+import { DatabaseFilesService } from "./databaseFile.service";
+import { idnumber } from "../customType";
 //used for debug
 // import { Logger } from "@nestjs/common";
+
 export class ActiveUser {
   name: string;
   pending_invite: boolean;
@@ -24,10 +26,10 @@ export class UserService {
     return this.usersRepository.find();
   }
 
-  findOne(id: number): Promise<User | null> {
+  findOne(id: idnumber): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
-  async remove(id: number): Promise<void> {
+  async remove(id: idnumber): Promise<void> {
     await this.usersRepository.delete(id);
   }
   addOne(userDto: UserDto): Promise<User> {
@@ -36,7 +38,7 @@ export class UserService {
     newUser.friendlist = [];
     return this.usersRepository.save(newUser);
   }
-  async addFriend(sender: number, target: number) {
+  async addFriend(sender: idnumber, target: idnumber): Promise<string | User> {
     let tempSender = await this.usersRepository
       .createQueryBuilder("User")
       .where("User.id = :sender", { sender })
@@ -54,7 +56,11 @@ export class UserService {
       return this.usersRepository.save(tempSender);
     } else return "Already friends";
   }
-  async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
+  async addAvatar(
+    userId: idnumber,
+    imageBuffer: Buffer,
+    filename: string
+  ): Promise<boolean> {
     const avatar = await this.databaseFilesService.uploadDatabaseFile(
       imageBuffer,
       filename
@@ -62,7 +68,7 @@ export class UserService {
     await this.usersRepository.update(userId, {
       avatarId: avatar.id,
     });
-	//A MODIFIER
-    return 1;
+    //A MODIFIER
+    return true;
   }
 }

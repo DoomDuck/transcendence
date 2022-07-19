@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { userController } from "./user.controller";
-import { DatabaseFilesController } from "./databaseFiles.controller";
+import { UserController } from "./user.controller";
+import { DatabaseFilesController } from "./databaseFile.controller";
 import { UserService } from "./user.service";
-import { DatabaseFilesService } from "./databaseFiles.service";
+import { DatabaseFilesService } from "./databaseFile.service";
 import { User } from "./user.entity";
 import { DatabaseFile } from "./databaseFile.entity";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -11,7 +11,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([DatabaseFile]),
   ],
-  controllers: [userController, DatabaseFilesController],
+  controllers: [UserController, DatabaseFilesController],
   providers: [UserService, DatabaseFilesService],
 })
 export class userModule {}
