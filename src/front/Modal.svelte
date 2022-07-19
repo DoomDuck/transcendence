@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
+
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
+
 </script>
 
 <div id="background" on:click={() => dispatch("close")} />
@@ -11,7 +13,6 @@
 
 <style>
   #background {
-    display: var(--display);
     position: fixed;
     z-index: 1;
     top: 0;
@@ -22,7 +23,6 @@
   }
 
   #modal {
-    display: var(--display);
     position: fixed;
     z-index: 2;
     top: 50%;
