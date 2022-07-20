@@ -29,12 +29,13 @@
     height: 100%;
     background-color: #ea0ed4;
   }
+
   #game {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
   }
+
   img {
     float: left;
     margin-left: 3%;
@@ -48,7 +49,7 @@
     color: blue;
     line-height: 300%;
     -webkit-text-stroke: 1px #000000;
-    font-size: 3em;
+    font-size: 4vh;
   }
 
   h4:hover {
