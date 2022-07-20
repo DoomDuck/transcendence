@@ -4,23 +4,23 @@ same for the avatar picture
 Object :
 User
 {
-	id: idnumber;
+	id: Id ;
 	name:string;
 	//array of id that the user added
-	friendlist: number[];
+	friendlist: Id[];
 	//id of the avatar of the user, to use on another request
-	avatarId:number;
+	avatarId: Id;
 }
 //Object used to pass information between front and back, different fron the User object
 UserDto
 {
-	id: idnumber;
-	name:string;
+	id: Id;
+	name: string;
 }
 FriendReauestDto
 {
-	sender: idnumber;
-	target:number;
+	sender: Id;
+	target: Id;
 }
 Request:
 //Used to get information
