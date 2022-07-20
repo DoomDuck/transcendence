@@ -57,7 +57,6 @@
 		"@types/jest": "^28.1.0",
 		"@types/node": "^16.0.0",
 		"@types/three": "^0.138.0",
-		"class-transformer": "^0.5.1",
 		"css-loader": "^6.7.1",
 		"express": "^4.17.3",
 		"jest": "^28.1.0",

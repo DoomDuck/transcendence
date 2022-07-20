@@ -17,6 +17,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { Express } from "express";
 import { UploadedFile, UseInterceptors } from "@nestjs/common";
 import { Multer } from "multer";
+
 @Controller("user")
 export class UserController {
   private logger: Logger = new Logger("User");
@@ -27,12 +28,12 @@ export class UserController {
   }
   @Post()
   public postUser(@Body() user: UserDto) {
-    // this.logger.log(user.name);
+     this.logger.log(user.name);
+	 this.logger.
     return this.userService.addOne(user);
   }
   @Post("friendRequest")
   public addFriend(@Body() friendRequest: FriendRequestDto) {
-    // this.logger.log(user.name);
     return this.userService.addFriend(
       friendRequest.sender,
       friendRequest.target

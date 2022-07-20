@@ -5,8 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DatabaseFilesService } from "./databaseFile.service";
 import { Id } from "../customType";
-//used for debug
-// import { Logger } from "@nestjs/common";
+ import { logger } from "../logger";
 
 export class ActiveUser {
   name: string;
@@ -15,7 +14,6 @@ export class ActiveUser {
 }
 @Injectable()
 export class UserService {
-  // private logger: Logger = new Logger("UserService");
   array_active_User: ActiveUser[];
   constructor(
     @InjectRepository(User)
