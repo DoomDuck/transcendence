@@ -54,5 +54,7 @@
 
   h4:hover {
     background-color: purple;
+    width: 100%;
+    text-align: center;
   }
 </style>

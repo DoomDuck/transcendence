@@ -68,5 +68,7 @@
 
   h4:hover {
     background-color: blue;
+    width: 100%;
+    text-align: center;
   }
 </style>
