@@ -1,11 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { User } from "./user.entity";
 import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DatabaseFilesService } from "./databaseFile.service";
 import { Id } from "../customType";
-import { logger } from "../logger";
 
 export class ActiveUser {
   name: string;
