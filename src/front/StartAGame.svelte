@@ -27,7 +27,8 @@
     overflow: hidden;
     width: 100%;
     height: 100%;
-    background-color: #ea0ed4;
+    /* background-color: #ea0ed4; */
+    background-image: url("../../public/img/starsSky.jpeg");
   }
 
   #game {
@@ -46,14 +47,15 @@
     text-align: center;
     font-family: "Press start 2P";
     font-style: normal;
-    color: blue;
+    color: #6028FF;
     line-height: 300%;
-    -webkit-text-stroke: 1px #000000;
-    font-size: 4vh;
+    -webkit-text-stroke: 1px #ff29ea;
+    text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
+    font-size: 3.5vh;
   }
 
   h4:hover {
-    background-color: purple;
+    background-color: blue;
     width: 100%;
     text-align: center;
   }

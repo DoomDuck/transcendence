@@ -62,8 +62,8 @@
   h4 {
     line-height: 350%;
     -webkit-text-stroke: 1px #ff29ea;
-    text-shadow: 4px 4px 4px purple, 4px 4px 4px purple;
-    font-size: 3vh;
+    text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
+    font-size: 3.5vh;
   }
 
   h4:hover {
