@@ -18,7 +18,7 @@ module.exports = {
     extensions: ['.mjs', '.js', '.svelte', '.ts'],
     mainFields: ['svelte', 'browser', 'module', 'main'],
   },
-
+  devtool: "source-map",
   module: {
     rules: [
       {
@@ -36,7 +36,11 @@ module.exports = {
           loader: 'svelte-loader',
           options: {
             emitCss: true,
+            compilerOptions: {
+              enableSourcemap: true,
+            },
             preprocess: svelte_preprocess({
+              sourceMap: true,
               tsconfigFile: "tsconfig.front.json",
             }),
           }
@@ -52,7 +56,13 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           // options necessary to use url('/path/to/some/asset.png|jpg|gif')
-          { loader: 'css-loader', options: { url: false } },
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+              sourceMap: true
+            }
+          },
         ]
       },
     ]
