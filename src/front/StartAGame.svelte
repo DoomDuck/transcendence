@@ -47,7 +47,7 @@
     text-align: center;
     font-family: "Press start 2P";
     font-style: normal;
-    color: #6028FF;
+    color: #6028ff;
     line-height: 300%;
     -webkit-text-stroke: 1px #ff29ea;
     text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
