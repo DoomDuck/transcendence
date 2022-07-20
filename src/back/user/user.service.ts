@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DatabaseFilesService } from "./databaseFile.service";
 import { Id } from "../customType";
- import { logger } from "../logger";
+import { logger } from "../logger";
 
 export class ActiveUser {
   name: string;

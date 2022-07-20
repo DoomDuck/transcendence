@@ -28,8 +28,6 @@ export class UserController {
   }
   @Post()
   public postUser(@Body() user: UserDto) {
-     this.logger.log(user.name);
-	 this.logger.
     return this.userService.addOne(user);
   }
   @Post("friendRequest")
@@ -55,7 +53,6 @@ export class UserController {
     @Body() userDto: UserDto,
     @UploadedFile() file: Express.Multer.File
   ): Promise<boolean> {
-    this.logger.log(userDto.id);
     return this.userService.addAvatar(
       userDto.id,
       file.buffer,
