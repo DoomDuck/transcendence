@@ -1,4 +1,4 @@
-{
+
   "extends": "@tsconfig/nest",
 
   "compilerOptions": {
@@ -40,4 +40,4 @@
   },
 
   "include": ["src/back/**/*.ts"],
-}
+

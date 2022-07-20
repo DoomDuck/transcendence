@@ -1,4 +1,4 @@
-import { idnumber } from "../customType";
+import { Id } from "../customType";
 import {
   Entity,
   Column,
@@ -8,7 +8,7 @@ import {
 @Entity("game")
 export class Gane {
   @PrimaryGeneratedColumn()
-  id: idnumber;
+  id: Id;
   @Column({ type: "varchar", length: 100, nullable: false })
   playerOne: string;
 
@@ -16,10 +16,10 @@ export class Gane {
   playerTwo: string;
 
   @Column("int")
-  playerOneScore: idnumber;
+  playerOneScore: Id;
 
   @Column("int")
-  playerTwoScore: idnumber;
+  playerTwoScore: Id;
 
   @CreateDateColumn()
   created_at: Date;

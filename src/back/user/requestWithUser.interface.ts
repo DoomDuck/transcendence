@@ -1,11 +1,11 @@
 import { Request } from "express";
 import { UserDto } from "./user.dto";
 
-import { idnumber } from "../customType";
+import { Id } from "../customType";
 interface RequestWithUser extends Request {
   //might be needed later
   // user: UserDto;
-  id: idnumber;
+  id: Id;
 }
 
 export default RequestWithUser;

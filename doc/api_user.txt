@@ -1,7 +1,10 @@
+Note :
+We use the id of the user (represented by an int(number)) to fetch data
+same for the avatar picture
 Object :
 User
 {
-	id:number;
+	id: idnumber;
 	name:string;
 	//array of id that the user added
 	friendlist: number[];
@@ -11,12 +14,12 @@ User
 //Object used to pass information between front and back, different fron the User object
 UserDto
 {
-	id:number;
+	id: idnumber;
 	name:string;
 }
 FriendReauestDto
 {
-	sender:number;
+	sender: idnumber;
 	target:number;
 }
 Request:

@@ -1,1 +1,1 @@
-export type idnumber = number;
+export type Id = number;

@@ -9,14 +9,14 @@ import {
 import { DatabaseFilesService } from "./databaseFile.service";
 import { Readable } from "stream";
 import { Response } from "express";
-import { idnumber } from "../customType";
+import { Id } from "../customType";
 @Controller("avatar")
 export class DatabaseFilesController {
   constructor(private readonly databaseFilesService: DatabaseFilesService) {}
 
   @Get(":id")
   async getDatabaseFileById(
-    @Param("id", ParseIntPipe) id: idnumber,
+    @Param("id", ParseIntPipe) id: Id,
     @Res({ passthrough: true }) response: Response
   ): Promise<StreamableFile> {
     const file = await this.databaseFilesService.getFileById(id);

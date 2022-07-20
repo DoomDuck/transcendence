@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DatabaseFile } from "./databaseFile.entity";
 
-import { idnumber } from "../customType";
+import { Id } from "../customType";
 @Injectable()
 export class DatabaseFilesService {
   constructor(
@@ -23,7 +23,7 @@ export class DatabaseFilesService {
     return newFile;
   }
 
-  async getFileById(id: idnumber): Promise<DatabaseFile> {
+  async getFileById(id: Id): Promise<DatabaseFile> {
     const file = await this.databaseFilesRepository.findOneBy({ id });
     if (!file) {
       // need change for consistency

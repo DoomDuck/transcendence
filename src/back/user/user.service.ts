@@ -4,7 +4,7 @@ import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DatabaseFilesService } from "./databaseFile.service";
-import { idnumber } from "../customType";
+import { Id } from "../customType";
 //used for debug
 // import { Logger } from "@nestjs/common";
 
@@ -26,10 +26,10 @@ export class UserService {
     return this.usersRepository.find();
   }
 
-  findOne(id: idnumber): Promise<User | null> {
+  findOne(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
-  async remove(id: idnumber): Promise<void> {
+  async remove(id: Id): Promise<void> {
     await this.usersRepository.delete(id);
   }
   addOne(userDto: UserDto): Promise<User> {
@@ -38,7 +38,7 @@ export class UserService {
     newUser.friendlist = [];
     return this.usersRepository.save(newUser);
   }
-  async addFriend(sender: idnumber, target: idnumber): Promise<string | User> {
+  async addFriend(sender: Id, target: Id): Promise<string | User> {
     let tempSender = await this.usersRepository
       .createQueryBuilder("User")
       .where("User.id = :sender", { sender })
@@ -57,7 +57,7 @@ export class UserService {
     } else return "Already friends";
   }
   async addAvatar(
-    userId: idnumber,
+    userId: Id,
     imageBuffer: Buffer,
     filename: string
   ): Promise<boolean> {
