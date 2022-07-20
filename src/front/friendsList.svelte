@@ -36,7 +36,7 @@
     flex-direction: column;
     align-items: center;
     overflow-y: scroll;
-    gap: 20px;
+    gap: 30px;
     width: 100vw;
     height: 100vh;
   }
@@ -49,10 +49,16 @@
     text-align: center;
   }
 
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 2em;
+    }
+  }
+
   input {
     height: 40px;
-    width: 95vw;
-    color: white;
+    width: 80vw;
+    color: rgb(165, 159, 159);
     background-color: aliceblue;
   }
 

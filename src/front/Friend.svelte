@@ -37,7 +37,7 @@
 
 <style>
   .friend {
-    width: 95vw;
+    width: 80vw;
     height: 70px;
     background: white;
     display: flex;
@@ -58,7 +58,7 @@
     width: 50px;
     height: 50px;
     margin-left: 1%;
-    margin-right: 10%;
+    margin-right: 2vw;
     margin-top: auto;
     margin-bottom: auto;
   }
