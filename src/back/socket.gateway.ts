@@ -26,6 +26,7 @@ export class SocketGateway
 
   @SubscribeMessage("msgToServer")
   handleMessage(client: Socket, text: string): WsResponse<string> {
+    this.logger.log("socker gateway handle message");
     return { event: "msgToClient", data: text };
   }
 }
