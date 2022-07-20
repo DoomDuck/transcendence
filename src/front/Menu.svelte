@@ -33,7 +33,7 @@
 
 <style>
   #menu {
-    background-image: url("../../public/img/starsSky.jpeg");
+    background-image: url("../../public/img/starsSky.png");
     width: 100%;
     height: 100%;
     overflow: hidden;

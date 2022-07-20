@@ -1,31 +1,79 @@
-import { Ball } from "./Ball";
-import { Bar } from "./Bar";
-import { EventEmitter } from "events";
-import { PlayersScore } from "./PlayersScore";
+import {
+  BarInputEvent,
+  GameProducedEvent,
+  SetBallEvent,
+  type DataChangerEvent,
+} from "../game/events";
+import { collisions } from "./collisions";
+import { DataBuffer } from "./data";
+import {
+  applyForces,
+  applySpeed,
+  processExternEvents,
+  propagateBarInputs,
+  updateGravitons,
+  updatePortal,
+} from "./update";
 
-/**
- * Simple wrapper to encapsulate all entities from the exterior (the Game instance).
- */
 export class GameState {
-  ball: Ball;
-  bars: [Bar, Bar];
-  playersScore: PlayersScore;
-
-  constructor(ball: Ball, bar1: Bar, bar2: Bar, playersScore: PlayersScore) {
-    this.ball = ball;
-    this.bars = [bar1, bar2];
-    this.playersScore = playersScore;
-  }
+  data: DataBuffer = new DataBuffer();
+  eventBuffer: DataChangerEvent[] = [];
 
   reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
-    this.ball.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-    this.bars[0].reset();
-    this.bars[1].reset();
+    this.data.reset();
+    this.data.ballCurrent.x = ballX;
+    this.data.ballCurrent.y = ballY;
+    this.data.ballCurrent.vx = ballSpeedX;
+    this.data.ballCurrent.vy = ballSpeedY;
   }
 
-  update(elapsed: number) {
-    this.bars[0].update(elapsed);
-    this.bars[1].update(elapsed);
-    this.ball.update(elapsed, this.bars);
+  update() {
+    this.computeOneStep();
+    this.data.actualNow++;
+    GameProducedEvent.fireAllEvents();
+  }
+
+  computeOneStep() {
+    for (let event of this.eventBuffer) {
+      this.handleEvent(event);
+    }
+    this.eventBuffer = [];
+    processExternEvents(this.data);
+    propagateBarInputs(this.data);
+    updateGravitons(this.data);
+    updatePortal(this.data);
+    applyForces(this.data);
+    applySpeed(this.data);
+    collisions(this.data);
+    this.data.advance();
+  }
+
+  handleEvent(event: DataChangerEvent) {
+    if (event.time < 0) return;
+    if (this.data.actualNow - event.time >= 100) {
+      // too old, discard
+      return;
+    }
+    if (event.time >= this.data.currentTime) {
+      this.data.addEvent(event.time, event);
+      return;
+    }
+    if (event.time < this.data.currentTime) {
+      console.log(
+        `PAST, event.time = ${event.time}, data.currentTime = ${this.data.currentTime}, data.actualNow = ${this.data.actualNow}`
+      );
+      // past event
+      let now = this.data.currentTime;
+      this.data.goBackTo(event.time);
+      this.data.addEventNow(event);
+      while (this.data.currentTime != now) {
+        this.computeOneStep();
+      }
+      return;
+    }
+  }
+
+  registerEvent(event: DataChangerEvent) {
+    this.eventBuffer.push(event);
   }
 }

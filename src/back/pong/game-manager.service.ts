@@ -1,16 +1,12 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Socket } from "socket.io";
-import { GameManager } from "../../pong/server";
-
-function removeElementByValue<T>(array: T[], item: T) {
-  let index = array.indexOf(item);
-  if (index !== -1) array.splice(index, 1);
-}
+import { removeElementByValue } from "../../pong/common/utils";
+import { ServerGameContext } from "../../pong/server";
 
 @Injectable()
 export class GameManagerService {
   private waitingClients: Socket[] = [];
-  private games: GameManager[] = [];
+  private games: ServerGameContext[] = [];
   private logger: Logger = new Logger("GameManagerService");
 
   add(socket: Socket) {
@@ -21,7 +17,7 @@ export class GameManagerService {
   launchGameIfPossible() {
     if (this.waitingClients.length >= 2) {
       this.logger.log("two clients are waiting for a game");
-      const gameInstance = new GameManager([
+      const gameInstance = new ServerGameContext([
         this.waitingClients[0],
         this.waitingClients[1],
       ]);
@@ -36,9 +32,5 @@ export class GameManagerService {
       });
       this.waitingClients.splice(0, 2);
     }
-  }
-
-  remove(socket: Socket) {
-    removeElementByValue(this.waitingClients, socket);
   }
 }

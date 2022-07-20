@@ -1,10 +1,11 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-
+  import Pong from "./Pong.svelte";
   const dispatch = createEventDispatcher();
 </script>
 
 <div id="Play">
+  <Pong />
   <img
     on:click={() => dispatch("start_game")}
     src="img/return.png"
@@ -17,9 +18,14 @@
 
 <style>
   #Play {
+    /* transform: translateX(); */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 100%;
-    background-image: url("../../public/img/starsSky.jpeg");
+    background-image: url("../../public/img/gameBackground.png");
     overflow: hidden;
   }
   img {
