@@ -1,8 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import ChatConversation from "./ChatConversation.svelte";
-  import OnlineFriends from "./OnlineFriends.svelte";
-  import WriteNewMsg from "./WriteNewMsg.svelte";
+  import ChatConversation from "$lib/ChatConversation.svelte";
+  import OnlineFriends from "$lib/OnlineFriends.svelte";
+  import WriteNewMsg from "WriteNewMsg.svelte";
 
   const dispatch = createEventDispatcher();
 

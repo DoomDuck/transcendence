@@ -1,23 +1,8 @@
-<script lang="ts">
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
-</script>
-
-<div id="start_a_game">
-  <div id="game">
-    <h4 on:click={() => dispatch("Play")}>Play</h4>
-    <h4 on:click={() => dispatch("Watch_a_game")}>Watch a game</h4>
-    <h4 on:click={() => dispatch("see_friends")}>Challenge a friend</h4>
-  </div>
-  <img
-    on:click={() => dispatch("open_menu")}
-    src="img/return.png"
-    alt="return"
-    width="30"
-    height="30"
-  />
-</div>
+<nav id="start_a_game">
+    <h4><a sveltekit:prefetch href="/Play">Play</a><h4>
+    <h4><a sveltekit:prefetch href="/Play" >Watch a game</a><h4>
+    <h4><a sveltekit:prefetch href="/Play" >Challenge a friend</a><h4>
+</nav>
 
 <style>
   #start_a_game {
@@ -29,18 +14,6 @@
     height: 100%;
     /* background-color: #ea0ed4; */
     background-image: url("starsSky.jpeg");
-  }
-
-  #game {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  img {
-    float: left;
-    margin-left: 3%;
-    margin-bottom: 3%;
   }
 
   h4 {

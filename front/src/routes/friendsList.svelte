@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import Friend from "./Friend.svelte";
-
-  export let friendNameSearch;
-  const dispatch = createEventDispatcher();
+  export let friendNameSearch: () => void;
 </script>
 
 <div class="friendsList">
@@ -16,13 +13,6 @@
       <Friend friendName="Flash McQueen" image="cars.jpeg" />
       <Friend friendName="Joey" image="canard.jpeg" />
     </div>
-    <img
-      on:click={() => dispatch("start_game")}
-      src="return.png"
-      alt="return"
-      width="30"
-      height="30"
-    />
   </div>
 </div>
 

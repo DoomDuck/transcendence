@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalid_attribute_name_character } from "svelte/internal";
-  import Profile from "./Profile.svelte";
+  import Profile from "../routes/Profile.svelte";
   import Modal from "./Modal.svelte";
 
   export let friendName: string;
