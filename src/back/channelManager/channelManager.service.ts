@@ -4,7 +4,7 @@ import { ChannelDto } from "./channel.dto";
 
 export class Channel {
   constructor(
-    public chanId: Id,
+    public channelId: Id,
     public name: string,
     public priv: boolean,
     public protect: boolean,
@@ -77,15 +77,19 @@ export class ChannelManagerService {
       (element) => element.name === chanName
     );
     if (tempChan === undefined) return "chan doesn't exist";
+
     if (tempChan.member.find((element) => element === sender))
       return "user already in chan";
     // if(tempChan.banned.find(element => element == sender)!=undefined)
     // return "user is banned from this chan";
     if (tempChan.priv) return "chan is privated";
+
     if (tempChan.protect) {
       if (password != tempChan.password) return "wrong password";
     }
+
     tempChan.member.push(sender);
+
     return "user added";
   }
   setPrivate(sender: Id, chanName: string): string {
@@ -123,5 +127,24 @@ export class ChannelManagerService {
     tempChan.admin.push(target);
     return "new admin added ";
   }
+  getRoomName(channelId:Id):string | undefined
+  {
+	const tempChan = this.arrayChannel.find(element => element.channelId === channelId);
+
+	 if  (tempChan)
+		 {
+			return tempChan.name;
+		 }
+	return undefined;
+  }
   //Send invitation
+	sendMessageToChannel(wss:Server,clientSocket: Socket, sender:Id, text: string , channelId: Id) {
+	const tempChan= this.arrayChannel.find(element => element.channelId== channelId);
+	if (tempChan)
+		{
+			 if((tempChan.member.find( element=> element ===sender )!= undefined))
+				wss.to(tempChan).emit("userToChannel",text);
+		}
+
+   }
 }

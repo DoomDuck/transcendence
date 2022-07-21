@@ -5,31 +5,45 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { DatabaseFilesService } from "./databaseFile.service";
 import { Id } from "../customType";
+import { Socket } from "socket.io";
 
 export class ActiveUser {
+	constructor(
+	public id:Id,
+	)
+	{
+	this.id=id;
+	this.pending_invite = false ;
+  	this.ingame= false;
+	}
   name: string;
   pending_invite: boolean;
   ingame: boolean;
+  socketUser:	Socket[];
 }
+
 @Injectable()
 export class UserService {
-  array_active_User: ActiveUser[];
+  arrayActiveUser: ActiveUser[];
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly databaseFilesService: DatabaseFilesService
   ) {}
-  findAll(): Promise<User[]> {
+  findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
   }
+	findOneActive(id: Id): ActiveUser | undefined {
+    return this.arrayActiveUser.find(element=> element.id===( id ));
+  }
 
-  findOne(id: Id): Promise<User | null> {
+  findOneDb(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
   async remove(id: Id): Promise<void> {
     await this.usersRepository.delete(id);
   }
-  addOne(userDto: UserDto): Promise<User> {
+  addOneDb(userDto: UserDto): Promise<User> {
     const newUser = new User();
     newUser.name = userDto.name;
     newUser.friendlist = [];

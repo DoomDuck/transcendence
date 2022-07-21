@@ -26,7 +26,7 @@ export class ChannelController {
 
   // @Get(":id")
   // public async getCarById(@Param("id") id: number) {
-    // return this.carService.getCarById(id);
+  // return this.carService.getCarById(id);
   // }
   //
   // @Delete(":id")
