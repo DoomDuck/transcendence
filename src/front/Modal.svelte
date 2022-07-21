@@ -25,8 +25,12 @@
     z-index: 2;
     top: 50%;
     left: 50%;
+    width: 280px;
+    height: 30vh;
     transform: translate(-50%, -50%);
     background: #fff;
     filter: drop-shadow(0 0 20px #333);
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 </style>
