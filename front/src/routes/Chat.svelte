@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import ChatConversation from '$lib/ChatConversation.svelte';
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
-	import WriteNewMsg from 'WriteNewMsg.svelte';
-
-	const dispatch = createEventDispatcher();
+	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 
 	let profilePic = 'img/canard.jpeg';
 	let friends = [];
@@ -12,7 +9,7 @@
 
 <div id="chat">
 	<div id="title">
-		<h1 on:click={() => dispatch('open_menu')}>Chat</h1>
+		<h1>Chat</h1>
 		<WriteNewMsg />
 	</div>
 

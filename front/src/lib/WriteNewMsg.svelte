@@ -1,6 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import SendMessage from './SendNewMessage.svelte';
+	import SendMessage from '$lib/SendNewMessage.svelte';
 	import Modal from './Modal.svelte';
 
 	const dispatch = createEventDispatcher();
