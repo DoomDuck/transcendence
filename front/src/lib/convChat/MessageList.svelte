@@ -1,23 +1,23 @@
+<script>
+	export default {
+		components: {
+			Message: './Message.html'
+		}
+	};
+</script>
+
 <div id="message-container">
 	{#each messages as message, i}
-	<Message {message} nextMessage={messages[i + 1]} {username} />
+		<Message {message} nextMessage={messages[i + 1]} {username} />
 	{:else}
-	<p>No messages</p>
+		<p>No messages</p>
 	{/each}
-  </div>
-  
-  <style>
+</div>
+
+<style>
 	#message-container {
-	  height: calc(100% - 45px);
-	  overflow-y: auto;
-	  padding: 0 10px;
+		height: calc(100% - 45px);
+		overflow-y: auto;
+		padding: 0 10px;
 	}
-  </style>
-  
-  <script>
-	export default {
-	  components: {
-		Message: './Message.html',
-	  }
-	};
-  </script>
+</style>
