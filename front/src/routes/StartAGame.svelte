@@ -6,7 +6,7 @@
 				<a sveltekit:prefetch href="/Play">Watch a game</a>
 				<h4>
 					<h4>
-						<a sveltekit:prefetch href="/friendsList">Challenge a friend</a>
+						<a sveltekit:prefetch href="/FriendsList">Challenge a friend</a>
 					</h4>
 				</h4>
 			</h4>
