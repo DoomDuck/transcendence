@@ -1,12 +1,14 @@
 <script lang="ts">
-	export let onlineFriends = [];
-	export let profilePic = 'img/canard.jpeg';
+	export let onlineFriends = [
+		{profilePic:"cars.jpeg"},
+		{profilePic:"canard.jpeg"},
+	];
 </script>
 
 <div>
 	<div id="online"><br /> Online friends</div>
 	<div class="onlineFriends">
-		{#each onlineFriends as friend}
+		{#each onlineFriends as {profilePic}}
 			<img class="roundedImage" src={profilePic} alt="contact" />
 		{/each}
 	</div>
