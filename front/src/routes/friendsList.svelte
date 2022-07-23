@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Friend from './Friend.svelte';
+	import Friend from '$lib/Friend.svelte';
 	export let friendNameSearch: () => void;
 </script>
 

@@ -28,7 +28,7 @@
 	<img
 		on:click={() => dispatch('start_waiting')}
 		class="play"
-		src="img/console.png"
+		src="console.png"
 		alt="play"
 		width="50px"
 		height="50px"
