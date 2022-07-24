@@ -17,9 +17,9 @@
 
 		<OnlineFriends onlineFriends={friends} />
 		<div>
-			<ChatConversation friendName="Flash McQueen" image="cars.jpeg" has_new_message={true} />
+			<ChatConversation friendName="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
 
-			<ChatConversation friendName="Joey" image="canard.jpeg" has_new_message={true} />
+			<ChatConversation friendName="Joey" image="canard.jpeg" hasNewMessage={true} />
 		</div>
 	</div>
 </div>
@@ -41,10 +41,9 @@
 
 	#title {
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-around;
 		align-items: center;
-		padding-left: 5%;
-		padding-right: 5%;
+		gap: 50vw;
 	}
 
 	#mainContainer {
@@ -65,7 +64,7 @@
 
 	.champ {
 		height: 40px;
-		width: 95%;
+		width: 80vw;
 		font-size: 0.5%;
 		color: white;
 		background-color: #d9d9d9;

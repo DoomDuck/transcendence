@@ -14,20 +14,20 @@
 <style>
 	.roundedImage {
 		overflow: hidden;
-		-webkit-border-radius: 50px;
-		-moz-border-radius: 50px;
-		border-radius: 50px;
-		width: 90px;
-		height: 90px;
-		margin-left: 2%;
-		margin-right: 1%;
+		-webkit-border-radius: 40px;
+		-moz-border-radius: 40px;
+		border-radius: 40px;
+		width: 70px;
+		height: 70px;
+		margin-left: 10px;
+		margin-right: 10px;
 		margin-top: auto;
 		margin-bottom: auto;
 		flex: 0 0 auto;
 	}
 
 	.onlineFriends {
-		width: 95vw;
+		width: 80vw;
 		height: 80px;
 		background: white;
 		display: flex;
@@ -37,7 +37,7 @@
 
 	#online {
 		color: white;
-		width: 95vw;
+		width: 80vw;
 		height: 40px;
 		background: #ff00b8;
 	}
