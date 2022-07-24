@@ -1,26 +1,36 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
+	import ConvChat from './ConvChat.svelte';
 
 	export let friendName: string;
 	export let image: string;
 
 	let showProfile = false;
-	export let has_new_message = false;
+	let openConv = false;
+	export let hasNewMessage = false;
 </script>
 
-<div class="conv">
-	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (showProfile = true)} />
+<div class="conv" on:click={() => (openConv = true)}>
+	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (openConv=false, dispatch('close'), showProfile = true)} />
 	<h5>{friendName}</h5>
 	{#if showProfile}
 		<Modal on:close={() => (showProfile = false)}>
 			<Profile {image} {friendName} />
 		</Modal>
 	{/if}
-	{#if has_new_message}
+	{#if hasNewMessage}
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
 	{/if}
 </div>
+{#if !showProfile && openConv}
+	<Modal on:close={() => (openConv = false)}>
+		<ConvChat {friendName} ></ConvChat>
+	</Modal>
+{/if}
 
 <style>
 	h5 {
@@ -35,7 +45,7 @@
 
 	.conv {
 		align-items: center;
-		width: 95vw;
+		width: 80vw;
 		height: 70px;
 		background: white;
 		display: flex;
