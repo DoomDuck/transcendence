@@ -1,4 +1,3 @@
-
 <div class="waitingRoom">
 	<img src="img/matchPong.gif" alt="waitingPong" width="30%" height="20%" />
 </div>

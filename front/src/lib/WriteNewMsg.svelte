@@ -15,7 +15,7 @@
 
 {#if sendingMessage}
 	<Modal on:close={() => (sendingMessage = false)}>
-		<SendMessage newText="Hello" sendMessage="{()=>{}}"/>
+		<SendMessage newText="Hello" sendMessage={() => {}} />
 	</Modal>
 {/if}
 
