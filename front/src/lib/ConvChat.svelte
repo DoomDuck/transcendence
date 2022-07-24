@@ -7,6 +7,8 @@ import { beforeUpdate, afterUpdate } from 'svelte';
 		placeholder?: true,
 	};
 
+	export let friendName:string;
+
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
@@ -61,6 +63,7 @@ import { beforeUpdate, afterUpdate } from 'svelte';
 		flex-direction: column;
 		height: 100%;
 		max-width: 320px;
+		font-family: 'Lato', sans-serif;
 	}
 
 	.scrollable {
@@ -97,6 +100,7 @@ import { beforeUpdate, afterUpdate } from 'svelte';
 </style>
 
 <div class="chat">
+	<h2>{friendName}</h2>
 	<div class="scrollable" bind:this={div}>
 		{#each comments as comment}
 			<article class={comment.author}>
