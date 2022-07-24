@@ -4,31 +4,19 @@
 </script>
 
 <div class="friendsList">
-	<div id="mainContainer">
-		<h1>Friends List</h1>
-		<form on:submit|preventDefault={friendNameSearch}>
-			<input type="search" placeholder="search..." />
-		</form>
-		<div>
-			<Friend friendName="Flash McQueen" image="cars.jpeg" />
-			<Friend friendName="Joey" image="canard.jpeg" />
-		</div>
+	<h1>Friends List</h1>
+	<form on:submit|preventDefault={friendNameSearch}>
+		<input type="search" placeholder="search..." />
+	</form>
+	<div>
+		<Friend friendName="Flash McQueen" image="cars.jpeg" />
+		<Friend friendName="Joey" image="canard.jpeg" />
 	</div>
 </div>
 
 <style>
 	* {
 		font-family: 'Press Start 2P';
-	}
-	#mainContainer {
-		overflow-y: scroll;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		overflow-y: scroll;
-		gap: 30px;
-		width: 100vw;
-		height: 100vh;
 	}
 
 	h1 {
@@ -54,7 +42,13 @@
 
 	.friendsList {
 		background-color: #9584ff;
-		width: 100%;
-		height: 100%;
+		width: 100vw;
+		height: 100vh;
+		overflow-y: scroll;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		overflow-y: scroll;
+		gap: 30px;
 	}
 </style>
