@@ -1,16 +1,12 @@
 <nav id="start_a_game">
 	<h4>
 		<a sveltekit:prefetch href="/Play">Play</a>
-		<h4>
-			<h4>
-				<a sveltekit:prefetch href="/Play">Watch a game</a>
-				<h4>
-					<h4>
-						<a sveltekit:prefetch href="/FriendsList">Challenge a friend</a>
-					</h4>
-				</h4>
-			</h4>
-		</h4>
+	</h4>
+	<h4>
+		<a sveltekit:prefetch href="/Play">Watch a game</a>
+	</h4>
+	<h4>
+		<a sveltekit:prefetch href="/FriendsList">Challenge a friend</a>
 	</h4>
 </nav>
 
@@ -22,7 +18,6 @@
 		overflow: hidden;
 		width: 100%;
 		height: 100%;
-		/* background-color: #ea0ed4; */
 		background-image: url('starsSky.jpeg');
 	}
 

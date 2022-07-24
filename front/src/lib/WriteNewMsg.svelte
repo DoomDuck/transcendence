@@ -1,9 +1,6 @@
 <script>
-	import { createEventDispatcher } from 'svelte';
 	import SendMessage from '$lib/SendNewMessage.svelte';
 	import Modal from './Modal.svelte';
-
-	const dispatch = createEventDispatcher();
 
 	let sendingMessage = false;
 </script>
@@ -18,13 +15,12 @@
 
 {#if sendingMessage}
 	<Modal on:close={() => (sendingMessage = false)}>
-		<SendMessage />
+		<SendMessage newText="Hello" sendMessage="{()=>{}}"/>
 	</Modal>
 {/if}
 
 <style>
 	img {
-		display: inline-block;
 		float: right;
 		justify-content: right;
 	}

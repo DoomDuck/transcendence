@@ -1,12 +1,24 @@
+<script lang='ts'>
+	import { fade } from 'svelte/transition';
+	export let message = "blablabla";
+	export let author = "Joey";
+	export let nextMessage = "ahahah";
+	export let nextAuthor = "Flash McQueen";
+	export let username = "Flash McQueen";
 
-<div class="message" class:mine={message.author} === {username} transition:fade>
-	<p class="text">{message.text}</p>
-	{#if showAuthor(message, nextMessage)}
-	<p class="author">{message.author}</p>
+	function showAuthor(author:string, nextMsg:string, nextAuthor:string){
+	  return !nextMsg || nextAuthor !== author;
+	}
+</script>
+
+<div class="message" class:mine="{author === username}" transition:fade>
+	<p class="text">{message}</p>
+	{#if showAuthor(author, nextMessage, nextAuthor)}
+		<p class="author">{author}</p>
 	{/if}
-  </div>
+</div>
   
-  <style>
+<style>
 	.message {
 	  margin: 7px 0;
 	}
@@ -33,16 +45,4 @@
 	  display: block;
 	  text-decoration: none;
 	}
-  </style>
-  
-  <script>
-	import { fade } from 'svelte-transitions';
-	export default {
-	  helpers: {
-		showAuthor(msg, nextMsg) {
-		  return !nextMsg || nextMsg.author !== msg.author;
-		}
-	  },
-	  transitions: { fade }
-	};
-  </script>
+</style>

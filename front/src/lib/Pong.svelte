@@ -1,7 +1,8 @@
+<!--
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { ClientContext } from '../pong/client/client';
+	import { ClientContext } from '../../../src/pong/client/client';
 
 	onMount(() => {
 		const ctx = new ClientContext();
@@ -39,3 +40,4 @@
 		background: rgba(0, 0, 0, 0);
 	}
 </style>
+-->

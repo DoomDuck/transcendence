@@ -1,14 +1,14 @@
-<script>
-	export default {
-		components: {
-			Message: './Message.html'
-		}
-	};
+<script lang='ts'>
+	import Message from "./Message.svelte";
+	export let username = "Flash McQueen";
+	export let messages = [
+		{text: "Hello", author: "Joey"},
+		{text: "Bye", author: "Flash McQueen"}
+	];
 </script>
-
 <div id="message-container">
 	{#each messages as message, i}
-		<Message {message} nextMessage={messages[i + 1]} {username} />
+	<Message message = {message.text} author={message.author} nextMessage={messages[i + 1].text} nextAuthor={messages[i + 1].author} {username} />
 	{:else}
 		<p>No messages</p>
 	{/each}

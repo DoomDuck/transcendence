@@ -3,8 +3,7 @@
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 
-	let profilePic = 'img/canard.jpeg';
-	let friends = [];
+	let friends = [{ profilePic: 'cars.jpeg' }, { profilePic: 'canard.jpeg' }];
 </script>
 
 <div id="chat">

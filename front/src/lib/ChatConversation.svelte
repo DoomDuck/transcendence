@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { invalid_attribute_name_character } from 'svelte/internal';
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
 
@@ -30,7 +29,6 @@
 	}
 
 	img {
-		display: inline-block;
 		float: right;
 		justify-content: right;
 	}
