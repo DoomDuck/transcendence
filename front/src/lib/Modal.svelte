@@ -29,7 +29,6 @@
 		transform: translate(-50%, -50%);
 		background: #fff;
 		filter: drop-shadow(0 0 20px #333);
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: hidden;
 	}
 </style>
