@@ -15,7 +15,12 @@
 </script>
 
 <div class="conv" on:click={() => (openConv = true)}>
-	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (openConv=false, dispatch('close'), showProfile = true)} />
+	<img
+		class="roundedImageConv"
+		src={image}
+		alt="contact"
+		on:click={() => ((openConv = false), dispatch('close'), (showProfile = true))}
+	/>
 	<h5>{friendName}</h5>
 	{#if showProfile}
 		<Modal on:close={() => (showProfile = false)}>
@@ -28,7 +33,7 @@
 </div>
 {#if !showProfile && openConv}
 	<Modal on:close={() => (openConv = false)}>
-		<ConvChat {friendName} ></ConvChat>
+		<ConvChat {friendName} />
 	</Modal>
 {/if}
 

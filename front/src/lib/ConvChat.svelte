@@ -1,38 +1,36 @@
 <script lang="ts">
-import { beforeUpdate, afterUpdate } from 'svelte';
+	import { beforeUpdate, afterUpdate } from 'svelte';
 
 	type Comment = {
-		author: string,
-		text: string,
-		placeholder?: true,
+		author: string;
+		text: string;
+		placeholder?: true;
 	};
 
-	export let friendName:string;
+	export let friendName: string;
 
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
 	beforeUpdate(() => {
-		autoscroll = div && (div.offsetHeight + div.scrollTop) > (div.scrollHeight - 20);
+		autoscroll = div && div.offsetHeight + div.scrollTop > div.scrollHeight - 20;
 	});
 
 	afterUpdate(() => {
 		if (autoscroll) div.scrollTo(0, div.scrollHeight);
 	});
 
-	let comments : Comment[] = [
-		{ author: 'bot', text: "Hello !" }
-	];
+	let comments: Comment[] = [{ author: 'bot', text: 'Hello !' }];
 
 	function handleKeydown(event: KeyboardEvent) {
-		const inputElement = (event.target as HTMLInputElement);
+		const inputElement = event.target as HTMLInputElement;
 		if (event.key === 'Enter') {
 			const text = inputElement.value;
 			if (!text) return;
 
 			comments = comments.concat({
 				author: 'user',
-				text,
+				text
 			});
 
 			inputElement.value = '';
@@ -47,15 +45,30 @@ import { beforeUpdate, afterUpdate } from 'svelte';
 				});
 
 				setTimeout(() => {
-					comments = comments.filter(comment => !comment.placeholder).concat({
-						author: 'bot',
-						text: reply
-					});
+					comments = comments
+						.filter((comment) => !comment.placeholder)
+						.concat({
+							author: 'bot',
+							text: reply
+						});
 				}, 500 + Math.random() * 500);
 			}, 200 + Math.random() * 200);
 		}
 	}
 </script>
+
+<div class="chat">
+	<h2>{friendName}</h2>
+	<div class="scrollable" bind:this={div}>
+		{#each comments as comment}
+			<article class={comment.author}>
+				<span>{comment.text}</span>
+			</article>
+		{/each}
+	</div>
+
+	<input on:keydown={handleKeydown} />
+</div>
 
 <style>
 	.chat {
@@ -92,22 +105,9 @@ import { beforeUpdate, afterUpdate } from 'svelte';
 	}
 
 	.user span {
-		background-color: #0074D9;
+		background-color: #0074d9;
 		color: white;
 		border-radius: 1em 1em 0 1em;
 		word-break: break-all;
 	}
 </style>
-
-<div class="chat">
-	<h2>{friendName}</h2>
-	<div class="scrollable" bind:this={div}>
-		{#each comments as comment}
-			<article class={comment.author}>
-				<span>{comment.text}</span>
-			</article>
-		{/each}
-	</div>
-
-	<input on:keydown={handleKeydown}>
-</div>
