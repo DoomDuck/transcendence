@@ -58,7 +58,13 @@
 </script>
 
 <div class="chat">
-	<h2>{friendName}</h2>
+	<div id="title">
+		<h2>{friendName}</h2>
+		<div>
+			<img src="blockingIcon.png" alt="block user" width=25px height=25px/>
+			<img src="joystick.png" alt ="invite friend to play" width=30px height=30px/> 
+		</div>
+	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each comments as comment}
 			<article class={comment.author}>
@@ -74,9 +80,9 @@
 	.chat {
 		display: flex;
 		flex-direction: column;
-		height: 100%;
-		max-width: 320px;
+		height: 50vh;
 		font-family: 'Lato', sans-serif;
+		width: 500px;
 	}
 
 	.scrollable {
@@ -84,6 +90,7 @@
 		border-top: 1px solid #eee;
 		margin: 0 0 0.5em 0;
 		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
 	article {
@@ -109,5 +116,12 @@
 		color: white;
 		border-radius: 1em 1em 0 1em;
 		word-break: break-all;
+	}
+	#title{
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.5vw;
 	}
 </style>
