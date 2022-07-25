@@ -28,10 +28,10 @@
 	<img
 		on:click={() => dispatch('start_waiting')}
 		class="play"
-		src="console.png"
+		src="joystick.png"
 		alt="play"
-		width="50px"
-		height="50px"
+		width="40px"
+		height="40px"
 	/>
 </div>
 
@@ -39,10 +39,10 @@
 	.friend {
 		width: 80vw;
 		height: 70px;
-		background: white;
+		background: #05053d;
 		display: flex;
 		align-items: center;
-		border: 1px solid #ff00b8;
+		border: 1px solid #a80a2f;
 	}
 
 	.play {
@@ -64,6 +64,6 @@
 	}
 
 	.name {
-		color: #ff00b8;
+		color: #a80a2f;
 	}
 </style>
