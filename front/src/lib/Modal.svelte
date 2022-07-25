@@ -6,10 +6,11 @@
 
 <div id="background" on:click={() => dispatch('close')} />
 <div id="modal">
-	<slot />
+	<slot/>
 </div>
 
 <style>
+
 	#background {
 		position: fixed;
 		z-index: 1;
@@ -25,7 +26,6 @@
 		z-index: 2;
 		top: 50%;
 		left: 50%;
-		width: 280px;
 		transform: translate(-50%, -50%);
 		background: #fff;
 		filter: drop-shadow(0 0 20px #333);
