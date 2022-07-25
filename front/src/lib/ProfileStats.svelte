@@ -39,9 +39,9 @@
 
 <style>
 	#statisticsLine {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
 	}
 
 	.stats {

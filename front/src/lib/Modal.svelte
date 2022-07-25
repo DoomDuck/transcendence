@@ -6,11 +6,10 @@
 
 <div id="background" on:click={() => dispatch('close')} />
 <div id="modal">
-	<slot/>
+	<slot />
 </div>
 
 <style>
-
 	#background {
 		position: fixed;
 		z-index: 1;

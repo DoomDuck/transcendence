@@ -61,8 +61,8 @@
 	<div id="title">
 		<h2>{friendName}</h2>
 		<div>
-			<img src="blockingIcon.png" alt="block user" width=25px height=25px/>
-			<img src="joystick.png" alt ="invite friend to play" width=30px height=30px/> 
+			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
+			<img src="joystick.png" alt="invite friend to play" width="30px" height="30px" />
 		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
@@ -117,7 +117,7 @@
 		border-radius: 1em 1em 0 1em;
 		word-break: break-all;
 	}
-	#title{
+	#title {
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;

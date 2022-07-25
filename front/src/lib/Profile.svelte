@@ -1,12 +1,11 @@
 <script lang="ts">
-	import ProfileStats from './ProfileStats.svelte'
+	import ProfileStats from './ProfileStats.svelte';
 	export let image: string;
 	export let friendName: string;
 	export let iD = 35214;
 	export let bestScore = 359;
 	export let wonGamesRatio = '50%';
 	export let classement = '3';
-
 </script>
 
 <div id="Profile">
@@ -15,8 +14,7 @@
 		<h3>{friendName}</h3>
 		<p>iD: {iD}</p>
 	</div>
-	<ProfileStats {bestScore} {wonGamesRatio} {classement}/>
-	
+	<ProfileStats {bestScore} {wonGamesRatio} {classement} />
 </div>
 
 <style>
@@ -50,7 +48,6 @@
 		flex-direction: column;
 		justify-content: center;
 		font-family: 'Lato', sans-serif;
-		width:250px;
+		width: 250px;
 	}
-
 </style>
