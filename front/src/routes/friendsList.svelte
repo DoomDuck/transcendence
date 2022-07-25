@@ -20,8 +20,8 @@
 	}
 
 	h1 {
-		color: #d0c5ff;
-		-webkit-text-stroke: 2px white;
+		color: #0b0b41;
+		-webkit-text-stroke: 2px #a80a2f;
 		font-size: 3em;
 		line-height: 300%;
 		text-align: center;
@@ -36,12 +36,12 @@
 	input {
 		height: 40px;
 		width: 80vw;
-		color: rgb(165, 159, 159);
-		background-color: aliceblue;
+		color: rgb(105, 99, 99);
+		background-color: #bdbdbd;
 	}
 
 	.friendsList {
-		background-color: #9584ff;
+		background-image: url('starsSky.jpeg');
 		width: 100vw;
 		height: 100vh;
 		overflow-y: scroll;
