@@ -1,3 +1,4 @@
+import { GSettings } from "../constants";
 import {
   BarInputEvent,
   GameProducedEvent,
@@ -5,26 +6,25 @@ import {
   type DataChangerEvent,
 } from "../game/events";
 import { collisions } from "./collisions";
-import { DataBuffer } from "./data";
+import { GameDataBuffer } from "./data";
 import {
   applyForces,
   applySpeed,
   processExternEvents,
   propagateBarInputs,
-  updateGravitons,
-  updatePortal,
+  updateSpawnable,
 } from "./update";
 
 export class GameState {
-  data: DataBuffer = new DataBuffer();
+  data: GameDataBuffer = new GameDataBuffer();
   eventBuffer: DataChangerEvent[] = [];
 
   reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
     this.data.reset();
-    this.data.ballCurrent.x = ballX;
-    this.data.ballCurrent.y = ballY;
-    this.data.ballCurrent.vx = ballSpeedX;
-    this.data.ballCurrent.vy = ballSpeedY;
+    this.data.current.ball.x = ballX;
+    this.data.current.ball.y = ballY;
+    this.data.current.ball.vx = ballSpeedX;
+    this.data.current.ball.vy = ballSpeedY;
   }
 
   update() {
@@ -40,8 +40,16 @@ export class GameState {
     this.eventBuffer = [];
     processExternEvents(this.data);
     propagateBarInputs(this.data);
-    updateGravitons(this.data);
-    updatePortal(this.data);
+    updateSpawnable(
+      this.data.current.gravitons,
+      this.data.next.gravitons,
+      GSettings.GRAVITON_LIFESPAN
+    );
+    updateSpawnable(
+      this.data.current.portals,
+      this.data.next.portals,
+      GSettings.PORTAL_LIFESPAN
+    );
     applyForces(this.data);
     applySpeed(this.data);
     collisions(this.data);

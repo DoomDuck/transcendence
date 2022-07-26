@@ -1,5 +1,4 @@
 import { GSettings } from "../../common/constants";
-import { DataBuffer } from "../../common/entities/data";
 import { Renderer } from "./Renderer";
 
 export abstract class Animation {
@@ -43,8 +42,8 @@ export class VictoryAnimation extends Animation {
     let nextRadius =
       elapsed * GSettings.VICTORY_ANIMATION_SPEED + this.previousRadius;
     let [x, y] = this.renderer.gameToCanvasCoord(
-      this.renderer.data.ballCurrent.x,
-      this.renderer.data.ballCurrent.y
+      this.renderer.data.current.ball.x,
+      this.renderer.data.current.ball.y
     );
     this.renderer.context.fillStyle = GSettings.VICTORY_ANIMATION_COLOR;
     this.renderer.context.beginPath();
@@ -58,7 +57,7 @@ export class VictoryAnimation extends Animation {
       2 * Math.PI
     );
     this.renderer.context.fill();
-    this.renderer.drawBall(this.renderer.data.ballCurrent);
+    this.renderer.drawBall(this.renderer.data.current.ball);
     this.previousRadius = nextRadius;
   }
 }

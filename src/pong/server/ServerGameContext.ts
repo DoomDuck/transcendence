@@ -59,7 +59,7 @@ export class ServerGameContext {
     setInterval(this.spawnGraviton.bind(this), 3000);
     // setInterval(() => {
     //   this.game.frame();
-    //   console.log(this.game.state.data.ballCurrent.x);
+    //   console.log(this.game.state.data.current.ball.x);
     // }, GSettings.GAME_STEP_MS);
   }
 

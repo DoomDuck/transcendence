@@ -1,97 +1,99 @@
 import { GameEvent, GSettings } from "../constants";
 import { GameProducedEvent } from "../game/events";
-// import { BallOutEvent } from "../game/events";
-import { BallData, DataBuffer, PortalData, PortalHalfData } from "./data";
+import { BallData, GameDataBuffer, PortalData } from "./data";
 
-function ballWallTopCollision(data: DataBuffer) {
-  let ballTop = data.ballNext.y - GSettings.BALL_RADIUS;
+function ballWallTopCollision(data: GameDataBuffer) {
+  let ballTop = data.next.ball.y - GSettings.BALL_RADIUS;
   if (ballTop < GSettings.GAME_TOP) {
     let dtCollision = Math.abs(
-      (GSettings.GAME_TOP - ballTop) / data.ballNext.vy
+      (GSettings.GAME_TOP - ballTop) / data.next.ball.vy
     );
     applyWallCollision(data, dtCollision);
   }
 }
 
-function ballWallBottomCollision(data: DataBuffer) {
-  let ballBottom = data.ballNext.y + GSettings.BALL_RADIUS;
+function ballWallBottomCollision(data: GameDataBuffer) {
+  let ballBottom = data.next.ball.y + GSettings.BALL_RADIUS;
   if (ballBottom > GSettings.GAME_BOTTOM) {
     let dtCollision = Math.abs(
-      (GSettings.GAME_BOTTOM - ballBottom) / data.ballNext.vy
+      (GSettings.GAME_BOTTOM - ballBottom) / data.next.ball.vy
     );
     applyWallCollision(data, dtCollision);
   }
 }
 
-function applyWallCollision(data: DataBuffer, dtCollision: number) {
-  data.ballNext.y =
-    data.ballCurrent.y +
-    (2 * dtCollision - GSettings.GAME_STEP_S) * data.ballNext.vy;
-  data.ballNext.vy = -data.ballCurrent.vy;
+function applyWallCollision(data: GameDataBuffer, dtCollision: number) {
+  data.next.ball.y =
+    data.current.ball.y +
+    (2 * dtCollision - GSettings.GAME_STEP_S) * data.next.ball.vy;
+  data.next.ball.vy = -data.current.ball.vy;
 }
 
-function ballBar1Collision(data: DataBuffer) {
+function ballBar1Collision(data: GameDataBuffer) {
   if (
-    data.ballCurrent.x - GSettings.BALL_RADIUS <
+    data.current.ball.x - GSettings.BALL_RADIUS <
     -GSettings.BAR_COLLISION_EDGE
   )
     return;
-  let ballEdge = data.ballNext.x - GSettings.BALL_RADIUS;
+  let ballEdge = data.next.ball.x - GSettings.BALL_RADIUS;
   if (ballEdge < -GSettings.BAR_COLLISION_EDGE) {
     let dtCollision = Math.abs(
-      (-GSettings.BAR_COLLISION_EDGE - ballEdge) / data.ballNext.vx
+      (-GSettings.BAR_COLLISION_EDGE - ballEdge) / data.next.ball.vx
     );
     applyBallBarCollision(data, dtCollision, 0);
   }
 }
 
-function ballBar2Collision(data: DataBuffer) {
-  if (data.ballCurrent.x + GSettings.BALL_RADIUS > GSettings.BAR_COLLISION_EDGE)
+function ballBar2Collision(data: GameDataBuffer) {
+  if (
+    data.current.ball.x + GSettings.BALL_RADIUS >
+    GSettings.BAR_COLLISION_EDGE
+  )
     return;
-  let ballEdge = data.ballNext.x + GSettings.BALL_RADIUS;
+  let ballEdge = data.next.ball.x + GSettings.BALL_RADIUS;
   if (ballEdge > GSettings.BAR_COLLISION_EDGE) {
     let dtCollision = Math.abs(
-      (GSettings.BAR_COLLISION_EDGE - ballEdge) / data.ballNext.vx
+      (GSettings.BAR_COLLISION_EDGE - ballEdge) / data.next.ball.vx
     );
     applyBallBarCollision(data, dtCollision, 1);
   }
 }
 
 function applyBallBarCollision(
-  data: DataBuffer,
+  data: GameDataBuffer,
   dtCollision: number,
   barId: number
 ) {
-  let barNow = data.barsCurrent[barId];
+  let barNow = data.current.bars[barId];
   let yBarCollision = barNow.y + dtCollision * barNow.vy;
-  let yBallCollision = data.ballCurrent.y + dtCollision * data.ballCurrent.vy;
+  let yBallCollision = data.current.ball.y + dtCollision * data.current.ball.vy;
   let dYCollision = yBallCollision - yBarCollision;
   if (
     Math.abs(dYCollision) <
     GSettings.BALL_RADIUS + GSettings.BAR_HEIGHT / 2
   ) {
-    data.ballNext.vx = -(
-      data.ballCurrent.vx +
-      Math.sign(data.ballCurrent.vx) * GSettings.BALL_SPEEDX_INCREASE
+    data.next.ball.vx = -(
+      data.current.ball.vx +
+      Math.sign(data.current.ball.vx) * GSettings.BALL_SPEEDX_INCREASE
     );
-    clipBallSpeedX(data.ballNext);
+    clipBallSpeedX(data.next.ball);
     let newVy = dYCollision * GSettings.BALL_COLLISION_VY_RATIO;
-    data.ballNext.x =
-      data.ballCurrent.x +
-      (2 * dtCollision - GSettings.GAME_STEP_S) * data.ballNext.vx;
-    data.ballNext.y =
-      data.ballCurrent.y +
-      dtCollision * data.ballNext.vy +
+    data.next.ball.x =
+      data.current.ball.x +
+      (2 * dtCollision - GSettings.GAME_STEP_S) * data.next.ball.vx;
+    data.next.ball.y =
+      data.current.ball.y +
+      dtCollision * data.next.ball.vy +
       (GSettings.GAME_STEP_S - dtCollision) * newVy;
-    data.ballNext.vy = newVy;
+    data.next.ball.vy = newVy;
     GameProducedEvent.produceEvent(
       GameEvent.BALL_BAR_COLLISION,
       barId,
       data.currentTime + 1,
-      data.ballNext.x,
-      data.ballNext.y,
-      data.ballNext.vx,
-      data.ballNext.vy
+      data.next.ball.x,
+      data.next.ball.y,
+      data.next.ball.vx,
+      data.next.ball.vy
     );
   } else {
     GameProducedEvent.produceEvent(
@@ -113,50 +115,50 @@ export function clipBallSpeedY(ball: BallData) {
     ball.vy = sign * GSettings.BALL_SPEEDY_MAX;
 }
 
-function clipBarPosition(data: DataBuffer, barId: number) {
-  let bar = data.barsNext[barId];
+function clipBarPosition(data: GameDataBuffer, barId: number) {
+  let bar = data.next.bars[barId];
   if (bar.y - GSettings.BAR_HEIGHT_HALF < GSettings.GAME_TOP)
     bar.y = GSettings.GAME_TOP + GSettings.BAR_HEIGHT_HALF;
   else if (bar.y + GSettings.BAR_HEIGHT_HALF > GSettings.GAME_BOTTOM)
     bar.y = GSettings.GAME_BOTTOM - GSettings.BAR_HEIGHT_HALF;
 }
 
-function ballGameEdgeCollision(data: DataBuffer) {
-  const ballEdge = Math.abs(data.ballNext.x) + GSettings.BALL_RADIUS;
+function ballGameEdgeCollision(data: GameDataBuffer) {
+  const ballEdge = Math.abs(data.next.ball.x) + GSettings.BALL_RADIUS;
   if (ballEdge > GSettings.GAME_RIGHT) {
     GameProducedEvent.produceEvent(
       "ballOut",
       data.currentTime,
-      data.ballNext.x > 0 ? 1 : 0
+      data.next.ball.x > 0 ? 1 : 0
     );
   }
 }
 
-function ballPortalCollision(data: DataBuffer) {
-  for (let portal of data.portalsCurrent.values()) {
+function ballPortalCollision(data: GameDataBuffer) {
+  for (let portal of data.current.portals.values()) {
     ballPortalCollisionOne(data, portal);
   }
 }
 
-function ballPortalCollisionOne(data: DataBuffer, portal: PortalData) {
+function ballPortalCollisionOne(data: GameDataBuffer, portal: PortalData) {
   if (
-    data.ballCurrent.vx > 0 &&
-    portal.parts[0].ballIsLeft(data.ballCurrent) &&
-    portal.parts[0].ballIsRight(data.ballNext)
+    data.current.ball.vx > 0 &&
+    portal.parts[0].ballIsLeft(data.current.ball) &&
+    portal.parts[0].ballIsRight(data.next.ball)
   ) {
-    data.ballNext.x += portal.transportX;
-    data.ballNext.y += portal.transportY;
+    data.next.ball.x += portal.transportX;
+    data.next.ball.y += portal.transportY;
   } else if (
-    data.ballCurrent.vx < 0 &&
-    portal.parts[1].ballIsRight(data.ballCurrent) &&
-    portal.parts[1].ballIsLeft(data.ballNext)
+    data.current.ball.vx < 0 &&
+    portal.parts[1].ballIsRight(data.current.ball) &&
+    portal.parts[1].ballIsLeft(data.next.ball)
   ) {
-    data.ballNext.x -= portal.transportX;
-    data.ballNext.y -= portal.transportY;
+    data.next.ball.x -= portal.transportX;
+    data.next.ball.y -= portal.transportY;
   }
 }
 
-export function collisions(data: DataBuffer) {
+export function collisions(data: GameDataBuffer) {
   ballWallTopCollision(data);
   ballWallBottomCollision(data);
   ballGameEdgeCollision(data);

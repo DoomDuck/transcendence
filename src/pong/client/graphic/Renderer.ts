@@ -2,7 +2,7 @@ import { Direction, GSettings, LEFT, RIGHT } from "../../common/constants";
 import {
   BallData,
   BarData,
-  DataBuffer,
+  GameDataBuffer,
   GravitonData,
   PortalData,
   PortalHalfData,
@@ -26,7 +26,7 @@ export class Renderer {
   victoryAnimation?: VictoryAnimation;
   scorePanels: ScorePanels;
 
-  constructor(public canvas: HTMLCanvasElement, public data: DataBuffer) {
+  constructor(public canvas: HTMLCanvasElement, public data: GameDataBuffer) {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.gravitonAnimationOpening = new MultiframeSprite(
       "/public/img/graviton_opening.png",
@@ -203,13 +203,13 @@ export class Renderer {
     }
     this.drawBackground();
 
-    this.drawBall(this.data.ballCurrent);
-    this.drawBar(this.data.barsCurrent[0]);
-    this.drawBar(this.data.barsCurrent[1]);
-    for (let graviton of this.data.gravitonsCurrent.values()) {
+    this.drawBall(this.data.current.ball);
+    this.drawBar(this.data.current.bars[0]);
+    this.drawBar(this.data.current.bars[1]);
+    for (let graviton of this.data.current.gravitons.values()) {
       this.drawGraviton(graviton);
     }
-    for (let portal of this.data.portalsCurrent.values()) {
+    for (let portal of this.data.current.portals.values()) {
       this.drawPortal(portal);
     }
     this.drawScore();

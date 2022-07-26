@@ -1,5 +1,5 @@
 import { GSettings, KeyValue } from "../constants";
-import { BallData, DataBuffer } from "../entities/data";
+import { BallData, GameDataBuffer } from "../entities/data";
 import { Game } from "./Game";
 
 /**
@@ -8,16 +8,16 @@ import { Game } from "./Game";
  * discarding (too far in the past) or re-computation (recent past).
  * From their point of view, they process the data as if they happen in the present.
  */
-export type DataChanger = (data: DataBuffer) => void;
+export type DataChanger = (data: GameDataBuffer) => void;
 export interface DataChangerEvent {
   // type: string;
   time: number;
-  process(data: DataBuffer): void;
+  process(data: GameDataBuffer): void;
 }
 
 // export interface DataChangerEvent {
 //     time: number;
-//     process(data: DataBuffer): void;
+//     process(data: GameDataBuffer): void;
 // }
 export type BarInputEventStruct = [number, number, KeyValue, boolean];
 export class BarInputEvent implements DataChangerEvent {
@@ -29,10 +29,10 @@ export class BarInputEvent implements DataChangerEvent {
   ) {}
 
   // for now ignore time ...
-  process(data: DataBuffer) {
+  process(data: GameDataBuffer) {
     if (this.key == KeyValue.UP)
-      data.barsCurrent[this.barId].upPressed = this.pressed;
-    else data.barsCurrent[this.barId].downPressed = this.pressed;
+      data.current.bars[this.barId].upPressed = this.pressed;
+    else data.current.bars[this.barId].downPressed = this.pressed;
   }
 }
 
@@ -57,9 +57,9 @@ export class SetBallEvent implements DataChangerEvent {
     public vy: number
   ) {}
 
-  process(data: DataBuffer) {
+  process(data: GameDataBuffer) {
     let [posError, speedError] = ballErrors(
-      data.ballCurrent,
+      data.current.ball,
       this.x,
       this.y,
       this.vx,
@@ -72,10 +72,10 @@ export class SetBallEvent implements DataChangerEvent {
       posError > GSettings.BALL_POS_ERROR_MAX ||
       speedError > GSettings.BALL_SPEED_ERROR_MAX
     ) {
-      data.ballCurrent.x = this.x;
-      data.ballCurrent.y = this.y;
-      data.ballCurrent.vx = this.vx;
-      data.ballCurrent.vy = this.vy;
+      data.current.ball.x = this.x;
+      data.current.ball.y = this.y;
+      data.current.ball.vx = this.vx;
+      data.current.ball.vy = this.vy;
       console.log("correcting ball");
       // return ["ball"];
     }
@@ -87,7 +87,7 @@ export type SpawnGravitonEventStruct = [number, number, number];
 export class SpawnGravitonEvent implements DataChangerEvent {
   constructor(public time: number, public x: number, public y: number) {}
 
-  process(data: DataBuffer) {
+  process(data: GameDataBuffer) {
     data.addGraviton(this.x, this.y);
   }
 }
@@ -102,7 +102,7 @@ export class SpawnPortalEvent implements DataChangerEvent {
     public y2: number
   ) {}
 
-  process(data: DataBuffer) {
+  process(data: GameDataBuffer) {
     data.addPortal(this.x1, this.y1, this.x2, this.y2);
   }
 }

@@ -1,10 +1,9 @@
 import { GSettings } from "../constants";
 import { Vector2 } from "../utils";
 import { clipBallSpeedX, clipBallSpeedY } from "./collisions";
-import { DataBuffer, GravitonData } from "./data";
-import { collisions } from "./collisions";
+import { GameDataBuffer, GravitonData, type Spawnable } from "./data";
 
-export function processExternEvents(data: DataBuffer) {
+export function processExternEvents(data: GameDataBuffer) {
   if (data.eventsNow !== null) {
     for (let dataChanger of data.eventsNow) {
       dataChanger(data);
@@ -12,70 +11,62 @@ export function processExternEvents(data: DataBuffer) {
   }
 }
 
-export function propagateBarInputs(data: DataBuffer) {
-  data.barsNext[0].copyKeysState(data.barsCurrent[0]);
-  data.barsNext[1].copyKeysState(data.barsCurrent[1]);
+export function propagateBarInputs(data: GameDataBuffer) {
+  data.next.bars[0].copyKeysState(data.current.bars[0]);
+  data.next.bars[1].copyKeysState(data.current.bars[1]);
 }
 
-// propagate graviton existance / death
-export function updateGravitons(data: DataBuffer) {
-  data.gravitonsNext.clear();
-  data.gravitonsCurrent.forEach((graviton) => {
-    if (graviton.age < GSettings.GRAVITON_LIFESPAN) {
-      let gravitonNext = Object.assign({}, graviton);
-      gravitonNext.age++;
-      data.gravitonsNext.add(gravitonNext);
+export function updateSpawnable(
+  entitiesCurrent: Set<Spawnable>,
+  entitiesNext: Set<Spawnable>,
+  lifespan: number
+) {
+  entitiesNext.clear();
+  entitiesCurrent.forEach((entity) => {
+    if (entity.age < lifespan) {
+      let entityNext = Object.assign({}, entity);
+      entityNext.age++;
+      entitiesNext.add(entityNext);
     }
   });
 }
 
-export function updatePortal(data: DataBuffer) {
-  data.portalsNext.clear();
-  data.portalsCurrent.forEach((portal) => {
-    if (portal.age < GSettings.PORTAL_LIFESPAN) {
-      let portalNext = Object.assign({}, portal);
-      portalNext.age++;
-      data.portalsNext.add(portalNext);
-    }
-  });
-}
-
-export function applyForces(data: DataBuffer) {
-  let resultForce = Array.from(data.gravitonsCurrent.values())
+export function applyForces(data: GameDataBuffer) {
+  let resultForce = Array.from(data.current.gravitons.values())
     .map((graviton) => computeForce(data, graviton))
     .reduce(
       (totalForce, currentForce) => totalForce.add(currentForce),
       new Vector2()
     );
-  data.ballNext.vx =
-    data.ballCurrent.vx + GSettings.GAME_STEP_S * resultForce.x;
-  data.ballNext.vy =
-    data.ballCurrent.vy + GSettings.GAME_STEP_S * resultForce.y;
-  clipBallSpeedX(data.ballNext);
-  clipBallSpeedY(data.ballNext);
+  data.next.ball.vx =
+    data.current.ball.vx + GSettings.GAME_STEP_S * resultForce.x;
+  data.next.ball.vy =
+    data.current.ball.vy + GSettings.GAME_STEP_S * resultForce.y;
+  clipBallSpeedX(data.next.ball);
+  clipBallSpeedY(data.next.ball);
 }
 
 export function computeForce(
-  data: DataBuffer,
+  data: GameDataBuffer,
   graviton: GravitonData
 ): Vector2 {
-  let dx = Math.abs(data.ballCurrent.x - graviton.x);
+  let dx = Math.abs(data.current.ball.x - graviton.x);
   if (dx > GSettings.GRAVITON_FORCE_WIDTH_HALF) return new Vector2();
   let mx = Math.sqrt(1 - dx / GSettings.GRAVITON_FORCE_WIDTH_HALF);
   let d =
-    (data.ballCurrent.y - graviton.y) / GSettings.GRAVITON_FORCE_HEIGHT_HALF;
+    (data.current.ball.y - graviton.y) / GSettings.GRAVITON_FORCE_HEIGHT_HALF;
   let dSign = Math.sign(d);
   let my = dSign / (1 + dSign * d);
   return new Vector2(0, -mx * my * GSettings.GRAVITON_MAX_FORCE);
 }
 
-export function applySpeed(data: DataBuffer) {
-  data.ballNext.x =
-    data.ballCurrent.x + GSettings.GAME_STEP_S * data.ballNext.vx;
-  data.ballNext.y =
-    data.ballCurrent.y + GSettings.GAME_STEP_S * data.ballNext.vy;
-  data.barsNext[0].y =
-    data.barsCurrent[0].y + GSettings.GAME_STEP_S * data.barsNext[0].vy;
-  data.barsNext[1].y =
-    data.barsCurrent[1].y + GSettings.GAME_STEP_S * data.barsNext[1].vy;
+export function applySpeed(data: GameDataBuffer) {
+  data.next.ball.x =
+    data.current.ball.x + GSettings.GAME_STEP_S * data.next.ball.vx;
+  data.next.ball.y =
+    data.current.ball.y + GSettings.GAME_STEP_S * data.next.ball.vy;
+  data.next.bars[0].y =
+    data.current.bars[0].y + GSettings.GAME_STEP_S * data.next.bars[0].vy;
+  data.next.bars[1].y =
+    data.current.bars[1].y + GSettings.GAME_STEP_S * data.next.bars[1].vy;
 }
