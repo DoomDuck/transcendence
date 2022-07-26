@@ -1,0 +1,44 @@
+<script lang="ts">
+	export let onlineFriends = [{ profilePic: 'cars.jpeg' }, { profilePic: 'canard.jpeg' }];
+</script>
+
+<div>
+	<div id="online"><br /> Online friends</div>
+	<div class="onlineFriends">
+		{#each onlineFriends as { profilePic }}
+			<img class="roundedImage" src={profilePic} alt="contact" />
+		{/each}
+	</div>
+</div>
+
+<style>
+	.roundedImage {
+		overflow: hidden;
+		-webkit-border-radius: 40px;
+		-moz-border-radius: 40px;
+		border-radius: 40px;
+		width: 70px;
+		height: 70px;
+		margin-left: 10px;
+		margin-right: 10px;
+		margin-top: auto;
+		margin-bottom: auto;
+		flex: 0 0 auto;
+	}
+
+	.onlineFriends {
+		width: 80vw;
+		height: 80px;
+		background: white;
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+	}
+
+	#online {
+		color: white;
+		width: 80vw;
+		height: 40px;
+		background: #ff00b8;
+	}
+</style>
