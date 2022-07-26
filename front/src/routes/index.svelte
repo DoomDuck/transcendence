@@ -50,4 +50,7 @@
 		width: 100%;
 		text-align: center;
 	}
+	a {
+		all: unset;
+	}
 </style>
