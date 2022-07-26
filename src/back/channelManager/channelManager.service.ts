@@ -3,7 +3,6 @@ import { Id } from "../customType";
 import { ChannelDto } from "./channel.dto";
 import { Socket, Server } from "socket.io";
 export class Channel {
-
   constructor(
     public channelId: Id,
     public name: string,
@@ -73,9 +72,9 @@ export class ChannelManagerService {
     else return this.arrayChannel;
   }
   //Return string is placeholder
-  joinChan(sender: Id, channelId: Id, password?: string): string | undefined{
+  joinChan(sender: Id, channelId: Id, password?: string): string | undefined {
     const tempChan = this.arrayChannel.find(
-      (element) => element.channelId ===channelId 
+      (element) => element.channelId === channelId
     );
     if (tempChan === undefined) return "chan doesn't exist";
 
@@ -141,27 +140,30 @@ export class ChannelManagerService {
   //Send invitation
   sendMessageToChannel(
     wss: Server,
-  	messageInfo:{ sender: Id; text: string; channelId: Id } ,
+    messageInfo: { sender: Id; text: string; channelId: Id }
   ) {
     const tempChan = this.arrayChannel.find(
       (channel) => channel.channelId == messageInfo.channelId
     );
     if (tempChan) {
-      if (tempChan.member.find((member) => member === messageInfo.sender) != undefined)
+      if (
+        tempChan.member.find((member) => member === messageInfo.sender) !=
+        undefined
+      )
         wss.to(tempChan.name).emit("userToChannel", messageInfo);
     }
   }
 
-	// sendMessageToChannel(
- //    wss: Server,
- //  	messageInfo:{ sender: Id; text: string; channelId: Id } ,
- //  ) {
- //    const tempChan = this.arrayChannel.find(
- //      (channel) => channel.channelId == messageInfo.channelId
- //    );
- //    if (tempChan) {
- //      if (tempChan.member.find((member) => member === messageInfo.sender) != undefined)
- //        wss.to(tempChan.name).emit("userToChannel", messageInfo);
- //    }
- //  }
+  // sendMessageToChannel(
+  //    wss: Server,
+  //  	messageInfo:{ sender: Id; text: string; channelId: Id } ,
+  //  ) {
+  //    const tempChan = this.arrayChannel.find(
+  //      (channel) => channel.channelId == messageInfo.channelId
+  //    );
+  //    if (tempChan) {
+  //      if (tempChan.member.find((member) => member === messageInfo.sender) != undefined)
+  //        wss.to(tempChan.name).emit("userToChannel", messageInfo);
+  //    }
+  //  }
 }

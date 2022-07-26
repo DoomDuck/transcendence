@@ -29,29 +29,31 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
     this.userService.addOne(
-      new UserDto(clientSocket.handshake.auth.token, clientSocket.handshake.auth.token, clientSocket)
+      new UserDto(
+        clientSocket.handshake.auth.token,
+        clientSocket.handshake.auth.token,
+        clientSocket
+      )
     );
   }
 
-
   //deprecated used to test on hugo.html
   @SubscribeMessage("chatToServer")
-  handleMessage(
-    message: { sender: string; message: string }
-  ) {
+  handleMessage(message: { sender: string; message: string }) {
     this.logger.log("chat gateway handle message");
     this.wss.emit("chatToClient", message);
   }
 
   //Not sur if i'm gonna need client socket later
   @SubscribeMessage("userToChannel")
-  handleMessageChannel(
-    messageInfoChannel: { sender: Id; text: string; channelId: Id }
-  ) {
+  handleMessageChannel(messageInfoChannel: {
+    sender: Id;
+    text: string;
+    channelId: Id;
+  }) {
     this.channelManagerService.sendMessageToChannel(
       this.wss,
-	  messageInfoChannel,
-     
+      messageInfoChannel
     );
   }
 
@@ -60,21 +62,25 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     clientSocket: Socket,
     joinInfo: { sender: Id; channelId: Id }
   ) {
-		if (this.channelManagerService.joinChan(joinInfo.sender, joinInfo.channelId)==="user added")
-			this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
-
+    if (
+      this.channelManagerService.joinChan(
+        joinInfo.sender,
+        joinInfo.channelId
+      ) === "user added"
+    )
+      this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
   }
 
-// @SubscribeMessage("userToChannel")
-//   handlePrivMessage(
-//     clientSocket: Socket,
-//     messageInfoPriv: { sender: Id; text: string; target: Id }
-//   ) {
-//     this.channelManagerService.sendMessageTo(
-//       this.wss,
-//       clientSocket,
-// 	  messageInfoPriv,
-     
-//     );
-//   }
+  // @SubscribeMessage("userToChannel")
+  //   handlePrivMessage(
+  //     clientSocket: Socket,
+  //     messageInfoPriv: { sender: Id; text: string; target: Id }
+  //   ) {
+  //     this.channelManagerService.sendMessageTo(
+  //       this.wss,
+  //       clientSocket,
+  // 	  messageInfoPriv,
+
+  //     );
+  //   }
 }
