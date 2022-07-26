@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let sendMessage;
+	export let sendMessage: () => void;
 	export let newText: string;
 </script>
 

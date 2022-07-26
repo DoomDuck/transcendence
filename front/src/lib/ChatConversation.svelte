@@ -1,27 +1,41 @@
 <script lang="ts">
-	import { invalid_attribute_name_character } from 'svelte/internal';
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
+	import ConvChat from './ConvChat.svelte';
 
 	export let friendName: string;
 	export let image: string;
+	export let hasNewMessage = false;
 
 	let showProfile = false;
-	export let has_new_message = false;
+	let openConv = false;
 </script>
 
-<div class="conv">
+<div
+	class="conv"
+	on:click={(e) => {
+		if (e.target == e.currentTarget) {
+			openConv = true;
+		}
+	}}
+>
 	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (showProfile = true)} />
 	<h5>{friendName}</h5>
-	{#if showProfile}
-		<Modal on:close={() => (showProfile = false)}>
-			<Profile {image} {friendName} />
-		</Modal>
-	{/if}
-	{#if has_new_message}
+	{#if hasNewMessage}
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
 	{/if}
 </div>
+
+{#if showProfile}
+	<Modal on:close={() => (showProfile = false)}>
+		<Profile {image} {friendName} />
+	</Modal>
+{/if}
+{#if openConv}
+	<Modal on:close={() => (openConv = false)}>
+		<ConvChat {friendName} />
+	</Modal>
+{/if}
 
 <style>
 	h5 {
@@ -30,14 +44,13 @@
 	}
 
 	img {
-		display: inline-block;
 		float: right;
 		justify-content: right;
 	}
 
 	.conv {
 		align-items: center;
-		width: 95vw;
+		width: 80vw;
 		height: 70px;
 		background: white;
 		display: flex;
