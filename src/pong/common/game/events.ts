@@ -83,27 +83,33 @@ export class SetBallEvent implements DataChangerEvent {
   }
 }
 
-export type SpawnGravitonEventStruct = [number, number, number];
+export type SpawnGravitonEventStruct = [number, number, number, number];
 export class SpawnGravitonEvent implements DataChangerEvent {
-  constructor(public time: number, public x: number, public y: number) {}
+  constructor(
+    public time: number,
+    public x: number,
+    public y: number,
+    public lifespan: number
+  ) {}
 
   process(data: GameDataBuffer) {
-    data.addGraviton(this.x, this.y);
+    data.addGraviton(this.x, this.y, this.lifespan);
   }
 }
 
-export type SpawnPortalEventStruct = [number, number, number];
+export type SpawnPortalEventStruct = [number, number, number, number];
 export class SpawnPortalEvent implements DataChangerEvent {
   constructor(
     public time: number,
     public x1: number,
     public y1: number,
     public x2: number,
-    public y2: number
+    public y2: number,
+    public lifespan: number
   ) {}
 
   process(data: GameDataBuffer) {
-    data.addPortal(this.x1, this.y1, this.x2, this.y2);
+    data.addPortal(this.x1, this.y1, this.x2, this.y2, this.lifespan);
   }
 }
 

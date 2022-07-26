@@ -77,6 +77,8 @@ export class GSettings {
 
   // GRAVITON ->
   static readonly GRAVITON_LIFESPAN = 500;
+  static readonly GRAVITON_SPRITE_WIDTH = 128;
+  static readonly GRAVITON_SPRITE_HEIGHT = 128;
   static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 10;
   static readonly GRAVITON_FORCE_WIDTH_HALF = GSettings.SCREEN_WIDTH / 10;
   static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 4;
@@ -88,7 +90,13 @@ export class GSettings {
 
   // PORTAL
   static readonly PORTAL_LIFESPAN = 1000;
+  static readonly PORTAL_SPRITE_WIDTH = 15;
+  static readonly PORTAL_SPRITE_HEIGHT = 75;
+  static readonly PORTAL_RATIO =
+    GSettings.PORTAL_SPRITE_WIDTH / GSettings.PORTAL_SPRITE_HEIGHT;
   static readonly PORTAL_HEIGHT = GSettings.SCREEN_WIDTH / 8;
+  static readonly PORTAL_WIDTH =
+    GSettings.PORTAL_RATIO * GSettings.PORTAL_HEIGHT;
 
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;

@@ -15,7 +15,13 @@ export class ClientGameContextOffline extends ClientGameContext {
     setInterval(() => {
       let x = GSettings.GRAVITON_SPAWN_WIDTH * (Math.random() - 0.5);
       let y = GSettings.GRAVITON_SPAWN_HEIGHT * (Math.random() - 0.5);
-      game.emit(GameEvent.SPAWN_GRAVITON, game.state.data.actualNow, x, y);
+      game.emit(
+        GameEvent.SPAWN_GRAVITON,
+        game.state.data.actualNow,
+        x,
+        y,
+        GSettings.GRAVITON_LIFESPAN
+      );
       // game.state.registerEvent(new SpawnGravitonEvent(game.state.data.actualNow, x, y));
     }, 3000);
     // setTimeout(() => {

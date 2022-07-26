@@ -71,7 +71,14 @@ export class Game {
     setTimeout(
       () =>
         this.state.registerEvent(
-          new SpawnPortalEvent(this.state.data.currentTime, -0.3, 0, 0.3, 0)
+          new SpawnPortalEvent(
+            this.state.data.currentTime,
+            -0.3,
+            0,
+            0.3,
+            0,
+            GSettings.PORTAL_LIFESPAN
+          )
         ),
       100
     );

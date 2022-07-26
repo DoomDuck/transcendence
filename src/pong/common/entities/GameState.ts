@@ -40,16 +40,8 @@ export class GameState {
     this.eventBuffer = [];
     processExternEvents(this.data);
     propagateBarInputs(this.data);
-    updateSpawnable(
-      this.data.current.gravitons,
-      this.data.next.gravitons,
-      GSettings.GRAVITON_LIFESPAN
-    );
-    updateSpawnable(
-      this.data.current.portals,
-      this.data.next.portals,
-      GSettings.PORTAL_LIFESPAN
-    );
+    updateSpawnable(this.data.current.gravitons, this.data.next.gravitons);
+    updateSpawnable(this.data.current.portals, this.data.next.portals);
     applyForces(this.data);
     applySpeed(this.data);
     collisions(this.data);

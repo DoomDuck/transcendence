@@ -1,5 +1,6 @@
 import { BallData } from ".";
 import { GSettings } from "../../constants";
+import { type Spawnable } from ".";
 
 export class PortalHalfData {
   yTop: number;
@@ -17,7 +18,7 @@ export class PortalHalfData {
     return ball.x > this.x && ball.y >= this.yTop && ball.y <= this.yBottom;
   }
 }
-export class PortalData {
+export class PortalData implements Spawnable {
   parts: [PortalHalfData, PortalHalfData];
   transportX: number;
   transportY: number;
@@ -27,7 +28,8 @@ export class PortalData {
     y1: number,
     x2: number,
     y2: number,
-    public age: number
+    public age: number,
+    public lifespan: number
   ) {
     this.parts = [new PortalHalfData(x1, y1), new PortalHalfData(x2, y2)];
     this.transportX = x2 - x1;

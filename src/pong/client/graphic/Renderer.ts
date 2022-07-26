@@ -6,6 +6,7 @@ import {
   GravitonData,
   PortalData,
   PortalHalfData,
+  type Spawnable,
 } from "../../common/entities/data";
 import { MultiframeSprite } from "./MultiframeSprite";
 import { VictoryAnimation } from "./animation";
@@ -21,7 +22,9 @@ export class Renderer {
   gravitonSize: number;
   gravitonAnimationOpening: MultiframeSprite;
   gravitonAnimationPulling: MultiframeSprite;
+  portalAnimation: MultiframeSprite;
   portalHeight: number;
+  portalWidth: number;
   scoreSize: number;
   victoryAnimation?: VictoryAnimation;
   scorePanels: ScorePanels;
@@ -30,14 +33,20 @@ export class Renderer {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.gravitonAnimationOpening = new MultiframeSprite(
       "/public/img/graviton_opening.png",
-      128,
-      128,
+      GSettings.GRAVITON_SPRITE_WIDTH,
+      GSettings.GRAVITON_SPRITE_HEIGHT,
       10
     );
     this.gravitonAnimationPulling = new MultiframeSprite(
       "/public/img/graviton_pulling.png",
-      128,
-      128,
+      GSettings.GRAVITON_SPRITE_WIDTH,
+      GSettings.GRAVITON_SPRITE_HEIGHT,
+      9
+    );
+    this.portalAnimation = new MultiframeSprite(
+      "/public/img/portal.png",
+      GSettings.PORTAL_SPRITE_WIDTH,
+      GSettings.PORTAL_SPRITE_HEIGHT,
       9
     );
     this.scorePanels = new ScorePanels();
@@ -52,6 +61,7 @@ export class Renderer {
     this.barHeight = this.ratio * GSettings.BAR_HEIGHT;
     this.gravitonSize = this.ratio * GSettings.GRAVITON_SIZE;
     this.portalHeight = this.ratio * GSettings.PORTAL_HEIGHT;
+    this.portalWidth = this.ratio * GSettings.PORTAL_WIDTH;
     this.scoreSize = this.ratio * GSettings.SCORE_SIZE;
     this.createBackground();
   }
@@ -115,30 +125,33 @@ export class Renderer {
     this.context.fillRect(x1, y1, this.barWidth, this.barHeight);
   }
 
+  decideFrameSpawnable(spawnable: Spawnable, nFramesOpening: number) {
+    let iFrame = Math.floor(spawnable.age / 5);
+    if (iFrame < nFramesOpening)
+      return { iFrame: iFrame, animationPhase: "opening" };
+    const iFrameClosing = Math.floor((spawnable.lifespan - spawnable.age) / 5);
+    if (iFrameClosing < nFramesOpening)
+      return { iFrame: iFrameClosing, animationPhase: "closing" };
+    iFrame -= nFramesOpening;
+    return { iFrame: iFrame, animationPhase: "middle" };
+  }
+
   drawGraviton(graviton: GravitonData) {
     const [x, y] = this.gameToCanvasCoord(
       graviton.x - GSettings.GRAVITON_SIZE / 2,
       graviton.y - GSettings.GRAVITON_SIZE / 2
     );
-    let iFrame = Math.floor(graviton.age / 5);
-    if (iFrame < this.gravitonAnimationOpening.nFrames) {
-      this.drawGravitonOpening(x, y, iFrame);
-      return;
-    }
-    iFrame -= this.gravitonAnimationOpening.nFrames;
-    if (
-      GSettings.GRAVITON_LIFESPAN - graviton.age >=
-      5 * this.gravitonAnimationOpening.nFrames
-    ) {
-      this.drawGravitonPulling(x, y, iFrame);
-      return;
-    }
-    iFrame = Math.floor((GSettings.GRAVITON_LIFESPAN - graviton.age) / 5);
-    this.drawGravitonOpening(x, y, iFrame);
-  }
-
-  drawGravitonOpening(x: number, y: number, iFrame: number) {
-    this.gravitonAnimationOpening.draw(
+    let { iFrame, animationPhase } = this.decideFrameSpawnable(
+      graviton,
+      this.gravitonAnimationOpening.nFrames
+    );
+    const animation =
+      animationPhase == "middle"
+        ? this.gravitonAnimationPulling
+        : this.gravitonAnimationOpening;
+    if (animationPhase == "middle")
+      iFrame %= this.gravitonAnimationPulling.nFrames;
+    animation.draw(
       this.context,
       x,
       y,
@@ -148,30 +161,25 @@ export class Renderer {
     );
   }
 
-  drawGravitonPulling(x: number, y: number, iFrame: number) {
-    this.gravitonAnimationPulling.draw(
-      this.context,
-      x,
-      y,
-      this.gravitonSize,
-      this.gravitonSize,
-      iFrame
-    );
-  }
-
-  drawPortal(portal: PortalData) {
-    this.drawPortalHalf(portal.parts[0], LEFT);
-    this.drawPortalHalf(portal.parts[1], RIGHT);
-  }
-
-  drawPortalHalf(portalHalf: PortalHalfData, side: Direction) {
-    const width = 0.2 * this.portalHeight;
+  drawPortal(portal: PortalData, side: number) {
+    const portalHalf = portal.parts[side];
     const [x, y] = this.gameToCanvasCoord(
-      portalHalf.x - (0.2 * GSettings.PORTAL_HEIGHT) / 2,
+      portalHalf.x - GSettings.PORTAL_WIDTH / 2,
       portalHalf.y - GSettings.PORTAL_HEIGHT / 2
     );
-    this.context.fillStyle = "rgb(255, 255, 255)";
-    this.context.fillRect(x, y, width, this.portalHeight);
+    let { iFrame, animationPhase } = this.decideFrameSpawnable(
+      portal,
+      this.portalAnimation.nFrames
+    );
+    if (animationPhase == "middle") iFrame = this.portalAnimation.nFrames - 1;
+    this.portalAnimation.draw(
+      this.context,
+      x,
+      y,
+      this.portalWidth,
+      this.portalHeight,
+      iFrame
+    );
   }
 
   drawScore(
@@ -203,15 +211,16 @@ export class Renderer {
     }
     this.drawBackground();
 
-    this.drawBall(this.data.current.ball);
     this.drawBar(this.data.current.bars[0]);
     this.drawBar(this.data.current.bars[1]);
     for (let graviton of this.data.current.gravitons.values()) {
       this.drawGraviton(graviton);
     }
     for (let portal of this.data.current.portals.values()) {
-      this.drawPortal(portal);
+      this.drawPortal(portal, 0);
+      this.drawPortal(portal, 1);
     }
+    this.drawBall(this.data.current.ball);
     this.drawScore();
   }
 }

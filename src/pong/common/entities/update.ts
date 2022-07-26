@@ -18,12 +18,11 @@ export function propagateBarInputs(data: GameDataBuffer) {
 
 export function updateSpawnable(
   entitiesCurrent: Set<Spawnable>,
-  entitiesNext: Set<Spawnable>,
-  lifespan: number
+  entitiesNext: Set<Spawnable>
 ) {
   entitiesNext.clear();
   entitiesCurrent.forEach((entity) => {
-    if (entity.age < lifespan) {
+    if (entity.age < entity.lifespan) {
       let entityNext = Object.assign({}, entity);
       entityNext.age++;
       entitiesNext.add(entityNext);

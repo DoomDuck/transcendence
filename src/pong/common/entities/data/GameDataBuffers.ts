@@ -71,13 +71,19 @@ export class GameDataBuffers {
     this.eventsArray = [];
   }
 
-  addGraviton(x: number, y: number): void {
-    let graviton = new GravitonData(x, y, 0);
+  addGraviton(x: number, y: number, lifespan: number): void {
+    let graviton = new GravitonData(x, y, 0, lifespan);
     this.current.gravitons.add(graviton);
   }
 
-  addPortal(x1: number, y1: number, x2: number, y2: number): void {
-    let portal = new PortalData(x1, y1, x2, y2, 0);
+  addPortal(
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    lifespan: number
+  ): void {
+    let portal = new PortalData(x1, y1, x2, y2, 0, lifespan);
     this.current.portals.add(portal);
   }
 
