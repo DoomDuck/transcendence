@@ -1,5 +1,10 @@
 import { Id } from "../customType";
+import { Socket } from "socket.io";
+
 export class UserDto {
-  readonly id: Id;
-  readonly name: string;
+  constructor(public id: Id, public name: string, public socket: Socket) {
+    this.id = id;
+    this.name = name;
+    this.socket = socket;
+  }
 }

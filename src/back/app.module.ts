@@ -11,6 +11,6 @@ import { GameManagerService } from "./pong/game-manager.service";
 @Module({
   imports: [TypeOrmModule.forRoot(config), userModule],
   controllers: [AlertController],
-  providers: [ChatGateway, AlertGateway, PongGateway, GameManagerService],
+  providers: [AlertGateway, PongGateway, GameManagerService],
 })
 export class AppModule {}
