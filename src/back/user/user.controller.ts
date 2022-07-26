@@ -24,7 +24,7 @@ export class UserController {
   constructor(private userService: UserService) {}
   @Get()
   async getUser() {
-    return this.userService.findAll();
+    return this.userService.findAllDb();
   }
   @Post()
   public postUser(@Body() user: UserDto) {
@@ -40,7 +40,7 @@ export class UserController {
 
   @Get(":id")
   public async getUseById(@Param("id") id: Id): Promise<User | null> {
-    return this.userService.findOne(id);
+    return this.userService.findOneDb(id);
   }
 
   // @Delete(":id")
