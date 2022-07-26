@@ -152,16 +152,16 @@ export class ChannelManagerService {
     }
   }
 
-	sendMessageToChannel(
-    wss: Server,
-  	messageInfo:{ sender: Id; text: string; channelId: Id } ,
-  ) {
-    const tempChan = this.arrayChannel.find(
-      (channel) => channel.channelId == messageInfo.channelId
-    );
-    if (tempChan) {
-      if (tempChan.member.find((member) => member === messageInfo.sender) != undefined)
-        wss.to(tempChan.name).emit("userToChannel", messageInfo);
-    }
-  }
+	// sendMessageToChannel(
+ //    wss: Server,
+ //  	messageInfo:{ sender: Id; text: string; channelId: Id } ,
+ //  ) {
+ //    const tempChan = this.arrayChannel.find(
+ //      (channel) => channel.channelId == messageInfo.channelId
+ //    );
+ //    if (tempChan) {
+ //      if (tempChan.member.find((member) => member === messageInfo.sender) != undefined)
+ //        wss.to(tempChan.name).emit("userToChannel", messageInfo);
+ //    }
+ //  }
 }

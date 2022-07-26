@@ -65,16 +65,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
   }
 
-@SubscribeMessage("userToChannel")
-  handlePrivMessage(
-    clientSocket: Socket,
-    messageInfoPriv: { sender: Id; text: string; target: Id }
-  ) {
-    this.channelManagerService.sendMessageTo(
-      this.wss,
-      clientSocket,
-	  messageInfoPriv,
+// @SubscribeMessage("userToChannel")
+//   handlePrivMessage(
+//     clientSocket: Socket,
+//     messageInfoPriv: { sender: Id; text: string; target: Id }
+//   ) {
+//     this.channelManagerService.sendMessageTo(
+//       this.wss,
+//       clientSocket,
+// 	  messageInfoPriv,
      
-    );
-  }
+//     );
+//   }
 }
