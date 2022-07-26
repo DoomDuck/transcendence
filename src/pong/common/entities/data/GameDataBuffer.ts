@@ -1,21 +1,12 @@
-import { BallData, BarData, GravitonData, PortalData } from ".";
+import { BallData, BarData, GameData, GravitonData, PortalData } from ".";
 import { type DataChanger, type DataChangerEvent } from "../../game/events";
 
-export class GameData {
-  ball: BallData = new BallData();
-  bars: [BarData, BarData] = [new BarData(0), new BarData(1)];
-  gravitons: Set<GravitonData> = new Set();
-  portals: Set<PortalData> = new Set();
-
-  reset() {
-    this.ball = new BallData();
-    this.bars = [new BarData(0), new BarData(1)];
-    this.gravitons.clear();
-    this.portals.clear();
-  }
-}
-
-export class GameDataBuffers {
+/**
+ * The actual bufferized state of a Game
+ * The size of the buffer is fixed to limit memory usage, but the
+ * size of the event buffer is illimited (allow to register future events)
+ */
+export class GameDataBuffer {
   dataArray: GameData[] = Array.from({ length: 100 }, () => new GameData());
   eventsArray: DataChanger[][];
 

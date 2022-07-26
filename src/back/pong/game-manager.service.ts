@@ -1,6 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Socket } from "socket.io";
-import { removeElementByValue } from "../../pong/common/utils";
 import { ServerGameContext } from "../../pong/server";
 
 @Injectable()

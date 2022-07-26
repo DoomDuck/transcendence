@@ -1,19 +1,29 @@
+/**
+ * MultiframeSprite contains all the images of
+ * the frames of a sprite
+ * It loads the spritesheet indicated by 'src'
+ * Used in Renderer
+ */
 export class MultiframeSprite {
-  img: HTMLImageElement;
+  imageBitmap: ImageBitmap;
   imgReady: boolean = false;
 
   constructor(
     src: string,
     public frameWidth: number,
     public frameHeight: number,
-    public nFrames: number
+    public nFrames: number,
+    public reverse: boolean = false
   ) {
-    this.img = new Image();
-    this.img.src = src;
-    this.img.onload = () => {
-      this.imgReady = true;
+    const image = new Image();
+    image.src = src;
+    image.onload = () => {
+      createImageBitmap(image).then((imageBitmap: ImageBitmap) => {
+        this.imageBitmap = imageBitmap;
+        this.imgReady = true;
+      });
     };
-    this.img.onerror = function () {
+    image.onerror = function () {
       console.log(`Error loading ${src}`);
     };
   }
@@ -29,7 +39,7 @@ export class MultiframeSprite {
     if (!this.imgReady) return;
     iFrame = iFrame % this.nFrames;
     context.drawImage(
-      this.img,
+      this.imageBitmap,
       this.frameWidth * iFrame,
       0,
       this.frameWidth,

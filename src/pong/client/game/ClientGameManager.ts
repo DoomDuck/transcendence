@@ -1,11 +1,12 @@
 import { GSettings } from "../../common/constants";
 import { Game } from "../../common/game";
-import { Renderer } from "../graphic/Renderer";
+import { Renderer } from "../graphic";
 
 /**
- * Holds the game instance on the client's side.
+ * Holds the Game instance on the client's side.
  * It adds to Game the rendering capability, the handling
- * of the client's keyboard inputs and its transmission to the server.
+ * of the client's keyboard inputs.
+ * It is extended in an online and an offline version
  */
 export abstract class ClientGameManager {
   game: Game;

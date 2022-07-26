@@ -18,14 +18,15 @@ import {
 /**
  * Manage a full game session between two players (sockets) in the server
  * Centralize event management by broadcast and transmission
+ * Instanciated in the backend whenever a game should start
  */
 export class ServerGameContext {
-  private game: Game;
-  private ready: [boolean, boolean] = [false, false];
+  game: Game;
+  ready: [boolean, boolean] = [false, false];
   score: [number, number] = [0, 0];
   ballDirection: number = LEFT;
 
-  constructor(private players: [Socket, Socket]) {
+  constructor(public players: [Socket, Socket]) {
     this.game = new Game();
     for (let [emitter, receiver] of [
       [PLAYER1, PLAYER2],

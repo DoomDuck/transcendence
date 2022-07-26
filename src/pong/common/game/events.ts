@@ -1,10 +1,14 @@
+/**
+ * There are two types of events:
+ *  - "Datachanger" are events produced outside of the GameState
+ *  - "GameProducedEvent" defines global functions to allow the GameState
+ *    to easily produce events meant to be listened to by the outside
+ */
 import { GSettings, KeyValue } from "../constants";
 import { BallData, GameDataBuffer } from "../entities/data";
-import { Game } from "./Game";
 
 /**
- * Such events operate on the Game's data.
- * Theire registration is handled in GameState which may result in
+ * These events registration is handled in GameState which may result in
  * discarding (too far in the past) or re-computation (recent past).
  * From their point of view, they process the data as if they happen in the present.
  */
@@ -15,10 +19,6 @@ export interface DataChangerEvent {
   process(data: GameDataBuffer): void;
 }
 
-// export interface DataChangerEvent {
-//     time: number;
-//     process(data: GameDataBuffer): void;
-// }
 export type BarInputEventStruct = [number, number, KeyValue, boolean];
 export class BarInputEvent implements DataChangerEvent {
   constructor(
@@ -28,7 +28,6 @@ export class BarInputEvent implements DataChangerEvent {
     public pressed: boolean
   ) {}
 
-  // for now ignore time ...
   process(data: GameDataBuffer) {
     if (this.key == KeyValue.UP)
       data.current.bars[this.barId].upPressed = this.pressed;
@@ -97,7 +96,14 @@ export class SpawnGravitonEvent implements DataChangerEvent {
   }
 }
 
-export type SpawnPortalEventStruct = [number, number, number, number];
+export type SpawnPortalEventStruct = [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number
+];
 export class SpawnPortalEvent implements DataChangerEvent {
   constructor(
     public time: number,

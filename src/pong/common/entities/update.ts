@@ -1,3 +1,12 @@
+/**
+ * Utility functions for updating the GameDataBuffer (the game's state):
+ *  - Apply Forces (cause: gravitons)
+ *  - Apply Speed (cause: force)
+ *  - Propagate data in the GameDataBuffer
+ * Used in GameState's update method
+ * Occur before the collisions (i.e. the "corrections/consequences" of those updates)
+ */
+
 import { GSettings } from "../constants";
 import { Vector2 } from "../utils";
 import { clipBallSpeedX, clipBallSpeedY } from "./collisions";

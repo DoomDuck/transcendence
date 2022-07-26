@@ -2,8 +2,10 @@ import { GameEvent, PLAYER1, PLAYER2 } from "../../common/constants";
 import { handleKeyOnline } from "./keyboardInput";
 import { Socket } from "socket.io-client";
 import { ClientGameManager } from "./ClientGameManager";
-import { GameProducedEvent } from "../../common/game/events";
 
+/**
+ * Specificities of the online version regarding keyboard events
+ */
 export class ClientGameManagerOnline extends ClientGameManager {
   socket: Socket;
   playerId: number;

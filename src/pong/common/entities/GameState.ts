@@ -1,10 +1,4 @@
-import { GSettings } from "../constants";
-import {
-  BarInputEvent,
-  GameProducedEvent,
-  SetBallEvent,
-  type DataChangerEvent,
-} from "../game/events";
+import { GameProducedEvent, type DataChangerEvent } from "../game/events";
 import { collisions } from "./collisions";
 import { GameDataBuffer } from "./data";
 import {
@@ -15,6 +9,16 @@ import {
   updateSpawnable,
 } from "./update";
 
+/**
+ * GameState is the main class in the hierarchy for the
+ * game's entities
+ * It is responsible for updating itself and handling external events
+ * The data is bufferized (see GameDataBuffer)
+ * The sole purpose the buffer is to allow both
+ * determination and synchronisation in online version
+ * In case of a misunderstanding between server and client,
+ * the past data can be restored and we can recompute what happened since
+ */
 export class GameState {
   data: GameDataBuffer = new GameDataBuffer();
   eventBuffer: DataChangerEvent[] = [];

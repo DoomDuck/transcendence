@@ -1,6 +1,11 @@
 import { GSettings } from "../../common/constants";
 import { Renderer } from "./Renderer";
 
+/**
+ * An animation produces timed modifications to the canvas
+ * and is chained with a given callback when finished
+ * Extended by VictoryAnimation
+ */
 export abstract class Animation {
   firstTime: number;
   lastTime: number;
@@ -32,6 +37,10 @@ export abstract class Animation {
   abstract draw(elapsed: number): void;
 }
 
+/**
+ * Animation used to illustrate a goal has been scored
+ * Used in Renderer
+ */
 export class VictoryAnimation extends Animation {
   previousRadius: number;
   constructor(renderer: Renderer, thenCallback: () => any) {

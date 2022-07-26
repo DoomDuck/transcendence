@@ -6,6 +6,7 @@ import {
   type SpawnGravitonEventStruct,
   SpawnGravitonEvent,
   SpawnPortalEvent,
+  type SpawnPortalEventStruct,
 } from "./events";
 
 /**
@@ -42,6 +43,12 @@ export class Game {
           this.state.registerEvent(new SpawnGravitonEvent(...eventArgs));
         },
       ],
+      [
+        GameEvent.SPAWN_PORTAL,
+        (...eventArgs: SpawnPortalEventStruct) => {
+          this.state.registerEvent(new SpawnPortalEvent(...eventArgs));
+        },
+      ],
     ];
     this.incommingEventsCallback = new Map(eventsCallbackPairs);
   }
@@ -68,20 +75,6 @@ export class Game {
     this.startTime = startTime + this.pauseOffetEarly;
     this.lastTime = this.startTime;
     this.pauseOffetEarly = 0;
-    setTimeout(
-      () =>
-        this.state.registerEvent(
-          new SpawnPortalEvent(
-            this.state.data.currentTime,
-            -0.3,
-            0,
-            0.3,
-            0,
-            GSettings.PORTAL_LIFESPAN
-          )
-        ),
-      100
-    );
   }
 
   pause(pauseTime?: number) {

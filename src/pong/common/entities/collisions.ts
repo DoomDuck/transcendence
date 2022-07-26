@@ -1,3 +1,12 @@
+/**
+ * Collision-related computations, involving the ball:
+ *  - with walls (rigid bodies)
+ *  - with the game's edges (trigger "ball out" event)
+ *  - with the bars
+ *  - with portals
+ * Also position clipping for the bar
+ */
+
 import { GameEvent, GSettings } from "../constants";
 import { GameProducedEvent } from "../game/events";
 import { BallData, GameDataBuffer, PortalData } from "./data";
@@ -109,6 +118,7 @@ export function clipBallSpeedX(ball: BallData) {
   if (sign * ball.vx > GSettings.BALL_SPEEDX_MAX)
     ball.vx = sign * GSettings.BALL_SPEEDX_MAX;
 }
+
 export function clipBallSpeedY(ball: BallData) {
   let sign = Math.sign(ball.vy);
   if (sign * ball.vy > GSettings.BALL_SPEEDY_MAX)

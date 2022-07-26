@@ -3,6 +3,9 @@ import { GameEvent } from "../common/constants";
 import { ClientGameContext } from "./ClientGameContext";
 import { ClientGameManagerOnline } from "./game/ClientGameManagerOnline";
 
+/**
+ * Online version of the game in the client (see ClientGameContext)
+ */
 export class ClientGameContextOnline extends ClientGameContext {
   socket: Socket;
   constructor() {
@@ -10,7 +13,7 @@ export class ClientGameContextOnline extends ClientGameContext {
     this.gameManager = new ClientGameManagerOnline();
   }
 
-  connect() {
+  configure() {
     this.socket = io("http://localhost:5000/pong");
     this.socket.on("connect", () => {
       console.log("connected to server");
@@ -33,11 +36,7 @@ export class ClientGameContextOnline extends ClientGameContext {
     transmitEventFromServerToGame(GameEvent.PAUSE);
     transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.socket.on(GameEvent.GOAL, (playerId: number) => {
-      game.pause();
-      this.gameManager.renderer
-        .startVictoryAnimationAsync()
-        .then(() => this.gameManager.renderer.scorePanels.goalAgainst(playerId))
-        .then(() => this.socket.emit(GameEvent.READY));
+      this.handleGoal(playerId);
     });
   }
 
@@ -53,5 +52,15 @@ export class ClientGameContextOnline extends ClientGameContext {
         ready();
       }
     );
+  }
+
+  handleGoal(playerId: number) {
+    const game = this.gameManager.game;
+    const renderer = this.gameManager.renderer;
+    game.pause();
+    renderer
+      .startVictoryAnimationAsync()
+      .then(() => renderer.scorePanels.goalAgainst(playerId))
+      .then(() => this.socket.emit(GameEvent.READY));
   }
 }

@@ -1,5 +1,9 @@
 import { GSettings } from "../../constants";
 
+/**
+ * Structure for the bar's data
+ * Grouped with the other entities in GameData
+ */
 export class BarData {
   x: number;
   y: number = 0;

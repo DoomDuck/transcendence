@@ -29,7 +29,6 @@ export class GSettings {
   static readonly SCORE_PANEL_CANVAS_FONT = "64px Avenir Medium";
 
   // PHYSIC -->
-  // static readonly DELTA_T = 1000 / 60;
   static readonly GAME_STEP_MS = 1000 / 60;
   static readonly GAME_STEP_S = 1 / 60;
   static readonly SERVER_EMIT_INTERVAL = 2;
@@ -43,9 +42,22 @@ export class GSettings {
   static readonly BAR_INITIALX = (17 / 40) * GSettings.SCREEN_WIDTH;
   static readonly BAR_INITIALY = 0;
   static readonly BAR_SENSITIVITY = (GSettings.SCREEN_WIDTH * 2) / 4;
+  // Offline
+  static readonly BAR_P1_UPKEYS = ["w", "z"];
+  static readonly BAR_P1_DOWNKEYS = ["s"];
+  static readonly BAR_P2_UPKEYS = ["ArrowUp"];
+  static readonly BAR_P2_DOWNKEYS = ["ArrowDown"];
+  // Online
+  static readonly BAR_UPKEYS = [
+    ...GSettings.BAR_P1_UPKEYS,
+    ...GSettings.BAR_P2_UPKEYS,
+  ];
+  static readonly BAR_DOWNKEYS = [
+    ...GSettings.BAR_P1_DOWNKEYS,
+    ...GSettings.BAR_P2_DOWNKEYS,
+  ];
   static readonly BAR_UP_KEYS = ["ArrowUp", "w", "z"];
   static readonly BAR_DOWN_KEYS = ["ArrowDown", "s"];
-  // static readonly BAR_COLOR = '0xd14081';
   static readonly BAR_COLOR = "rgb(209, 64, 129)";
   static readonly BAR_COLLISION_EDGE =
     GSettings.BAR_INITIALX - GSettings.BAR_WIDTH / 2;
@@ -53,7 +65,6 @@ export class GSettings {
   // BALL ---->
   static readonly BALL_RADIUS = GSettings.SCREEN_WIDTH / 80;
   static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 4;
-  // static readonly BALL_INITIAL_SPEEDX = GSettings.SCREEN_WIDTH / 20;
   static readonly BALL_RADIAL_SEGMENTS = 100;
   static readonly BALL_SPEEDX_INCREASE = GSettings.SCREEN_WIDTH / 20;
   static readonly BALL_SPEEDX_CORNER_BOOST = GSettings.BALL_SPEEDX_INCREASE * 2;
@@ -77,6 +88,8 @@ export class GSettings {
 
   // GRAVITON ->
   static readonly GRAVITON_LIFESPAN = 500;
+  static readonly GRAVITON_LIFESPAN_MS =
+    GSettings.GRAVITON_LIFESPAN * GSettings.GAME_STEP_MS;
   static readonly GRAVITON_SPRITE_WIDTH = 128;
   static readonly GRAVITON_SPRITE_HEIGHT = 128;
   static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 10;
@@ -90,13 +103,19 @@ export class GSettings {
 
   // PORTAL
   static readonly PORTAL_LIFESPAN = 1000;
-  static readonly PORTAL_SPRITE_WIDTH = 15;
+  static readonly PORTAL_LIFESPAN_MS =
+    GSettings.PORTAL_LIFESPAN * GSettings.GAME_STEP_MS;
+  static readonly PORTAL_SPRITE_WIDTH = 23;
   static readonly PORTAL_SPRITE_HEIGHT = 75;
   static readonly PORTAL_RATIO =
     GSettings.PORTAL_SPRITE_WIDTH / GSettings.PORTAL_SPRITE_HEIGHT;
   static readonly PORTAL_HEIGHT = GSettings.SCREEN_WIDTH / 8;
   static readonly PORTAL_WIDTH =
     GSettings.PORTAL_RATIO * GSettings.PORTAL_HEIGHT;
+  static readonly PORTAL_SPAWN_XMIN = 0.05 * GSettings.SCREEN_WIDTH;
+  static readonly PORTAL_SPAWN_XMAX = 0.25 * GSettings.SCREEN_WIDTH;
+  static readonly PORTAL_SPAWN_HEIGHT =
+    GSettings.GAME_HEIGHT - GSettings.PORTAL_HEIGHT;
 
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
@@ -148,8 +167,10 @@ export class GameEvent {
   static readonly BALL_BAR_COLLISION = "ballBarCollision";
   //
   static readonly READY = "ready";
-  // time: number, x: number, y: number
+  // time: number, x: number, y: number, lifespan: number
   static readonly SPAWN_GRAVITON = "spawnGraviton";
+  // time: number, x1: number, y1: number, x2: number, y2: number, lifespan: number
+  static readonly SPAWN_PORTAL = "spawnPortal";
 }
 
 // export type BarKeyDownEvent = [KeyValue, number];

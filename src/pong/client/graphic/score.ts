@@ -1,5 +1,9 @@
 import { Direction, GSettings } from "../../common/constants";
 
+/**
+ * The canvas surface used to draw one number
+ * (the score of a single player)
+ */
 export class SingleNumberPanel {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
@@ -54,6 +58,10 @@ export class SingleNumberPanel {
   }
 }
 
+/**
+ * The renderer for the score of both players
+ * Used in Renderer
+ */
 export class ScorePanels {
   panel1: SingleNumberPanel = new SingleNumberPanel(Direction.LEFT);
   panel2: SingleNumberPanel = new SingleNumberPanel(Direction.RIGHT);

@@ -12,6 +12,11 @@ import { MultiframeSprite } from "./MultiframeSprite";
 import { VictoryAnimation } from "./animation";
 import { ScorePanels } from "./score";
 
+/**
+ * Renderer is the main class for the display of the Game's
+ * graphical components
+ * It is instanciated and used in ClientGameManager
+ */
 export class Renderer {
   context: CanvasRenderingContext2D;
   ratio: number;
@@ -20,9 +25,9 @@ export class Renderer {
   barWidth: number;
   barHeight: number;
   gravitonSize: number;
-  gravitonAnimationOpening: MultiframeSprite;
-  gravitonAnimationPulling: MultiframeSprite;
-  portalAnimation: MultiframeSprite;
+  gravitonSpriteOpening: MultiframeSprite;
+  gravitonSpritePulling: MultiframeSprite;
+  portalSprites: [MultiframeSprite, MultiframeSprite];
   portalHeight: number;
   portalWidth: number;
   scoreSize: number;
@@ -31,24 +36,32 @@ export class Renderer {
 
   constructor(public canvas: HTMLCanvasElement, public data: GameDataBuffer) {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
-    this.gravitonAnimationOpening = new MultiframeSprite(
+    this.gravitonSpriteOpening = new MultiframeSprite(
       "/public/img/graviton_opening.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
       GSettings.GRAVITON_SPRITE_HEIGHT,
       10
     );
-    this.gravitonAnimationPulling = new MultiframeSprite(
+    this.gravitonSpritePulling = new MultiframeSprite(
       "/public/img/graviton_pulling.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
       GSettings.GRAVITON_SPRITE_HEIGHT,
       9
     );
-    this.portalAnimation = new MultiframeSprite(
-      "/public/img/portal.png",
-      GSettings.PORTAL_SPRITE_WIDTH,
-      GSettings.PORTAL_SPRITE_HEIGHT,
-      9
-    );
+    this.portalSprites = [
+      new MultiframeSprite(
+        "/public/img/portal.png",
+        GSettings.PORTAL_SPRITE_WIDTH,
+        GSettings.PORTAL_SPRITE_HEIGHT,
+        9
+      ),
+      new MultiframeSprite(
+        "/public/img/portalReverse.png",
+        GSettings.PORTAL_SPRITE_WIDTH,
+        GSettings.PORTAL_SPRITE_HEIGHT,
+        9
+      ),
+    ];
     this.scorePanels = new ScorePanels();
   }
 
@@ -143,14 +156,14 @@ export class Renderer {
     );
     let { iFrame, animationPhase } = this.decideFrameSpawnable(
       graviton,
-      this.gravitonAnimationOpening.nFrames
+      this.gravitonSpriteOpening.nFrames
     );
     const animation =
       animationPhase == "middle"
-        ? this.gravitonAnimationPulling
-        : this.gravitonAnimationOpening;
+        ? this.gravitonSpritePulling
+        : this.gravitonSpriteOpening;
     if (animationPhase == "middle")
-      iFrame %= this.gravitonAnimationPulling.nFrames;
+      iFrame %= this.gravitonSpritePulling.nFrames;
     animation.draw(
       this.context,
       x,
@@ -163,16 +176,17 @@ export class Renderer {
 
   drawPortal(portal: PortalData, side: number) {
     const portalHalf = portal.parts[side];
+    const portalSprite = this.portalSprites[side];
     const [x, y] = this.gameToCanvasCoord(
       portalHalf.x - GSettings.PORTAL_WIDTH / 2,
       portalHalf.y - GSettings.PORTAL_HEIGHT / 2
     );
     let { iFrame, animationPhase } = this.decideFrameSpawnable(
       portal,
-      this.portalAnimation.nFrames
+      portalSprite.nFrames
     );
-    if (animationPhase == "middle") iFrame = this.portalAnimation.nFrames - 1;
-    this.portalAnimation.draw(
+    if (animationPhase == "middle") iFrame = portalSprite.nFrames - 1;
+    portalSprite.draw(
       this.context,
       x,
       y,
