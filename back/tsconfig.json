@@ -5,7 +5,7 @@
         "express",
         "node",
         "three",
-        "jest",
+        "jest"
     ],
     "outDir": "build/",
     "rootDir": "src/",
@@ -14,13 +14,21 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noImplicitReturns": true,
-	  "allowSyntheticDefaultImports": true,
+	"allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
 
     "target": "es2017",
     "sourceMap": true,
+
+	"strict": true,
+	"strictBindCallApply": true,
+	"strictFunctionTypes": true,
+	"strictPropertyInitialization": true,
+	"noImplicitThis": true,
+	"alwaysStrict": true,
+
 
     "baseUrl": ".",
     "incremental": true,
@@ -29,7 +37,7 @@
     "noImplicitAny": true,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": false
   },
   "include": ["src/**/*.ts"],
 }

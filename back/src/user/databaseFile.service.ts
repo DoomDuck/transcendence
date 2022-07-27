@@ -1,19 +1,19 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { DatabaseFile } from "./databaseFile.entity";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DatabaseFile } from './databaseFile.entity';
 
-import { Id } from "../customType";
+import { Id } from '../customType';
 @Injectable()
 export class DatabaseFilesService {
   constructor(
     @InjectRepository(DatabaseFile)
-    private databaseFilesRepository: Repository<DatabaseFile>
+    private databaseFilesRepository: Repository<DatabaseFile>,
   ) {}
 
   async uploadDatabaseFile(
     dataBuffer: Buffer,
-    filename: string
+    filename: string,
   ): Promise<DatabaseFile> {
     const newFile = this.databaseFilesRepository.create({
       filename,

@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
-import { Id } from "../customType";
-import { ChannelDto } from "./channel.dto";
-import { Socket, Server } from "socket.io";
+import { Injectable } from '@nestjs/common';
+import { Id } from '../customType';
+import { ChannelDto } from './channel.dto';
+import { Socket, Server } from 'socket.io';
 export class Channel {
   constructor(
     public channelId: Id,
@@ -9,12 +9,14 @@ export class Channel {
     public priv: boolean,
     public protect: boolean,
     public password: string,
-    public creator: Id
+    public creator: Id,
   ) {
     this.name = name;
     this.priv = priv;
     this.protect = protect;
     this.password = password;
+    this.admin = [];
+    this.member = [];
     this.admin.push(creator);
     this.member.push(creator);
     this.creator = creator;
@@ -28,10 +30,13 @@ export class Channel {
 @Injectable()
 export class ChannelManagerService {
   private arrayChannel: Channel[];
+  constructor() {
+    this.arrayChannel = [];
+  }
 
   createChan(channelDto: ChannelDto): boolean {
     const found = this.arrayChannel.find(
-      (channel) => channel.name === channelDto.name
+      (channel) => channel.name === channelDto.name,
     );
     if (found === undefined) {
       if (this.arrayChannel === [])
@@ -42,8 +47,8 @@ export class ChannelManagerService {
             channelDto.priv,
             channelDto.protec,
             channelDto.password,
-            channelDto.creator
-          )
+            channelDto.creator,
+          ),
         );
       else {
         this.arrayChannel.push(
@@ -53,8 +58,8 @@ export class ChannelManagerService {
             channelDto.priv,
             channelDto.protec,
             channelDto.password,
-            channelDto.creator
-          )
+            channelDto.creator,
+          ),
         );
       }
       return true;
@@ -62,74 +67,74 @@ export class ChannelManagerService {
   }
   findChanOne(chanName: string): Channel | string {
     const tempChan = this.arrayChannel.find(
-      (element) => element.name === chanName
+      (element) => element.name === chanName,
     );
-    if (tempChan === undefined) return "channel not found";
+    if (tempChan === undefined) return 'channel not found';
     else return tempChan;
   }
   findChanAll(): Channel[] | string {
-    if (this.arrayChannel === []) return "no channel at all";
+    if (this.arrayChannel === []) return 'no channel at all';
     else return this.arrayChannel;
   }
   //Return string is placeholder
   joinChan(sender: Id, channelId: Id, password?: string): string | undefined {
     const tempChan = this.arrayChannel.find(
-      (element) => element.channelId === channelId
+      (element) => element.channelId === channelId,
     );
     if (tempChan === undefined) return "chan doesn't exist";
 
     if (tempChan.member.find((element) => element === sender))
-      return "user already in chan";
+      return 'user already in chan';
     // if(tempChan.banned.find(element => element == sender)!=undefined)
     // return "user is banned from this chan";
-    if (tempChan.priv) return "chan is privated";
+    if (tempChan.priv) return 'chan is privated';
 
     if (tempChan.protect) {
-      if (password != tempChan.password) return "wrong password";
+      if (password != tempChan.password) return 'wrong password';
     }
 
     tempChan.member.push(sender);
 
-    return "user added";
+    return 'user added';
   }
   setPrivate(sender: Id, chanName: string): string {
     const tempChan = this.arrayChannel.find(
-      (element) => element.name === chanName
+      (element) => element.name === chanName,
     );
     if (tempChan === undefined) return "chan doesn't exist";
     if (tempChan.admin.find((element) => element === sender) === undefined)
-      return "insuficient permission";
+      return 'insuficient permission';
     tempChan.priv = true;
-    return "private mode set";
+    return 'private mode set';
   }
 
   setPassword(sender: Id, chanName: string, password: string): string {
     const tempChan = this.arrayChannel.find(
-      (element) => element.name === chanName
+      (element) => element.name === chanName,
     );
 
     if (tempChan === undefined) return "chan doesn't exist";
     if (tempChan.admin.find((element) => element === sender) === undefined)
-      return "insuficient permission";
+      return 'insuficient permission';
     tempChan.protect = true;
     tempChan.password = password;
-    return "password set";
+    return 'password set';
   }
   setNewAdmin(sender: Id, target: Id, chanName: string): string {
     const tempChan = this.arrayChannel.find(
-      (element) => element.name === chanName
+      (element) => element.name === chanName,
     );
     if (tempChan === undefined) return "chan doesn't exist";
     if (tempChan.admin.find((element) => element === sender) === undefined)
-      return "insuficient permission";
+      return 'insuficient permission';
     if (tempChan.admin.find((element) => element === target) != undefined)
-      return "target already admin";
+      return 'target already admin';
     tempChan.admin.push(target);
-    return "new admin added ";
+    return 'new admin added ';
   }
   getRoomName(channelId: Id): string | undefined {
     const tempChan = this.arrayChannel.find(
-      (element) => element.channelId === channelId
+      (element) => element.channelId === channelId,
     );
 
     if (tempChan) {
@@ -140,30 +145,17 @@ export class ChannelManagerService {
   //Send invitation
   sendMessageToChannel(
     wss: Server,
-    messageInfo: { sender: Id; text: string; channelId: Id }
+    messageInfo: { sender: Id; text: string; channelId: Id },
   ) {
     const tempChan = this.arrayChannel.find(
-      (channel) => channel.channelId == messageInfo.channelId
+      (channel) => channel.channelId == messageInfo.channelId,
     );
     if (tempChan) {
       if (
         tempChan.member.find((member) => member === messageInfo.sender) !=
         undefined
       )
-        wss.to(tempChan.name).emit("userToChannel", messageInfo);
+        wss.to(tempChan.name).emit('userToChannel', messageInfo);
     }
   }
-
-  // sendMessageToChannel(
-  //    wss: Server,
-  //  	messageInfo:{ sender: Id; text: string; channelId: Id } ,
-  //  ) {
-  //    const tempChan = this.arrayChannel.find(
-  //      (channel) => channel.channelId == messageInfo.channelId
-  //    );
-  //    if (tempChan) {
-  //      if (tempChan.member.find((member) => member === messageInfo.sender) != undefined)
-  //        wss.to(tempChan.name).emit("userToChannel", messageInfo);
-  //    }
-  //  }
 }
