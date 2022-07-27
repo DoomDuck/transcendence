@@ -9,13 +9,13 @@ import { DatabaseFile } from './databaseFile.entity';
 import { Id } from '../customType';
 @Entity('User')
 export class User {
-  constructor(_name: string, _id?: Id) {
-    if (_id) this.id = _id;
-    this.name = _name;
+  constructor(id: Id, name: string) {
+    this.id = id;
+    this.name = name;
     this.friendlist = [];
   }
   @PrimaryGeneratedColumn()
-  id!: Id;
+  id: Id;
   @Column({ type: 'varchar', length: 100, nullable: false })
   name: string;
 

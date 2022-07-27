@@ -1,6 +1,17 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import Friend from '$lib/Friend.svelte';
 	export let friendNameSearch: () => void;
+
+	onMount(async () => {
+		const reponse = await fetch('http://localhost:5000/user', {
+			method: 'GET'
+		});
+
+		const result = await reponse.json();
+
+		console.log(result);
+	});
 </script>
 
 <div class="friendsList">

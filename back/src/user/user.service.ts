@@ -10,12 +10,10 @@ import { Socket, Server } from 'socket.io';
 
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
-    this.id = id;
     this.pending_invite = false;
     this.ingame = false;
     this.socketUser = [];
     this.joinedChannel = [];
-    this.name = name;
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite: boolean;
@@ -27,6 +25,7 @@ export class ActiveUser {
 @Injectable()
 export class UserService {
   arrayActiveUser: ActiveUser[];
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -47,16 +46,23 @@ export class UserService {
   async remove(id: Id): Promise<void> {
     await this.usersRepository.delete(id);
   }
-  addOne(userDto: UserDto): Promise<User> | undefined {
+  async addOne(userDto: UserDto): Promise<undefined> {
     const id = userDto.id;
-    if (this.usersRepository.findOneBy({ id }) === undefined) {
+    let logger = new Logger('user');
+    logger.log(userDto);
+    logger.log(id);
+    if ((await this.usersRepository.findOneBy({ id })) === null) {
       // A Comprendre plus tard
       // if( this.usersRepository.findOneBy({ userDto.id })=== undefined)
-      const newUser = new User(userDto.name);
+      //  const newUser = new User(userDto.name);
+      logger.log('dans undefined');
+      const newUser = new User(userDto.id, userDto.name);
+
       // newUser.name = userDto.name;
       // newUser.friendlist = [];
       this.usersRepository.save(newUser);
     }
+    logger.log(this.usersRepository.findOneBy({ id }));
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       this.arrayActiveUser.push(

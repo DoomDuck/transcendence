@@ -29,7 +29,6 @@
 	"noImplicitThis": true,
 	"alwaysStrict": true,
 
-
     "baseUrl": ".",
     "incremental": true,
     "skipLibCheck": true,
