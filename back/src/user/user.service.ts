@@ -6,7 +6,7 @@ import { Channel } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
-import { Socket , Server} from 'socket.io';
+import { Socket, Server } from 'socket.io';
 
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
@@ -15,7 +15,7 @@ export class ActiveUser {
     this.ingame = false;
     this.socketUser = [];
     this.joinedChannel = [];
-     this.name = name;
+    this.name = name;
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite: boolean;
@@ -126,14 +126,16 @@ export class UserService {
   }
 
   sendMessageToUser(
-	 wss: Server,
-	   messageInfo:{ sender: Id; text: string; target: Id } ,
-   ) {
-	 const tempUser = this.arrayActiveUser.find(
-	   (user) => user.id ===messageInfo.sender
-	 );
-	 if (tempUser) {
-		 tempUser.socketUser.forEach((socket)=> wss.to(socket.id).emit("userToUser", messageInfo));
-	 }
-   }
+    wss: Server,
+    messageInfo: { sender: Id; text: string; target: Id },
+  ) {
+    const tempUser = this.arrayActiveUser.find(
+      (user) => user.id === messageInfo.sender,
+    );
+    if (tempUser) {
+      tempUser.socketUser.forEach((socket) =>
+        wss.to(socket.id).emit('userToUser', messageInfo),
+      );
+    }
+  }
 }

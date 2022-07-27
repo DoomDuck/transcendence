@@ -1,12 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class DatabaseFile {
-	constructor(_filename:string, _data:Uint8Array)
-		{
-			this.filename=_filename;
-			this.data=_data;
-		}
+  constructor(_filename: string, _data: Uint8Array) {
+    this.filename = _filename;
+    this.data = _data;
+  }
   @PrimaryGeneratedColumn()
   public id?: number;
 
@@ -14,7 +13,7 @@ export class DatabaseFile {
   filename: string;
 
   @Column({
-    type: "bytea",
+    type: 'bytea',
   })
   data: Uint8Array;
 }
