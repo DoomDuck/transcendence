@@ -24,7 +24,6 @@ export class UserController {
   constructor(private userService: UserService) {}
   @Get()
   async getUser() {
-    console.log('Hello');
     return this.userService.findAllDb();
   }
   @Post()
