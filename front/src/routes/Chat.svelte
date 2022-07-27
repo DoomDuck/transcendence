@@ -36,7 +36,8 @@
 	#chat {
 		width: 100%;
 		height: 100%;
-		background-color: #4628ff;
+		/* background-color: #4628ff; */
+		background-image: url('giphy.gif');
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
