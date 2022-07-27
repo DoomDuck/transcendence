@@ -41,7 +41,7 @@
 	}
 
 	.friendsList {
-		background-image: url('starsSky.jpeg');
+		background-image: url('space.gif');
 		width: 100vw;
 		height: 100vh;
 		overflow-y: scroll;

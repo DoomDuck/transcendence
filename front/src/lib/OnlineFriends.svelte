@@ -29,14 +29,14 @@
 	.onlineFriends {
 		width: 80vw;
 		height: 80px;
-		background: white;
+		background: #140128;
 		display: flex;
 		flex-wrap: nowrap;
 		overflow-x: auto;
 	}
 
 	#online {
-		color: white;
+		color: rgb(20, 1, 166);
 		width: 80vw;
 		height: 40px;
 		background: #ff00b8;

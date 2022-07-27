@@ -37,7 +37,7 @@
 		width: 100%;
 		height: 100%;
 		/* background-color: #4628ff; */
-		background-image: url('giphy.gif');
+		background-image: url('space.gif');
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
@@ -69,9 +69,9 @@
 	h1 {
 		justify-content: left;
 		font-style: normal;
-		color: #ff00b8;
+		color: #bf43a2;
 		line-height: 150%;
-		-webkit-text-stroke: 2px #ecf100;
+		-webkit-text-stroke: 2px #1300a5;
 		font-size: 2.5em;
 	}
 
