@@ -1,7 +1,7 @@
-import { Controller, Post, HttpCode, Body } from "@nestjs/common";
-import { AlertGateway } from "./alert.gateway";
+import { Controller, Post, HttpCode, Body } from '@nestjs/common';
+import { AlertGateway } from './alert.gateway';
 
-@Controller("alert")
+@Controller('alert')
 export class AlertController {
   constructor(private alertGateway: AlertGateway) {}
   @Post()

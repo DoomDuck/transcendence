@@ -1,8 +1,8 @@
-import { UserService } from "../user/user.service";
-import { ChannelManagerService } from "../channelManager/channelManager.service";
-import { UserDto } from "../user/user.dto";
-import { Id } from "../customType";
-import { Socket, Server } from "socket.io";
+import { UserService } from '../user/user.service';
+import { ChannelManagerService } from '../channelManager/channelManager.service';
+import { UserDto } from '../user/user.dto';
+import { Id } from '../customType';
+import { Socket, Server } from 'socket.io';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -10,19 +10,19 @@ import {
   WebSocketGateway,
   OnGatewayInit,
   WebSocketServer,
-} from "@nestjs/websockets";
-import { Logger } from "@nestjs/common";
+} from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
 
-@WebSocketGateway({ namespace: "/chat" })
+@WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
-  @WebSocketServer() wss: Server;
+  @WebSocketServer() wss!: Server;
   constructor(
     private userService: UserService,
-    private channelManagerService: ChannelManagerService
+    private channelManagerService: ChannelManagerService,
   ) {}
-  private logger: Logger = new Logger("ChatGateway");
+  private logger: Logger = new Logger('ChatGateway');
   afterInit(server: any) {
-    this.logger.log("Initialized chat ");
+    this.logger.log('Initialized chat ');
   }
 
   handleConnection(clientSocket: Socket) {
@@ -32,20 +32,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       new UserDto(
         clientSocket.handshake.auth.token,
         clientSocket.handshake.auth.token,
-        clientSocket
-      )
+        clientSocket,
+      ),
     );
   }
 
   //deprecated used to test on hugo.html
-  @SubscribeMessage("chatToServer")
+  @SubscribeMessage('chatToServer')
   handleMessage(message: { sender: string; message: string }) {
-    this.logger.log("chat gateway handle message");
-    this.wss.emit("chatToClient", message);
+    this.logger.log('chat gateway handle message');
+    this.wss.emit('chatToClient', message);
   }
 
   //Not sur if i'm gonna need client socket later
-  @SubscribeMessage("userToChannel")
+  @SubscribeMessage('userToChannel')
   handleMessageChannel(messageInfoChannel: {
     sender: Id;
     text: string;
@@ -53,20 +53,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   }) {
     this.channelManagerService.sendMessageToChannel(
       this.wss,
-      messageInfoChannel
+      messageInfoChannel,
     );
   }
 
-  @SubscribeMessage("joinChannel")
+  @SubscribeMessage('joinChannel')
   handleJoinChannel(
     clientSocket: Socket,
-    joinInfo: { sender: Id; channelId: Id }
+    joinInfo: { sender: Id; channelId: Id },
   ) {
     if (
       this.channelManagerService.joinChan(
         joinInfo.sender,
-        joinInfo.channelId
-      ) === "user added"
+        joinInfo.channelId,
+      ) === 'user added'
     )
       this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
   }

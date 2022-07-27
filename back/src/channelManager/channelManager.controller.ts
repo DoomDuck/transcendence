@@ -7,12 +7,12 @@ import {
   Body,
   Param,
   Query,
-} from "@nestjs/common";
-import { ChannelManagerService } from "./channelManager.service";
-import { ChannelDto } from "./channel.dto";
-import { Channel } from "./channelManager.service";
+} from '@nestjs/common';
+import { ChannelManagerService } from './channelManager.service';
+import { ChannelDto } from './channel.dto';
+import { Channel } from './channelManager.service';
 
-@Controller("channel")
+@Controller('channel')
 export class ChannelController {
   constructor(private channelManagerService: ChannelManagerService) {}
   @Get()

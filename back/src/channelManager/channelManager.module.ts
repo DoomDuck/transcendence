@@ -1,5 +1,5 @@
-import { Module } from "@nestjs/common";
-import { ChannelManagerService } from "./channelManager.service";
+import { Module } from '@nestjs/common';
+import { ChannelManagerService } from './channelManager.service';
 
 @Module({
   providers: [ChannelManagerService],

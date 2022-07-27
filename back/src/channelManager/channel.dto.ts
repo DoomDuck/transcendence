@@ -1,8 +1,15 @@
-import { Id } from "../customType";
+import { Id } from '../customType';
 
 export class ChannelDto {
-  readonly name: string;
-  readonly creator: Id;
+  constructor(public name: string, public creator: Id) {
+    this.name = name;
+    this.creator = creator;
+    this.password = name;
+    this.priv = false;
+    this.protec = false;
+    this.admin = [];
+    this.banned = [];
+  }
   readonly password: string;
   readonly priv: boolean;
   readonly protec: boolean;

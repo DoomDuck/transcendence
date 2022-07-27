@@ -1,7 +1,7 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { AlertGateway } from "./alert.gateway";
+import { Test, TestingModule } from '@nestjs/testing';
+import { AlertGateway } from './alert.gateway';
 
-describe("AlertGateway", () => {
+describe('AlertGateway', () => {
   let gateway: AlertGateway;
 
   beforeEach(async () => {
@@ -12,7 +12,7 @@ describe("AlertGateway", () => {
     gateway = module.get<AlertGateway>(AlertGateway);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(gateway).toBeDefined();
   });
 });

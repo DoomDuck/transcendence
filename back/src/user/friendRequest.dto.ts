@@ -1,5 +1,7 @@
-import { Id } from "../customType";
+import { Id } from '../customType';
 export class FriendRequestDto {
-  readonly sender: Id;
-  readonly target: Id;
+  constructor(public sender: Id, public target: Id) {
+    this.sender = sender;
+    this.target = target;
+  }
 }
