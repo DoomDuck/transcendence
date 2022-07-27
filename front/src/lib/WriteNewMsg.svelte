@@ -22,6 +22,5 @@
 <style>
 	img {
 		float: right;
-		justify-content: right;
 	}
 </style>

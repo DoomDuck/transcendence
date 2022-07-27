@@ -2,6 +2,7 @@
 	import ChatConversation from '$lib/ChatConversation.svelte';
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
+	import CreateChannel from '$lib/CreateChannel.svelte'
 
 	let friends = [{ profilePic: 'cars.jpeg' }, { profilePic: 'canard.jpeg' }];
 </script>
@@ -9,7 +10,10 @@
 <div id="chat">
 	<div id="title">
 		<h1>Chat</h1>
-		<WriteNewMsg />
+		<div id='options'>
+			<CreateChannel/>
+			<WriteNewMsg />
+		</div>
 	</div>
 
 	<div id="mainContainer">
@@ -41,9 +45,17 @@
 
 	#title {
 		display: flex;
-		justify-content: space-around;
+		justify-content: space-between;
 		align-items: center;
-		gap: 50vw;
+		margin-left: 10vw;
+		margin-right: 10vw;
+	}
+
+	#options{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 20px;
 	}
 
 	#mainContainer {
