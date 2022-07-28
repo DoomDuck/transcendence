@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
-	import GameInvit from './GameInvit.svelte'
+	import GameInvit from './GameInvit.svelte';
 
 	let showProfile = false;
 	let invit = false;
@@ -34,7 +34,7 @@
 	/>
 	{#if invit}
 		<Modal on:close={() => (invit = false)}>
-			<GameInvit {friendName}/>
+			<GameInvit {friendName} />
 		</Modal>
 	{/if}
 </div>

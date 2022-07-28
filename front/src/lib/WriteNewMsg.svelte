@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 	import SendMessage from '$lib/SendNewMessage.svelte';
 	import Modal from './Modal.svelte';
 

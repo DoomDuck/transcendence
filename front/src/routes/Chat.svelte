@@ -2,7 +2,7 @@
 	import DirectMessages from '$lib/DirectMessages.svelte';
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
-	import CreateChannel from '$lib/CreateChannel.svelte'
+	import CreateChannel from '$lib/CreateChannel.svelte';
 
 	let friends = [{ profilePic: 'cars.jpeg' }, { profilePic: 'canard.jpeg' }];
 </script>
@@ -10,8 +10,8 @@
 <div id="chat">
 	<div id="title">
 		<h1>Chat</h1>
-		<div id='options'>
-			<CreateChannel/>
+		<div id="options">
+			<CreateChannel />
 			<WriteNewMsg />
 		</div>
 	</div>
@@ -51,7 +51,7 @@
 		margin-right: 10vw;
 	}
 
-	#options{
+	#options {
 		display: flex;
 		flex-direction: row;
 		align-items: center;

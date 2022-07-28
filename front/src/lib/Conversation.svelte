@@ -64,9 +64,15 @@
 <div class="chat">
 	<div id="title">
 		<h2>{friendName}</h2>
-		<div id='options'>
+		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
-			<img src="joystick.png" alt="invite friend to play" width="30px" height="30px" on:click={() => (invit = true)}/>
+			<img
+				src="joystick.png"
+				alt="invite friend to play"
+				width="30px"
+				height="30px"
+				on:click={() => (invit = true)}
+			/>
 		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
@@ -82,7 +88,7 @@
 
 {#if invit}
 	<Modal on:close={() => (invit = false)}>
-		<GameInvit {friendName}/>
+		<GameInvit {friendName} />
 	</Modal>
 {/if}
 
@@ -134,8 +140,8 @@
 		align-items: center;
 		padding: 0.5vw;
 	}
-	#options{
-		display:flex;
+	#options {
+		display: flex;
 		flex-direction: row;
 		align-items: center;
 		gap: 12px;
