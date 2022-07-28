@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["express", "node", "three", "jest"],
+    "types": ["dat.gui", "express", "node", "three", "jest"],
     "outDir": "build/",
     "rootDir": "src/",
 
