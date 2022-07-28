@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ChatConversation from '$lib/ChatConversation.svelte';
+	import DirectMessages from '$lib/DirectMessages.svelte';
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte'
@@ -21,9 +21,9 @@
 
 		<OnlineFriends onlineFriends={friends} />
 		<div>
-			<ChatConversation friendName="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
+			<DirectMessages friendName="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
 
-			<ChatConversation friendName="Joey" image="canard.jpeg" hasNewMessage={true} />
+			<DirectMessages friendName="Joey" image="canard.jpeg" hasNewMessage={true} />
 		</div>
 	</div>
 </div>
@@ -36,7 +36,6 @@
 	#chat {
 		width: 100%;
 		height: 100%;
-		/* background-color: #4628ff; */
 		background-image: url('starsSky.jpeg');
 		overflow: hidden;
 		display: flex;
