@@ -17,7 +17,7 @@
 	</div>
 
 	<div id="mainContainer">
-		<input class="champ" type="search" value="Search.." />
+		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
 		<div>
@@ -69,9 +69,9 @@
 	h1 {
 		justify-content: left;
 		font-style: normal;
-		color: #bf43a2;
+		color: #fa1ec7;
 		line-height: 150%;
-		-webkit-text-stroke: 2px #1300a5;
+		-webkit-text-stroke: 2px #00bfff;
 		font-size: 2.5em;
 	}
 

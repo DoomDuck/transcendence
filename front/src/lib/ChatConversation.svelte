@@ -52,7 +52,7 @@
 		align-items: center;
 		width: 80vw;
 		height: 70px;
-		background: #140128;
+		background: #040128;
 		display: flex;
 		border: 1px solid #ff00b8;
 	}
