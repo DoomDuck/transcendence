@@ -32,4 +32,8 @@
 		"url": "https://github.com/DoomDuck/transcendence/issues"
 	},
 	"homepage": "https://github.com/DoomDuck/transcendence#readme",
+	"devDependencies": {
+		"prettier": "^2.7.1",
+		"prettier-plugin-svelte": "^2.7.0"
+	}
 }
