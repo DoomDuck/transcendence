@@ -37,7 +37,7 @@
 		width: 100%;
 		height: 100%;
 		/* background-color: #4628ff; */
-		background-image: url('space.gif');
+		background-image: url('starsSky.jpeg');
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;

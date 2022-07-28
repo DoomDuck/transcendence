@@ -7,7 +7,7 @@
 	#Play {
 		width: 100%;
 		height: 100%;
-		background-image: url('space.gif');
+		background-image: url('starsSky.jpeg');
 		overflow: hidden;
 	}
 </style>

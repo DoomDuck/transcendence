@@ -17,7 +17,7 @@
 
 <style>
 	#menu {
-		background-image: url('space.gif');
+		background-image: url('starsSky.jpeg');
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
