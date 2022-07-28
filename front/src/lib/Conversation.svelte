@@ -60,7 +60,7 @@
 <div class="chat">
 	<div id="title">
 		<h2>{friendName}</h2>
-		<div>
+		<div id='options'>
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
 			<img src="joystick.png" alt="invite friend to play" width="30px" height="30px" />
 		</div>
@@ -123,5 +123,11 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5vw;
+	}
+	#options{
+		display:flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 12px;
 	}
 </style>
