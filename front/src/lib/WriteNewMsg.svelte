@@ -6,7 +6,7 @@
 </script>
 
 <img
-	src="write.png"
+	src="pencil.png"
 	width="40"
 	height="40"
 	alt="write msg"
