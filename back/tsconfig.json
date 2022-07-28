@@ -1,12 +1,6 @@
 {
   "compilerOptions": {
-    "types": [
-        "dat.gui",
-        "express",
-        "node",
-        "three",
-        "jest"
-    ],
+    "types": ["dat.gui", "express", "node", "three", "jest"],
     "outDir": "build/",
     "rootDir": "src/",
 
@@ -14,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noImplicitReturns": true,
-	"allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -22,12 +16,12 @@
     "target": "es2017",
     "sourceMap": true,
 
-	"strict": true,
-	"strictBindCallApply": true,
-	"strictFunctionTypes": true,
-	"strictPropertyInitialization": true,
-	"noImplicitThis": true,
-	"alwaysStrict": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
 
     "baseUrl": ".",
     "incremental": true,
@@ -38,5 +32,5 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts"]
 }
