@@ -1,5 +1,5 @@
 <div class="waitingRoom">
-	<img src="img/matchPong.gif" alt="waitingPong" width="30%" height="20%" />
+	<img src="matchPong.gif" alt="waitingPong" width="1000vw" height="500px" />
 </div>
 
 <style>
