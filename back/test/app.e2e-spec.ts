@@ -14,11 +14,24 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
   });
+  
+  
+  it('GET /user', () => {   
+    const result: request.Test = request(app.getHttpServer())
+      .get('/user')
+      .expect(200)
+      .expect([]);
 
-  it('/ (GET)', () => {
+    // I don't know why yet but it is REQUIRED to return
+    return result;
+    
+    
+    
+  });
+  
+  it('GET / should yield 404', () => {
     return request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
-  });
+      .expect(404);
+  })
 });
