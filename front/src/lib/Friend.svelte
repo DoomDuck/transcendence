@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
-
-	const dispatch = createEventDispatcher();
+	import GameInvit from './GameInvit.svelte'
 
 	let showProfile = false;
+	let invit = false;
 
 	export let image: string;
 	export let friendName: string;
@@ -26,13 +25,18 @@
 
 	<p class="name">{friendName}</p>
 	<img
-		on:click={() => dispatch('start_waiting')}
+		on:click={() => (invit = true)}
 		class="play"
 		src="joystick.png"
 		alt="play"
 		width="40px"
 		height="40px"
 	/>
+	{#if invit}
+		<Modal on:close={() => (invit = false)}>
+			<GameInvit {friendName}/>
+		</Modal>
+	{/if}
 </div>
 
 <style>
