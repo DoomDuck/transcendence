@@ -1,7 +1,7 @@
 <script lang='ts'>
 	export let optionOne = "";
 	export let optionTwo = "";
-	let mode = "";
+	let mode = optionOne;
 
 	function toggleMode() {
 	  if (mode == optionOne) 
