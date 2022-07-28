@@ -1,4 +1,5 @@
 <script lang="ts">
+	export let color: string = '#6028FF';
 </script>
 
 <nav id="menu">
@@ -48,8 +49,5 @@
 		background-color: blue;
 		width: 100%;
 		text-align: center;
-	}
-	a {
-		all: unset;
 	}
 </style>
