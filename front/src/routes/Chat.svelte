@@ -3,6 +3,7 @@
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
+import ChannelConversation from '$lib/ChannelConversation.svelte';
 
 	let friends = [{ profilePic: 'cars.jpeg' }, { profilePic: 'canard.jpeg' }];
 </script>
@@ -21,9 +22,11 @@
 
 		<OnlineFriends onlineFriends={friends} />
 		<div>
-			<DirectMessages friendName="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
+			<DirectMessages name="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
 
-			<DirectMessages friendName="Joey" image="canard.jpeg" hasNewMessage={true} />
+			<DirectMessages name="Joey" image="canard.jpeg" hasNewMessage={true} />
+
+			<ChannelConversation name="Oh yeah" hasNewMessage={false}/>
 		</div>
 	</div>
 </div>
