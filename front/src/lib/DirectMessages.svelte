@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
-	import ConvChat from './ConvChat.svelte';
+	import Conversation from './Conversation.svelte';
 
 	export let friendName: string;
 	export let image: string;
@@ -33,7 +33,7 @@
 {/if}
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>
-		<ConvChat {friendName} />
+		<Conversation {friendName} />
 	</Modal>
 {/if}
 
@@ -52,7 +52,7 @@
 		align-items: center;
 		width: 80vw;
 		height: 70px;
-		background: white;
+		background: #040128;
 		display: flex;
 		border: 1px solid #ff00b8;
 	}

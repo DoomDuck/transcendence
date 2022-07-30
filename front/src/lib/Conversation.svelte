@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate } from 'svelte';
 
+	import GameInvit from './GameInvit.svelte';
+	import Modal from './Modal.svelte';
+	let invit = false;
+
 	type Comment = {
 		author: string;
 		text: string;
@@ -60,9 +64,15 @@
 <div class="chat">
 	<div id="title">
 		<h2>{friendName}</h2>
-		<div>
+		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
-			<img src="joystick.png" alt="invite friend to play" width="30px" height="30px" />
+			<img
+				src="joystick.png"
+				alt="invite friend to play"
+				width="30px"
+				height="30px"
+				on:click={() => (invit = true)}
+			/>
 		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
@@ -75,6 +85,12 @@
 
 	<input on:keydown={handleKeydown} />
 </div>
+
+{#if invit}
+	<Modal on:close={() => (invit = false)}>
+		<GameInvit {friendName} />
+	</Modal>
+{/if}
 
 <style>
 	.chat {
@@ -123,5 +139,11 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5vw;
+	}
+	#options {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 12px;
 	}
 </style>
