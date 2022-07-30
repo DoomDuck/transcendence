@@ -1,15 +1,13 @@
-<script lang="ts">
-	import Profile from './Profile.svelte';
+<script lang='ts'>
 	import Modal from './Modal.svelte';
 	import Conversation from './Conversation.svelte';
 
 	export let name: string;
-	export let image: string;
 	export let hasNewMessage = false;
 
-	let showProfile = false;
 	let openConv = false;
 </script>
+
 
 <div
 	class="conv"
@@ -19,18 +17,14 @@
 		}
 	}}
 >
-	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (showProfile = true)} />
+	<img class="imageConv" src="groupIcon.png" alt="contact" />
 	<h5>{name}</h5>
 	{#if hasNewMessage}
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
 	{/if}
 </div>
 
-{#if showProfile}
-	<Modal on:close={() => (showProfile = false)}>
-		<Profile {image} {name} />
-	</Modal>
-{/if}
+
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>
 		<Conversation {name} />
@@ -62,11 +56,8 @@
 		padding: 5%;
 	}
 
-	.roundedImageConv {
+	.imageConv {
 		overflow: hidden;
-		-webkit-border-radius: 50px;
-		-moz-border-radius: 50px;
-		border-radius: 30px;
 		width: 60px;
 		height: 60px;
 		margin-left: 1%;

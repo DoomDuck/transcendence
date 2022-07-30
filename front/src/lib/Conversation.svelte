@@ -11,7 +11,7 @@
 		placeholder?: true;
 	};
 
-	export let friendName: string;
+	export let name: string;
 
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
@@ -63,7 +63,7 @@
 
 <div class="chat">
 	<div id="title">
-		<h2>{friendName}</h2>
+		<h2>{name}</h2>
 		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
 			<img
@@ -88,7 +88,7 @@
 
 {#if invit}
 	<Modal on:close={() => (invit = false)}>
-		<GameInvit {friendName} />
+		<GameInvit {name} />
 	</Modal>
 {/if}
 

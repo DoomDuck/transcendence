@@ -26,6 +26,7 @@
 		<div id="createChannel">
 			<Switch optionOne="Private Channel" optionTwo="Public Channel" />
 			<input id="destinataire" type="search" placeholder="Members :" required />
+			<input type='text' placeholder='Title :' required />
 			<button on:click={() => dispatch('close')}> Create channel </button>
 		</div>
 	</Modal>

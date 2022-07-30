@@ -7,7 +7,7 @@
 	let invit = false;
 
 	export let image: string;
-	export let friendName: string;
+	export let name: string;
 </script>
 
 <div class="friend">
@@ -19,11 +19,11 @@
 	/>
 	{#if showProfile}
 		<Modal on:close={() => (showProfile = false)}>
-			<Profile {image} {friendName} />
+			<Profile {image} {name} />
 		</Modal>
 	{/if}
 
-	<p class="name">{friendName}</p>
+	<p class="name">{name}</p>
 	<img
 		on:click={() => (invit = true)}
 		class="play"
@@ -34,7 +34,7 @@
 	/>
 	{#if invit}
 		<Modal on:close={() => (invit = false)}>
-			<GameInvit {friendName} />
+			<GameInvit {name} />
 		</Modal>
 	{/if}
 </div>

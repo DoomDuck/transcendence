@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Switch from './Switch.svelte';
-	export let friendName: string;
+	export let name: string;
 </script>
 
 <div id="invitation">
 	<Switch optionOne="Classic Mode" optionTwo="Special Mode" />
 	<a sveltekit:prefetch href="/WaitingRoom">
 		<button>
-			Invit {friendName} to play
+			Invit {name} to play
 		</button>
 	</a>
 </div>
