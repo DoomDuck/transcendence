@@ -63,7 +63,6 @@ export class ClientGameContextOffline extends ClientGameContext {
       })
       .then(() => renderer.scorePanels.goalAgainst(playerId))
       .then(() => delay(500))
-      .then(() => console.log("caca"))
       .then(() => this.startGame());
   }
 }
