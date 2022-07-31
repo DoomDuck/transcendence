@@ -9,8 +9,8 @@
 		<input type="search" placeholder="search..." />
 	</form>
 	<div>
-		<Friend friendName="Flash McQueen" image="cars.jpeg" />
-		<Friend friendName="Joey" image="canard.jpeg" />
+		<Friend name="Flash McQueen" image="cars.jpeg" />
+		<Friend name="Joey" image="canard.jpeg" />
 	</div>
 </div>
 
