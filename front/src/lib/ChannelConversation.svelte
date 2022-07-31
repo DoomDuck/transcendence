@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 	import Modal from './Modal.svelte';
 	import Conversation from './Conversation.svelte';
 
@@ -7,7 +7,6 @@
 
 	let openConv = false;
 </script>
-
 
 <div
 	class="conv"
@@ -23,7 +22,6 @@
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
 	{/if}
 </div>
-
 
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>

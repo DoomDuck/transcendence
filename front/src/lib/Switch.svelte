@@ -15,12 +15,12 @@
 		<span class="slider round" />
 	</label>
 </div>
-<div id='mode'>
+<div id="mode">
 	{mode}
 </div>
 
 <style>
-	#mode{
+	#mode {
 		text-align: center;
 	}
 	.switch {
