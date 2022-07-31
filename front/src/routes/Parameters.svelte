@@ -3,6 +3,7 @@
 	export let avatar: string;	
 	export let name= "Ted";
 	export let blocked = [{profilePic: 'cars.jpeg', name: "Flash McQueen"}];
+	let twoFactorsAuth = false;
 
 </script>
 
@@ -18,6 +19,12 @@
 			</div>
 			<button> unblock </button>
 		</div>
+	</div>
+	<div id='lastParams'>
+		<div><input type=checkbox checked={twoFactorsAuth}> Two factors authentication </div>
+		<button id='disco'>
+			Disconnect
+		</button>
 	</div>
 </div>
 
@@ -70,5 +77,21 @@
 	}
 	button{
 		margin:20px;
+	}
+	#lastParams{
+		width: 50vw;
+		height: 80px;
+		border: 1px solid #ff00b8;
+		display:flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	input{
+		margin: 20px;
+	}
+	#disco{
+		float: right;
+		width: 150px;
+		height: 30px;
 	}
 </style>
