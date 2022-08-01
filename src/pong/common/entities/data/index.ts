@@ -4,4 +4,4 @@ export { GameData } from "./GameData";
 export { GameDataBuffer } from "./GameDataBuffer";
 export { GravitonData } from "./GravitonData";
 export { PortalData, PortalHalfData } from "./portal";
-export { type Spawnable } from "./Spawnable";
+export { type Spawnable } from "./spawnable";

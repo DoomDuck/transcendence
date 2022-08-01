@@ -17,7 +17,7 @@ export class PongGateway implements OnGatewayConnection {
   private logger: Logger = new Logger("PongGateway");
 
   handleConnection(client: Socket) {
-    this.logger.log(`connection ${client.id}`);
+    this.logger.log(`socket connection ${client.id}`);
     this.manager.add(client);
   }
 }

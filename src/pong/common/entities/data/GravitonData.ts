@@ -1,14 +1,11 @@
-import { type Spawnable } from "./Spawnable";
+import { type Spawnable } from "./spawnable";
 
 /**
  * Structure for a graviton's data
  * Grouped with the other entities in GameData
  */
 export class GravitonData implements Spawnable {
-  constructor(
-    public x: number,
-    public y: number,
-    public age: number,
-    public lifespan: number
-  ) {}
+  age: number = 0;
+
+  constructor(public x: number, public y: number) {}
 }

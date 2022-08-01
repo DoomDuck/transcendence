@@ -40,26 +40,26 @@ export class Renderer {
       "/public/img/graviton_opening.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
       GSettings.GRAVITON_SPRITE_HEIGHT,
-      10
+      GSettings.GRAVITON_OPENING_NFRAMES
     );
     this.gravitonSpritePulling = new MultiframeSprite(
       "/public/img/graviton_pulling.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
       GSettings.GRAVITON_SPRITE_HEIGHT,
-      9
+      GSettings.GRAVITON_PULLING_NFRAMES
     );
     this.portalSprites = [
       new MultiframeSprite(
         "/public/img/portal.png",
         GSettings.PORTAL_SPRITE_WIDTH,
         GSettings.PORTAL_SPRITE_HEIGHT,
-        9
+        GSettings.PORTAL_SPRITE_NFRAMES
       ),
       new MultiframeSprite(
         "/public/img/portalReverse.png",
         GSettings.PORTAL_SPRITE_WIDTH,
         GSettings.PORTAL_SPRITE_HEIGHT,
-        9
+        GSettings.PORTAL_SPRITE_NFRAMES
       ),
     ];
     this.scorePanels = new ScorePanels();
@@ -138,11 +138,15 @@ export class Renderer {
     this.context.fillRect(x1, y1, this.barWidth, this.barHeight);
   }
 
-  decideFrameSpawnable(spawnable: Spawnable, nFramesOpening: number) {
+  decideFrameSpawnable(
+    spawnable: Spawnable,
+    nFramesOpening: number,
+    lifespan: number
+  ) {
     let iFrame = Math.floor(spawnable.age / 5);
     if (iFrame < nFramesOpening)
       return { iFrame: iFrame, animationPhase: "opening" };
-    const iFrameClosing = Math.floor((spawnable.lifespan - spawnable.age) / 5);
+    const iFrameClosing = Math.floor((lifespan - spawnable.age) / 5);
     if (iFrameClosing < nFramesOpening)
       return { iFrame: iFrameClosing, animationPhase: "closing" };
     iFrame -= nFramesOpening;
@@ -156,7 +160,8 @@ export class Renderer {
     );
     let { iFrame, animationPhase } = this.decideFrameSpawnable(
       graviton,
-      this.gravitonSpriteOpening.nFrames
+      this.gravitonSpriteOpening.nFrames,
+      GSettings.GRAVITON_LIFESPAN
     );
     const animation =
       animationPhase == "middle"
@@ -183,7 +188,8 @@ export class Renderer {
     );
     let { iFrame, animationPhase } = this.decideFrameSpawnable(
       portal,
-      portalSprite.nFrames
+      portalSprite.nFrames,
+      GSettings.PORTAL_LIFESPAN
     );
     if (animationPhase == "middle") iFrame = portalSprite.nFrames - 1;
     portalSprite.draw(

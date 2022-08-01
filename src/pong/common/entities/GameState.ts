@@ -1,3 +1,4 @@
+import { GSettings } from "../constants";
 import { GameProducedEvent, type DataChangerEvent } from "../game/events";
 import { collisions } from "./collisions";
 import { GameDataBuffer } from "./data";
@@ -44,8 +45,16 @@ export class GameState {
     this.eventBuffer = [];
     processExternEvents(this.data);
     propagateBarInputs(this.data);
-    updateSpawnable(this.data.current.gravitons, this.data.next.gravitons);
-    updateSpawnable(this.data.current.portals, this.data.next.portals);
+    updateSpawnable(
+      this.data.current.gravitons,
+      this.data.next.gravitons,
+      GSettings.GRAVITON_LIFESPAN
+    );
+    updateSpawnable(
+      this.data.current.portals,
+      this.data.next.portals,
+      GSettings.PORTAL_LIFESPAN
+    );
     applyForces(this.data);
     applySpeed(this.data);
     collisions(this.data);

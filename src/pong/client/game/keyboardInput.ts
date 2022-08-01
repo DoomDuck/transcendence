@@ -11,6 +11,7 @@ import {
   UP,
 } from "../../common/constants";
 import { GameState } from "../../common/entities";
+import { Game } from "../../common/game";
 import { BarInputEvent } from "../../common/game/events";
 
 export function handleKeydownOffline(e: KeyboardEvent, state: GameState) {
@@ -88,4 +89,36 @@ export function handleKeyOnline(
       ` -> sended ${state.data.actualNow}, ${playerId}, ${DOWN}, ${pressed}`
     );
   }
+}
+
+export function setupKeyboardOffline(game: Game) {
+  window.addEventListener(
+    "keydown",
+    (e: KeyboardEvent) => handleKeydownOffline(e, game.state),
+    false
+  );
+  window.addEventListener(
+    "keyup",
+    (e: KeyboardEvent) => handleKeyupOffline(e, game.state),
+    false
+  );
+}
+
+export function setupKeyboardOnline(
+  game: Game,
+  playerId: number,
+  socket: Socket
+) {
+  window.addEventListener(
+    "keydown",
+    (e: KeyboardEvent) =>
+      handleKeyOnline(e, game.state, playerId, socket, true),
+    false
+  );
+  window.addEventListener(
+    "keyup",
+    (e: KeyboardEvent) =>
+      handleKeyOnline(e, game.state, playerId, socket, false),
+    false
+  );
 }

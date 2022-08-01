@@ -8,7 +8,7 @@ import { Renderer } from "../graphic";
  * of the client's keyboard inputs.
  * It is extended in an online and an offline version
  */
-export abstract class ClientGameManager {
+export class ClientGameManager {
   game: Game;
   container: HTMLDivElement;
   canvas: HTMLCanvasElement;

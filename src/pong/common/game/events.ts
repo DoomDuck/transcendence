@@ -35,87 +35,74 @@ export class BarInputEvent implements DataChangerEvent {
   }
 }
 
-function ballErrors(
-  ball: BallData,
-  x: number,
-  y: number,
-  vx: number,
-  vy: number
-) {
-  return [
-    Math.sqrt((ball.x - x) ** 2 + (ball.y - y) ** 2),
-    Math.sqrt((ball.vx - vx) ** 2 + (ball.vy - vy) ** 2),
-  ];
-}
-export class SetBallEvent implements DataChangerEvent {
-  constructor(
-    public time: number,
-    public x: number,
-    public y: number,
-    public vx: number,
-    public vy: number
-  ) {}
+// function ballErrors(
+//   ball: BallData,
+//   x: number,
+//   y: number,
+//   vx: number,
+//   vy: number
+// ) {
+//   return [
+//     Math.sqrt((ball.x - x) ** 2 + (ball.y - y) ** 2),
+//     Math.sqrt((ball.vx - vx) ** 2 + (ball.vy - vy) ** 2),
+//   ];
+// }
+// export class SetBallEvent implements DataChangerEvent {
+//   constructor(
+//     public time: number,
+//     public x: number,
+//     public y: number,
+//     public vx: number,
+//     public vy: number
+//   ) {}
 
-  process(data: GameDataBuffer) {
-    let [posError, speedError] = ballErrors(
-      data.current.ball,
-      this.x,
-      this.y,
-      this.vx,
-      this.vy
-    );
-    console.log(
-      `set ball event: posError = ${posError}, speedError = ${speedError}`
-    );
-    if (
-      posError > GSettings.BALL_POS_ERROR_MAX ||
-      speedError > GSettings.BALL_SPEED_ERROR_MAX
-    ) {
-      data.current.ball.x = this.x;
-      data.current.ball.y = this.y;
-      data.current.ball.vx = this.vx;
-      data.current.ball.vy = this.vy;
-      console.log("correcting ball");
-      // return ["ball"];
-    }
-    // return undefined;
-  }
-}
+//   process(data: GameDataBuffer) {
+//     let [posError, speedError] = ballErrors(
+//       data.current.ball,
+//       this.x,
+//       this.y,
+//       this.vx,
+//       this.vy
+//     );
+//     console.log(
+//       `set ball event: posError = ${posError}, speedError = ${speedError}`
+//     );
+//     if (
+//       posError > GSettings.BALL_POS_ERROR_MAX ||
+//       speedError > GSettings.BALL_SPEED_ERROR_MAX
+//     ) {
+//       data.current.ball.x = this.x;
+//       data.current.ball.y = this.y;
+//       data.current.ball.vx = this.vx;
+//       data.current.ball.vy = this.vy;
+//       console.log("correcting ball");
+//       // return ["ball"];
+//     }
+//     // return undefined;
+//   }
+// }
 
-export type SpawnGravitonEventStruct = [number, number, number, number];
+export type SpawnGravitonEventStruct = [number, number, number];
 export class SpawnGravitonEvent implements DataChangerEvent {
-  constructor(
-    public time: number,
-    public x: number,
-    public y: number,
-    public lifespan: number
-  ) {}
+  constructor(public time: number, public x: number, public y: number) {}
 
   process(data: GameDataBuffer) {
-    data.addGraviton(this.x, this.y, this.lifespan);
+    data.addGraviton(this.x, this.y);
   }
 }
 
-export type SpawnPortalEventStruct = [
-  number,
-  number,
-  number,
-  number,
-  number,
-  number
-];
+export type SpawnPortalEventStruct = [number, number, number, number, number];
 export class SpawnPortalEvent implements DataChangerEvent {
   constructor(
     public time: number,
     public x1: number,
     public y1: number,
     public x2: number,
-    public y2: number,
-    public lifespan: number
+    public y2: number
   ) {}
 
   process(data: GameDataBuffer) {
-    data.addPortal(this.x1, this.y1, this.x2, this.y2, this.lifespan);
+    data.addPortal(this.x1, this.y1, this.x2, this.y2);
   }
 }
 

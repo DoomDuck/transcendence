@@ -1,4 +1,5 @@
 import { ClientGameManager } from "./game";
+import { Renderer } from "./graphic";
 
 /**
  * Root of the client code execution
@@ -11,7 +12,9 @@ import { ClientGameManager } from "./game";
  *  - Spawns the gravitons and protals regularly
  */
 export abstract class ClientGameContext {
-  gameManager: ClientGameManager;
+  gameManager: ClientGameManager = new ClientGameManager();
+
+  constructor(public onFinish: () => void) {}
 
   abstract configure(): void;
   abstract startGame(): void;

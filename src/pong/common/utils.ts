@@ -2,8 +2,7 @@
  * Utility functions
  */
 
-import { GameEvent, GSettings } from "./constants";
-import { Game } from "./game";
+import { GSettings } from "./constants";
 
 export function delay(duration: number) {
   return new Promise((resolve) => {
@@ -18,40 +17,31 @@ export class Vector2 {
   }
 }
 
-export function spawnRandomGraviton(game: Game) {
-  let x = GSettings.GRAVITON_SPAWN_WIDTH * (Math.random() - 0.5);
-  let y = GSettings.GRAVITON_SPAWN_HEIGHT * (Math.random() - 0.5);
-  game.emit(
-    GameEvent.SPAWN_GRAVITON,
-    game.state.data.actualNow,
-    x,
-    y,
-    GSettings.GRAVITON_LIFESPAN
-  );
+export function randomGravitonCoords(): [number, number] {
+  return [
+    GSettings.GRAVITON_SPAWN_WIDTH * (Math.random() - 0.5),
+    GSettings.GRAVITON_SPAWN_HEIGHT * (Math.random() - 0.5),
+  ];
 }
 
 function rangedRandomValue(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
-export function spawnRandomPortal(game: Game) {
-  let x1 = -rangedRandomValue(
-    GSettings.PORTAL_SPAWN_XMIN,
-    GSettings.PORTAL_SPAWN_XMAX
-  );
-  let x2 = rangedRandomValue(
-    GSettings.PORTAL_SPAWN_XMIN,
-    GSettings.PORTAL_SPAWN_XMAX
-  );
-  let y1 = GSettings.PORTAL_SPAWN_HEIGHT * (Math.random() - 0.5);
-  let y2 = GSettings.PORTAL_SPAWN_HEIGHT * (Math.random() - 0.5);
-  game.emit(
-    GameEvent.SPAWN_PORTAL,
-    game.state.data.actualNow,
-    x1,
-    y1,
-    x2,
-    y2,
-    GSettings.PORTAL_LIFESPAN
-  );
+export function randomPortalCoords(): [number, number, number, number] {
+  return [
+    -rangedRandomValue(
+      GSettings.PORTAL_SPAWN_XMIN,
+      GSettings.PORTAL_SPAWN_XMAX
+    ),
+    rangedRandomValue(GSettings.PORTAL_SPAWN_XMIN, GSettings.PORTAL_SPAWN_XMAX),
+    GSettings.PORTAL_SPAWN_HEIGHT * (Math.random() - 0.5),
+    GSettings.PORTAL_SPAWN_HEIGHT * (Math.random() - 0.5),
+  ];
+}
+
+export function staticImplements<T>() {
+  return <U extends T>(constructor: U) => {
+    constructor;
+  };
 }

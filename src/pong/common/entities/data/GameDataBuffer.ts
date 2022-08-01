@@ -8,7 +8,7 @@ import { type DataChanger, type DataChangerEvent } from "../../game/events";
  */
 export class GameDataBuffer {
   dataArray: GameData[] = Array.from({ length: 100 }, () => new GameData());
-  eventsArray: DataChanger[][];
+  eventsArray: DataChanger[][] = [];
 
   currentIndex: number;
   nextIndex: number;
@@ -62,19 +62,13 @@ export class GameDataBuffer {
     this.eventsArray = [];
   }
 
-  addGraviton(x: number, y: number, lifespan: number): void {
-    let graviton = new GravitonData(x, y, 0, lifespan);
+  addGraviton(x: number, y: number): void {
+    let graviton = new GravitonData(x, y);
     this.current.gravitons.add(graviton);
   }
 
-  addPortal(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-    lifespan: number
-  ): void {
-    let portal = new PortalData(x1, y1, x2, y2, 0, lifespan);
+  addPortal(x1: number, y1: number, x2: number, y2: number): void {
+    let portal = new PortalData(x1, y1, x2, y2);
     this.current.portals.add(portal);
   }
 

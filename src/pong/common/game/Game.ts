@@ -7,6 +7,7 @@ import {
   SpawnGravitonEvent,
   SpawnPortalEvent,
   type SpawnPortalEventStruct,
+  GameProducedEvent,
 } from "./events";
 
 /**
@@ -31,6 +32,7 @@ export class Game {
       [GameEvent.START, this.start.bind(this)],
       [GameEvent.PAUSE, this.pause.bind(this)],
       [GameEvent.RESET, this.reset.bind(this)],
+      [GameEvent.GOAL, this.goal.bind(this)],
       [
         GameEvent.RECEIVE_BAR_EVENT,
         (...eventArgs: BarInputEventStruct) => {
@@ -58,7 +60,7 @@ export class Game {
   }
 
   emit(event: string, ...args: any[]) {
-    this.incommingEventsCallback.get(event)(...args);
+    this.incommingEventsCallback.get(event)?.call(this, ...args);
   }
 
   reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
@@ -105,5 +107,16 @@ export class Game {
       this.timeAccumulated -= GSettings.GAME_STEP_MS;
       this.state.update();
     }
+  }
+
+  isOver(): boolean {
+    return (
+      this.score[0] >= GSettings.GAME_SCORE_VICTORY ||
+      this.score[1] >= GSettings.GAME_SCORE_VICTORY
+    );
+  }
+
+  winner(): number {
+    return this.score[0] >= this.score[1] ? 0 : 1;
   }
 }

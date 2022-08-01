@@ -1,17 +1,17 @@
 import { io, Socket } from "socket.io-client";
-import { GameEvent } from "../common/constants";
+import { GameEvent, PLAYER1, PLAYER2 } from "../common/constants";
+import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContext } from "./ClientGameContext";
-import { ClientGameManagerOnline } from "./game/ClientGameManagerOnline";
+import { setupKeyboardOnline } from "./game";
 
 /**
  * Online version of the game in the client (see ClientGameContext)
  */
 export class ClientGameContextOnline extends ClientGameContext {
   socket: Socket;
-  constructor() {
-    super();
-    this.gameManager = new ClientGameManagerOnline();
-  }
+  playerId: number;
+  otherPlayerId: number;
+  ballOutAlreadyEmitted: boolean = false;
 
   configure() {
     this.socket = io("http://localhost:5000/pong");
@@ -33,10 +33,24 @@ export class ClientGameContextOnline extends ClientGameContext {
     transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_EVENT);
     transmitEventFromServerToGame(GameEvent.START);
     transmitEventFromServerToGame(GameEvent.RESET);
+    this.socket.on(GameEvent.RESET, () => {
+      this.ballOutAlreadyEmitted = false;
+    });
     transmitEventFromServerToGame(GameEvent.PAUSE);
     transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
+    transmitEventFromServerToGame(GameEvent.SPAWN_PORTAL);
+    transmitEventFromServerToGame(GameEvent.GOAL);
     this.socket.on(GameEvent.GOAL, (playerId: number) => {
       this.handleGoal(playerId);
+    });
+
+    // outgoing event
+
+    GameProducedEvent.registerEvent(GameEvent.BALL_OUT, (playerId: number) => {
+      if (playerId == this.playerId && !this.ballOutAlreadyEmitted) {
+        this.socket.emit(GameEvent.BALL_OUT, playerId);
+        this.ballOutAlreadyEmitted = true;
+      }
     });
   }
 
@@ -44,10 +58,9 @@ export class ClientGameContextOnline extends ClientGameContext {
     this.socket.on(
       "playerIdConfirmed",
       (playerId: number, ready: () => void) => {
-        (this.gameManager as ClientGameManagerOnline).setup(
-          this.socket,
-          playerId
-        );
+        this.playerId = playerId;
+        this.otherPlayerId = this.playerId == PLAYER1 ? PLAYER2 : PLAYER1;
+        setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
         this.animate(Date.now());
         ready();
       }
@@ -61,6 +74,9 @@ export class ClientGameContextOnline extends ClientGameContext {
     renderer
       .startVictoryAnimationAsync()
       .then(() => renderer.scorePanels.goalAgainst(playerId))
-      .then(() => this.socket.emit(GameEvent.READY));
+      .then(() => {
+        if (this.gameManager.game.isOver()) this.onFinish();
+        else this.socket.emit(GameEvent.READY);
+      });
   }
 }

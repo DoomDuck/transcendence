@@ -137,8 +137,7 @@ function ballGameEdgeCollision(data: GameDataBuffer) {
   const ballEdge = Math.abs(data.next.ball.x) + GSettings.BALL_RADIUS;
   if (ballEdge > GSettings.GAME_RIGHT) {
     GameProducedEvent.produceEvent(
-      "ballOut",
-      data.currentTime,
+      GameEvent.BALL_OUT,
       data.next.ball.x > 0 ? 1 : 0
     );
   }

@@ -18,6 +18,7 @@ export class GSettings {
   static readonly GAME_BOTTOM = GSettings.GAME_HEIGHT / 2;
   static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
   static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
+  static readonly GAME_SCORE_VICTORY = 3;
 
   // UID ----->
   static readonly SCORE_SIZE = GSettings.SCREEN_WIDTH / 30;
@@ -56,8 +57,6 @@ export class GSettings {
     ...GSettings.BAR_P1_DOWNKEYS,
     ...GSettings.BAR_P2_DOWNKEYS,
   ];
-  static readonly BAR_UP_KEYS = ["ArrowUp", "w", "z"];
-  static readonly BAR_DOWN_KEYS = ["ArrowDown", "s"];
   static readonly BAR_COLOR = "rgb(209, 64, 129)";
   static readonly BAR_COLLISION_EDGE =
     GSettings.BAR_INITIALX - GSettings.BAR_WIDTH / 2;
@@ -86,12 +85,22 @@ export class GSettings {
   static readonly BALL_POS_ERROR_MAX = 0.05 * GSettings.SCREEN_WIDTH;
   static readonly BALL_SPEED_ERROR_MAX = 0.05 * GSettings.SCREEN_WIDTH;
 
+  // SPRITES ->
+  static readonly SPRITE_FRAME_RATE = 5;
+
   // GRAVITON ->
   static readonly GRAVITON_LIFESPAN = 500;
   static readonly GRAVITON_LIFESPAN_MS =
     GSettings.GRAVITON_LIFESPAN * GSettings.GAME_STEP_MS;
   static readonly GRAVITON_SPRITE_WIDTH = 128;
   static readonly GRAVITON_SPRITE_HEIGHT = 128;
+  static readonly GRAVITON_OPENING_NFRAMES = 10;
+  static readonly GRAVITON_PULLING_NFRAMES = 9;
+  static readonly GRAVITON_OPENING_DURATION =
+    GSettings.SPRITE_FRAME_RATE * GSettings.GRAVITON_OPENING_NFRAMES;
+  static readonly GRAVITON_MAIN_DURATION =
+    GSettings.GRAVITON_LIFESPAN - GSettings.GRAVITON_OPENING_DURATION;
+  static readonly GRAVITON_END_DURATION = GSettings.GRAVITON_OPENING_DURATION;
   static readonly GRAVITON_SIZE = GSettings.SCREEN_WIDTH / 10;
   static readonly GRAVITON_FORCE_WIDTH_HALF = GSettings.SCREEN_WIDTH / 10;
   static readonly GRAVITON_FORCE_HEIGHT_HALF = GSettings.GRAVITON_SIZE / 4;
@@ -99,32 +108,45 @@ export class GSettings {
   static readonly GRAVITON_SPAWN_WIDTH = GSettings.GAME_WIDTH / 2;
   static readonly GRAVITON_SPAWN_HEIGHT =
     GSettings.GAME_HEIGHT - GSettings.GRAVITON_SIZE;
-  static readonly GRAVITON_ONLINE_SPAWN_DELAY = 10;
+  static readonly GRAVITON_SPAWN_DELAY = 500;
+  static readonly GRAVITON_SPAWN_INTERVAL =
+    GSettings.GRAVITON_LIFESPAN_MS * 0.55;
 
-  // PORTAL
+  // PORTAL -->
   static readonly PORTAL_LIFESPAN = 1000;
   static readonly PORTAL_LIFESPAN_MS =
     GSettings.PORTAL_LIFESPAN * GSettings.GAME_STEP_MS;
   static readonly PORTAL_SPRITE_WIDTH = 23;
   static readonly PORTAL_SPRITE_HEIGHT = 75;
+  static readonly PORTAL_SPRITE_NFRAMES = 9;
+  static readonly PORTAL_OPENING_DURATION =
+    GSettings.SPRITE_FRAME_RATE * GSettings.PORTAL_SPRITE_NFRAMES;
+  static readonly PORTAL_MAIN_DURATION =
+    GSettings.PORTAL_LIFESPAN - GSettings.PORTAL_OPENING_DURATION;
+  static readonly PORTAL_END_DURATION = GSettings.PORTAL_OPENING_DURATION;
+  static readonly PORTAL_HEIGHT = GSettings.SCREEN_WIDTH / 8;
   static readonly PORTAL_RATIO =
     GSettings.PORTAL_SPRITE_WIDTH / GSettings.PORTAL_SPRITE_HEIGHT;
-  static readonly PORTAL_HEIGHT = GSettings.SCREEN_WIDTH / 8;
   static readonly PORTAL_WIDTH =
     GSettings.PORTAL_RATIO * GSettings.PORTAL_HEIGHT;
   static readonly PORTAL_SPAWN_XMIN = 0.05 * GSettings.SCREEN_WIDTH;
   static readonly PORTAL_SPAWN_XMAX = 0.25 * GSettings.SCREEN_WIDTH;
   static readonly PORTAL_SPAWN_HEIGHT =
     GSettings.GAME_HEIGHT - GSettings.PORTAL_HEIGHT;
+  static readonly PORTAL_SPAWN_DELAY = 1000;
+  static readonly PORTAL_SPAWN_INTERVAL = GSettings.PORTAL_LIFESPAN_MS * 1.1;
 
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
   static readonly VICTORY_ANIMATION_SPEED = GSettings.BALL_SPEEDY_MAX;
   static readonly VICTORY_ANIMATION_COLOR = "rgba(255, 0, 0)";
 
-  // BACKGROUND
+  // BACKGROUND >
   static readonly BACKGROUND_COLOR_GREY = "rgb(173, 173, 173)";
   static readonly BACKGROUND_N_SUBDIVISIONS = 25;
+
+  // ONLINE ---->
+  static readonly ONLINE_SPAWN_DELAY = 10;
 }
 
 export const PLAYER1 = 0;
@@ -159,6 +181,8 @@ export class GameEvent {
   static readonly SET_BALL = "receiveSetBall";
   // playerId: number
   static readonly GOAL = "goal";
+  // playerId: number
+  static readonly BALL_OUT = "ballOut";
   // ballSpeedX: number, ballSpeedY: number
   static readonly RESET = "reset";
   // time: number
@@ -167,10 +191,12 @@ export class GameEvent {
   static readonly BALL_BAR_COLLISION = "ballBarCollision";
   //
   static readonly READY = "ready";
-  // time: number, x: number, y: number, lifespan: number
+  // time: number, x: number, y: number
   static readonly SPAWN_GRAVITON = "spawnGraviton";
-  // time: number, x1: number, y1: number, x2: number, y2: number, lifespan: number
+  // time: number, x1: number, y1: number, x2: number, y2: number
   static readonly SPAWN_PORTAL = "spawnPortal";
+  //
+  static readonly GAME_OVER = "gameOver";
 }
 
 // export type BarKeyDownEvent = [KeyValue, number];
