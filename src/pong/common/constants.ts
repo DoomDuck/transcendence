@@ -24,10 +24,9 @@ export class GSettings {
   static readonly SCORE_SIZE = GSettings.SCREEN_WIDTH / 30;
   static readonly SCORE_X = GSettings.SCREEN_WIDTH / 20;
   static readonly SCORE_Y = -GSettings.GAME_HEIGHT * (1 / 2 - 1 / 10);
-  static readonly SCORE_PANEL_CANVAS_WIDTH = 200;
-  static readonly SCORE_PANEL_CANVAS_HEIGHT = 100;
-  static readonly SCORE_PANEL_CANVAS_FILLSTYLE = "white";
-  static readonly SCORE_PANEL_CANVAS_FONT = "64px Avenir Medium";
+  static readonly SCORE_PANEL_FONT = "64px Avenir Medium";
+  static readonly SCORE_PANEL_FONT_SIZE = 64;
+  static readonly SCORE_PANEL_TEXT_FILLSTYLE = "white";
 
   // PHYSIC -->
   static readonly GAME_STEP_MS = 1000 / 60;
@@ -139,7 +138,7 @@ export class GSettings {
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
   static readonly VICTORY_ANIMATION_SPEED = GSettings.BALL_SPEEDY_MAX;
-  static readonly VICTORY_ANIMATION_COLOR = "rgba(255, 0, 0)";
+  static readonly VICTORY_ANIMATION_COLOR = "rgb(255, 0, 0)";
 
   // BACKGROUND >
   static readonly BACKGROUND_COLOR_GREY = "rgb(173, 173, 173)";

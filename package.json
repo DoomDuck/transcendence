@@ -7,6 +7,7 @@
 	},
 	"scripts": {
 		"front_build": "webpack",
+		"front_debug": "webpack -d source-map",
 		"front_build:dev": "webpack --watch",
 		"nest_build": "nest build --path tsconfig.back.json",
 		"nest_start": "nest start --path tsconfig.back.json",

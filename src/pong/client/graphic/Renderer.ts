@@ -20,7 +20,6 @@ import { ScorePanels } from "./score";
 export class Renderer {
   context: CanvasRenderingContext2D;
   ratio: number;
-  background: ImageData;
   ballRadius: number;
   barWidth: number;
   barHeight: number;
@@ -31,6 +30,7 @@ export class Renderer {
   portalHeight: number;
   portalWidth: number;
   scoreSize: number;
+  backgroundBlockSize: number;
   victoryAnimation?: VictoryAnimation;
   scorePanels: ScorePanels;
 
@@ -76,15 +76,15 @@ export class Renderer {
     this.portalHeight = this.ratio * GSettings.PORTAL_HEIGHT;
     this.portalWidth = this.ratio * GSettings.PORTAL_WIDTH;
     this.scoreSize = this.ratio * GSettings.SCORE_SIZE;
-    this.createBackground();
+    this.backgroundBlockSize = height / GSettings.BACKGROUND_N_SUBDIVISIONS;
   }
 
-  createBackground() {
+  drawBackground() {
     const width = this.canvas.width;
     const height = this.canvas.height;
-    const blockSize = this.canvas.height / GSettings.BACKGROUND_N_SUBDIVISIONS;
+    const blockSize = this.backgroundBlockSize;
 
-    this.context.fillStyle = "rgb(0, 0, 0, 255)";
+    this.context.fillStyle = "rgb(0, 0, 0)";
     this.context.fillRect(0, 0, width, height);
 
     this.context.fillStyle = GSettings.BACKGROUND_COLOR_GREY;
@@ -99,11 +99,6 @@ export class Renderer {
         blockSize
       );
     }
-    this.background = this.context.getImageData(0, 0, width, height);
-  }
-
-  drawBackground() {
-    this.context.putImageData(this.background, 0, 0);
   }
 
   gameToCanvasCoord(x: number, y: number) {
@@ -229,13 +224,23 @@ export class Renderer {
       this.victoryAnimation.frame(time);
       return;
     }
+    // this.context.resetTransform();
+    // this.drawScore();
     this.drawBackground();
+    // this.context.fillStyle = "black";
+    // this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // this.context.putImageData(this.background, 0, 0);
+    // this.context.putImageData(this.background, 1, 0, 0, 0, this.canvas.width, this.canvas.height);
+    // this.context.putImageData(this.background, -100, -100);
+    // console.log(this.background.data[3]);
 
     this.drawBar(this.data.current.bars[0]);
     this.drawBar(this.data.current.bars[1]);
+
     for (let graviton of this.data.current.gravitons.values()) {
       this.drawGraviton(graviton);
     }
+
     for (let portal of this.data.current.portals.values()) {
       this.drawPortal(portal, 0);
       this.drawPortal(portal, 1);
