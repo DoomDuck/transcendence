@@ -56,8 +56,9 @@
             },
             created() {
                 this.username = prompt('Enter your username:');
-
-                this.socket.chat = io('http://localhost:5000/chat');
+						this.socket.chat = io('http://localhost:5000/chat',{auth :{ token:"tamere"}});
+//					this.socket.chat = io('http://localhost:5000/chat',{ autoConnect: false });
+					//this.socket.chat = io('http://localhost:5000/chat');
                 this.socket.chat.on('chatToClient', (msg) => {
                     this.receiveChatMessage(msg);
                 });

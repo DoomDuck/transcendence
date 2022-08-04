@@ -6,4 +6,4 @@ if [[ ! -f node_modules/prettier/bin-prettier.js ]]; then
 fi
 
 exec ./node_modules/prettier/bin-prettier.js --write \
-    $(find src -name '*.ts' && find src -name '*.svelte')
+    $(find front/src back/src -name '*.ts' && find front/src back/src -name '*.svelte')
