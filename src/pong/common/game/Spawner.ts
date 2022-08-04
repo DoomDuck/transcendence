@@ -17,8 +17,10 @@ export class Spawner {
   ) {}
 
   startSpawning(delay: number = 0) {
-    if (this.intervalHandles[0] !== null || this.intervalHandles[1] !== null)
-      throw new Error("Tried to start spawner twice");
+    if (this.intervalHandles[0] !== null || this.intervalHandles[1] !== null) {
+      this.stopSpawning();
+      // throw new Error("Tried to start spawner twice");
+    }
     setTimeout(() => {
       this.intervalHandles[0] = setInterval(
         this.spawnGraviton,

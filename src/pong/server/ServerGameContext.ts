@@ -15,7 +15,7 @@ import {
   SpawnGravitonEvent,
 } from "../common/game/events";
 import { Spawner } from "../common/game/Spawner";
-import { randomGravitonCoords, randomPortalCoords } from "../common/utils";
+import { delay, randomGravitonCoords, randomPortalCoords } from "../common/utils";
 
 /**
  * Manage a full game session between two players (sockets) in the server
@@ -54,6 +54,16 @@ export class ServerGameContext {
     );
 
     setInterval(this.game.frame.bind(this.game), GSettings.GAME_STEP_MS);
+
+    //d
+    // let i = 500;
+    // setTimeout(() => {
+    //   setInterval(() => {
+    //     Promise.resolve(this.pause(100))
+    //       .then(() => delay(i))
+    //       .then(() => {this.start(100); i+=100;})
+    //   }, 2000)
+    // }, 600)
   }
 
   isReady(playerId: number) {
@@ -95,14 +105,12 @@ export class ServerGameContext {
     const time = this.game.state.data.actualNow + GSettings.ONLINE_SPAWN_DELAY;
     const [x, y] = randomGravitonCoords();
     this.broadcastEvent(GameEvent.SPAWN_GRAVITON, time, x, y);
-    console.log("spawnGraviton", time);
   }
 
   spawnPortal() {
     const time = this.game.state.data.actualNow + GSettings.ONLINE_SPAWN_DELAY;
     const [x1, x2, y1, y2] = randomPortalCoords();
     this.broadcastEvent(GameEvent.SPAWN_PORTAL, time, x1, y1, x2, y2);
-    console.log("spawnPortal", time);
   }
 
   handleGoal(playerId: number) {

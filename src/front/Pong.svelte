@@ -16,9 +16,9 @@
     };
 
     // offline
-    const ctx = new ClientGameContextOffline(onFinish);
+    // const ctx = new ClientGameContextOffline(onFinish);
     // online
-    // const ctx = new ClientGameContextOnline(onFinish);
+    const ctx = new ClientGameContextOnline(onFinish);
     ctx.configure();
     ctx.startGame();
   });

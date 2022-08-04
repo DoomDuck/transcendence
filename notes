@@ -1,1 +1,9 @@
 background image: https://www.pexels.com/photo/sky-with-stars-illustration-957061/
+
+createClientContext({
+  onFinish: Function,
+  online: boolean = true,
+  classic: boolean = true,
+})
+
+test de pause()
