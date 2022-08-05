@@ -1,11 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Socket } from "socket.io";
+import { removeIfPresent } from "../../pong/common/utils";
 import { ServerGameContext } from "../../pong/server";
-
-function removeIfPresent<T>(array: Array<T>, element: T) {
-  const i = array.indexOf(element);
-  if (i != -1) array.splice(i, 1);
-}
 
 @Injectable()
 export class GameManagerService {

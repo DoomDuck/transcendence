@@ -40,8 +40,7 @@ export function randomPortalCoords(): [number, number, number, number] {
   ];
 }
 
-export function staticImplements<T>() {
-  return <U extends T>(constructor: U) => {
-    constructor;
-  };
+export function removeIfPresent<T>(array: Array<T>, element: T) {
+  const i = array.indexOf(element);
+  if (i != -1) array.splice(i, 1);
 }

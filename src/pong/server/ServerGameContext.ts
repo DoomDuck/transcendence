@@ -9,13 +9,14 @@ import {
 } from "../common/constants";
 import { Socket } from "socket.io";
 import { BarInputEvent, Game } from "../common/game";
-import {
-  BarInputEventStruct,
-  GameProducedEvent,
-  SpawnGravitonEvent,
-} from "../common/game/events";
+import { BarInputEventStruct } from "../common/game/events";
 import { Spawner } from "../common/game/Spawner";
-import { delay, randomGravitonCoords, randomPortalCoords } from "../common/utils";
+import {
+  delay,
+  randomGravitonCoords,
+  randomPortalCoords,
+  removeIfPresent,
+} from "../common/utils";
 
 /**
  * Manage a full game session between two players (sockets) in the server
@@ -28,6 +29,8 @@ export class ServerGameContext {
   score: [number, number] = [0, 0];
   ballDirection: number = LEFT;
   spawner: Spawner;
+  observers: Socket[];
+  alreadyStarted: boolean = false;
 
   constructor(public players: [Socket, Socket], public onFinish: () => void) {
     this.game = new Game();
@@ -39,6 +42,9 @@ export class ServerGameContext {
         GameEvent.SEND_BAR_EVENT,
         (...args: BarInputEventStruct) => {
           this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
+          for (let observer of this.observers) {
+            observer.emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
+          }
           this.game.state.registerEvent(new BarInputEvent(...args));
         }
       );
@@ -53,22 +59,16 @@ export class ServerGameContext {
       this.spawnPortal.bind(this)
     );
 
-    setInterval(this.game.frame.bind(this.game), GSettings.GAME_STEP_MS);
-
-    //d
-    // let i = 500;
-    // setTimeout(() => {
-    //   setInterval(() => {
-    //     Promise.resolve(this.pause(100))
-    //       .then(() => delay(i))
-    //       .then(() => {this.start(100); i+=100;})
-    //   }, 2000)
-    // }, 600)
+    setInterval(() => {
+      this.game.frame();
+      this.spawner.frame();
+    }, GSettings.GAME_STEP_MS);
   }
 
   isReady(playerId: number) {
     this.ready[playerId] = true;
     if (this.ready[0] && this.ready[1] && !this.game.isOver()) {
+      this.alreadyStarted = true;
       console.log("both players are ready, starting");
       this.ready = [false, false];
       this.reset(0, 0, this.ballDirection);
@@ -76,29 +76,42 @@ export class ServerGameContext {
     }
   }
 
+  addObserver(socket: Socket) {
+    this.observers.push(socket);
+    socket.on("disconnect", () => {
+      removeIfPresent(this.observers, socket);
+    });
+    if (this.alreadyStarted) {
+      // SHIT
+    }
+  }
+
   broadcastEvent(event: string, ...args: any[]) {
     this.game.emit(event, ...args);
     this.players[PLAYER1].emit(event, ...args);
     this.players[PLAYER2].emit(event, ...args);
+    for (let observer of this.observers) {
+      observer.emit(event, ...args);
+    }
   }
 
   start(delay: number) {
     const startTime = Date.now() + delay;
     this.broadcastEvent(GameEvent.START, startTime);
-    this.spawner.startSpawning(delay);
+    this.spawner.start(startTime);
   }
 
   pause(delay: number) {
     const pauseTime = Date.now() + delay;
     this.broadcastEvent(GameEvent.PAUSE, pauseTime);
-    this.spawner.stopSpawning();
+    this.spawner.pause(pauseTime);
   }
 
   reset(ballX: number, ballY: number, ballDirection: Direction) {
     let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
     let ballSpeedY = ((2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX) / 3;
     this.broadcastEvent(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-    this.spawner.stopSpawning();
+    this.spawner.reset();
   }
 
   spawnGraviton() {
@@ -116,7 +129,7 @@ export class ServerGameContext {
   handleGoal(playerId: number) {
     console.log("GOAL !!!");
     this.game.pause();
-    this.spawner.stopSpawning();
+    this.spawner.pause();
     this.broadcastEvent(GameEvent.GOAL, playerId);
     if (this.game.isOver()) {
       this.onFinish();

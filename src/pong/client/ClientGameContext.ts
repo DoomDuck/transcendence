@@ -1,27 +1,20 @@
+import { ElapsedTimeMeasurer } from "../common/game/ElapsedTimeMeasurer";
 import { ClientGameManager } from "./game";
-import { Renderer } from "./graphic";
 
 /**
  * Root of the client code execution
  * Online version:
  *  - Connect to the server's socket namespace upon creation
  *  - Waits for server to confirm a game starts
- *  - Only then can it know its role (p1, p2 or observer)
+ *  - Only then can know its role (p1, p2 or observer)
  * Offline version:
  *  - Start immediately
- *  - Spawns the gravitons and protals regularly
+ *  - Spawns the gravitons and protals
  */
-export abstract class ClientGameContext {
-  gameManager: ClientGameManager = new ClientGameManager();
+export interface ClientGameContext {
+  gameManager: ClientGameManager;
+  onFinish(): void;
 
-  constructor(public onFinish: () => void) {}
-
-  abstract configure(): void;
-  abstract startGame(): void;
-
-  animate(time: DOMHighResTimeStamp) {
-    requestAnimationFrame(this.animate.bind(this));
-    this.gameManager.game.frame();
-    this.gameManager.render(time);
-  }
+  animate(): void;
+  startGame(): void;
 }

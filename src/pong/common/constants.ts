@@ -108,8 +108,8 @@ export class GSettings {
   static readonly GRAVITON_SPAWN_HEIGHT =
     GSettings.GAME_HEIGHT - GSettings.GRAVITON_SIZE;
   static readonly GRAVITON_SPAWN_DELAY = 500;
-  static readonly GRAVITON_SPAWN_INTERVAL =
-    GSettings.GRAVITON_LIFESPAN_MS * 0.55;
+  static readonly GRAVITON_SPAWN_TMIN = GSettings.GRAVITON_LIFESPAN_MS * 0.5;
+  static readonly GRAVITON_SPAWN_TMAX = GSettings.GRAVITON_LIFESPAN_MS;
 
   // PORTAL -->
   static readonly PORTAL_LIFESPAN = 1000;
@@ -133,7 +133,8 @@ export class GSettings {
   static readonly PORTAL_SPAWN_HEIGHT =
     GSettings.GAME_HEIGHT - GSettings.PORTAL_HEIGHT;
   static readonly PORTAL_SPAWN_DELAY = 1000;
-  static readonly PORTAL_SPAWN_INTERVAL = GSettings.PORTAL_LIFESPAN_MS * 1.1;
+  static readonly PORTAL_SPAWN_TMIN = GSettings.PORTAL_LIFESPAN_MS * 1;
+  static readonly PORTAL_SPAWN_TMAX = GSettings.PORTAL_LIFESPAN_MS * 1.5;
 
   // ANIMATION >
   static readonly VICTORY_ANIMATION_DURATION_MS = 1500;
@@ -176,6 +177,8 @@ export class GameEvent {
   static readonly START = "start";
   // pauseTime: number
   static readonly PAUSE = "pause";
+  // // elapsed: number
+  // static readonly UPDATE = "update";
   // time: number, x: number, y: number, speedX: number, speedY: number
   static readonly SET_BALL = "receiveSetBall";
   // playerId: number
