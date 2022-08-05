@@ -7,15 +7,15 @@
         "jest"
     ],
     
-    "outDir": "build/",
-    "rootDir": "src/",
+    "outDir": "back/build/",
+    "rootDir": "../",
+    "moduleResolution": "node",
 
     "importsNotUsedAsValues": "remove",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noImplicitReturns": true,
   	"allowSyntheticDefaultImports": true,
-    "module": "commonjs",
     "declaration": true,
     "removeComments": true,
 
@@ -31,7 +31,7 @@
 
 
     "baseUrl": ".",
-    "incremental": true,
+    "incremental": false,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "noImplicitAny": true,

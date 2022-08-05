@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"description": "Transcendance back",
 	"scripts": {
+		"webpack": "webpack",
 		"prebuild": "rimraf dist",
 		"build": "nest build",
 		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -68,7 +69,8 @@
 		"ts-jest": "^28.0.5",
 		"ts-loader": "^9.3.1",
 		"ts-node": "^10.8.2",
-		"tsconfig-paths": "^4.0.0"
+		"tsconfig-paths": "^4.0.0",
+		"webpack": "^5.74.0"
 	},
 	"jest": {
 		"moduleFileExtensions": [
