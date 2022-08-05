@@ -2,16 +2,9 @@
   "name": "pong",
   "version": "1.0.0",
   "description": "",
-  "scripts": {
-    "build": "tsc"
-  },
-  "files": [
-    "build",
-    "package.json",
-    "tsconfig.json"
-  ],
-  "main": "./build/index.js",
-  "exports": "./build/index.js",
+
+  "main": "./index.ts",
+
   "author": "el-zins",
   "license": "ISC",
   "dependencies": {
