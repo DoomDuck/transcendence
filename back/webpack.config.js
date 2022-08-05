@@ -1,18 +1,22 @@
 const path = require("path");
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   entry: "./src/main.ts",
   
   // bundle files from node_modules
-  externals: [],
-  
-  target: 'node',
+  externals: [nodeExternals(
+    {allowlist: ['pong']}
+  )],
+  externalsPresets: {
+    node: true,
+  },
   
   mode: 'development',
   
   output: {
     path: path.resolve(__dirname, "build/"),
-    filename: "./bundle.js",
+    filename: "./main.js",
   },
   
   resolve: {
