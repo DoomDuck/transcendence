@@ -36,7 +36,7 @@
 	#chat {
 		width: 100%;
 		height: 100%;
-		background-image: url('starsSky.jpeg');
+		background-image: url('/starsSky.jpeg');
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;

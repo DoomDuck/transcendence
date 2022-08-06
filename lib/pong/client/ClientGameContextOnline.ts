@@ -13,8 +13,17 @@ export class ClientGameContextOnline extends ClientGameContext {
   otherPlayerId!: number;
   ballOutAlreadyEmitted: boolean = false;
 
-  configure() {
-    this.socket = io("http://localhost:5000/pong");
+  async configure() {
+    this.socket = io("http://localhost:5000/pong", {
+      // extraHeaders: {
+      //   "Access-Control-Allow-Origin": "http://localhost:5000",
+      //   "Access-Control-Allow-Credentials": "true",
+      //   // TODO check list syntax
+      //   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      //   "Access-Control-Allow-Headers": "Content-type, Authorization"
+        
+      // }
+    });
     this.socket.on("connect", () => {
       console.log("connected to server");
     });

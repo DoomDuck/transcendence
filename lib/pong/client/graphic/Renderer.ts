@@ -37,26 +37,26 @@ export class Renderer {
   constructor(public canvas: HTMLCanvasElement, public data: GameDataBuffer) {
     this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.gravitonSpriteOpening = new MultiframeSprite(
-      "/public/img/graviton_opening.png",
+      "/graviton_opening.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
       GSettings.GRAVITON_SPRITE_HEIGHT,
       GSettings.GRAVITON_OPENING_NFRAMES
     );
     this.gravitonSpritePulling = new MultiframeSprite(
-      "/public/img/graviton_pulling.png",
+      "/graviton_pulling.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
       GSettings.GRAVITON_SPRITE_HEIGHT,
       GSettings.GRAVITON_PULLING_NFRAMES
     );
     this.portalSprites = [
       new MultiframeSprite(
-        "/public/img/portal.png",
+        "/portal.png",
         GSettings.PORTAL_SPRITE_WIDTH,
         GSettings.PORTAL_SPRITE_HEIGHT,
         GSettings.PORTAL_SPRITE_NFRAMES
       ),
       new MultiframeSprite(
-        "/public/img/portalReverse.png",
+        "/portalReverse.png",
         GSettings.PORTAL_SPRITE_WIDTH,
         GSettings.PORTAL_SPRITE_HEIGHT,
         GSettings.PORTAL_SPRITE_NFRAMES
