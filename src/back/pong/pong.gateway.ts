@@ -18,6 +18,12 @@ export class PongGateway implements OnGatewayConnection {
 
   handleConnection(client: Socket) {
     this.logger.log(`socket connection ${client.id}`);
-    this.manager.add(client);
+    client.on("joinMatchMaking", () => {
+      this.manager.add(client);
+    });
+    ///// TTTTTEEEMMMMPORARRRRRRRYYYY-YEAH
+    client.on("observe", (gameId: number) => {
+      this.manager.addObserver(client, gameId);
+    });
   }
 }

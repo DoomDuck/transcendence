@@ -5,7 +5,21 @@
 </script>
 
 <div id="start_a_game">
-  <h4 on:click={() => dispatch("Play")}>Play</h4>
+  <h4
+    on:click={() => dispatch("play_online", { online: true, observe: false })}
+  >
+    Play Online
+  </h4>
+  <br />
+  <h4
+    on:click={() => dispatch("play_offline", { online: false, observe: false })}
+  >
+    Play Offline
+  </h4>
+  <br />
+  <h4 on:click={() => dispatch("observe", { online: true, observe: true })}>
+    Observe
+  </h4>
   <br />
   <h4 on:click={() => dispatch("see_friends")}>Challenge a friend</h4>
   <img
@@ -21,7 +35,7 @@
   #start_a_game {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: hidden;
     width: 100%;
     height: 100%;
@@ -38,7 +52,7 @@
     font-family: "Press start 2P";
     font-style: normal;
     color: blue;
-    line-height: 500%;
+    line-height: 300%;
     -webkit-text-stroke: 1px #000000;
     font-size: 2.5em;
   }

@@ -12,12 +12,10 @@ type Timeout = ReturnType<typeof setInterval>;
  */
 export class Spawner {
   gravitonDelays: Iterator<number> = delaysGenerator(
-    GSettings.GRAVITON_SPAWN_DELAY,
     GSettings.GRAVITON_SPAWN_TMIN,
     GSettings.GRAVITON_SPAWN_TMAX
   );
   portalDelays: Iterator<number> = delaysGenerator(
-    GSettings.PORTAL_SPAWN_DELAY,
     GSettings.PORTAL_SPAWN_TMIN,
     GSettings.PORTAL_SPAWN_TMAX
   );
@@ -29,8 +27,7 @@ export class Spawner {
     public spawnGraviton: () => void,
     public spawnPortal: () => void
   ) {
-    this.currentGravitonDelay = this.gravitonDelays.next().value;
-    this.currentPortalDelay = this.portalDelays.next().value;
+    this.reset();
   }
 
   start(startTime: number) {
@@ -42,6 +39,8 @@ export class Spawner {
   }
 
   reset() {
+    this.currentGravitonDelay = GSettings.GRAVITON_SPAWN_DELAY;
+    this.currentPortalDelay = GSettings.PORTAL_SPAWN_DELAY;
     this.elapsedTimeMeasurer.reset();
   }
 
@@ -59,6 +58,7 @@ export class Spawner {
       this.portalDelays,
       this.spawnPortal
     );
+    console.log(this.currentPortalDelay);
   }
 }
 
@@ -76,9 +76,8 @@ function consumeElapsedTime(
   return currentDelay;
 }
 
-function* delaysGenerator(initialDelay: number, tMin: number, tMax: number) {
+function* delaysGenerator(tMin: number, tMax: number) {
   const DT = tMax - tMin;
-  yield initialDelay;
   while (true) {
     yield Math.random() * DT + tMin;
   }

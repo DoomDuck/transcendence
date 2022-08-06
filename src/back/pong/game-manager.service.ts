@@ -17,6 +17,13 @@ export class GameManagerService {
     });
   }
 
+  addObserver(socket: Socket, gameId: number) {
+    // TOCHANGE (debug): need to work with the front part
+    // currently: launch a game before observing
+    this.games[0].addObserver(socket);
+    console.log("OBSERVER INCOOOOOOOOOOOMINNNNG");
+  }
+
   launchGameIfPossible() {
     if (this.waitingClients.length >= 2) {
       this.logger.log("two clients are waiting for a game");

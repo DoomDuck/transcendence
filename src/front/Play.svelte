@@ -2,10 +2,13 @@
   import { createEventDispatcher } from "svelte";
   import Pong from "./Pong.svelte";
   const dispatch = createEventDispatcher();
+
+  export let online;
+  export let observe;
 </script>
 
 <div id="Play">
-  <Pong />
+  <Pong {online} {observe} />
   <img
     on:click={() => dispatch("start_game")}
     src="img/return.png"

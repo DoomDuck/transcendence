@@ -1,5 +1,6 @@
 import { BallData, BarData, GameData, GravitonData, PortalData } from ".";
 import { type DataChanger, type DataChangerEvent } from "../../game/events";
+// import { PlainObject } from "../../utils";
 
 /**
  * The actual bufferized state of a Game
@@ -18,8 +19,12 @@ export class GameDataBuffer {
   current: GameData;
   next: GameData;
 
+  // constructor(data?: PlainObject<GameDataBuffer>) {
   constructor() {
+    // if (data === undefined)
     this.reset();
+    // else
+    //   Object.assign(this, data);
   }
 
   get eventsNow(): DataChanger[] | null {

@@ -29,8 +29,10 @@ export class ServerGameContext {
   score: [number, number] = [0, 0];
   ballDirection: number = LEFT;
   spawner: Spawner;
-  observers: Socket[];
+  observers: Socket[] = [];
   alreadyStarted: boolean = false;
+  gameLoopHandle?: ReturnType<typeof setInterval>;
+  // observerSendStateQueue: ((Game) => void)[] = [];
 
   constructor(public players: [Socket, Socket], public onFinish: () => void) {
     this.game = new Game();
@@ -42,9 +44,6 @@ export class ServerGameContext {
         GameEvent.SEND_BAR_EVENT,
         (...args: BarInputEventStruct) => {
           this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
-          for (let observer of this.observers) {
-            observer.emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
-          }
           this.game.state.registerEvent(new BarInputEvent(...args));
         }
       );
@@ -59,9 +58,12 @@ export class ServerGameContext {
       this.spawnPortal.bind(this)
     );
 
-    setInterval(() => {
+    this.gameLoopHandle = setInterval(() => {
       this.game.frame();
       this.spawner.frame();
+      for (let observer of this.observers) {
+        observer.emit(GameEvent.OBSERVER_UPDATE, this.game.state.data.current);
+      }
     }, GSettings.GAME_STEP_MS);
   }
 
@@ -81,12 +83,15 @@ export class ServerGameContext {
     socket.on("disconnect", () => {
       removeIfPresent(this.observers, socket);
     });
-    if (this.alreadyStarted) {
-      // SHIT
-    }
   }
 
-  broadcastEvent(event: string, ...args: any[]) {
+  broadcastEventPlayersOnly(event: string, ...args: any[]) {
+    this.game.emit(event, ...args);
+    this.players[PLAYER1].emit(event, ...args);
+    this.players[PLAYER2].emit(event, ...args);
+  }
+
+  broadcastEventEveryone(event: string, ...args: any[]) {
     this.game.emit(event, ...args);
     this.players[PLAYER1].emit(event, ...args);
     this.players[PLAYER2].emit(event, ...args);
@@ -97,43 +102,66 @@ export class ServerGameContext {
 
   start(delay: number) {
     const startTime = Date.now() + delay;
-    this.broadcastEvent(GameEvent.START, startTime);
+    this.broadcastEventPlayersOnly(GameEvent.START, startTime);
     this.spawner.start(startTime);
   }
 
   pause(delay: number) {
     const pauseTime = Date.now() + delay;
-    this.broadcastEvent(GameEvent.PAUSE, pauseTime);
+    this.broadcastEventPlayersOnly(GameEvent.PAUSE, pauseTime);
     this.spawner.pause(pauseTime);
   }
 
   reset(ballX: number, ballY: number, ballDirection: Direction) {
     let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
     let ballSpeedY = ((2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX) / 3;
-    this.broadcastEvent(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
+    this.broadcastEventEveryone(
+      GameEvent.RESET,
+      ballX,
+      ballY,
+      ballSpeedX,
+      ballSpeedY
+    );
     this.spawner.reset();
   }
 
   spawnGraviton() {
     const time = this.game.state.data.actualNow + GSettings.ONLINE_SPAWN_DELAY;
     const [x, y] = randomGravitonCoords();
-    this.broadcastEvent(GameEvent.SPAWN_GRAVITON, time, x, y);
+    this.broadcastEventPlayersOnly(GameEvent.SPAWN_GRAVITON, time, x, y);
   }
 
   spawnPortal() {
     const time = this.game.state.data.actualNow + GSettings.ONLINE_SPAWN_DELAY;
     const [x1, x2, y1, y2] = randomPortalCoords();
-    this.broadcastEvent(GameEvent.SPAWN_PORTAL, time, x1, y1, x2, y2);
+    this.broadcastEventPlayersOnly(
+      GameEvent.SPAWN_PORTAL,
+      time,
+      x1,
+      y1,
+      x2,
+      y2
+    );
   }
 
   handleGoal(playerId: number) {
     console.log("GOAL !!!");
     this.game.pause();
     this.spawner.pause();
-    this.broadcastEvent(GameEvent.GOAL, playerId);
+    this.broadcastEventEveryone(GameEvent.GOAL, playerId);
     if (this.game.isOver()) {
-      this.onFinish();
+      this.handleEndOfGame();
     }
     this.ballDirection = playerId == PLAYER1 ? LEFT : RIGHT;
+  }
+
+  handleEndOfGame() {
+    this.players[0].disconnect();
+    this.players[1].disconnect();
+    for (let observer of this.observers) {
+      observer.disconnect();
+    }
+    clearInterval(this.gameLoopHandle);
+    this.onFinish();
   }
 }

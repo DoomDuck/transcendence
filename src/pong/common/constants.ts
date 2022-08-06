@@ -112,7 +112,7 @@ export class GSettings {
   static readonly GRAVITON_SPAWN_TMAX = GSettings.GRAVITON_LIFESPAN_MS;
 
   // PORTAL -->
-  static readonly PORTAL_LIFESPAN = 1000;
+  static readonly PORTAL_LIFESPAN = 600;
   static readonly PORTAL_LIFESPAN_MS =
     GSettings.PORTAL_LIFESPAN * GSettings.GAME_STEP_MS;
   static readonly PORTAL_SPRITE_WIDTH = 23;
@@ -199,6 +199,8 @@ export class GameEvent {
   static readonly SPAWN_PORTAL = "spawnPortal";
   //
   static readonly GAME_OVER = "gameOver";
+  // GameData
+  static readonly OBSERVER_UPDATE = "observerUpdate";
 }
 
 // export type BarKeyDownEvent = [KeyValue, number];

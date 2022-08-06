@@ -11,17 +11,17 @@ import {
   randomGravitonCoords,
   randomPortalCoords,
 } from "../common/utils";
-import { type ClientGameContext } from "./ClientGameContext";
+import { ClientGameContext } from "./ClientGameContext";
 import { ClientGameManager, setupKeyboardOffline } from "./game";
 
 /**
  * Offline version of the game in the client (see ClientGameContext)
  */
-export class ClientGameContextOffline implements ClientGameContext {
+export class ClientGameContextOffline extends ClientGameContext {
   spawner: Spawner;
-  gameManager: ClientGameManager = new ClientGameManager();
 
-  constructor(public onFinish: () => void) {
+  constructor(onFinish: () => void) {
+    super(onFinish);
     this.spawner = new Spawner(
       this.spawnGraviton.bind(this),
       this.spawnPortal.bind(this)
@@ -41,7 +41,7 @@ export class ClientGameContextOffline implements ClientGameContext {
   animate() {
     // animation loop
     let animate = (time: DOMHighResTimeStamp) => {
-      requestAnimationFrame(animate);
+      this.animationHandle = requestAnimationFrame(animate);
       this.gameManager.game.frame();
       this.spawner.frame();
       this.gameManager.render(time);
@@ -89,7 +89,7 @@ export class ClientGameContextOffline implements ClientGameContext {
       this.reset(ballSpeedX);
       renderer.scorePanels.goalAgainst(playerId);
       if (this.gameManager.game.isOver()) {
-        this.onFinish();
+        this.handleEndOfGame();
       } else {
         delay(500).then(() => this.startGame());
       }

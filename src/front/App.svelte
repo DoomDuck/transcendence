@@ -9,9 +9,13 @@
   type Status = "Menu" | "StartAGame" | "Chat" | "Play" | "Friends" | "Waiting";
 
   let status: Status = "Menu";
+  let statusArgs: any;
 
-  function go_to(place: Status) {
-    return () => (status = place);
+  function go_to(place: Status, args?: any) {
+    return () => {
+      status = place;
+      statusArgs = args;
+    };
   }
 </script>
 
@@ -28,12 +32,14 @@
   <Menu on:start_game={go_to("StartAGame")} on:open_chat={go_to("Chat")} />
 {:else if status == "StartAGame"}
   <StartAGame
-    on:Play={go_to("Play")}
+    on:play_online={go_to("Play", { online: true, observe: false })}
+    on:play_offline={go_to("Play", { online: false, observe: false })}
+    on:observe={go_to("Play", { online: true, observe: true })}
     on:open_menu={go_to("Menu")}
     on:see_friends={go_to("Friends")}
   />
 {:else if status == "Play"}
-  <Play on:start_game={go_to("StartAGame")} />
+  <Play {...statusArgs} on:start_game={go_to("StartAGame")} />
 {:else if status == "Friends"}
   <Friends
     on:start_game={go_to("StartAGame")}
