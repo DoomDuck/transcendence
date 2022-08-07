@@ -6,18 +6,9 @@
 		"doc": "doc"
 	},
 	"scripts": {
-		"front_build": "webpack",
-		"front_debug": "webpack -d source-map",
-		"front_build:dev": "webpack --watch",
-		"nest_build": "nest build --path tsconfig.back.json",
-		"nest_start": "nest start --path tsconfig.back.json",
-		"nest_start:dev": "nest start --path tsconfig.back.json --watch",
-		"nest_start:debug": "nest start --path tsconfig.back.json --debug --watch",
-		"nest_start:prod": "node build/back/main.js",
-		"check_format": "./scripts/check_format.sh",
-		"format": "./scripts/format.sh",
-		"setup_hooks": "./scripts/hooks/setup.sh",
-		"remove_hooks": "./scripts/hooks/remove.sh"
+		"install": "(cd front && npm install) && (cd back && npm install)",
+		"format": "(cd front && npm run format) && (cd back && npm run format)",
+		"format:check": "(cd front && npm run format:check) && (cd back && npm run format:check)"
 	},
 	"repository": {
 		"type": "git",
