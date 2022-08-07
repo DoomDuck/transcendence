@@ -1,43 +1,62 @@
-<!--
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import {
+		ClientGameContextOnlineObserver,
+		ClientGameContextOffline,
+		ClientGameContextOnlinePlayer,
+		ClientGameContext
+	} from 'pong';
+	export let online: boolean;
+	export let observe: boolean;
 
-	import { ClientContext } from '../../../src/pong/client/client';
+	console.log(`online: ${online}`);
+	console.log(`observe: ${observe}`);
+
+	let visibilities = ['visible', 'hidden'];
 
 	onMount(() => {
-		const ctx = new ClientContext();
+		const onFinish = () => {
+			// SHOW THE FINISH SCREEN
+			// DO THINGS
+			// E.G.
+			visibilities = ['hidden', 'visible'];
+		};
+
+		let ctx: ClientGameContext;
+		if (online) {
+			if (observe) ctx = new ClientGameContextOnlineObserver(onFinish);
+			else ctx = new ClientGameContextOnlinePlayer(onFinish);
+		} else ctx = new ClientGameContextOffline(onFinish);
+		ctx.animate();
+		ctx.startGame();
 	});
 </script>
 
 <div id="game-container">
-	<div id="game-screen" />
-	<div id="game-text">
-		<div id="p1-score" class="player-score" />
-		<div id="p2-score" class="player-score" />
+	<canvas id="game-screen" style="visibility: {visibilities[0]}" />
+	<div id="gameover-screen" style="visibility: {visibilities[1]}">
+		<p>Game<br />Over</p>
 	</div>
 </div>
 
 <style>
 	#game-container {
-		width: 100%;
-		height: 100%;
+		width: 67%;
+		height: 67%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
-	/* ensuring that game text and game screen superpose */
-	#game-text {
-		position: absolute;
-		top: 0;
-		z-index: 1;
-	}
-	/* ensuring that game text and game screen superpose */
 	#game-screen {
 		position: absolute;
-		top: 0;
-		z-index: 0;
 	}
-	.player-score {
-		color: rgb(255, 255, 255);
-		font-family: sans-serif;
-		background: rgba(0, 0, 0, 0);
+	#gameover-screen {
+		position: absolute;
+		background-color: white;
 	}
+	/* .player-score {
+    color: rgb(255, 255, 255);
+    font-family: sans-serif;
+    background: rgba(0, 0, 0, 0);
+} */
 </style>
--->

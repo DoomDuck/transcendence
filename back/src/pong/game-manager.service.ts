@@ -1,30 +1,36 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { GameManager } from 'pong/server';
-
-function removeElementByValue<T>(array: T[], item: T) {
-  const index = array.indexOf(item);
-  if (index !== -1) array.splice(index, 1);
-}
+import { removeIfPresent } from 'pong';
+import { ServerGameContext } from 'pong';
 
 @Injectable()
 export class GameManagerService {
   private waitingClients: Socket[] = [];
-  private games: GameManager[] = [];
+  private games: ServerGameContext[] = [];
   private logger: Logger = new Logger('GameManagerService');
 
   add(socket: Socket) {
     this.waitingClients.push(socket);
     this.launchGameIfPossible();
+    socket.on('disconnect', () => {
+      removeIfPresent(this.waitingClients, socket);
+    });
+  }
+
+  addObserver(socket: Socket, gameId: number) {
+    // TOCHANGE (debug): need to work with the front part
+    // currently: launch a game before observing
+    this.games[0].addObserver(socket);
+    console.log('OBSERVER INCOOOOOOOOOOOMINNNNG');
   }
 
   launchGameIfPossible() {
     if (this.waitingClients.length >= 2) {
       this.logger.log('two clients are waiting for a game');
-      const gameInstance = new GameManager([
-        this.waitingClients[0],
-        this.waitingClients[1],
-      ]);
+      const gameInstance: ServerGameContext = new ServerGameContext(
+        [this.waitingClients[0], this.waitingClients[1]],
+        () => removeIfPresent(this.games, gameInstance),
+      );
       this.games.push(gameInstance);
       this.waitingClients[0].emit('playerIdConfirmed', 0, () => {
         this.logger.log('player 0 ready');
@@ -36,9 +42,5 @@ export class GameManagerService {
       });
       this.waitingClients.splice(0, 2);
     }
-  }
-
-  remove(socket: Socket) {
-    removeElementByValue(this.waitingClients, socket);
   }
 }

@@ -1,97 +1,98 @@
-import { EventEmitter } from "events";
-import { Socket } from "socket.io-client";
-import { GameEvent, GSettings, PlayerID } from "../constants";
-import { PLAYER1, PLAYER2 } from "../constants";
-import { GameState } from "../entities/GameState";
+import { GameEvent, GSettings } from "../constants";
+import { GameState } from "../entities";
+import { ElapsedTimeMeasurer } from "./ElapsedTimeMeasurer";
+import {
+  BarInputEvent,
+  type BarInputEventStruct,
+  type SpawnGravitonEventStruct,
+  SpawnGravitonEvent,
+  SpawnPortalEvent,
+  type SpawnPortalEventStruct,
+} from "./events";
 
 /**
  * Game represents the environment representing an ongoing game between two players.
  * It is meant to be the bridge between the 'unanimated' game state and the outside
  * (i.e. all the communication + game loop and time-related problematics).
- * Extended in the server (ServerGame), as well as in the client (ClientGame).
+ * Instanciated by both client (in ClientGameManager) and server (in ServerGameContext)
  */
-export abstract class Game {
-  lastTime: number;
-  timeAccumulated: number;
-  state: GameState;
-  paused: boolean;
+export class Game {
+  state: GameState = new GameState();
+  score: [number, number] = [0, 0];
+  elapsedTimeMeasurer: ElapsedTimeMeasurer = new ElapsedTimeMeasurer();
+  timeAccumulated: number = 0;
   incommingEventsCallback: Map<string, any>;
-  outgoingEventsBallback: Map<string, any>;
 
-  constructor(state: GameState) {
-    this.lastTime = 0;
-    this.timeAccumulated = 0;
-    this.paused = true;
-    this.state = state;
+  constructor() {
     const eventsCallbackPairs: [string, any][] = [
       [GameEvent.START, this.start.bind(this)],
       [GameEvent.PAUSE, this.pause.bind(this)],
-      [GameEvent.UNPAUSE, this.unpause.bind(this)],
       [GameEvent.RESET, this.reset.bind(this)],
       [GameEvent.GOAL, this.goal.bind(this)],
+      [
+        GameEvent.RECEIVE_BAR_EVENT,
+        (...eventArgs: BarInputEventStruct) => {
+          this.state.registerEvent(new BarInputEvent(...eventArgs));
+        },
+      ],
+      [
+        GameEvent.SPAWN_GRAVITON,
+        (...eventArgs: SpawnGravitonEventStruct) => {
+          this.state.registerEvent(new SpawnGravitonEvent(...eventArgs));
+        },
+      ],
+      [
+        GameEvent.SPAWN_PORTAL,
+        (...eventArgs: SpawnPortalEventStruct) => {
+          this.state.registerEvent(new SpawnPortalEvent(...eventArgs));
+        },
+      ],
     ];
     this.incommingEventsCallback = new Map(eventsCallbackPairs);
-    this.outgoingEventsBallback = new Map();
   }
 
-  onIn(event: string, callback: any) {
+  on(event: string, callback: any) {
     this.incommingEventsCallback.set(event, callback);
   }
 
-  onOut(event: string, callback: any) {
-    this.outgoingEventsBallback.set(event, callback);
-  }
-
-  emitOut(event: string, ...args: any[]) {
-    this.outgoingEventsBallback.get(event)(...args);
-  }
-
-  emitIn(event: string, ...args: any[]) {
-    this.incommingEventsCallback.get(event)(...args);
+  emit(event: string, ...args: any[]) {
+    this.incommingEventsCallback.get(event)?.call(this, ...args);
   }
 
   reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
-    console.log("Game reset");
     this.timeAccumulated = 0;
-    this.paused = true;
+    this.elapsedTimeMeasurer.reset();
     this.state.reset(ballX, ballY, ballSpeedX, ballSpeedY);
   }
 
-  start() {
-    console.log("Game start");
-    this.paused = false;
-    this.lastTime = Date.now();
+  goal(playerId: number) {
+    this.score[playerId]++;
   }
 
-  pause() {
-    if (this.paused) return;
-    this.paused = true;
+  start(startTime: number) {
+    this.elapsedTimeMeasurer.start(startTime);
   }
 
-  unpause() {
-    if (!this.paused) return;
-    this.paused = false;
-    this.lastTime = Date.now();
-  }
-
-  goal(playerId: PlayerID) {
-    this.state.playersScore.handleGoal(playerId);
+  pause(pauseTime?: number) {
+    this.elapsedTimeMeasurer.pause(pauseTime);
   }
 
   frame() {
-    if (this.paused) return;
-    let newTime = Date.now();
-    let dt = newTime - this.lastTime;
-    this.timeAccumulated += dt;
-    this.lastTime = newTime;
-
-    while (this.timeAccumulated >= GSettings.GAME_STEP) {
-      this.timeAccumulated -= GSettings.GAME_STEP;
-      this.update(GSettings.GAME_STEP);
+    this.timeAccumulated += this.elapsedTimeMeasurer.frame();
+    while (this.timeAccumulated >= GSettings.GAME_STEP_MS) {
+      this.timeAccumulated -= GSettings.GAME_STEP_MS;
+      this.state.update();
     }
   }
 
-  update(elapsed: number) {
-    this.state.update(elapsed);
+  isOver(): boolean {
+    return (
+      this.score[0] >= GSettings.GAME_SCORE_VICTORY ||
+      this.score[1] >= GSettings.GAME_SCORE_VICTORY
+    );
+  }
+
+  winner(): number {
+    return this.score[0] >= this.score[1] ? 0 : 1;
   }
 }
