@@ -1,6 +1,5 @@
 <script>
-	import ChatMessage from './ChatMessage.svelte';
-	import TodayDivider from './TodayDivider.svelte';
+	import ChatMessage from './_ChatMessage.svelte';
 	import Fa from 'svelte-fa';
 	import {
 		faUsers,
@@ -147,7 +146,6 @@
 				/>
 			{/each}
 
-			<TodayDivider />
 			{#each todayMessages as todayMessage}
 				<ChatMessage
 					{nameMe}

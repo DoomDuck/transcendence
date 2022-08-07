@@ -1,16 +1,14 @@
 <script lang="ts">
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
+	import type { ConversationType } from './types';
 	import Conversation from './Conversation.svelte';
 
-	export let image = 'cars.jpeg';
-	// export let id: number;
-	export let name: string;
-	// export let chatmessage: {
-	// 	sender: number,
-	// 	content:string
-	// };
+	// export let name: string;
+	export let conversation: ConversationType;
 	export let hasNewMessage = false;
+	//
+	export let image = 'cars.jpeg';
 
 	let showProfile = false;
 	let openConv = false;
@@ -25,7 +23,7 @@
 	}}
 >
 	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (showProfile = true)} />
-	<h5>{name}</h5>
+	<h5>{conversation.interlocutor}</h5>
 	{#if hasNewMessage}
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
 	{/if}
@@ -33,12 +31,12 @@
 
 {#if showProfile}
 	<Modal on:close={() => (showProfile = false)}>
-		<Profile {image} {name} />
+		<Profile {image} name={conversation.interlocutor} />
 	</Modal>
 {/if}
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>
-		<Conversation {name} />
+		<Conversation {...conversation} />
 	</Modal>
 {/if}
 

@@ -1,9 +1,8 @@
 <script lang="ts">
-	import DirectMessages from '$lib/DirectMessages.svelte';
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
-	import OpenConversations from '$lib/OpenConversations.svelte';
+	import ConversationList from '$lib/ConversationList.svelte';
 
 	let friends = [
 		{ profilePic: 'cars.jpeg', name: 'coullax' },
@@ -24,12 +23,7 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<div>
-			<DirectMessages name="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
-
-			<DirectMessages name="Joey" image="canard.jpeg" hasNewMessage={true} />
-		</div>
-		<OpenConversations />
+		<ConversationList />
 	</div>
 </div>
 

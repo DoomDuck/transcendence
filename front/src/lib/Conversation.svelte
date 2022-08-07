@@ -3,16 +3,12 @@
 
 	import GameInvit from './GameInvit.svelte';
 	import Modal from './Modal.svelte';
+	import { type CommentType } from './types';
+
+	export let interlocutor: string;
+	export let comments: CommentType[];
+
 	let invit = false;
-
-	type Comment = {
-		author: string;
-		text: string;
-		placeholder?: true;
-	};
-
-	export let name: string;
-
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
@@ -24,8 +20,6 @@
 		if (autoscroll) div.scrollTo(0, div.scrollHeight);
 	});
 
-	let comments: Comment[] = [{ author: 'bot', text: 'Hello !' }];
-
 	function handleKeydown(event: KeyboardEvent) {
 		const inputElement = event.target as HTMLInputElement;
 		if (event.key === 'Enter') {
@@ -33,37 +27,37 @@
 			if (!text) return;
 
 			comments = comments.concat({
-				author: 'user',
+				author: undefined,
 				text
 			});
 
 			inputElement.value = '';
 
-			const reply = text + '!';
+			// const reply = text + '!';
 
-			setTimeout(() => {
-				comments = comments.concat({
-					author: 'bot',
-					text: '...',
-					placeholder: true
-				});
+			// setTimeout(() => {
+			// 	comments = comments.concat({
+			// 		author: 'bot',
+			// 		text: '...',
+			// 		placeholder: true
+			// 	});
 
-				setTimeout(() => {
-					comments = comments
-						.filter((comment) => !comment.placeholder)
-						.concat({
-							author: 'bot',
-							text: reply
-						});
-				}, 500 + Math.random() * 500);
-			}, 200 + Math.random() * 200);
+			// 	setTimeout(() => {
+			// 		comments = comments
+			// 			.filter((comment) => !comment.placeholder)
+			// 			.concat({
+			// 				author: 'bot',
+			// 				text: reply
+			// 			});
+			// 	}, 500 + Math.random() * 500);
+			// }, 200 + Math.random() * 200);
 		}
 	}
 </script>
 
 <div class="chat">
 	<div id="title">
-		<h2>{name}</h2>
+		<h2>{interlocutor}</h2>
 		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
 			<img
@@ -77,7 +71,7 @@
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each comments as comment}
-			<article class={comment.author}>
+			<article class={comment.author === undefined ? 'user' : 'interlocutor'}>
 				<span>{comment.text}</span>
 			</article>
 		{/each}
@@ -88,7 +82,7 @@
 
 {#if invit}
 	<Modal on:close={() => (invit = false)}>
-		<GameInvit {name} />
+		<GameInvit name={interlocutor} />
 	</Modal>
 {/if}
 
@@ -122,7 +116,7 @@
 		display: inline-block;
 	}
 
-	.bot span {
+	.interlocutor span {
 		background-color: #eee;
 		border-radius: 1em 1em 1em 0;
 	}
