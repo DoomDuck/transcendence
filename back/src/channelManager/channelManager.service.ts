@@ -72,6 +72,13 @@ export class ChannelManagerService {
     if (tempChan === undefined) return 'channel not found';
     else return tempChan;
   }
+  findChanById(channelId: Id): Channel | string {
+    const tempChan = this.arrayChannel.find(
+      (channel) => channel.channelId === channelId,
+    );
+    if (tempChan === undefined) return 'channel not found';
+    else return tempChan;
+  }
   findChanAll(): Channel[] | string {
     if (this.arrayChannel === []) return 'no channel at all';
     else return this.arrayChannel;

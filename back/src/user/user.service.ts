@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserDto } from './user.dto';
+import { UserHistoryDto } from './userHistory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
@@ -14,12 +15,31 @@ export class ActiveUser {
     this.ingame = false;
     this.socketUser = [];
     this.joinedChannel = [];
+    this.activeUserConversation = [];
+    this.activeChannelConversation = [];
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite: boolean;
   ingame: boolean;
   socketUser: Socket[];
   joinedChannel: Channel[];
+  activeUserConversation: ActiveConversation[];
+  activeChannelConversation: ActiveConversation[];
+}
+export class ChatMessage {
+  constructor(public sender: Id, public content: string) {
+    this.sender = sender;
+    this.content = content;
+  }
+}
+
+export class ActiveConversation {
+  constructor(public id: Id, public chatMessage?: ChatMessage) {
+    this.id = id;
+    this.history = [];
+    if (chatMessage) this.history.push(chatMessage);
+  }
+  history: ChatMessage[];
 }
 
 @Injectable()
@@ -32,6 +52,15 @@ export class UserService {
     private readonly databaseFilesService: DatabaseFilesService,
   ) {
     this.arrayActiveUser = [];
+  }
+  getUserHistory(id: Id): UserHistoryDto | undefined {
+    const tempUser = this.arrayActiveUser.find((user) => user.id === id);
+    if (tempUser)
+      return new UserHistoryDto(
+        tempUser.activeUserConversation,
+        tempUser.activeChannelConversation,
+      );
+    else return undefined;
   }
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
@@ -52,14 +81,8 @@ export class UserService {
     logger.log(userDto);
     logger.log(id);
     if ((await this.usersRepository.findOneBy({ id })) === null) {
-      // A Comprendre plus tard
-      // if( this.usersRepository.findOneBy({ userDto.id })=== undefined)
-      //  const newUser = new User(userDto.name);
       logger.log('dans undefined');
       const newUser = new User(userDto.id, userDto.name);
-
-      // newUser.name = userDto.name;
-      // newUser.friendlist = [];
       this.usersRepository.save(newUser);
     }
     logger.log(this.usersRepository.findOneBy({ id }));
@@ -130,18 +153,74 @@ export class UserService {
     //A MODIFIER
     return true;
   }
+  updateUserConversation(
+    sender: ActiveUser,
+    target: ActiveUser,
+    content: string,
+  ) {
+    const tempSenderConversation = sender.activeUserConversation.find(
+      (conv) => conv.id === target.id,
+    );
+    const tempTargetConversation = sender.activeUserConversation.find(
+      (conv) => conv.id === sender.id,
+    );
+    if (tempSenderConversation)
+      tempSenderConversation.history.push(new ChatMessage(sender.id, content));
+    else
+      sender.activeUserConversation.push(
+        new ActiveConversation(target.id, new ChatMessage(sender.id, content)),
+      );
 
+    if (tempTargetConversation)
+      tempTargetConversation.history.push(new ChatMessage(sender.id, content));
+    else
+      target.activeUserConversation.push(
+        new ActiveConversation(sender.id, new ChatMessage(sender.id, content)),
+      );
+  }
+  updateChannelConversation(
+    senderId: Id,
+    userId: Id,
+    channel: Channel,
+    content: string,
+  ) {
+    const sender = this.findOneActive(senderId);
+    const user = this.findOneActive(userId);
+    if (sender === undefined || user === undefined) return;
+    const tempUserConversation = user.activeChannelConversation.find(
+      (conv) => conv.id === channel.channelId,
+    );
+    if (tempUserConversation)
+      tempUserConversation.history.push(new ChatMessage(sender.id, content));
+    else
+      user.activeChannelConversation.push(
+        new ActiveConversation(
+          channel.channelId,
+          new ChatMessage(sender.id, content),
+        ),
+      );
+  }
   sendMessageToUser(
     wss: Server,
     messageInfo: { sender: Id; text: string; target: Id },
   ) {
-    const tempUser = this.arrayActiveUser.find(
+    const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id === messageInfo.sender,
     );
-    if (tempUser) {
-      tempUser.socketUser.forEach((socket) =>
-        wss.to(socket.id).emit('userToUser', messageInfo),
-      );
+    const tempUserTarget = this.arrayActiveUser.find(
+      (user) => user.id === messageInfo.target,
+    );
+    if (tempUserSender) {
+      if (tempUserTarget) {
+        tempUserTarget.socketUser.forEach((socket) =>
+          wss.to(socket.id).emit('userToUser', messageInfo),
+        );
+        this.updateUserConversation(
+          tempUserSender,
+          tempUserTarget,
+          messageInfo.text,
+        );
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
+import { Channel } from '../channelManager/channelManager.service';
 import { UserDto } from '../user/user.dto';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
@@ -51,17 +52,29 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     text: string;
     channelId: Id;
   }) {
-    this.channelManagerService.sendMessageToChannel(
-      this.wss,
-      messageInfoChannel,
+    const tempChannel = this.channelManagerService.findChanById(
+      messageInfoChannel.channelId,
     );
+    if (tempChannel instanceof Channel) {
+      tempChannel.member.forEach((member: Id) => {
+        const tempUser = this.userService.findOneActive(member);
+        if (tempUser)
+          this.userService.updateChannelConversation(
+            messageInfoChannel.channelId,
+            member,
+            tempChannel,
+            messageInfoChannel.text,
+          );
+      });
+      this.channelManagerService.sendMessageToChannel(
+        this.wss,
+        messageInfoChannel,
+      );
+    }
   }
 
   @SubscribeMessage('joinChannel')
-  handleJoinChannel(
-    clientSocket: Socket,
-    joinInfo: { sender: Id; channelId: Id },
-  ) {
+  handleJoinChannel(joinInfo: { sender: Id; channelId: Id }) {
     if (
       this.channelManagerService.joinChan(
         joinInfo.sender,
@@ -71,16 +84,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
   }
 
-  // @SubscribeMessage("userToChannel")
-  //   handlePrivMessage(
-  //     clientSocket: Socket,
-  //     messageInfoPriv: { sender: Id; text: string; target: Id }
-  //   ) {
-  //     this.channelManagerService.sendMessageTo(
-  //       this.wss,
-  //       clientSocket,
-  // 	  messageInfoPriv,
-
-  //     );
-  //   }
+  @SubscribeMessage('userToUser')
+  handlePrivMessage(messageInfoPriv: { sender: Id; text: string; target: Id }) {
+    this.userService.sendMessageToUser(this.wss, messageInfoPriv);
+  }
 }
