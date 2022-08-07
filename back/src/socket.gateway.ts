@@ -1,13 +1,16 @@
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+
 import type {
   OnGatewayInit,
   WsResponse,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
+
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
-@WebSocketGateway()
+
+@WebSocketGateway({ cors: { origin: true } })
 export class SocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {

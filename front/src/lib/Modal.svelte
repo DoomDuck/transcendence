@@ -29,5 +29,6 @@
 		background: #fff;
 		filter: drop-shadow(0 0 20px #333);
 		overflow: hidden;
+		font-family: 'Lato', sans-serif;
 	}
 </style>

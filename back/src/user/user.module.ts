@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
+import { UserHistoryController } from './userHistory.controller';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { ChannelController } from '../channelManager/channelManager.controller';
 import { DatabaseFilesController } from './databaseFile.controller';
@@ -14,7 +15,12 @@ import { ChatGateway } from '../chat/chat.gateway';
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([DatabaseFile]),
   ],
-  controllers: [UserController, DatabaseFilesController, ChannelController],
+  controllers: [
+    UserController,
+    UserHistoryController,
+    DatabaseFilesController,
+    ChannelController,
+  ],
   providers: [
     ChatGateway,
     UserService,

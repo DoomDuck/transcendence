@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "compilerOptions": {
     "types": ["dat.gui", "express", "node", "three", "jest"],
     "outDir": "build/",
@@ -33,4 +34,18 @@
     "noFallthroughCasesInSwitch": false
   },
   "include": ["src/**/*.ts"]
+=======
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+    "preserveValueImports": true,
+    "isolatedModules": true,
+    "target": "es2017",
+    "importsNotUsedAsValues": "preserve"
+	}
+>>>>>>> main
 }

@@ -1,26 +1,35 @@
 <script lang="ts">
-	import ChatConversation from '$lib/ChatConversation.svelte';
+	import DirectMessages from '$lib/DirectMessages.svelte';
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
+	import CreateChannel from '$lib/CreateChannel.svelte';
+	import OpenConversations from '$lib/OpenConversations.svelte';
 
-	let friends = [{ profilePic: 'cars.jpeg' }, { profilePic: 'canard.jpeg' }];
+	let friends = [
+		{ profilePic: 'cars.jpeg', name: 'coullax' },
+		{ profilePic: 'canard.jpeg', name: 'coullax' }
+	];
 </script>
 
 <div id="chat">
 	<div id="title">
 		<h1>Chat</h1>
-		<WriteNewMsg />
+		<div id="options">
+			<CreateChannel />
+			<WriteNewMsg />
+		</div>
 	</div>
 
 	<div id="mainContainer">
-		<input class="champ" type="search" value="Search.." />
+		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
 		<div>
-			<ChatConversation friendName="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
+			<DirectMessages name="Flash McQueen" image="cars.jpeg" hasNewMessage={true} />
 
-			<ChatConversation friendName="Joey" image="canard.jpeg" hasNewMessage={true} />
+			<DirectMessages name="Joey" image="canard.jpeg" hasNewMessage={true} />
 		</div>
+		<OpenConversations />
 	</div>
 </div>
 
@@ -32,7 +41,7 @@
 	#chat {
 		width: 100%;
 		height: 100%;
-		background-color: #4628ff;
+		background-image: url('/starsSky.jpeg');
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
@@ -41,9 +50,17 @@
 
 	#title {
 		display: flex;
-		justify-content: space-around;
+		justify-content: space-between;
 		align-items: center;
-		gap: 50vw;
+		margin-left: 10vw;
+		margin-right: 10vw;
+	}
+
+	#options {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 20px;
 	}
 
 	#mainContainer {
@@ -56,9 +73,9 @@
 	h1 {
 		justify-content: left;
 		font-style: normal;
-		color: #ff00b8;
+		color: #fa1ec7;
 		line-height: 150%;
-		-webkit-text-stroke: 2px #ecf100;
+		-webkit-text-stroke: 2px #00bfff;
 		font-size: 2.5em;
 	}
 

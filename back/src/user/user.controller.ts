@@ -27,10 +27,11 @@ export class UserController {
   async getUser() {
     return this.userService.findAllDb();
   }
-  @Get('history:id')
-  async getHistory(@Param('id') id: Id): Promise<UserHistoryDto | undefined> {
-    return this.userService.getUserHistory(id);
-  }
+  // @Get(':id')
+  // async getHistory(@Param('id') id: Id): Promise<UserHistoryDto | undefined> {
+  // this.logger.log('get history id');
+  // return this.userService.getUserHistory(id);
+  // }
   @Post()
   public postUser(@Body() user: UserDto) {
     return this.userService.addOne(user);

@@ -6,10 +6,9 @@
 		"doc": "doc"
 	},
 	"scripts": {
-		"check_format": "./scripts/check_format.sh",
-		"format": "./scripts/format.sh",
-		"setup_hooks": "./scripts/hooks/setup.sh",
-		"remove_hooks": "./scripts/hooks/remove.sh"
+		"install": "(cd front && npm install) && (cd back && npm install)",
+		"format": "(cd front && npm run format) && (cd back && npm run format)",
+		"format:check": "(cd front && npm run format:check) && (cd back && npm run format:check)"
 	},
 	"repository": {
 		"type": "git",
@@ -31,9 +30,5 @@
 	"bugs": {
 		"url": "https://github.com/DoomDuck/transcendence/issues"
 	},
-	"homepage": "https://github.com/DoomDuck/transcendence#readme",
-	"devDependencies": {
-		"prettier": "^2.7.1",
-		"prettier-plugin-svelte": "^2.7.0"
-	}
+	"homepage": "https://github.com/DoomDuck/transcendence#readme"
 }

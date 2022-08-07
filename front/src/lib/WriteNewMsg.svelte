@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import SendMessage from '$lib/SendNewMessage.svelte';
 	import Modal from './Modal.svelte';
 
@@ -6,7 +6,7 @@
 </script>
 
 <img
-	src="write.png"
+	src="pencil.png"
 	width="40"
 	height="40"
 	alt="write msg"
@@ -22,6 +22,5 @@
 <style>
 	img {
 		float: right;
-		justify-content: right;
 	}
 </style>

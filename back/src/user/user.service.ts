@@ -53,14 +53,18 @@ export class UserService {
   ) {
     this.arrayActiveUser = [];
   }
-  getUserHistory(id: Id): UserHistoryDto | undefined {
+  getUserHistory(id: Id): UserHistoryDto | null {
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (tempUser)
       return new UserHistoryDto(
         tempUser.activeUserConversation,
         tempUser.activeChannelConversation,
       );
-    else return undefined;
+    else
+      return new UserHistoryDto(
+        [new ActiveConversation(0, new ChatMessage(0, 'couillax'))],
+        [new ActiveConversation(1, new ChatMessage(0, 'couillax max'))],
+      );
   }
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();

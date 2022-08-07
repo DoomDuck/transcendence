@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Friend from '$lib/Friend.svelte';
-	export let friendNameSearch: () => void;
+	export let nameSearch: () => void;
 
 	onMount(async () => {
 		const reponse = await fetch('http://localhost:5000/user', {
@@ -16,12 +16,12 @@
 
 <div class="friendsList">
 	<h1>Friends List</h1>
-	<form on:submit|preventDefault={friendNameSearch}>
+	<form on:submit|preventDefault={nameSearch}>
 		<input type="search" placeholder="search..." />
 	</form>
 	<div>
-		<Friend friendName="Flash McQueen" image="cars.jpeg" />
-		<Friend friendName="Joey" image="canard.jpeg" />
+		<Friend name="Flash McQueen" image="cars.jpeg" />
+		<Friend name="Joey" image="canard.jpeg" />
 	</div>
 </div>
 
@@ -52,7 +52,7 @@
 	}
 
 	.friendsList {
-		background-image: url('starsSky.jpeg');
+		background-image: url('/starsSky.jpeg');
 		width: 100vw;
 		height: 100vh;
 		overflow-y: scroll;

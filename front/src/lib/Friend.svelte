@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
-
-	const dispatch = createEventDispatcher();
+	import GameInvit from './GameInvit.svelte';
 
 	let showProfile = false;
+	let invit = false;
 
 	export let image: string;
-	export let friendName: string;
+	export let name: string;
 </script>
 
 <div class="friend">
@@ -20,19 +19,24 @@
 	/>
 	{#if showProfile}
 		<Modal on:close={() => (showProfile = false)}>
-			<Profile {image} {friendName} />
+			<Profile {image} {name} />
 		</Modal>
 	{/if}
 
-	<p class="name">{friendName}</p>
+	<p class="name">{name}</p>
 	<img
-		on:click={() => dispatch('start_waiting')}
+		on:click={() => (invit = true)}
 		class="play"
 		src="joystick.png"
 		alt="play"
 		width="40px"
 		height="40px"
 	/>
+	{#if invit}
+		<Modal on:close={() => (invit = false)}>
+			<GameInvit {name} />
+		</Modal>
+	{/if}
 </div>
 
 <style>
@@ -53,7 +57,7 @@
 	.roundedImageFriend {
 		overflow: hidden;
 		-webkit-border-radius: 50px;
-		-moz-border-radius: 50px;
+		/* -moz-border-radius: 50px; */
 		border-radius: 30px;
 		width: 50px;
 		height: 50px;
