@@ -1,11 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
+import { removeIfPresent } from 'pong';
 import { ServerGameContext } from 'pong';
-
-function removeIfPresent<T>(array: Array<T>, element: T) {
-  const i = array.indexOf(element);
-  if (i != -1) array.splice(i, 1);
-}
 
 @Injectable()
 export class GameManagerService {
@@ -19,6 +15,13 @@ export class GameManagerService {
     socket.on('disconnect', () => {
       removeIfPresent(this.waitingClients, socket);
     });
+  }
+
+  addObserver(socket: Socket, gameId: number) {
+    // TOCHANGE (debug): need to work with the front part
+    // currently: launch a game before observing
+    this.games[0].addObserver(socket);
+    console.log('OBSERVER INCOOOOOOOOOOOMINNNNG');
   }
 
   launchGameIfPossible() {

@@ -1,6 +1,5 @@
 import { GSettings } from "../constants";
-
-type Timeout = ReturnType<typeof setInterval>;
+import { ElapsedTimeMeasurer } from "./ElapsedTimeMeasurer";
 
 /**
  * Spawner is used by the context that spawns
@@ -10,37 +9,74 @@ type Timeout = ReturnType<typeof setInterval>;
  * the same rules
  */
 export class Spawner {
-  intervalHandles: [Timeout | null, Timeout | null] = [null, null];
+  gravitonDelays: Iterator<number> = delaysGenerator(
+    GSettings.GRAVITON_SPAWN_TMIN,
+    GSettings.GRAVITON_SPAWN_TMAX
+  );
+  portalDelays: Iterator<number> = delaysGenerator(
+    GSettings.PORTAL_SPAWN_TMIN,
+    GSettings.PORTAL_SPAWN_TMAX
+  );
+  currentGravitonDelay: number = GSettings.GRAVITON_SPAWN_DELAY;
+  currentPortalDelay: number = GSettings.PORTAL_SPAWN_DELAY;
+  elapsedTimeMeasurer: ElapsedTimeMeasurer = new ElapsedTimeMeasurer();
+
   constructor(
     public spawnGraviton: () => void,
     public spawnPortal: () => void
-  ) {}
-
-  startSpawning(delay: number = 0) {
-    if (this.intervalHandles[0] !== null || this.intervalHandles[1] !== null)
-      throw new Error("Tried to start spawner twice");
-    setTimeout(() => {
-      this.intervalHandles[0] = setInterval(
-        this.spawnGraviton,
-        GSettings.GRAVITON_SPAWN_INTERVAL
-      );
-      this.spawnGraviton();
-    }, GSettings.GRAVITON_SPAWN_DELAY + delay);
-    setTimeout(() => {
-      this.intervalHandles[1] = setInterval(
-        this.spawnPortal,
-        GSettings.PORTAL_SPAWN_INTERVAL
-      );
-      this.spawnPortal();
-    }, GSettings.PORTAL_SPAWN_DELAY + delay);
+  ) {
+    this.reset();
   }
 
-  stopSpawning() {
-    for (let i = 0; i < 2; i++) {
-      if (this.intervalHandles[i] !== null) {
-        clearInterval(this.intervalHandles[i] as Timeout);
-        this.intervalHandles[i] = null;
-      }
-    }
+  start(startTime: number) {
+    this.elapsedTimeMeasurer.start(startTime);
+  }
+
+  pause(pauseTime?: number) {
+    this.elapsedTimeMeasurer.pause(pauseTime);
+  }
+
+  reset() {
+    this.currentGravitonDelay = GSettings.GRAVITON_SPAWN_DELAY;
+    this.currentPortalDelay = GSettings.PORTAL_SPAWN_DELAY;
+    this.elapsedTimeMeasurer.reset();
+  }
+
+  frame() {
+    const elapsed = this.elapsedTimeMeasurer.frame();
+    this.currentGravitonDelay = consumeElapsedTime(
+      elapsed,
+      this.currentGravitonDelay,
+      this.gravitonDelays,
+      this.spawnGraviton
+    );
+    this.currentPortalDelay = consumeElapsedTime(
+      elapsed,
+      this.currentPortalDelay,
+      this.portalDelays,
+      this.spawnPortal
+    );
+    console.log(this.currentPortalDelay);
+  }
+}
+
+function consumeElapsedTime(
+  elapsed: number,
+  currentDelay: number,
+  delaysGenerator: Iterator<number>,
+  callback: Function
+): number {
+  currentDelay -= elapsed;
+  while (currentDelay < 0) {
+    callback();
+    currentDelay += delaysGenerator.next().value;
+  }
+  return currentDelay;
+}
+
+function* delaysGenerator(tMin: number, tMax: number) {
+  const DT = tMax - tMin;
+  while (true) {
+    yield Math.random() * DT + tMin;
   }
 }

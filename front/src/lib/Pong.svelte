@@ -1,6 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ClientGameContextOnline } from 'pong';
+	import {
+		ClientGameContextOnlineObserver,
+		ClientGameContextOffline,
+		ClientGameContextOnlinePlayer,
+		ClientGameContext
+	} from 'pong';
+	export let online: boolean;
+	export let observe: boolean;
+
+	console.log(`online: ${online}`);
+	console.log(`observe: ${observe}`);
 
 	let visibilities = ['visible', 'hidden'];
 
@@ -12,11 +22,12 @@
 			visibilities = ['hidden', 'visible'];
 		};
 
-		// offline
-		// const ctx = new ClientGameContextOffline(onFinish);
-		// online
-		const ctx = new ClientGameContextOnline(onFinish);
-		ctx.configure();
+		let ctx: ClientGameContext;
+		if (online) {
+			if (observe) ctx = new ClientGameContextOnlineObserver(onFinish);
+			else ctx = new ClientGameContextOnlinePlayer(onFinish);
+		} else ctx = new ClientGameContextOffline(onFinish);
+		ctx.animate();
 		ctx.startGame();
 	});
 </script>

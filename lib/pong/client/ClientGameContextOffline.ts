@@ -1,9 +1,6 @@
 import { GameEvent, GSettings } from "../common/constants";
-import { Game } from "../common/game";
 import {
   GameProducedEvent,
-  SpawnGravitonEvent,
-  SpawnPortalEvent,
 } from "../common/game/events";
 import { Spawner } from "../common/game/Spawner";
 import {
@@ -19,46 +16,45 @@ import { setupKeyboardOffline } from "./game";
  */
 export class ClientGameContextOffline extends ClientGameContext {
   spawner: Spawner;
+
   constructor(onFinish: () => void) {
     super(onFinish);
-    setupKeyboardOffline(this.gameManager.game);
     this.spawner = new Spawner(
       this.spawnGraviton.bind(this),
       this.spawnPortal.bind(this)
     );
-  }
+    this.reset(GSettings.BALL_INITIAL_SPEEDX);
 
-  configure() {
-    const game = this.gameManager.game;
+    // input events
+    setupKeyboardOffline(this.gameManager.game);
+
+    // internal events
     GameProducedEvent.registerEvent(GameEvent.BALL_OUT, (playerId: number) => {
       this.gameManager.game.emit(GameEvent.GOAL, playerId);
       this.handleGoal(playerId);
     });
-    game.reset(0, 0, GSettings.BALL_INITIAL_SPEEDX, 0);
-    this.animate(Date.now());
+  }
+
+  animate() {
+    // animation loop
+    let animate = (time: DOMHighResTimeStamp) => {
+      this.animationHandle = requestAnimationFrame(animate);
+      this.gameManager.game.frame();
+      this.spawner.frame();
+      this.gameManager.render(time);
+    };
+    animate(Date.now());
   }
 
   startGame() {
-    const game = this.gameManager.game;
-    game.start();
-    this.spawner.startSpawning();
+    const now = Date.now();
+    this.gameManager.game.start(now);
+    this.spawner.start(now);
   }
 
-  handleGoal(playerId: number) {
-    const game = this.gameManager.game;
-    const renderer = this.gameManager.renderer;
-    game.pause();
-    renderer.startVictoryAnimationAsync().then(() => {
-      const speedX = (playerId == 0 ? -1 : 1) * GSettings.BALL_INITIAL_SPEEDX;
-      game.reset(0, 0, speedX, 0);
-      this.spawner.stopSpawning();
-      renderer.scorePanels.goalAgainst(playerId);
-      if (this.gameManager.game.isOver()) {
-        this.onFinish();
-      } else {
-        delay(500).then(() => this.startGame());
-      }
-    });
+  reset(ballSpeedX: number) {
+    this.gameManager.game.reset(0, 0, ballSpeedX, 0);
+    this.spawner.reset();
   }
 
   spawnGraviton() {
@@ -78,5 +74,22 @@ export class ClientGameContextOffline extends ClientGameContext {
       x2,
       y2
     );
+  }
+
+  handleGoal(playerId: number) {
+    const game = this.gameManager.game;
+    const renderer = this.gameManager.renderer;
+    game.pause();
+    renderer.startVictoryAnimationAsync().then(() => {
+      const ballSpeedX =
+        (playerId == 0 ? -1 : 1) * GSettings.BALL_INITIAL_SPEEDX;
+      this.reset(ballSpeedX);
+      renderer.scorePanels.goalAgainst(playerId);
+      if (this.gameManager.game.isOver()) {
+        this.handleEndOfGame();
+      } else {
+        delay(500).then(() => this.startGame());
+      }
+    });
   }
 }

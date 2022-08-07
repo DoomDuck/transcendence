@@ -1,5 +1,3 @@
-import { staticImplements } from "../../utils";
-
 /**
  * Any entity that spawns and dies (e.g. graviton, portal)
  */

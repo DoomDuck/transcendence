@@ -9,13 +9,13 @@ import {
 } from "../common/constants";
 import { Socket } from "socket.io";
 import { BarInputEvent, Game } from "../common/game";
-import {
-  BarInputEventStruct,
-  GameProducedEvent,
-  SpawnGravitonEvent,
-} from "../common/game/events";
+import { type BarInputEventStruct } from "../common/game/events";
 import { Spawner } from "../common/game/Spawner";
-import { randomGravitonCoords, randomPortalCoords } from "../common/utils";
+import {
+  randomGravitonCoords,
+  randomPortalCoords,
+  removeIfPresent,
+} from "../common/utils";
 
 /**
  * Manage a full game session between two players (sockets) in the server
@@ -28,6 +28,10 @@ export class ServerGameContext {
   score: [number, number] = [0, 0];
   ballDirection: number = LEFT;
   spawner: Spawner;
+  observers: Socket[] = [];
+  alreadyStarted: boolean = false;
+  gameLoopHandle?: ReturnType<typeof setInterval>;
+  // observerSendStateQueue: ((Game) => void)[] = [];
 
   constructor(public players: [Socket, Socket], public onFinish: () => void) {
     this.game = new Game();
@@ -53,12 +57,19 @@ export class ServerGameContext {
       this.spawnPortal.bind(this)
     );
 
-    setInterval(this.game.frame.bind(this.game), GSettings.GAME_STEP_MS);
+    this.gameLoopHandle = setInterval(() => {
+      this.game.frame();
+      this.spawner.frame();
+      for (let observer of this.observers) {
+        observer.emit(GameEvent.OBSERVER_UPDATE, this.game.state.data.current);
+      }
+    }, GSettings.GAME_STEP_MS);
   }
 
   isReady(playerId: number) {
     this.ready[playerId] = true;
     if (this.ready[0] && this.ready[1] && !this.game.isOver()) {
+      this.alreadyStarted = true;
       console.log("both players are ready, starting");
       this.ready = [false, false];
       this.reset(0, 0, this.ballDirection);
@@ -66,53 +77,90 @@ export class ServerGameContext {
     }
   }
 
-  broadcastEvent(event: string, ...args: any[]) {
+  addObserver(socket: Socket) {
+    this.observers.push(socket);
+    socket.on("disconnect", () => {
+      removeIfPresent(this.observers, socket);
+    });
+  }
+
+  broadcastEventPlayersOnly(event: string, ...args: any[]) {
     this.game.emit(event, ...args);
     this.players[PLAYER1].emit(event, ...args);
     this.players[PLAYER2].emit(event, ...args);
   }
 
+  broadcastEventEveryone(event: string, ...args: any[]) {
+    this.game.emit(event, ...args);
+    this.players[PLAYER1].emit(event, ...args);
+    this.players[PLAYER2].emit(event, ...args);
+    for (let observer of this.observers) {
+      observer.emit(event, ...args);
+    }
+  }
+
   start(delay: number) {
     const startTime = Date.now() + delay;
-    this.broadcastEvent(GameEvent.START, startTime);
-    this.spawner.startSpawning(delay);
+    this.broadcastEventPlayersOnly(GameEvent.START, startTime);
+    this.spawner.start(startTime);
   }
 
   pause(delay: number) {
     const pauseTime = Date.now() + delay;
-    this.broadcastEvent(GameEvent.PAUSE, pauseTime);
-    this.spawner.stopSpawning();
+    this.broadcastEventPlayersOnly(GameEvent.PAUSE, pauseTime);
+    this.spawner.pause(pauseTime);
   }
 
   reset(ballX: number, ballY: number, ballDirection: Direction) {
     let ballSpeedX = ballDirection * GSettings.BALL_INITIAL_SPEEDX;
     let ballSpeedY = ((2 * Math.random() - 1) * GSettings.BALL_SPEEDY_MAX) / 3;
-    this.broadcastEvent(GameEvent.RESET, ballX, ballY, ballSpeedX, ballSpeedY);
-    this.spawner.stopSpawning();
+    this.broadcastEventEveryone(
+      GameEvent.RESET,
+      ballX,
+      ballY,
+      ballSpeedX,
+      ballSpeedY
+    );
+    this.spawner.reset();
   }
 
   spawnGraviton() {
     const time = this.game.state.data.actualNow + GSettings.ONLINE_SPAWN_DELAY;
     const [x, y] = randomGravitonCoords();
-    this.broadcastEvent(GameEvent.SPAWN_GRAVITON, time, x, y);
-    console.log("spawnGraviton", time);
+    this.broadcastEventPlayersOnly(GameEvent.SPAWN_GRAVITON, time, x, y);
   }
 
   spawnPortal() {
     const time = this.game.state.data.actualNow + GSettings.ONLINE_SPAWN_DELAY;
     const [x1, x2, y1, y2] = randomPortalCoords();
-    this.broadcastEvent(GameEvent.SPAWN_PORTAL, time, x1, y1, x2, y2);
-    console.log("spawnPortal", time);
+    this.broadcastEventPlayersOnly(
+      GameEvent.SPAWN_PORTAL,
+      time,
+      x1,
+      y1,
+      x2,
+      y2
+    );
   }
 
   handleGoal(playerId: number) {
     console.log("GOAL !!!");
     this.game.pause();
-    this.spawner.stopSpawning();
-    this.broadcastEvent(GameEvent.GOAL, playerId);
+    this.spawner.pause();
+    this.broadcastEventEveryone(GameEvent.GOAL, playerId);
     if (this.game.isOver()) {
-      this.onFinish();
+      this.handleEndOfGame();
     }
     this.ballDirection = playerId == PLAYER1 ? LEFT : RIGHT;
+  }
+
+  handleEndOfGame() {
+    this.players[0].disconnect();
+    this.players[1].disconnect();
+    for (let observer of this.observers) {
+      observer.disconnect();
+    }
+    clearInterval(this.gameLoopHandle);
+    this.onFinish();
   }
 }

@@ -1,5 +1,5 @@
 import { GSettings } from "../constants";
-import { GameProducedEvent, DataChangerEvent } from "../game/events";
+import { GameProducedEvent, type DataChangerEvent } from "../game/events";
 import { collisions } from "./collisions";
 import { GameDataBuffer } from "./data";
 import {
@@ -73,7 +73,11 @@ export class GameState {
     }
     if (event.time < this.data.currentTime) {
       console.log(
-        `PAST, event.time = ${event.time}, data.currentTime = ${this.data.currentTime}, data.actualNow = ${this.data.actualNow}`
+        `PAST, type: '${typeof event}' event.time = ${
+          event.time
+        }, data.currentTime = ${this.data.currentTime}, data.actualNow = ${
+          this.data.actualNow
+        }`
       );
       // past event
       let now = this.data.currentTime;

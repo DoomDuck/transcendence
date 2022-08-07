@@ -1,6 +1,6 @@
 import { BallData } from ".";
 import { GSettings } from "../../constants";
-import { Spawnable } from ".";
+import { type Spawnable } from ".";
 
 /**
  * Structure for a portal's data

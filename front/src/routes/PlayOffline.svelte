@@ -3,7 +3,7 @@
 </script>
 
 <div id="Play">
-	<Pong />
+	<Pong online={false} observe={false} />
 </div>
 
 <style>

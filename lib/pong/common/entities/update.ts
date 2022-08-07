@@ -10,7 +10,7 @@
 import { GSettings } from "../constants";
 import { Vector2 } from "../utils";
 import { clipBallSpeedX, clipBallSpeedY } from "./collisions";
-import { GameDataBuffer, GravitonData, Spawnable } from "./data";
+import { GameDataBuffer, GravitonData, type Spawnable } from "./data";
 
 export function processExternEvents(data: GameDataBuffer) {
   if (data.eventsNow !== null) {

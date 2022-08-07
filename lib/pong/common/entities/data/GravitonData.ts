@@ -1,4 +1,4 @@
-import { Spawnable } from "./spawnable";
+import { type Spawnable } from "./spawnable";
 
 /**
  * Structure for a graviton's data

@@ -1,9 +1,12 @@
 <nav id="start_a_game">
 	<h4>
-		<a sveltekit:prefetch href="/Play">Play</a>
+		<a sveltekit:prefetch href="/PlayOnline">Play Online</a>
 	</h4>
 	<h4>
-		<a sveltekit:prefetch href="/Play">Watch a game</a>
+		<a sveltekit:prefetch href="/PlayOffline">Play Offline</a>
+	</h4>
+	<h4>
+		<a sveltekit:prefetch href="/PlayObserve">Observe</a>
 	</h4>
 	<h4>
 		<a sveltekit:prefetch href="/FriendsList">Challenge a friend</a>
@@ -14,7 +17,7 @@
 	#start_a_game {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		overflow: hidden;
 		width: 100%;
 		height: 100%;

@@ -4,7 +4,7 @@ import autoPreprocess from 'svelte-preprocess';
 /** @type {import('@sveltejs/kit').Config} */
 export default {
 	preprocess: autoPreprocess({
-		sourceMap: true,
+		sourceMap: true
 	}),
 	kit: {
 		adapter: adapter({
