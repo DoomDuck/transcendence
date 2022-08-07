@@ -56,7 +56,6 @@ export class Spawner {
       this.portalDelays,
       this.spawnPortal
     );
-    console.log(this.currentPortalDelay);
   }
 }
 
