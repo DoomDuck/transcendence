@@ -27,7 +27,8 @@
 			if (!text) return;
 
 			comments = comments.concat({
-				author: undefined,
+				author: '',
+				isMe: true,
 				text
 			});
 
@@ -71,7 +72,7 @@
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each comments as comment}
-			<article class={comment.author === undefined ? 'user' : 'interlocutor'}>
+			<article class={comment.isMe ? 'user' : 'interlocutor'}>
 				<span>{comment.text}</span>
 			</article>
 		{/each}

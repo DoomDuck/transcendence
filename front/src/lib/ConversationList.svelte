@@ -1,7 +1,7 @@
 <script lang="ts">
-	import DirectMessages from './ConversationListItem.svelte';
 	import { onMount } from 'svelte';
 	import { type ConversationType } from './types';
+	import ConversationListItem from './ConversationListItem.svelte';
 
 	let conversations: ConversationType[] = [
 		{
@@ -9,10 +9,12 @@
 			comments: [
 				{
 					author: 'couillax',
+					isMe: false,
 					text: 'Haha, je suis couillax sale enculé'
 				},
 				{
 					author: 'couillax',
+					isMe: false,
 					text: 'rentre chez toi sale enculé'
 				}
 			]
@@ -22,10 +24,12 @@
 			comments: [
 				{
 					author: 'me',
+					isMe: true,
 					text: 'Haha, je suis moi'
 				},
 				{
 					author: 'maman',
+					isMe: false,
 					text: 'rentre chez toi sale enculé'
 				}
 			]
@@ -39,6 +43,7 @@
 
 	// 	if (resp.ok) {
 	// 		userHistoryDto = await resp.json();
+	//    myName = userHistoryDto.myName;
 	// 		conversations = [...userHistoryDto.userHistory, ...userHistoryDto.channelHistory];
 	// 		console.log('OK');
 	// 	} else {
@@ -52,7 +57,7 @@
 
 <div>
 	{#each conversations as conversation}
-		<DirectMessages {conversation} image="cars.jpeg" />
+		<ConversationListItem {conversation} image="cars.jpeg" />
 	{:else}
 		<p>Waiting...</p>
 	{/each}

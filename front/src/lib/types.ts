@@ -1,6 +1,7 @@
 export type CommentType = {
-	author?: string;
+	author: string;
 	text: string;
+	isMe: boolean;
 	placeholder?: true;
 };
 
