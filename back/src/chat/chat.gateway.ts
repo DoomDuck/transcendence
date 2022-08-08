@@ -51,8 +51,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   //Not sur if i'm gonna need client socket later
   //
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
-  handleCreateChannel()
-  {}
+  handleCreateChannel() {}
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   handleMessageChannel(messageInfoChannel: {
     sender: Id;

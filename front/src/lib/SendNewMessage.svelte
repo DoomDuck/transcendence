@@ -1,10 +1,13 @@
 <script lang="ts">
-	export let sendMessage: (interlocutor: string, text: string) => void;
+	import { createEventDispatcher } from 'svelte';
+
 	export let text: string;
+
+	const dispach = createEventDispatcher();
 	let target: string = '';
 </script>
 
-<form on:submit|preventDefault={() => sendMessage(target, text)}>
+<form on:submit|preventDefault={() => dispach('msgToUser', { target, text })}>
 	<div id="formContainer">
 		<input
 			id="destinataire"
@@ -15,8 +18,7 @@
 			required
 		/> <br />
 		<textarea id="message" type="text" placeholder="Type a message..." bind:value={text} />
-		<!-- input go in newText -->
-		<button on:click={() => sendMessage(target, text)}>
+		<button>
 			<img src="send.png" alt="send message" />
 		</button>
 	</div>
