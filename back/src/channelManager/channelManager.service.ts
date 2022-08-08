@@ -3,6 +3,9 @@ import { Id } from '../customType';
 import { ChannelDto } from './channel.dto';
 import { Socket, Server } from 'socket.io';
 import { ChatEvent } from 'chat'; 
+import { ChatError } from 'chat'; 
+import { ChatFeedbackDto } from '../chat/chatFeedback.dto'; 
+
 export class Channel {
   constructor(
     public channelId: Id,
@@ -73,11 +76,11 @@ export class ChannelManagerService {
     if (tempChan === undefined) return 'channel not found';
     else return tempChan;
   }
-  findChanById(channelId: Id): Channel | string {
+  findChanById(channelId: Id): Channel | false {
     const tempChan = this.arrayChannel.find(
       (channel) => channel.channelId === channelId,
     );
-    if (tempChan === undefined) return 'channel not found';
+    if (tempChan === undefined) return false;
     else return tempChan;
   }
   findChanAll(): Channel[] | string {
@@ -85,25 +88,22 @@ export class ChannelManagerService {
     else return this.arrayChannel;
   }
   //Return string is placeholder
-  joinChan(sender: Id, channelId: Id, password?: string): string | undefined {
+  joinChan(sender: Id, channelId: Id, password?: string): ChatFeedbackDto {
+
     const tempChan = this.arrayChannel.find(
       (element) => element.channelId === channelId,
     );
-    if (tempChan === undefined) return "chan doesn't exist";
+    if (tempChan === undefined) return  new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
 
     if (tempChan.member.find((element) => element === sender))
-      return 'user already in chan';
-    // if(tempChan.banned.find(element => element == sender)!=undefined)
-    // return "user is banned from this chan";
-    if (tempChan.priv) return 'chan is privated';
+      return  new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL)  ; 
+    if (tempChan.priv) return  new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
 
     if (tempChan.protect) {
-      if (password != tempChan.password) return 'wrong password';
+      if (password != tempChan.password) return  new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
-
     tempChan.member.push(sender);
-
-    return 'user added';
+    return  new ChatFeedbackDto(true);
   }
   setPrivate(sender: Id, chanName: string): string {
     const tempChan = this.arrayChannel.find(

@@ -2,7 +2,9 @@ import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Channel } from '../channelManager/channelManager.service';
 import { ChatEvent } from 'chat'; 
+import { ChatError } from 'chat'; 
 import { UserDto } from '../user/user.dto';
+import { ChatFeedbackDto } from './chatFeedback.dto';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
 import {
@@ -76,18 +78,31 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
   handleJoinChannel(joinInfo: { sender: Id; channelId: Id }) {
-    if (
-      this.channelManagerService.joinChan(
+		let feedback : ChatFeedbackDto;
+	if (!this.channelManagerService.findChanById(joinInfo.channelId))
+		{
+			feedback = new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+			return;
+		}
+	if (!this.userService.findOneDb(joinInfo.sender))
+		{
+			feedback = new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
+			return;
+		}
+      feedback= this.channelManagerService.joinChan(
         joinInfo.sender,
         joinInfo.channelId,
-      ) === 'user added'
-    )
-      this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
+      ) ;
+   		
+	  if (feedback.success === true)
+  	    this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
+  	return feedback;
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
-  handlePrivMessage(messageInfoPriv: { sender: Id; text: string; target: Id }) {
-    const feedback =this.userService.sendMessageToUser(this.wss, messageInfoPriv);
+  handlePrivMessage(clientSocket : Socket, target: string,text: string,reponseCallback : (chatFeedbackDto:ChatFeedbackDto) => void) {
+    const feedback =this.userService.sendMessageToUser(clientSocket.handshake.auth.token,this.wss, text,target);
+	reponseCallback(feedback);
   }
 
  @SubscribeMessage(ChatEvent.FRIEND_INVITE)

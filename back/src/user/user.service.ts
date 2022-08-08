@@ -142,6 +142,8 @@ export class UserService {
     let logger = new Logger('user');
     logger.log(userDto);
     logger.log(id);
+	if (userDto.name === undefined)
+		return;
     if ((await this.usersRepository.findOneBy({ id })) === null) {
       logger.log('dans undefined');
       const newUser = new User(userDto.id, userDto.name);
@@ -275,24 +277,25 @@ export class UserService {
       );
   }
   sendMessageToUser(
+	  senderId:Id,
     wss: Server,
-    messageInfo: { sender: Id; text: string; target: Id },
+      text: string, target: string ,
   ):ChatFeedbackDto {
     const tempUserSender = this.arrayActiveUser.find(
-      (user) => user.id === messageInfo.sender,
+      (user) => user.id === senderId,
     );
     const tempUserTarget = this.arrayActiveUser.find(
-      (user) => user.id === messageInfo.target,
+      (user) => user.name === target,
     );
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
-          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, messageInfo),
+          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER,tempUserSender.name,text),
         );
         this.updateUserConversation(
           tempUserSender,
           tempUserTarget,
-          messageInfo.text,
+          text,
         );
 			return new ChatFeedbackDto(true);
 	  }
