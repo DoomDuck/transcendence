@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserDto } from './user.dto';
+import { ChatFeedbackDto } from './../chat/chatFeedback.dto';
 import { UserHistoryDto } from './userHistory.dto';
 import { ChatMessageDto } from './userHistory.dto';
 import { ActiveConversationDto } from './userHistory.dto';
@@ -11,7 +12,8 @@ import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
-
+import { ChatEvent } from 'chat'; 
+import { ChatError } from 'chat'; 
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
     this.pending_invite = false;
@@ -30,7 +32,7 @@ export class ActiveUser {
   activeChannelConversation: ActiveConversation[];
 }
 export class ChatMessage {
-  constructor(public sender: Id, public content: string, public isMe:boolean) {
+  constructor(public sender: Id, public content: string, public isMe: boolean) {
     this.sender = sender;
     this.content = content;
   }
@@ -57,53 +59,71 @@ export class UserService {
   ) {
     this.arrayActiveUser = [];
   }
-	dtoTraductionChatMessage(chatMessage:ChatMessage[]) : ChatMessageDto[]
-	{
-
-		// const tempUser= this.findOneActive(chatMessage.sender) as ActiveUser;
-		let chatMessageDto : ChatMessageDto[];
-		chatMessageDto = [];
-		chatMessage.forEach((message)=> chatMessageDto.push(
-		new ChatMessageDto((this.findOneActive(message.sender) as ActiveUser).name, message.content, message.isMe)		
-		))
-		return chatMessageDto;
-	}
-
-dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConversationDto[]
-  {
-	let activeConversationDto :  ActiveConversationDto[];
-	activeConversationDto =  [];
-	activeConversation.forEach((conv:ActiveConversation)=> activeConversationDto.push(new ActiveConversationDto((this.channelManagerService.findChanById(conv.id) as Channel).name, 
-																   this.dtoTraductionChatMessage(conv.history)))
-					);
-	return activeConversationDto;	
+  dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
+    // const tempUser= this.findOneActive(chatMessage.sender) as ActiveUser;
+    let chatMessageDto: ChatMessageDto[];
+    chatMessageDto = [];
+    chatMessage.forEach((message) =>
+      chatMessageDto.push(
+        new ChatMessageDto(
+          (this.findOneActive(message.sender) as ActiveUser).name,
+          message.content,
+          message.isMe,
+        ),
+      ),
+    );
+    return chatMessageDto;
   }
-   dtoTraductionUserConv(activeConversation:ActiveConversation[]) : ActiveConversationDto[]
-  {
-	let activeConversationDto :  ActiveConversationDto[];
-	activeConversationDto =  [];
-	activeConversation.forEach((conv:ActiveConversation)=> activeConversationDto.push(new ActiveConversationDto((this.findOneActive(conv.id) as ActiveUser).name, 
-																   this.dtoTraductionChatMessage(conv.history)))
-					);
-	return activeConversationDto;	
+
+  dtoTraductionChannelConv(
+    activeConversation: ActiveConversation[],
+  ): ActiveConversationDto[] {
+    let activeConversationDto: ActiveConversationDto[];
+    activeConversationDto = [];
+    activeConversation.forEach((conv: ActiveConversation) =>
+      activeConversationDto.push(
+        new ActiveConversationDto(
+          (this.channelManagerService.findChanById(conv.id) as Channel).name,
+          this.dtoTraductionChatMessage(conv.history),
+        ),
+      ),
+    );
+    return activeConversationDto;
+  }
+  dtoTraductionUserConv(
+    activeConversation: ActiveConversation[],
+  ): ActiveConversationDto[] {
+    let activeConversationDto: ActiveConversationDto[];
+    activeConversationDto = [];
+    activeConversation.forEach((conv: ActiveConversation) =>
+      activeConversationDto.push(
+        new ActiveConversationDto(
+          (this.findOneActive(conv.id) as ActiveUser).name,
+          this.dtoTraductionChatMessage(conv.history),
+        ),
+      ),
+    );
+    return activeConversationDto;
   }
   getUserHistory(id: Id): UserHistoryDto | null {
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
-    if (tempUser){
+    if (tempUser) {
       return new UserHistoryDto(
         this.dtoTraductionUserConv(tempUser.activeUserConversation),
-        this.dtoTraductionChannelConv(tempUser.activeChannelConversation)
+        this.dtoTraductionChannelConv(tempUser.activeChannelConversation),
       );
-	}
-    else
-    {
-      
-      return new UserHistoryDto (
+    } else {
+      return new UserHistoryDto(
         [
-          new ActiveConversationDto('gisele', [new ChatMessageDto("couillax", "max",true), new ChatMessageDto("gisele", "lol",false)])
-        ],[] );
+          new ActiveConversationDto('gisele', [
+            new ChatMessageDto('couillax', 'max', true),
+            new ChatMessageDto('gisele', 'lol', false),
+          ]),
+        ],
+        [],
+      );
     }
-    }
+  }
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
   }
@@ -162,7 +182,7 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
     }
   }
 
-  async addFriend(sender: Id, target: Id): Promise<string | User> {
+  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto>{
     const tempSender = await this.usersRepository
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
@@ -171,14 +191,14 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
       .getOne();
-    if (tempSender === null) return 'Sender does not exist';
-    if (tempTarget === null) return 'Target does not exist';
+    if (tempSender === null) return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST);
+    if (tempTarget === null) return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND);
     if (
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
-      return this.usersRepository.save(tempSender);
-    } else return 'Already friends';
+      return new ChatFeedbackDto(true);
+    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND) ;
   }
   async addAvatar(
     userId: Id,
@@ -207,17 +227,27 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
       (conv) => conv.id === sender.id,
     );
     if (tempSenderConversation)
-      tempSenderConversation.history.push(new ChatMessage(sender.id, content,true));
+      tempSenderConversation.history.push(
+        new ChatMessage(sender.id, content, true),
+      );
     else
       sender.activeUserConversation.push(
-        new ActiveConversation(target.id, new ChatMessage(sender.id, content,true)),
+        new ActiveConversation(
+          target.id,
+          new ChatMessage(sender.id, content, true),
+        ),
       );
 
     if (tempTargetConversation)
-      tempTargetConversation.history.push(new ChatMessage(sender.id, content,false));
+      tempTargetConversation.history.push(
+        new ChatMessage(sender.id, content, false),
+      );
     else
       target.activeUserConversation.push(
-        new ActiveConversation(sender.id, new ChatMessage(sender.id, content,false)),
+        new ActiveConversation(
+          sender.id,
+          new ChatMessage(sender.id, content, false),
+        ),
       );
   }
   updateChannelConversation(
@@ -233,19 +263,21 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
       (conv) => conv.id === channel.channelId,
     );
     if (tempUserConversation)
-      tempUserConversation.history.push(new ChatMessage(sender.id, content,senderId===userId));
+      tempUserConversation.history.push(
+        new ChatMessage(sender.id, content, senderId === userId),
+      );
     else
       user.activeChannelConversation.push(
         new ActiveConversation(
           channel.channelId,
-          new ChatMessage(sender.id, content,senderId===userId),
+          new ChatMessage(sender.id, content, senderId === userId),
         ),
       );
   }
   sendMessageToUser(
     wss: Server,
     messageInfo: { sender: Id; text: string; target: Id },
-  ) {
+  ):ChatFeedbackDto {
     const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id === messageInfo.sender,
     );
@@ -255,14 +287,19 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
-          wss.to(socket.id).emit('userToUser', messageInfo),
+          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, messageInfo),
         );
         this.updateUserConversation(
           tempUserSender,
           tempUserTarget,
           messageInfo.text,
         );
-      }
+			return new ChatFeedbackDto(true);
+	  }
+	  else
+			return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND)
     }
+	else
+			return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST)
   }
 }
