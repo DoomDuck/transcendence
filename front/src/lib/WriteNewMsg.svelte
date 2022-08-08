@@ -1,7 +1,9 @@
 <script lang="ts">
 	import SendMessage from '$lib/SendNewMessage.svelte';
+	import { ChatContext } from './ChatContext';
 	import Modal from './Modal.svelte';
 
+	export let context: ChatContext;
 	let sendingMessage = false;
 </script>
 
@@ -15,7 +17,7 @@
 
 {#if sendingMessage}
 	<Modal on:close={() => (sendingMessage = false)}>
-		<SendMessage newText="" sendMessage={() => {}} />
+		<SendMessage newText="" sendMessage={context.sendMessage.bind(context)} />
 	</Modal>
 {/if}
 

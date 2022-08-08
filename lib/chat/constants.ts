@@ -1,13 +1,13 @@
-export class ChatEvent{
-	 static readonly MSG_TO_CHANNEL ="msg to channel"
+export class ChatEvent {
+	static readonly MSG_TO_CHANNEL ="msg to channel"
 	static readonly MSG_TO_USER ='msg to user'
 	static readonly JOIN_CHANNEL ='join channel'
 	static readonly CREATE_CHANNEL ='create channel'
 	static readonly GAME_INVITE ='game invite'
 	static readonly FRIEND_INVITE ='friend invite'
 }
-export class ChatError
-{
+
+export class ChatError {
 	 static readonly U_DO_NOT_EXIST ="u do not exist"
 	 static readonly USER_NOT_FOUND ="user not found"
 	 static readonly USER_OFFLINE ="user offline"

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Id } from '../customType';
 import { ChannelDto } from './channel.dto';
 import { Socket, Server } from 'socket.io';
-import { ChatEvent } from 'chat'; 
+import { ChatEvent } from 'chat';
 export class Channel {
   constructor(
     public channelId: Id,

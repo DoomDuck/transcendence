@@ -23,7 +23,8 @@
 		"42",
 		"transcendance",
 		"nestjs",
-		"pong"
+		"pong",
+    "chat"
 	],
 	"license": "MIT",
 	"dependencies": {

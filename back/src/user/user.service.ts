@@ -12,8 +12,8 @@ import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
-import { ChatEvent } from 'chat'; 
-import { ChatError } from 'chat'; 
+import { ChatEvent } from 'chat';
+import { ChatError } from 'chat';
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
     this.pending_invite = false;
@@ -182,7 +182,7 @@ export class UserService {
     }
   }
 
-  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto>{
+  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto> {
     const tempSender = await this.usersRepository
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
@@ -191,14 +191,16 @@ export class UserService {
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
       .getOne();
-    if (tempSender === null) return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST);
-    if (tempTarget === null) return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND);
+    if (tempSender === null)
+      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+    if (tempTarget === null)
+      return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
     if (
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
       return new ChatFeedbackDto(true);
-    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND) ;
+    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND);
   }
   async addAvatar(
     userId: Id,
@@ -277,7 +279,7 @@ export class UserService {
   sendMessageToUser(
     wss: Server,
     messageInfo: { sender: Id; text: string; target: Id },
-  ):ChatFeedbackDto {
+  ): ChatFeedbackDto {
     const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id === messageInfo.sender,
     );
@@ -294,12 +296,8 @@ export class UserService {
           tempUserTarget,
           messageInfo.text,
         );
-			return new ChatFeedbackDto(true);
-	  }
-	  else
-			return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND)
-    }
-	else
-			return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST)
+        return new ChatFeedbackDto(true);
+      } else return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
+    } else return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
   }
 }

@@ -1,7 +1,7 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Channel } from '../channelManager/channelManager.service';
-import { ChatEvent } from 'chat'; 
+import { ChatEvent } from 'chat';
 import { UserDto } from '../user/user.dto';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
@@ -87,11 +87,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(messageInfoPriv: { sender: Id; text: string; target: Id }) {
-    const feedback =this.userService.sendMessageToUser(this.wss, messageInfoPriv);
+    const feedback = this.userService.sendMessageToUser(
+      this.wss,
+      messageInfoPriv,
+    );
   }
 
- @SubscribeMessage(ChatEvent.FRIEND_INVITE)
-  handleFriendInvite(friendRequest:{sender:Id;target:Id} ) {
-    const feedback =this.userService.addFriend(friendRequest.sender,friendRequest.target);
+  @SubscribeMessage(ChatEvent.FRIEND_INVITE)
+  handleFriendInvite(friendRequest: { sender: Id; target: Id }) {
+    const feedback = this.userService.addFriend(
+      friendRequest.sender,
+      friendRequest.target,
+    );
   }
 }
