@@ -3,7 +3,6 @@
 	import { ChatContext } from './ChatContext';
 	import Modal from './Modal.svelte';
 
-	export let context: ChatContext;
 	let sendingMessage = false;
 </script>
 
@@ -17,7 +16,7 @@
 
 {#if sendingMessage}
 	<Modal on:close={() => (sendingMessage = false)}>
-		<SendMessage text="" sendMessage={context.sendDirectMessage.bind(context)} />
+		<SendMessage text="" on:msgToUser />
 	</Modal>
 {/if}
 
