@@ -8,14 +8,14 @@ export class ChatEvent {
 }
 export class ChatError
 {
-	 static readonly U_DO_NOT_EXIST ="u do not exist"
-	 static readonly USER_NOT_FOUND ="user not found"
-	 static readonly USER_OFFLINE ="user offline"
-	 static readonly CHANNEL_NOT_FOUND ="channel not found"
-	 static readonly WRONG_PASSWORD ="wrong password"
-	 static readonly YOU_ARE_BANNED ="you are banned"
-	 static readonly YOU_ARE_MUTED ="you are muted"
-	 static readonly YOU_ARE_BLOCKED ="you are blocked"
+  static readonly U_DO_NOT_EXIST ="u do not exist"
+  static readonly USER_NOT_FOUND ="user not found"
+  static readonly USER_OFFLINE ="user offline"
+  static readonly CHANNEL_NOT_FOUND ="channel not found"
+  static readonly WRONG_PASSWORD ="wrong password"
+  static readonly YOU_ARE_BANNED ="you are banned"
+  static readonly YOU_ARE_MUTED ="you are muted"
+  static readonly YOU_ARE_BLOCKED ="you are blocked"
 	static readonly ALREADY_FRIEND = "already friend";
 	static readonly ALREADY_IN_CHANNEL = "already in channel";
 	static readonly ALREADY_ADMIN = "already admin";
@@ -25,19 +25,22 @@ export class ChatError
 }
 
 
-// interface ServerToClientEvents {
-//   noArg: () => void;
-//   basicEmit: (a: number, b: string, c: Buffer) => void;
-//   withAck: (d: string, callback: (e: number) => void) => void;
-// }
+export interface ServerToClientEvents {
+  [ChatEvent.MSG_TO_USER]: (dto: {source: string, content: string}) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: {source: string, content: string}) => void;
+}
 
-// interface ClientToServerEvents {
-//   hello: () => void;
-// }
+export type ChatFeedbackDto = {
+  success: boolean,
+  errorMessage?: string,
+}
 
-// interface InterServerEvents {
-//   ping: () => void;
-// }
+
+export interface ClientToServerEvents {
+  [ChatEvent.MSG_TO_USER]: (dto: {target: string, content: string}, feedback: ChatFeedbackDto) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: {target: string, content: string}, feedback: ChatFeedbackDto) => void;
+}
+
 
 // interface SocketData {
 //   name: string;
