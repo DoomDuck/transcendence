@@ -173,12 +173,12 @@ export class UserService {
   joinChanUser(userId: Id, channelId: Id) {
     const activeUser = this.arrayActiveUser.find((user) => user.id === userId);
     if (activeUser) {
-      const newChannel = activeUser.joinedChannel.find(
+      const tempChannel = activeUser.joinedChannel.find(
         (channel: Channel) => channel.channelId === channelId,
       );
-      if (newChannel)
+      if (tempChannel)
         activeUser.socketUser.forEach((socket: Socket) =>
-          socket.join(newChannel.name),
+          socket.join(tempChannel.name),
         );
     }
   }
@@ -240,7 +240,6 @@ export class UserService {
           new ChatMessage(sender.id, content, true),
         ),
       );
-
     if (tempTargetConversation)
       tempTargetConversation.history.push(
         new ChatMessage(sender.id, content, false),

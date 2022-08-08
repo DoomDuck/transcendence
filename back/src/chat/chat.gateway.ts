@@ -100,15 +100,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(
     clientSocket: Socket,
-    target: string,
-    text: string,
+    messageInfo: {
+      target: string;
+      text: string;
+    },
     reponseCallback: (chatFeedbackDto: ChatFeedbackDto) => void,
   ) {
     const feedback = this.userService.sendMessageToUser(
       clientSocket.handshake.auth.token,
       this.wss,
-      text,
-      target,
+      messageInfo.text,
+      messageInfo.target,
     );
     reponseCallback(feedback);
   }
