@@ -7,25 +7,12 @@
 	export let context: ChatContext;
 	let userHistoryDto;
 	let error = false;
-
-	// onMount(async () => {
-	// 	const resp = await fetch('http://localhost:5000/history/0', { method: 'GET' });
-
-	// 	if (resp.ok) {
-	// 		userHistoryDto = await resp.json();
-	// 		conversations = [...userHistoryDto.userHistory, ...userHistoryDto.channelHistory];
-	// 		console.log('OK');
-	// 	} else {
-	// 		error = true;
-	// 		console.log('PAS OK');
-	// 		console.log(resp.status);
-	// 		console.log(resp.statusText);
-	// 	}
-	// });
 </script>
 
 <div>
-	{#each context.conversations as conversation}
-		<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
-	{/each}
+	{#key context.conversations}
+		{#each context.conversations as conversation}
+			<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
+		{/each}
+	{/key}
 </div>

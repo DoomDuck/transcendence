@@ -11,14 +11,14 @@ export class ChatContext {
 	constructor() {
 		this.socket = io('http://localhost:5000/chat', { auth: { token: prompt('your token ?') } });
 		this.socket.on(ChatEvent.MSG_TO_USER, this.handleDirectMessage.bind(this));
-		this.createConversation('babar');
-		this.handleDirectMessage({ source: 'babar', content: 'hi' });
-		this.handleDirectMessage({ source: 'babar2', content: 'hi' });
-		this.addMessageToConversation('alpha', {
-			author: 'alpha',
-			isMe: false,
-			text: 'gama'
-		});
+		// this.createConversation('babar');
+		// this.handleDirectMessage({ source: 'babar', content: 'hi' });
+		// this.handleDirectMessage({ source: 'babar2', content: 'hi' });
+		// this.addMessageToConversation('alpha', {
+		// 	author: 'alpha',
+		// 	isMe: false,
+		// 	text: 'gama'
+		// });
 	}
 
 	private findConversation(interlocutor: string): ConversationType | undefined {
@@ -30,7 +30,7 @@ export class ChatContext {
 		return this.conversations[0];
 	}
 
-	private findOrCreateConversation(interlocutor: string) {
+	private findOrCreateConversation(interlocutor: string): ConversationType {
 		return this.findConversation(interlocutor) ?? this.createConversation(interlocutor);
 	}
 
@@ -45,7 +45,9 @@ export class ChatContext {
 			isMe: false,
 			text: message.content
 		});
+
 		console.log(JSON.stringify(message));
+		console.log(JSON.stringify(this.conversations));
 	}
 
 	sendDirectMessage(interlocutor: string, text: string) {

@@ -86,13 +86,11 @@ export class ChatGateway
           dto.content,
         );
     });
-    this.wss
-      .to(tempChannel.name)
-      .emit(ChatEvent.MSG_TO_CHANNEL, {
-        source: tempSender.name,
-        channel: tempChannel.name,
-        content: dto.content,
-      });
+    this.wss.to(tempChannel.name).emit(ChatEvent.MSG_TO_CHANNEL, {
+      source: tempSender.name,
+      channel: tempChannel.name,
+      content: dto.content,
+    });
     return new ChatFeedbackDto(true);
   }
 
