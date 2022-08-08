@@ -321,7 +321,7 @@ export class UserService {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
           wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-            source: tempUserTarget.name,
+            source: tempUserSender.name,
             content: text,
           }),
         );
