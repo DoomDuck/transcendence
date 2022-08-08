@@ -139,10 +139,12 @@ export class UserService {
   }
   async addOne(userDto: UserDto): Promise<undefined> {
     const id = userDto.id;
-    let logger = new Logger('user');
+    let logger = new Logger('addone');
     logger.log(userDto);
     logger.log(id);
     if (userDto.name === undefined) return;
+
+    logger.log('test1');
     if ((await this.usersRepository.findOneBy({ id })) === null) {
       logger.log('dans undefined');
       const newUser = new User(userDto.id, userDto.name);
@@ -151,10 +153,12 @@ export class UserService {
     logger.log(this.usersRepository.findOneBy({ id }));
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
+      logger.log('test2');
       this.arrayActiveUser.push(
         new ActiveUser(id, userDto.name, userDto.socket),
       );
     } else {
+      logger.log('test3');
       tempUser.socketUser.push(userDto.socket);
     }
     return undefined;
@@ -282,18 +286,22 @@ export class UserService {
     text: string,
     target: string,
   ): ChatFeedbackDto {
+    let logger = new Logger('sendMessageToUser');
     const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id === senderId,
     );
     const tempUserTarget = this.arrayActiveUser.find(
       (user) => user.name === target,
     );
+
+    logger.log(tempUserSender!.name);
+    logger.log(tempUserTarget!.name);
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
           wss
             .to(socket.id)
-            .emit(ChatEvent.MSG_TO_USER, tempUserSender.name, text),
+            .emit(ChatEvent.MSG_TO_USER, tempUserTarget.name, text),
         );
         this.updateUserConversation(tempUserSender, tempUserTarget, text);
         return new ChatFeedbackDto(true);

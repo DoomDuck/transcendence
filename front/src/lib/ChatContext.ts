@@ -1,5 +1,6 @@
 import type { ConversationEntryType, ConversationType, DirectMessageType } from './types';
 import { io, Socket } from 'socket.io-client';
+
 import { ChatEvent, type ChatFeedbackDto } from 'chat/';
 
 export class ChatContext {
