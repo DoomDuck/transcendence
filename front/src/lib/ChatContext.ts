@@ -39,6 +39,9 @@ export class ChatContext {
 			console.log(`sucess: ${feedback.sucess}`);
 			console.log(`errorMessage: ${feedback.errorMessage}`);
 		});
+
+		console.log(`interlocutor: ${interlocutor}`);
+		console.log(`text: ${text}`);
 	}
 }
 
