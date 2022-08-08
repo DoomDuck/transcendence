@@ -3,10 +3,45 @@
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
 	import ConversationList from '$lib/ConversationList.svelte';
+	import { ChatContext } from '$lib/ChatContext';
 
 	let friends = [
 		{ profilePic: 'cars.jpeg', name: 'coullax' },
 		{ profilePic: 'canard.jpeg', name: 'coullax' }
+	];
+
+	const context: ChatContext = new ChatContext();
+	context.conversations = [
+		{
+			interlocutor: 'couillax',
+			history: [
+				{
+					author: 'couillax',
+					isMe: false,
+					text: 'Haha, je suis couillax sale enculé'
+				},
+				{
+					author: 'couillax',
+					isMe: false,
+					text: 'rentre chez toi sale enculé'
+				}
+			]
+		},
+		{
+			interlocutor: 'maman',
+			history: [
+				{
+					author: 'me',
+					isMe: true,
+					text: 'Haha, je suis moi'
+				},
+				{
+					author: 'maman',
+					isMe: false,
+					text: 'rentre chez toi sale enculé'
+				}
+			]
+		}
 	];
 </script>
 
@@ -23,7 +58,7 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<ConversationList />
+		<ConversationList {context} />
 	</div>
 </div>
 

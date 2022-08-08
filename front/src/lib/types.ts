@@ -9,3 +9,8 @@ export type ConversationType = {
 	interlocutor: string;
 	history: CommentType[];
 };
+
+export type DirectMessageType = {
+	sender: string;
+	content: string;
+};
