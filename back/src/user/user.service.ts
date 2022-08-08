@@ -140,9 +140,11 @@ export class UserService {
   async addOne(userDto: UserDto): Promise<undefined> {
     const id = userDto.id;
     let logger = new Logger('addone');
+		
+    if (!userDto) return;
+    if (!userDto.id) return;
     logger.log(userDto);
     logger.log(id);
-    if (userDto.name === undefined) return;
 
     logger.log('test1');
     if ((await this.usersRepository.findOneBy({ id })) === null) {
@@ -301,7 +303,7 @@ export class UserService {
         tempUserTarget.socketUser.forEach((socket) =>
           wss
             .to(socket.id)
-            .emit(ChatEvent.MSG_TO_USER, tempUserTarget.name, text),
+            .emit(ChatEvent.MSG_TO_USER, {interlocuteur:tempUserTarget.name, content:text})
         );
         this.updateUserConversation(tempUserSender, tempUserTarget, text);
         return new ChatFeedbackDto(true);
