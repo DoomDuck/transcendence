@@ -282,6 +282,16 @@ export class UserService {
         ),
       );
   }
+
+  disconnection(clientSocket: Socket)
+  {
+    const activeUser = this.arrayActiveUser.find((user) => user.id ===clientSocket.handshake.auth.token );
+	if (activeUser)
+		{
+			if(activeUser.socketUser.length === 1)
+				this.arrayActiveUser
+		}
+  }
   sendMessageToUser(
     senderId: Id,
     wss: Server,
@@ -295,9 +305,6 @@ export class UserService {
     const tempUserTarget = this.arrayActiveUser.find(
       (user) => user.name === target,
     );
-
-    logger.log(tempUserSender!.name);
-    logger.log(tempUserTarget!.name);
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>

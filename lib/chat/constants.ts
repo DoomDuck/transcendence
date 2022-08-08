@@ -18,9 +18,10 @@ export class ChatError
 	 static readonly YOU_ARE_BLOCKED ="you are blocked"
 	static readonly ALREADY_FRIEND = "already friend";
 	static readonly ALREADY_IN_CHANNEL = "already in channel";
+	static readonly ALREADY_ADMIN = "already admin";
 	static readonly NAME_ALREADY_IN_USE = "name already in use";
-
 	static readonly CHANNEL_IS_PRIVATE = "the channel is private";
+	static readonly INSUFICIENT_PERMISSION = "insuficient permission";
 }
 
 

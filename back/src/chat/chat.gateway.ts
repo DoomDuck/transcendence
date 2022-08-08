@@ -18,7 +18,7 @@ import {
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: '/chat' })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
+export class ChatGateway implements OnGatewayInit, OnGatewayConnection,OnGatewayDisconnect {
   @WebSocketServer() wss!: Server;
   constructor(
     private userService: UserService,
@@ -40,7 +40,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       ),
     );
   }
-
+handleDisconnect(clientSocket: Socket){
+	this.logger.log(`Client connected: ${clientSocket.id}`);
+    this.logger.log(clientSocket.handshake.auth.token);
+	this.userService.disconnection(clientSocket);
+}
   //deprecated used to test on hugo.html
   @SubscribeMessage('chatToServer')
   handleMessage(message: { sender: string; message: string }) {

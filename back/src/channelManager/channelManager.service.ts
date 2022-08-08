@@ -95,40 +95,40 @@ export class ChannelManagerService {
     tempChan.member.push(sender);
     return new ChatFeedbackDto(true);
   }
-  setPrivate(sender: Id, chanName: string): string {
+  setPrivate(sender: Id, chanName: string): ChatFeedbackDto {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
-    if (tempChan === undefined) return "chan doesn't exist";
+    if (tempChan === undefined) return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
-      return 'insuficient permission';
+      return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     tempChan.priv = true;
-    return 'private mode set';
+    return new ChatFeedbackDto(true);
   }
 
-  setPassword(sender: Id, chanName: string, password: string): string {
+  setPassword(sender: Id, chanName: string, password: string):ChatFeedbackDto   {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
 
-    if (tempChan === undefined) return "chan doesn't exist";
+    if (tempChan === undefined) return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
-      return 'insuficient permission';
+      return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     tempChan.protect = true;
     tempChan.password = password;
-    return 'password set';
+    return new ChatFeedbackDto(true);
   }
-  setNewAdmin(sender: Id, target: Id, chanName: string): string {
+  setNewAdmin(sender: Id, target: Id, chanName: string): ChatFeedbackDto {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
-    if (tempChan === undefined) return "chan doesn't exist";
+    if (tempChan === undefined) return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
-      return 'insuficient permission';
+      return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     if (tempChan.admin.find((element) => element === target) != undefined)
-      return 'target already admin';
+      return new ChatFeedbackDto(false, ChatError.ALREADY_ADMIN);
     tempChan.admin.push(target);
-    return 'new admin added ';
+    return new ChatFeedbackDto(true);
   }
   getRoomName(channelId: Id): string | undefined {
     const tempChan = this.arrayChannel.find(
