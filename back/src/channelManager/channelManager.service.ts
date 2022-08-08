@@ -61,7 +61,7 @@ export class ChannelManagerService {
     } else return new ChatFeedbackDto(false, ChatError.NAME_ALREADY_IN_USE);
   }
 
-  findChanOne(chanName: string): Channel | string {
+  findChanByName(chanName: string): Channel | string {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
@@ -109,7 +109,10 @@ export class ChannelManagerService {
     tempChan.priv = true;
     return new ChatFeedbackDto(true);
   }
-
+	msgToChanVerif(senderId:Id, channel:Channel)
+	{
+			
+	}
   setPassword(sender: Id, chanName: string, password: string):ChatFeedbackDto   {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
@@ -145,19 +148,15 @@ export class ChannelManagerService {
     return undefined;
   }
   //Send invitation
-  sendMessageToChannel(
-    wss: Server,
-    messageInfo: { sender: Id; text: string; channelId: Id },
-  ) {
-    const tempChan = this.arrayChannel.find(
-      (channel) => channel.channelId == messageInfo.channelId,
-    );
-    if (tempChan) {
-      if (
-        tempChan.member.find((member) => member === messageInfo.sender) !=
-        undefined
-      )
-        wss.to(tempChan.name).emit(ChatEvent.MSG_TO_CHANNEL, messageInfo);
-    }
-  }
+  // sendMessageToChannel(
+    // wss: Server,
+	// text:string,
+	// sender: ActiveUser;
+	// channel:Channel,
+  // ) {
+        // channel.member.find((member) => member === messageInfo.sender) !=
+        // undefined
+      // )
+    // }
+  // }
 }

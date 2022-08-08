@@ -55,31 +55,34 @@ handleDisconnect(clientSocket: Socket){
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   handleCreateChannel() {}
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
-  handleMessageChannel(messageInfoChannel: {
-    sender: Id;
-    text: string;
-    channelId: Id;
-  }) {
-    const tempChannel = this.channelManagerService.findChanById(
-      messageInfoChannel.channelId,
+  handleMessageChannel(
+		clientSocket:Socket,
+	  dto:{target: string, content: string}
+  ) {
+    const tempChannel = this.channelManagerService.findChanByName(
+      dto.target
     );
-    if (tempChannel instanceof Channel) {
+    if (!(tempChannel instanceof Channel)) 
+		return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+	if(!this.userService.msgToChanVerif(clientSocket.handshake.auth.token,tempChannel))
+		return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
+    const tempSender = this.userService.findOneActive(clientSocket.handshake.auth.token);
+	if(!tempSender)
+		return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
       tempChannel.member.forEach((member: Id) => {
         const tempUser = this.userService.findOneActive(member);
         if (tempUser)
           this.userService.updateChannelConversation(
-            messageInfoChannel.channelId,
-            member,
-            tempChannel,
-            messageInfoChannel.text,
+			clientSocket.handshake.auth.token,
+			member,
+           tempChannel,
+            dto.content,
           );
       });
-      this.channelManagerService.sendMessageToChannel(
-        this.wss,
-        messageInfoChannel,
-      );
+        this.wss.to(tempChannel.name).emit(ChatEvent.MSG_TO_CHANNEL,{source:tempSender.name,channel:tempChannel.name, content:dto.content} );
+		return new ChatFeedbackDto(true);
     }
-  }
+  
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
   handleJoinChannel(joinInfo: { sender: Id; channelId: Id }) {

@@ -16,6 +16,7 @@ export class ChatError
   static readonly YOU_ARE_BANNED ="you are banned"
   static readonly YOU_ARE_MUTED ="you are muted"
   static readonly YOU_ARE_BLOCKED ="you are blocked"
+  static readonly NOT_IN_CHANNEL ="not in channel"
 	static readonly ALREADY_FRIEND = "already friend";
 	static readonly ALREADY_IN_CHANNEL = "already in channel";
 	static readonly ALREADY_ADMIN = "already admin";
@@ -27,7 +28,7 @@ export class ChatError
 
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: {source: string, content: string}) => void;
-  [ChatEvent.MSG_TO_CHANNEL]: (dto: {source: string, content: string}) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: {source: string,channel:string, content: string}) => void;
 }
 
 export type ChatFeedbackDto = {

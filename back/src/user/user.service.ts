@@ -83,6 +83,15 @@ export class UserService {
     return chatMessageDto;
   }
 
+msgToChanVerif(senderId:Id, channel:Channel):boolean
+	{
+		const tempUser= this.findOneActive(senderId);
+		if(channel.member.find((id)=> id===senderId))
+			return true;
+		else 
+			return false;
+
+	}
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveConversationDto[] {
