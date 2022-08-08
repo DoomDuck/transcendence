@@ -1,11 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { removeIfPresent } from 'pong';
 import { ServerGameContext } from 'pong';
-import { Socket as IOSocketBaseType } from 'socket.io';
-
-import { ServerToClientEvents, ClientToServerEvents } from 'chat';
-
-type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class GameManagerService {

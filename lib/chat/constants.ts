@@ -39,7 +39,6 @@ export interface ClientToServerEvents {
   [ChatEvent.MSG_TO_CHANNEL]: (dto: {target: string, content: string}, feedback: ChatFeedbackDto) => void;
 }
 
-
 // interface SocketData {
 //   name: string;
 //   age: number;

@@ -157,7 +157,12 @@ export class ChannelManagerService {
         tempChan.member.find((member) => member === messageInfo.sender) !=
         undefined
       )
-        wss.to(tempChan.name).emit(ChatEvent.MSG_TO_CHANNEL, messageInfo);
+        wss
+          .to(tempChan.name)
+          .emit(ChatEvent.MSG_TO_CHANNEL, {
+            source: messageInfo.sender.toString(),
+            content: messageInfo.text,
+          });
     }
   }
 }
