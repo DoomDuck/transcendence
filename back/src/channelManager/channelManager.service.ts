@@ -38,23 +38,11 @@ export class ChannelManagerService {
     this.arrayChannel = [];
   }
 
-  createChan(channelDto: ChannelDto): boolean {
+  createChan(channelDto: ChannelDto):ChatFeedbackDto  {
     const found = this.arrayChannel.find(
       (channel) => channel.name === channelDto.name,
     );
     if (found === undefined) {
-      if (this.arrayChannel === [])
-        this.arrayChannel.push(
-          new Channel(
-            1,
-            channelDto.name,
-            channelDto.priv,
-            channelDto.protec,
-            channelDto.password,
-            channelDto.creator,
-          ),
-        );
-      else {
         this.arrayChannel.push(
           new Channel(
             this.arrayChannel.length + 1,
@@ -65,10 +53,10 @@ export class ChannelManagerService {
             channelDto.creator,
           ),
         );
-      }
-      return true;
-    } else return false;
+      return new ChatFeedbackDto(true);
+    } else return new ChatFeedbackDto(false, ChatError.NAME_ALREADY_IN_USE) ;
   }
+
   findChanOne(chanName: string): Channel | string {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
