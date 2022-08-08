@@ -83,15 +83,11 @@ export class UserService {
     return chatMessageDto;
   }
 
-msgToChanVerif(senderId:Id, channel:Channel):boolean
-	{
-		const tempUser= this.findOneActive(senderId);
-		if(channel.member.find((id)=> id===senderId))
-			return true;
-		else 
-			return false;
-
-	}
+  msgToChanVerif(senderId: Id, channel: Channel): boolean {
+    const tempUser = this.findOneActive(senderId);
+    if (channel.member.find((id) => id === senderId)) return true;
+    else return false;
+  }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveConversationDto[] {
@@ -300,14 +296,13 @@ msgToChanVerif(senderId:Id, channel:Channel):boolean
       );
   }
 
-  disconnection(clientSocket: Socket)
-  {
-    const activeUser = this.arrayActiveUser.find((user) => user.id ===clientSocket.handshake.auth.token );
-	if (activeUser)
-		{
-			if(activeUser.socketUser.length === 1)
-				this.arrayActiveUser
-		}
+  disconnection(clientSocket: Socket) {
+    const activeUser = this.arrayActiveUser.find(
+      (user) => user.id === clientSocket.handshake.auth.token,
+    );
+    if (activeUser) {
+      if (activeUser.socketUser.length === 1) this.arrayActiveUser;
+    }
   }
   sendMessageToUser(
     senderId: Id,

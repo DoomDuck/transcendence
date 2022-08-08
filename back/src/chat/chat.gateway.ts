@@ -18,7 +18,9 @@ import {
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: '/chat' })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection,OnGatewayDisconnect {
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() wss!: Server;
   constructor(
     private userService: UserService,
@@ -40,11 +42,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection,OnGateway
       ),
     );
   }
-handleDisconnect(clientSocket: Socket){
-	this.logger.log(`Client connected: ${clientSocket.id}`);
+  handleDisconnect(clientSocket: Socket) {
+    this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
-	this.userService.disconnection(clientSocket);
-}
+    this.userService.disconnection(clientSocket);
+  }
   //deprecated used to test on hugo.html
   @SubscribeMessage('chatToServer')
   handleMessage(message: { sender: string; message: string }) {
@@ -56,33 +58,43 @@ handleDisconnect(clientSocket: Socket){
   handleCreateChannel() {}
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   handleMessageChannel(
-		clientSocket:Socket,
-	  dto:{target: string, content: string}
+    clientSocket: Socket,
+    dto: { target: string; content: string },
   ) {
-    const tempChannel = this.channelManagerService.findChanByName(
-      dto.target
+    const tempChannel = this.channelManagerService.findChanByName(dto.target);
+    if (!(tempChannel instanceof Channel))
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (
+      !this.userService.msgToChanVerif(
+        clientSocket.handshake.auth.token,
+        tempChannel,
+      )
+    )
+      return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
+    const tempSender = this.userService.findOneActive(
+      clientSocket.handshake.auth.token,
     );
-    if (!(tempChannel instanceof Channel)) 
-		return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-	if(!this.userService.msgToChanVerif(clientSocket.handshake.auth.token,tempChannel))
-		return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
-    const tempSender = this.userService.findOneActive(clientSocket.handshake.auth.token);
-	if(!tempSender)
-		return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
-      tempChannel.member.forEach((member: Id) => {
-        const tempUser = this.userService.findOneActive(member);
-        if (tempUser)
-          this.userService.updateChannelConversation(
-			clientSocket.handshake.auth.token,
-			member,
-           tempChannel,
-            dto.content,
-          );
+    if (!tempSender)
+      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+    tempChannel.member.forEach((member: Id) => {
+      const tempUser = this.userService.findOneActive(member);
+      if (tempUser)
+        this.userService.updateChannelConversation(
+          clientSocket.handshake.auth.token,
+          member,
+          tempChannel,
+          dto.content,
+        );
+    });
+    this.wss
+      .to(tempChannel.name)
+      .emit(ChatEvent.MSG_TO_CHANNEL, {
+        source: tempSender.name,
+        channel: tempChannel.name,
+        content: dto.content,
       });
-        this.wss.to(tempChannel.name).emit(ChatEvent.MSG_TO_CHANNEL,{source:tempSender.name,channel:tempChannel.name, content:dto.content} );
-		return new ChatFeedbackDto(true);
-    }
-  
+    return new ChatFeedbackDto(true);
+  }
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
   handleJoinChannel(joinInfo: { sender: Id; channelId: Id }) {

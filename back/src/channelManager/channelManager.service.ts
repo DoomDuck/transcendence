@@ -103,22 +103,21 @@ export class ChannelManagerService {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
-    if (tempChan === undefined) return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (tempChan === undefined)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     tempChan.priv = true;
     return new ChatFeedbackDto(true);
   }
-	msgToChanVerif(senderId:Id, channel:Channel)
-	{
-			
-	}
-  setPassword(sender: Id, chanName: string, password: string):ChatFeedbackDto   {
+  msgToChanVerif(senderId: Id, channel: Channel) {}
+  setPassword(sender: Id, chanName: string, password: string): ChatFeedbackDto {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
 
-    if (tempChan === undefined) return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (tempChan === undefined)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     tempChan.protect = true;
@@ -129,7 +128,8 @@ export class ChannelManagerService {
     const tempChan = this.arrayChannel.find(
       (element) => element.name === chanName,
     );
-    if (tempChan === undefined) return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (tempChan === undefined)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     if (tempChan.admin.find((element) => element === target) != undefined)
@@ -149,14 +149,14 @@ export class ChannelManagerService {
   }
   //Send invitation
   // sendMessageToChannel(
-    // wss: Server,
-	// text:string,
-	// sender: ActiveUser;
-	// channel:Channel,
+  // wss: Server,
+  // text:string,
+  // sender: ActiveUser;
+  // channel:Channel,
   // ) {
-        // channel.member.find((member) => member === messageInfo.sender) !=
-        // undefined
-      // )
-    // }
+  // channel.member.find((member) => member === messageInfo.sender) !=
+  // undefined
+  // )
+  // }
   // }
 }
