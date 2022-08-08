@@ -6,7 +6,7 @@
 	import { type CommentType } from './types';
 
 	export let interlocutor: string;
-	export let comments: CommentType[];
+	export let history: CommentType[];
 
 	let invit = false;
 	let div: HTMLDivElement;
@@ -26,7 +26,7 @@
 			const text = inputElement.value;
 			if (!text) return;
 
-			comments = comments.concat({
+			history = history.concat({
 				author: '',
 				isMe: true,
 				text
@@ -37,14 +37,14 @@
 			// const reply = text + '!';
 
 			// setTimeout(() => {
-			// 	comments = comments.concat({
+			// 	history = history.concat({
 			// 		author: 'bot',
 			// 		text: '...',
 			// 		placeholder: true
 			// 	});
 
 			// 	setTimeout(() => {
-			// 		comments = comments
+			// 		history = history
 			// 			.filter((comment) => !comment.placeholder)
 			// 			.concat({
 			// 				author: 'bot',
@@ -71,7 +71,7 @@
 		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
-		{#each comments as comment}
+		{#each history as comment}
 			<article class={comment.isMe ? 'user' : 'interlocutor'}>
 				<span>{comment.text}</span>
 			</article>

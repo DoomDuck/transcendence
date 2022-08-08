@@ -4,7 +4,7 @@
 	import {
 		faUsers,
 		faCompressArrowsAlt,
-		faComments,
+		fahistory,
 		faEnvelope
 	} from '@fortawesome/free-solid-svg-icons';
 

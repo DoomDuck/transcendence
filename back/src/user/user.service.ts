@@ -2,8 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserDto } from './user.dto';
 import { UserHistoryDto } from './userHistory.dto';
+import { ChatMessageDto } from './userHistory.dto';
+import { ActiveConversationDto } from './userHistory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channelManager.service';
+import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
@@ -27,7 +30,7 @@ export class ActiveUser {
   activeChannelConversation: ActiveConversation[];
 }
 export class ChatMessage {
-  constructor(public sender: Id, public content: string) {
+  constructor(public sender: Id, public content: string, public isMe:boolean) {
     this.sender = sender;
     this.content = content;
   }
@@ -50,22 +53,57 @@ export class UserService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly databaseFilesService: DatabaseFilesService,
+    private readonly channelManagerService: ChannelManagerService,
   ) {
     this.arrayActiveUser = [];
   }
+	dtoTraductionChatMessage(chatMessage:ChatMessage[]) : ChatMessageDto[]
+	{
+
+		// const tempUser= this.findOneActive(chatMessage.sender) as ActiveUser;
+		let chatMessageDto : ChatMessageDto[];
+		chatMessageDto = [];
+		chatMessage.forEach((message)=> chatMessageDto.push(
+		new ChatMessageDto((this.findOneActive(message.sender) as ActiveUser).name, message.content, message.isMe)		
+		))
+		return chatMessageDto;
+	}
+
+dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConversationDto[]
+  {
+	let activeConversationDto :  ActiveConversationDto[];
+	activeConversationDto =  [];
+	activeConversation.forEach((conv:ActiveConversation)=> activeConversationDto.push(new ActiveConversationDto((this.channelManagerService.findChanById(conv.id) as Channel).name, 
+																   this.dtoTraductionChatMessage(conv.history)))
+					);
+	return activeConversationDto;	
+  }
+   dtoTraductionUserConv(activeConversation:ActiveConversation[]) : ActiveConversationDto[]
+  {
+	let activeConversationDto :  ActiveConversationDto[];
+	activeConversationDto =  [];
+	activeConversation.forEach((conv:ActiveConversation)=> activeConversationDto.push(new ActiveConversationDto((this.findOneActive(conv.id) as ActiveUser).name, 
+																   this.dtoTraductionChatMessage(conv.history)))
+					);
+	return activeConversationDto;	
+  }
   getUserHistory(id: Id): UserHistoryDto | null {
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
-    if (tempUser)
+    if (tempUser){
       return new UserHistoryDto(
-        tempUser.activeUserConversation,
-        tempUser.activeChannelConversation,
+        this.dtoTraductionUserConv(tempUser.activeUserConversation),
+        this.dtoTraductionChannelConv(tempUser.activeChannelConversation)
       );
+	}
     else
-      return new UserHistoryDto(
-        [new ActiveConversation(0, new ChatMessage(0, 'couillax'))],
-        [new ActiveConversation(1, new ChatMessage(0, 'couillax max'))],
-      );
-  }
+    {
+      
+      return new UserHistoryDto (
+        [
+          new ActiveConversationDto('gisele', [new ChatMessageDto("couillax", "max",true), new ChatMessageDto("gisele", "lol",false)])
+        ],[] );
+    }
+    }
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
   }
@@ -169,17 +207,17 @@ export class UserService {
       (conv) => conv.id === sender.id,
     );
     if (tempSenderConversation)
-      tempSenderConversation.history.push(new ChatMessage(sender.id, content));
+      tempSenderConversation.history.push(new ChatMessage(sender.id, content,true));
     else
       sender.activeUserConversation.push(
-        new ActiveConversation(target.id, new ChatMessage(sender.id, content)),
+        new ActiveConversation(target.id, new ChatMessage(sender.id, content,true)),
       );
 
     if (tempTargetConversation)
-      tempTargetConversation.history.push(new ChatMessage(sender.id, content));
+      tempTargetConversation.history.push(new ChatMessage(sender.id, content,false));
     else
       target.activeUserConversation.push(
-        new ActiveConversation(sender.id, new ChatMessage(sender.id, content)),
+        new ActiveConversation(sender.id, new ChatMessage(sender.id, content,false)),
       );
   }
   updateChannelConversation(
@@ -195,12 +233,12 @@ export class UserService {
       (conv) => conv.id === channel.channelId,
     );
     if (tempUserConversation)
-      tempUserConversation.history.push(new ChatMessage(sender.id, content));
+      tempUserConversation.history.push(new ChatMessage(sender.id, content,senderId===userId));
     else
       user.activeChannelConversation.push(
         new ActiveConversation(
           channel.channelId,
-          new ChatMessage(sender.id, content),
+          new ChatMessage(sender.id, content,senderId===userId),
         ),
       );
   }

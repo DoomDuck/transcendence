@@ -7,5 +7,5 @@ export type CommentType = {
 
 export type ConversationType = {
 	interlocutor: string;
-	comments: CommentType[];
+	history: CommentType[];
 };
