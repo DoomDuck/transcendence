@@ -7,7 +7,6 @@
     "preserveValueImports": true,
     "isolatedModules": true,
     "target": "es2017",
-    "importsNotUsedAsValues": "preserve",
-    "moduleResolution": "node"
+    "importsNotUsedAsValues": "preserve"
 	}
 }

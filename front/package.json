@@ -33,6 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"pong": "file:../lib/pong"
+		"pong": "file:../lib/pong",
+		"chat": "file:../lib/chat"
 	}
 }

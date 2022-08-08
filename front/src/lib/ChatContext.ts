@@ -1,13 +1,15 @@
 import type { ConversationType, DirectMessageType } from './types';
 import { io, Socket } from 'socket.io-client';
+import { ChatEvent } from 'chat/';
 
 export class ChatContext {
-	// socket: Socket;
+	socket: Socket;
 	conversations: ConversationType[] = [];
 	channels: ConversationType[] = [];
 
 	constructor() {
-		this.socket = io('http://localhost:5000/chat');
+		this.socket = io('http://localhost:5000/chat', { auth: { token: prompt('your token ?') } });
+		this.socket.on(ChatEvent.MSG_TO_USER, this.handleDirectMessage.bind(this));
 	}
 
 	private findConversation(interlocutor: string): ConversationType | undefined {
@@ -30,5 +32,22 @@ export class ChatContext {
 				isMe: false
 			}
 		];
+	}
+
+	sendMessage(interlocutor: string, text: string) {
+		this.socket.emit(
+			ChatEvent.MSG_TO_USER,
+			{
+				target: interlocutor,
+				text: text
+			},
+			(feedback: any) => {
+				console.log(`sucess: ${feedback.success}`);
+				console.log(`errorMessage: ${feedback.errorMessage}`);
+				console.log(`feedback: ${JSON.stringify(feedback)}`);
+			}
+		);
+		console.log(`interlocutor: ${interlocutor}`);
+		console.log(`text: ${text}`);
 	}
 }

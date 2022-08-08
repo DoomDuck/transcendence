@@ -1,14 +1,22 @@
 <script lang="ts">
-	export let sendMessage: () => void;
-	export let newText: string;
+	export let sendMessage: (interlocutor: string, text: string) => void;
+	export let text: string;
+	let target: string = '';
 </script>
 
-<form on:submit|preventDefault={sendMessage}>
+<form on:submit|preventDefault={() => sendMessage(target, text)}>
 	<div id="formContainer">
-		<input id="destinataire" type="search" placeholder="To :" required /> <br />
-		<textarea id="message" type="text" placeholder="Type a message..." bind:value={newText} />
+		<input
+			id="destinataire"
+			type="search"
+			placeholder="To :"
+			contenteditable="true"
+			bind:value={target}
+			required
+		/> <br />
+		<textarea id="message" type="text" placeholder="Type a message..." bind:value={text} />
 		<!-- input go in newText -->
-		<button>
+		<button on:click={() => sendMessage(target, text)}>
 			<img src="send.png" alt="send message" />
 		</button>
 	</div>

@@ -11,38 +11,6 @@
 	];
 
 	const context: ChatContext = new ChatContext();
-	context.conversations = [
-		{
-			interlocutor: 'couillax',
-			history: [
-				{
-					author: 'couillax',
-					isMe: false,
-					text: 'Haha, je suis couillax sale enculé'
-				},
-				{
-					author: 'couillax',
-					isMe: false,
-					text: 'rentre chez toi sale enculé'
-				}
-			]
-		},
-		{
-			interlocutor: 'maman',
-			history: [
-				{
-					author: 'me',
-					isMe: true,
-					text: 'Haha, je suis moi'
-				},
-				{
-					author: 'maman',
-					isMe: false,
-					text: 'rentre chez toi sale enculé'
-				}
-			]
-		}
-	];
 </script>
 
 <div id="chat">
@@ -50,7 +18,7 @@
 		<h1>Chat</h1>
 		<div id="options">
 			<CreateChannel />
-			<WriteNewMsg />
+			<WriteNewMsg {context} />
 		</div>
 	</div>
 

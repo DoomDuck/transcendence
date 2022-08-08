@@ -1,10 +1,10 @@
-export class ChatEvent{
-	 static readonly MSG_TO_CHANNEL ="msg to channel"
-	static readonly MSG_TO_USER ='msg to user'
-	static readonly JOIN_CHANNEL ='join channel'
-	static readonly CREATE_CHANNEL ='create channel'
-	static readonly GAME_INVITE ='game invite'
-	static readonly FRIEND_INVITE ='friend invite'
+export class ChatEvent {
+	static readonly MSG_TO_CHANNEL = "msg to channel"
+	static readonly MSG_TO_USER = 'msg to user'
+	static readonly JOIN_CHANNEL = 'join channel'
+	static readonly CREATE_CHANNEL = 'create channel'
+	static readonly GAME_INVITE = 'game invite'
+	static readonly FRIEND_INVITE = 'friend invite'
 }
 export class ChatError
 {
@@ -22,3 +22,23 @@ export class ChatError
 
 	static readonly CHANNEL_IS_PRIVATE = "the channel is private";
 }
+
+
+// interface ServerToClientEvents {
+//   noArg: () => void;
+//   basicEmit: (a: number, b: string, c: Buffer) => void;
+//   withAck: (d: string, callback: (e: number) => void) => void;
+// }
+
+// interface ClientToServerEvents {
+//   hello: () => void;
+// }
+
+// interface InterServerEvents {
+//   ping: () => void;
+// }
+
+// interface SocketData {
+//   name: string;
+//   age: number;
+// }

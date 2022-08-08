@@ -108,7 +108,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       target: string;
       text: string;
     },
-    reponseCallback: (chatFeedbackDto: ChatFeedbackDto) => void,
   ) {
     const feedback = this.userService.sendMessageToUser(
       clientSocket.handshake.auth.token,
@@ -116,7 +115,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       messageInfo.text,
       messageInfo.target,
     );
-    reponseCallback(feedback);
+    console.log(feedback);
+    // return { success: feedback.success, errorMessage: feedback.errorMessage };
+    return feedback;
   }
 
   @SubscribeMessage(ChatEvent.FRIEND_INVITE)
