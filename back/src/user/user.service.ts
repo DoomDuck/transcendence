@@ -148,9 +148,11 @@ export class UserService {
   async addOne(userDto: UserDto): Promise<undefined> {
     const id = userDto.id;
     let logger = new Logger('addone');
+
+    if (!userDto) return;
+    if (!userDto.id) return;
     logger.log(userDto);
     logger.log(id);
-    if (userDto.name === undefined) return;
 
     logger.log('test1');
     if ((await this.usersRepository.findOneBy({ id })) === null) {
