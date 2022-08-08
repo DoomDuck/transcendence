@@ -48,8 +48,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     this.wss.emit('chatToClient', message);
   }
 
-  //Not sur if i'm gonna need client socket later
-  //
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   handleCreateChannel() {}
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)

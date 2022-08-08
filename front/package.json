@@ -33,7 +33,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"chat": "file:../lib/chat",
 		"pong": "file:../lib/pong",
-		"chat": "file:../lib/chat"
+		"socket.io-client": "^4.5.1"
 	}
 }
