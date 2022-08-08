@@ -35,16 +35,19 @@ export class ChatContext {
 	}
 
 	sendMessage(interlocutor: string, text: string) {
-		this.socket.emit(ChatEvent.MSG_TO_USER, interlocutor, text, (feedback: ChatFeedbackDto) => {
-			console.log(`sucess: ${feedback.sucess}`);
-			console.log(`errorMessage: ${feedback.errorMessage}`);
-		});
-
+		this.socket.emit(
+			ChatEvent.MSG_TO_USER,
+			{
+				target: interlocutor,
+				text: text
+			},
+			(feedback: any) => {
+				console.log(`sucess: ${feedback.success}`);
+				console.log(`errorMessage: ${feedback.errorMessage}`);
+				console.log(`feedback: ${JSON.stringify(feedback)}`);
+			}
+		);
 		console.log(`interlocutor: ${interlocutor}`);
 		console.log(`text: ${text}`);
 	}
-}
-
-class ChatFeedbackDto {
-	constructor(public sucess: boolean, public errorMessage?: string) {}
 }
