@@ -299,9 +299,10 @@ export class UserService {
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
-          wss
-            .to(socket.id)
-            .emit(ChatEvent.MSG_TO_USER, tempUserTarget.name, text),
+          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
+            interlocutor: tempUserTarget.name,
+            content: text,
+          }),
         );
         this.updateUserConversation(tempUserSender, tempUserTarget, text);
         return new ChatFeedbackDto(true);

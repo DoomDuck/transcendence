@@ -22,7 +22,7 @@
 		<h1>Chat</h1>
 		<div id="options">
 			<CreateChannel />
-			<WriteNewMsg {context} on:msgToUser={handleMsgToUser} />
+			<WriteNewMsg on:msgToUser={handleMsgToUser} />
 		</div>
 	</div>
 

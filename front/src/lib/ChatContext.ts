@@ -12,8 +12,8 @@ export class ChatContext {
 		this.socket = io('http://localhost:5000/chat', { auth: { token: prompt('your token ?') } });
 		this.socket.on(ChatEvent.MSG_TO_USER, this.handleDirectMessage.bind(this));
 		this.createConversation('babar');
-		this.handleDirectMessage({ sender: 'babar', content: 'hi' });
-		this.handleDirectMessage({ sender: 'babar2', content: 'hi' });
+		this.handleDirectMessage({ interlocutor: 'babar', content: 'hi' });
+		this.handleDirectMessage({ interlocutor: 'babar2', content: 'hi' });
 	}
 
 	private findConversation(interlocutor: string): ConversationType | undefined {
@@ -35,11 +35,12 @@ export class ChatContext {
 	}
 
 	handleDirectMessage(message: DirectMessageType) {
-		this.addMessageToConversation(message.sender, {
-			author: message.sender,
+		this.addMessageToConversation(message.interlocutor, {
+			author: message.interlocutor,
 			isMe: false,
 			text: message.content
 		});
+		console.log(JSON.stringify(message));
 	}
 
 	sendDirectMessage(interlocutor: string, text: string) {

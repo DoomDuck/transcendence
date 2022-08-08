@@ -11,6 +11,6 @@ export type ConversationType = {
 };
 
 export type DirectMessageType = {
-	sender: string;
+	interlocutor: string;
 	content: string;
 };

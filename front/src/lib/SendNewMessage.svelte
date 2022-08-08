@@ -7,7 +7,7 @@
 	let target: string = '';
 </script>
 
-<form on:submit|preventDefault={() => dispach('msgToUser', { target, text })}>
+<form on:submit|preventDefault={() => dispach('msgToUser', { interlocutor: target, text })}>
 	<div id="formContainer">
 		<input
 			id="destinataire"
