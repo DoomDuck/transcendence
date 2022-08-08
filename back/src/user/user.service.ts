@@ -30,7 +30,7 @@ export class ActiveUser {
   activeChannelConversation: ActiveConversation[];
 }
 export class ChatMessage {
-  constructor(public sender: Id, public content: string, public isMe:boolean) {
+  constructor(public sender: Id, public content: string, public isMe: boolean) {
     this.sender = sender;
     this.content = content;
   }
@@ -57,53 +57,71 @@ export class UserService {
   ) {
     this.arrayActiveUser = [];
   }
-	dtoTraductionChatMessage(chatMessage:ChatMessage[]) : ChatMessageDto[]
-	{
-
-		// const tempUser= this.findOneActive(chatMessage.sender) as ActiveUser;
-		let chatMessageDto : ChatMessageDto[];
-		chatMessageDto = [];
-		chatMessage.forEach((message)=> chatMessageDto.push(
-		new ChatMessageDto((this.findOneActive(message.sender) as ActiveUser).name, message.content, message.isMe)		
-		))
-		return chatMessageDto;
-	}
-
-dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConversationDto[]
-  {
-	let activeConversationDto :  ActiveConversationDto[];
-	activeConversationDto =  [];
-	activeConversation.forEach((conv:ActiveConversation)=> activeConversationDto.push(new ActiveConversationDto((this.channelManagerService.findChanById(conv.id) as Channel).name, 
-																   this.dtoTraductionChatMessage(conv.history)))
-					);
-	return activeConversationDto;	
+  dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
+    // const tempUser= this.findOneActive(chatMessage.sender) as ActiveUser;
+    let chatMessageDto: ChatMessageDto[];
+    chatMessageDto = [];
+    chatMessage.forEach((message) =>
+      chatMessageDto.push(
+        new ChatMessageDto(
+          (this.findOneActive(message.sender) as ActiveUser).name,
+          message.content,
+          message.isMe,
+        ),
+      ),
+    );
+    return chatMessageDto;
   }
-   dtoTraductionUserConv(activeConversation:ActiveConversation[]) : ActiveConversationDto[]
-  {
-	let activeConversationDto :  ActiveConversationDto[];
-	activeConversationDto =  [];
-	activeConversation.forEach((conv:ActiveConversation)=> activeConversationDto.push(new ActiveConversationDto((this.findOneActive(conv.id) as ActiveUser).name, 
-																   this.dtoTraductionChatMessage(conv.history)))
-					);
-	return activeConversationDto;	
+
+  dtoTraductionChannelConv(
+    activeConversation: ActiveConversation[],
+  ): ActiveConversationDto[] {
+    let activeConversationDto: ActiveConversationDto[];
+    activeConversationDto = [];
+    activeConversation.forEach((conv: ActiveConversation) =>
+      activeConversationDto.push(
+        new ActiveConversationDto(
+          (this.channelManagerService.findChanById(conv.id) as Channel).name,
+          this.dtoTraductionChatMessage(conv.history),
+        ),
+      ),
+    );
+    return activeConversationDto;
+  }
+  dtoTraductionUserConv(
+    activeConversation: ActiveConversation[],
+  ): ActiveConversationDto[] {
+    let activeConversationDto: ActiveConversationDto[];
+    activeConversationDto = [];
+    activeConversation.forEach((conv: ActiveConversation) =>
+      activeConversationDto.push(
+        new ActiveConversationDto(
+          (this.findOneActive(conv.id) as ActiveUser).name,
+          this.dtoTraductionChatMessage(conv.history),
+        ),
+      ),
+    );
+    return activeConversationDto;
   }
   getUserHistory(id: Id): UserHistoryDto | null {
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
-    if (tempUser){
+    if (tempUser) {
       return new UserHistoryDto(
         this.dtoTraductionUserConv(tempUser.activeUserConversation),
-        this.dtoTraductionChannelConv(tempUser.activeChannelConversation)
+        this.dtoTraductionChannelConv(tempUser.activeChannelConversation),
       );
-	}
-    else
-    {
-      
-      return new UserHistoryDto (
+    } else {
+      return new UserHistoryDto(
         [
-          new ActiveConversationDto('gisele', [new ChatMessageDto("couillax", "max",true), new ChatMessageDto("gisele", "lol",false)])
-        ],[] );
+          new ActiveConversationDto('gisele', [
+            new ChatMessageDto('couillax', 'max', true),
+            new ChatMessageDto('gisele', 'lol', false),
+          ]),
+        ],
+        [],
+      );
     }
-    }
+  }
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
   }
@@ -207,17 +225,27 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
       (conv) => conv.id === sender.id,
     );
     if (tempSenderConversation)
-      tempSenderConversation.history.push(new ChatMessage(sender.id, content,true));
+      tempSenderConversation.history.push(
+        new ChatMessage(sender.id, content, true),
+      );
     else
       sender.activeUserConversation.push(
-        new ActiveConversation(target.id, new ChatMessage(sender.id, content,true)),
+        new ActiveConversation(
+          target.id,
+          new ChatMessage(sender.id, content, true),
+        ),
       );
 
     if (tempTargetConversation)
-      tempTargetConversation.history.push(new ChatMessage(sender.id, content,false));
+      tempTargetConversation.history.push(
+        new ChatMessage(sender.id, content, false),
+      );
     else
       target.activeUserConversation.push(
-        new ActiveConversation(sender.id, new ChatMessage(sender.id, content,false)),
+        new ActiveConversation(
+          sender.id,
+          new ChatMessage(sender.id, content, false),
+        ),
       );
   }
   updateChannelConversation(
@@ -233,12 +261,14 @@ dtoTraductionChannelConv(activeConversation:ActiveConversation[]) : ActiveConver
       (conv) => conv.id === channel.channelId,
     );
     if (tempUserConversation)
-      tempUserConversation.history.push(new ChatMessage(sender.id, content,senderId===userId));
+      tempUserConversation.history.push(
+        new ChatMessage(sender.id, content, senderId === userId),
+      );
     else
       user.activeChannelConversation.push(
         new ActiveConversation(
           channel.channelId,
-          new ChatMessage(sender.id, content,senderId===userId),
+          new ChatMessage(sender.id, content, senderId === userId),
         ),
       );
   }

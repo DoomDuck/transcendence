@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
+	import ConversationBox from './ConversationBox.svelte';
 	import type { ConversationType } from './types';
-	import Conversation from './Conversation.svelte';
 
 	// export let name: string;
 	export let conversation: ConversationType;
@@ -36,7 +36,7 @@
 {/if}
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>
-		<Conversation {...conversation} />
+		<ConversationBox {conversation} />
 	</Modal>
 {/if}
 

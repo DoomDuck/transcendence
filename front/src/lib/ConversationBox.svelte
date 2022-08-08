@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate } from 'svelte';
-
 	import GameInvit from './GameInvit.svelte';
 	import Modal from './Modal.svelte';
-	import { type CommentType } from './types';
+	import { type ConversationType } from './types';
 
-	export let interlocutor: string;
-	export let history: CommentType[];
+	export let conversation: ConversationType;
 
 	let invit = false;
 	let div: HTMLDivElement;
@@ -26,39 +24,20 @@
 			const text = inputElement.value;
 			if (!text) return;
 
-			history = history.concat({
+			conversation.history = conversation.history.concat({
 				author: '',
 				isMe: true,
 				text
 			});
 
 			inputElement.value = '';
-
-			// const reply = text + '!';
-
-			// setTimeout(() => {
-			// 	history = history.concat({
-			// 		author: 'bot',
-			// 		text: '...',
-			// 		placeholder: true
-			// 	});
-
-			// 	setTimeout(() => {
-			// 		history = history
-			// 			.filter((comment) => !comment.placeholder)
-			// 			.concat({
-			// 				author: 'bot',
-			// 				text: reply
-			// 			});
-			// 	}, 500 + Math.random() * 500);
-			// }, 200 + Math.random() * 200);
 		}
 	}
 </script>
 
 <div class="chat">
 	<div id="title">
-		<h2>{interlocutor}</h2>
+		<h2>{conversation.interlocutor}</h2>
 		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
 			<img
@@ -71,7 +50,7 @@
 		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
-		{#each history as comment}
+		{#each conversation.history as comment}
 			<article class={comment.isMe ? 'user' : 'interlocutor'}>
 				<span>{comment.text}</span>
 			</article>
@@ -83,7 +62,7 @@
 
 {#if invit}
 	<Modal on:close={() => (invit = false)}>
-		<GameInvit name={interlocutor} />
+		<GameInvit name={conversation.interlocutor} />
 	</Modal>
 {/if}
 
