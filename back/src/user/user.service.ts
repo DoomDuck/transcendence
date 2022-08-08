@@ -12,8 +12,8 @@ import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
-import { ChatEvent } from 'chat'; 
-import { ChatError } from 'chat'; 
+import { ChatEvent } from 'chat';
+import { ChatError } from 'chat';
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
     this.pending_invite = false;
@@ -142,8 +142,7 @@ export class UserService {
     let logger = new Logger('user');
     logger.log(userDto);
     logger.log(id);
-	if (userDto.name === undefined)
-		return;
+    if (userDto.name === undefined) return;
     if ((await this.usersRepository.findOneBy({ id })) === null) {
       logger.log('dans undefined');
       const newUser = new User(userDto.id, userDto.name);
@@ -184,7 +183,7 @@ export class UserService {
     }
   }
 
-  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto>{
+  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto> {
     const tempSender = await this.usersRepository
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
@@ -193,14 +192,16 @@ export class UserService {
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
       .getOne();
-    if (tempSender === null) return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST);
-    if (tempTarget === null) return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND);
+    if (tempSender === null)
+      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+    if (tempTarget === null)
+      return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
     if (
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
       return new ChatFeedbackDto(true);
-    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND) ;
+    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND);
   }
   async addAvatar(
     userId: Id,
@@ -277,10 +278,11 @@ export class UserService {
       );
   }
   sendMessageToUser(
-	  senderId:Id,
+    senderId: Id,
     wss: Server,
-      text: string, target: string ,
-  ):ChatFeedbackDto {
+    text: string,
+    target: string,
+  ): ChatFeedbackDto {
     const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id === senderId,
     );
@@ -290,19 +292,13 @@ export class UserService {
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
-          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER,tempUserSender.name,text),
+          wss
+            .to(socket.id)
+            .emit(ChatEvent.MSG_TO_USER, tempUserSender.name, text),
         );
-        this.updateUserConversation(
-          tempUserSender,
-          tempUserTarget,
-          text,
-        );
-			return new ChatFeedbackDto(true);
-	  }
-	  else
-			return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND)
-    }
-	else
-			return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST)
+        this.updateUserConversation(tempUserSender, tempUserTarget, text);
+        return new ChatFeedbackDto(true);
+      } else return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
+    } else return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
   }
 }

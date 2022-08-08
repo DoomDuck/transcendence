@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Id } from '../customType';
 import { ChannelDto } from './channel.dto';
 import { Socket, Server } from 'socket.io';
-import { ChatEvent } from 'chat'; 
-import { ChatError } from 'chat'; 
-import { ChatFeedbackDto } from '../chat/chatFeedback.dto'; 
+import { ChatEvent } from 'chat';
+import { ChatError } from 'chat';
+import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
 
 export class Channel {
   constructor(
@@ -89,21 +89,23 @@ export class ChannelManagerService {
   }
   //Return string is placeholder
   joinChan(sender: Id, channelId: Id, password?: string): ChatFeedbackDto {
-
     const tempChan = this.arrayChannel.find(
       (element) => element.channelId === channelId,
     );
-    if (tempChan === undefined) return  new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (tempChan === undefined)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
 
     if (tempChan.member.find((element) => element === sender))
-      return  new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL)  ; 
-    if (tempChan.priv) return  new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
+      return new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL);
+    if (tempChan.priv)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
 
     if (tempChan.protect) {
-      if (password != tempChan.password) return  new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
+      if (password != tempChan.password)
+        return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
     tempChan.member.push(sender);
-    return  new ChatFeedbackDto(true);
+    return new ChatFeedbackDto(true);
   }
   setPrivate(sender: Id, chanName: string): string {
     const tempChan = this.arrayChannel.find(
