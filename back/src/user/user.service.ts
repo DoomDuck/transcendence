@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserDto } from './user.dto';
+import { ChatFeedbackDto } from './../chat/chatFeedback.dto';
 import { UserHistoryDto } from './userHistory.dto';
 import { ChatMessageDto } from './userHistory.dto';
 import { ActiveConversationDto } from './userHistory.dto';
@@ -11,7 +12,8 @@ import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
-
+import { ChatEvent } from 'chat'; 
+import { ChatError } from 'chat'; 
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
     this.pending_invite = false;
@@ -180,7 +182,7 @@ export class UserService {
     }
   }
 
-  async addFriend(sender: Id, target: Id): Promise<string | User> {
+  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto>{
     const tempSender = await this.usersRepository
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
@@ -189,14 +191,14 @@ export class UserService {
       .createQueryBuilder('User')
       .where('User.id = :sender', { sender })
       .getOne();
-    if (tempSender === null) return 'Sender does not exist';
-    if (tempTarget === null) return 'Target does not exist';
+    if (tempSender === null) return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST);
+    if (tempTarget === null) return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND);
     if (
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
-      return this.usersRepository.save(tempSender);
-    } else return 'Already friends';
+      return new ChatFeedbackDto(true);
+    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND) ;
   }
   async addAvatar(
     userId: Id,
@@ -275,7 +277,7 @@ export class UserService {
   sendMessageToUser(
     wss: Server,
     messageInfo: { sender: Id; text: string; target: Id },
-  ) {
+  ):ChatFeedbackDto {
     const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id === messageInfo.sender,
     );
@@ -285,14 +287,19 @@ export class UserService {
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
-          wss.to(socket.id).emit('userToUser', messageInfo),
+          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, messageInfo),
         );
         this.updateUserConversation(
           tempUserSender,
           tempUserTarget,
           messageInfo.text,
         );
-      }
+			return new ChatFeedbackDto(true);
+	  }
+	  else
+			return new ChatFeedbackDto(false,ChatError.USER_NOT_FOUND)
     }
+	else
+			return new ChatFeedbackDto(false,ChatError.U_DO_NOT_EXIST)
   }
 }

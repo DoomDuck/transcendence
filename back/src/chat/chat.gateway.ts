@@ -1,6 +1,7 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Channel } from '../channelManager/channelManager.service';
+import { ChatEvent } from 'chat'; 
 import { UserDto } from '../user/user.dto';
 import { Id } from '../customType';
 import { Socket, Server } from 'socket.io';
@@ -46,7 +47,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   //Not sur if i'm gonna need client socket later
-  @SubscribeMessage('userToChannel')
+  @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   handleMessageChannel(messageInfoChannel: {
     sender: Id;
     text: string;
@@ -73,7 +74,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
-  @SubscribeMessage('joinChannel')
+  @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
   handleJoinChannel(joinInfo: { sender: Id; channelId: Id }) {
     if (
       this.channelManagerService.joinChan(
@@ -84,8 +85,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection {
       this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
   }
 
-  @SubscribeMessage('userToUser')
+  @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(messageInfoPriv: { sender: Id; text: string; target: Id }) {
-    this.userService.sendMessageToUser(this.wss, messageInfoPriv);
+    const feedback =this.userService.sendMessageToUser(this.wss, messageInfoPriv);
+  }
+
+ @SubscribeMessage(ChatEvent.FRIEND_INVITE)
+  handleFriendInvite(friendRequest:{sender:Id;target:Id} ) {
+    const feedback =this.userService.addFriend(friendRequest.sender,friendRequest.target);
   }
 }

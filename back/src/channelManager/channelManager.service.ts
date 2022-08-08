@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Id } from '../customType';
 import { ChannelDto } from './channel.dto';
 import { Socket, Server } from 'socket.io';
+import { ChatEvent } from 'chat'; 
 export class Channel {
   constructor(
     public channelId: Id,
@@ -162,7 +163,7 @@ export class ChannelManagerService {
         tempChan.member.find((member) => member === messageInfo.sender) !=
         undefined
       )
-        wss.to(tempChan.name).emit('userToChannel', messageInfo);
+        wss.to(tempChan.name).emit(ChatEvent.MSG_TO_CHANNEL, messageInfo);
     }
   }
 }
