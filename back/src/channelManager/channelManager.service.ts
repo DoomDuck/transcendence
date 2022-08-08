@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Id } from '../customType';
 import { ChannelDto } from './channel.dto';
-import { Socket, Server } from 'socket.io';
 import { ChatEvent } from 'chat';
 import { ChatError } from 'chat';
 import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
+import { Server as IOServerBaseType } from 'socket.io';
+
+import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+
+type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 export class Channel {
   constructor(

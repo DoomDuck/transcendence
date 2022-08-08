@@ -11,9 +11,17 @@ import { ChannelManagerService } from '../channelManager/channelManager.service'
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
-import { Socket, Server } from 'socket.io';
+import {
+  Socket as IOSocketBaseType,
+  Server as IOServerBaseType,
+} from 'socket.io';
 import { ChatEvent } from 'chat';
 import { ChatError } from 'chat';
+import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+
+type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
+type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
+
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
     this.pending_invite = false;
@@ -300,7 +308,7 @@ export class UserService {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
           wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-            interlocutor: tempUserTarget.name,
+            source: tempUserTarget.name,
             content: text,
           }),
         );
