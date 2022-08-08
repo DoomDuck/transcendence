@@ -1,6 +1,6 @@
-import type { ConversationType, DirectMessageType } from './types';
+import type { ConversationEntryType, ConversationType, DirectMessageType } from './types';
 import { io, Socket } from 'socket.io-client';
-import { ChatEvent } from 'chat/';
+import { ChatEvent, type ChatFeedbackDto } from 'chat/';
 
 export class ChatContext {
 	socket: Socket;
@@ -10,6 +10,9 @@ export class ChatContext {
 	constructor() {
 		this.socket = io('http://localhost:5000/chat', { auth: { token: prompt('your token ?') } });
 		this.socket.on(ChatEvent.MSG_TO_USER, this.handleDirectMessage.bind(this));
+		this.createConversation('babar');
+		this.handleDirectMessage({ sender: 'babar', content: 'hi' });
+		this.handleDirectMessage({ sender: 'babar2', content: 'hi' });
 	}
 
 	private findConversation(interlocutor: string): ConversationType | undefined {
@@ -21,30 +24,40 @@ export class ChatContext {
 		return this.conversations[0];
 	}
 
-	handleDirectMessage(message: DirectMessageType) {
-		const conversation =
-			this.findConversation(message.sender) ?? this.createConversation(message.sender);
-		conversation.history = [
-			...conversation.history,
-			{
-				author: message.sender,
-				text: message.content,
-				isMe: false
-			}
-		];
+	private findOrCreateConversation(interlocutor: string) {
+		return this.findConversation(interlocutor) ?? this.createConversation(interlocutor);
 	}
 
-	sendMessage(interlocutor: string, text: string) {
+	private addMessageToConversation(interlocutor: string, message: ConversationEntryType) {
+		const conversation = this.findOrCreateConversation(interlocutor);
+		conversation.history = [...conversation.history, message];
+	}
+
+	handleDirectMessage(message: DirectMessageType) {
+		this.addMessageToConversation(message.sender, {
+			author: message.sender,
+			isMe: false,
+			text: message.content
+		});
+	}
+
+	sendDirectMessage(interlocutor: string, text: string) {
 		this.socket.emit(
 			ChatEvent.MSG_TO_USER,
 			{
 				target: interlocutor,
 				text: text
 			},
-			(feedback: any) => {
-				console.log(`sucess: ${feedback.success}`);
-				console.log(`errorMessage: ${feedback.errorMessage}`);
-				console.log(`feedback: ${JSON.stringify(feedback)}`);
+			(feedback: ChatFeedbackDto) => {
+				if (feedback.success) {
+					this.addMessageToConversation(interlocutor, {
+						author: '',
+						isMe: true,
+						text: text
+					});
+				} else {
+					alert(`error: ${feedback.errorMessage}`);
+				}
 			}
 		);
 		console.log(`interlocutor: ${interlocutor}`);

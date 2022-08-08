@@ -36,7 +36,7 @@
 {/if}
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>
-		<ConversationBox {conversation} />
+		<ConversationBox {conversation} on:msgToUser />
 	</Modal>
 {/if}
 

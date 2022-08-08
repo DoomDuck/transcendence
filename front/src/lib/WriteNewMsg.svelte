@@ -17,7 +17,7 @@
 
 {#if sendingMessage}
 	<Modal on:close={() => (sendingMessage = false)}>
-		<SendMessage text="" sendMessage={context.sendMessage.bind(context)} />
+		<SendMessage text="" sendMessage={context.sendDirectMessage.bind(context)} />
 	</Modal>
 {/if}
 

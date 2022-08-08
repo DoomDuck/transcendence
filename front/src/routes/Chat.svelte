@@ -11,6 +11,10 @@
 	];
 
 	const context: ChatContext = new ChatContext();
+
+	function handleMsgToUser(event: CustomEvent) {
+		context.sendDirectMessage(event.detail.interlocutor, event.detail.text);
+	}
 </script>
 
 <div id="chat">
@@ -26,7 +30,7 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<ConversationList {context} />
+		<ConversationList {context} on:msgToUser={handleMsgToUser} />
 	</div>
 </div>
 

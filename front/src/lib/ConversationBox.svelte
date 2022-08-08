@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { beforeUpdate, afterUpdate } from 'svelte';
+	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
 	import GameInvit from './GameInvit.svelte';
 	import Modal from './Modal.svelte';
 	import { type ConversationType } from './types';
 
 	export let conversation: ConversationType;
 
+	const dispatch = createEventDispatcher();
 	let invit = false;
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
@@ -27,9 +28,12 @@
 			conversation.history = conversation.history.concat({
 				author: '',
 				isMe: true,
-				text
+				text: text
 			});
-
+			dispatch('msgToUser', {
+				interlocutor: conversation.interlocutor,
+				text: text
+			});
 			inputElement.value = '';
 		}
 	}

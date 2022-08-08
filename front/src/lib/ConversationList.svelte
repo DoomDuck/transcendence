@@ -26,8 +26,6 @@
 
 <div>
 	{#each context.conversations as conversation}
-		<ConversationListItem {conversation} image="cars.jpeg" />
-	{:else}
-		<p>Waiting...</p>
+		<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
 	{/each}
 </div>

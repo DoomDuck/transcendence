@@ -1,4 +1,4 @@
-export type CommentType = {
+export type ConversationEntryType = {
 	author: string;
 	text: string;
 	isMe: boolean;
@@ -7,7 +7,7 @@ export type CommentType = {
 
 export type ConversationType = {
 	interlocutor: string;
-	history: CommentType[];
+	history: ConversationEntryType[];
 };
 
 export type DirectMessageType = {
