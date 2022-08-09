@@ -11,6 +11,7 @@
 		ChatEvent,
 		type ChatFeedbackDto
 	} from 'chat';
+	import type { DMFromServer } from 'chat/constants';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
@@ -54,16 +55,16 @@
 		conversations = [conversation, ...conversations];
 	}
 
-	function handleDirectMessage(message: { source: string; content: string }) {
+	function handleDirectMessage(message: DMFromServer) {
 		addMessageToConversation(message.source, {
 			author: message.source,
 			isMe: false,
 			text: message.content
 		});
-
 		console.log(JSON.stringify(message));
 		console.log(JSON.stringify(conversations));
 	}
+
 	function sendDirectMessage(interlocutor: string, text: string) {
 		socket.emit(
 			ChatEvent.MSG_TO_USER,
