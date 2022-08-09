@@ -11,7 +11,7 @@
 		type ChatFeedbackDto
 	} from 'chat';
 	import type { CreateChannelToServer, DMFromServer, DMToServer } from 'chat/constants';
-	import SendNewMessage from '$lib/SendNewMessage.svelte';
+	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
