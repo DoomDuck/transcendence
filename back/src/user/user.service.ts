@@ -189,13 +189,11 @@ export class UserService {
     }
   }
 
-  joinChanUser(userId: Id, channelId: Id) {
+ async joinChanUser(userId: Id, channel: string) {
     const activeUser = this.arrayActiveUser.find((user) => user.id === userId);
     if (activeUser) {
-      const tempChannel = activeUser.joinedChannel.find(
-        (channel: Channel) => channel.channelId === channelId,
-      );
-      if (tempChannel)
+      const tempChannel = await this.channelManagerService.findChanByName(channel);      
+	  if (tempChannel)
         activeUser.socketUser.forEach((socket: Socket) =>
           socket.join(tempChannel.name),
         );
@@ -209,7 +207,7 @@ export class UserService {
       .getOne();
     const tempTarget = await this.usersRepository
       .createQueryBuilder('User')
-      .where('User.id = :sender', { sender })
+      .where('User.id = :target', { target })
       .getOne();
     if (tempSender === null)
       return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
@@ -219,6 +217,8 @@ export class UserService {
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
+	  //a test
+		this.usersRepository.update(tempSender.id, {friendlist:tempSender.friendlist})
       return new ChatFeedbackDto(true);
     } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND);
   }

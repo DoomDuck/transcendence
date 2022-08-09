@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from './user/user.entity';
+import { Channel } from './channelManager/channel.entity';
 import { DatabaseFile } from './user/databaseFile.entity';
 
 export const config: TypeOrmModuleOptions = {
@@ -10,6 +11,6 @@ export const config: TypeOrmModuleOptions = {
   host: '127.0.0.1',
   database: 'postgres',
   synchronize: true,
-  entities: [User, DatabaseFile],
+  entities: [User, DatabaseFile,Channel],
   // entities: ["dist/**/*.entity{.ts,.js}"],
 };

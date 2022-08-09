@@ -1,7 +1,8 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
-import { Channel } from '../channelManager/channelManager.service';
+// import { Channel } from '../channelManager/channelManager.service';
 import { ChatEvent } from 'chat';
+import type { CreateChannelToServer,JoinChannelToServer  } from 'chat';
 import { ChatError } from 'chat';
 import { UserDto } from '../user/user.dto';
 import { ChatFeedbackDto } from './chatFeedback.dto';
@@ -56,14 +57,16 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
-  handleCreateChannel() {}
+  handleCreateChannel(clientSocket:Socket,chanInfo : CreateChannelToServer) {
+	this.channelManagerService.createChan(clientSocket.handshake.auth.token,chanInfo);
+  }
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
-  handleMessageChannel(
+  async handleMessageChannel(
     clientSocket: Socket,
     dto: { target: string; content: string },
   ) {
-    const tempChannel = this.channelManagerService.findChanByName(dto.target);
+    const tempChannel = await this.channelManagerService.findChanByName(dto.target);
     const tempSender = this.userService.findOneActive(
       clientSocket.handshake.auth.token,
     );
@@ -92,23 +95,22 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
-  handleJoinChannel(joinInfo: { sender: Id; channelId: Id }) {
+  async handleJoinChannel(clientSocket:Socket,joinInfo: JoinChannelToServer ) {
     let feedback: ChatFeedbackDto;
-    if (!this.channelManagerService.findChanById(joinInfo.channelId)) {
+    if (!await this.channelManagerService.findChanByName(joinInfo.channel)) {
       feedback = new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
       return;
     }
-    if (!this.userService.findOneDb(joinInfo.sender)) {
-      feedback = new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
+    if (!this.userService.findOneDb(clientSocket.handshake.auth.token)) {
+      feedback = new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
       return;
     }
-    feedback = this.channelManagerService.joinChan(
-      joinInfo.sender,
-      joinInfo.channelId,
+    feedback = await this.channelManagerService.joinChan(
+      clientSocket.handshake.auth.token,
+      joinInfo.channel,
     );
-
     if (feedback.success === true)
-      this.userService.joinChanUser(joinInfo.sender, joinInfo.channelId);
+      this.userService.joinChanUser(clientSocket.handshake.auth.token, joinInfo.channel);
     return feedback;
   }
 
