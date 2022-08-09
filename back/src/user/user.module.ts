@@ -7,6 +7,7 @@ import { DatabaseFilesController } from './databaseFile.controller';
 import { UserService } from './user.service';
 import { DatabaseFilesService } from './databaseFile.service';
 import { User } from './user.entity';
+import { Channel } from '../channelManager/channel.entity';
 import { DatabaseFile } from './databaseFile.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatGateway } from '../chat/chat.gateway';
@@ -14,6 +15,7 @@ import { ChatGateway } from '../chat/chat.gateway';
   imports: [
     TypeOrmModule.forFeature([User]),
     TypeOrmModule.forFeature([DatabaseFile]),
+    TypeOrmModule.forFeature([Channel]),
   ],
   controllers: [
     UserController,

@@ -70,6 +70,7 @@ export class UserService {
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     let chatMessageDto: ChatMessageDto[];
     chatMessageDto = [];
+    //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
     chatMessage.forEach((message) =>
       chatMessageDto.push(
         new ChatMessageDto(
@@ -81,12 +82,12 @@ export class UserService {
     );
     return chatMessageDto;
   }
-
-  msgToChanVerif(senderId: Id, channel: Channel): boolean {
-    const tempUser = this.findOneActive(senderId);
-    if (channel.member.find((id) => id === senderId)) return true;
-    else return false;
-  }
+  // might be deprecated
+  // msgToChanVerif(senderId: Id, channel: Channel): boolean {
+  // const tempUser = this.findOneActive(senderId);
+  // if (channel.member.find((id) => id === senderId)) return true;
+  // else return false;
+  // }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveConversationDto[] {
@@ -188,11 +189,11 @@ export class UserService {
     }
   }
 
-  joinChanUser(userId: Id, channelId: Id) {
+  async joinChanUser(userId: Id, channel: string) {
     const activeUser = this.arrayActiveUser.find((user) => user.id === userId);
     if (activeUser) {
-      const tempChannel = activeUser.joinedChannel.find(
-        (channel: Channel) => channel.channelId === channelId,
+      const tempChannel = await this.channelManagerService.findChanByName(
+        channel,
       );
       if (tempChannel)
         activeUser.socketUser.forEach((socket: Socket) =>
@@ -208,7 +209,7 @@ export class UserService {
       .getOne();
     const tempTarget = await this.usersRepository
       .createQueryBuilder('User')
-      .where('User.id = :sender', { sender })
+      .where('User.id = :target', { target })
       .getOne();
     if (tempSender === null)
       return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
@@ -218,6 +219,10 @@ export class UserService {
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
+      //a test
+      this.usersRepository.update(tempSender.id, {
+        friendlist: tempSender.friendlist,
+      });
       return new ChatFeedbackDto(true);
     } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND);
   }
