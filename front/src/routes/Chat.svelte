@@ -92,7 +92,7 @@
 	}
 
 	function handleCreateChannel(event: CustomEvent<CreateChannelToServer>) {
-		console.log(JSON.stringify(event));
+		console.log(JSON.stringify(event.detail));
 		socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				createChannel(event.detail.channel);
