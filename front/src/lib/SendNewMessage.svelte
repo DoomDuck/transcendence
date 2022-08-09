@@ -1,27 +1,36 @@
 <script lang="ts">
+	import type { DMToServer } from 'chat/constants';
+
 	import { createEventDispatcher } from 'svelte';
 
-	export let text: string;
+	export let content: string;
 
-	const dispach = createEventDispatcher();
+	const dispach = createEventDispatcher<{ msgToUser: DMToServer }>();
 	let target: string = '';
+
+	function handleBlur(event: FocusEvent) {
+		target = target.trim();
+	}
+	function handleSubmit(event: SubmitEvent) {
+		dispach('msgToUser', { target, content });
+	}
 </script>
 
-<form on:submit|preventDefault={() => dispach('msgToUser', { interlocutor: target, text })}>
-	<div id="formContainer">
-		<input
-			id="destinataire"
-			type="search"
-			placeholder="To :"
-			contenteditable="true"
-			bind:value={target}
-			required
-		/> <br />
-		<textarea id="message" type="text" placeholder="Type a message..." bind:value={text} />
-		<button>
-			<img src="send.png" alt="send message" />
-		</button>
-	</div>
+<form id="formContainer" on:submit|preventDefault={handleSubmit}>
+	<!-- <div id="formContainer"> -->
+	<input
+		id="destinataire"
+		placeholder="To :"
+		contenteditable="true"
+		bind:value={target}
+		on:blur={handleBlur}
+		required
+	/> <br />
+	<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
+	<button>
+		<img src="send.png" alt="send message" />
+	</button>
+	<!-- </div> -->
 </form>
 
 <style>

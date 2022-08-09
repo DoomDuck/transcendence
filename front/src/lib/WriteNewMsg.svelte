@@ -15,7 +15,7 @@
 
 {#if sendingMessage}
 	<Modal on:close={() => (sendingMessage = false)}>
-		<SendMessage text="" on:msgToUser />
+		<SendMessage content="" on:msgToUser />
 	</Modal>
 {/if}
 
