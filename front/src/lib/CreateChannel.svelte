@@ -2,7 +2,7 @@
 	import Modal from './Modal.svelte';
 	import Switch from './Switch.svelte';
 	import { createEventDispatcher } from 'svelte';
-import { ChannelCategory } from 'chat/constants';
+	import { ChannelCategory } from 'chat/constants';
 
 	const dispatch = createEventDispatcher();
 
@@ -12,19 +12,24 @@ import { ChannelCategory } from 'chat/constants';
 		{ id: 'protected', label: 'Password-protected' },
 		{ id: 'private', label: 'Private' }
 	];
-  let channelName: string;
+	let channelName: string;
 	let isProtected: boolean;
 	let chosenCategory: string;
-  $: category = chosenCategory == 'public' ? (ChannelCategory.PUBLIC : (chosenCategory == 'protected' ? ChannelCategory.PROTECTED : ChannelCategory.PRIVATE));
+	$: category =
+		chosenCategory == 'public'
+			? ChannelCategory.PUBLIC
+			: chosenCategory == 'protected'
+			? ChannelCategory.PROTECTED
+			: ChannelCategory.PRIVATE;
 	$: isPasswordProtected = chosenCategory == 'protected';
 	let password: string | undefined;
 	function dispacheCreateChannel() {
-    dispatch("createChannel", {
-      channel: channelName,
-      category,
-      password
-    });
-  }
+		dispatch('createChannel', {
+			channel: channelName,
+			category,
+			password
+		});
+	}
 </script>
 
 <img
