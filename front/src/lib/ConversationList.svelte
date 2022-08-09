@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import ConversationListItem from './ConversationListItem.svelte';
-	import { ChatContext } from '$lib/ChatContext';
 	import { type ConversationType } from './types';
+	import ConversationBox from './ConversationBox.svelte';
 
-	export let context: ChatContext;
+	export let conversations: ConversationType[];
 	let userHistoryDto;
 	let error = false;
 </script>
 
 <div>
-	{#key context.conversations}
-		{#each context.conversations as conversation}
-			<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
-		{/each}
-	{/key}
+	<!-- {#key conversations} -->
+	{#each conversations as conversation}
+		<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
+	{/each}
+	<!-- {/key} -->
 </div>

@@ -28,7 +28,7 @@ export class ChatError
 
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: {source: string, content: string}) => void;
-  [ChatEvent.MSG_TO_CHANNEL]: (dto: {source: string,channel:string, content: string}) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: {source: string, channel:string, content: string}) => void;
 }
 
 export type ChatFeedbackDto = {
@@ -36,13 +36,9 @@ export type ChatFeedbackDto = {
   errorMessage?: string,
 }
 
+export type FeedbackCallback = (feedback: ChatFeedbackDto) => void
 
 export interface ClientToServerEvents {
-  [ChatEvent.MSG_TO_USER]: (dto: {target: string, content: string}, feedback: ChatFeedbackDto) => void;
-  [ChatEvent.MSG_TO_CHANNEL]: (dto: {target: string, content: string}, feedback: ChatFeedbackDto) => void;
+  [ChatEvent.MSG_TO_USER]: (dto: {target: string, content: string}, callback: FeedbackCallback) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: {target: string, content: string}, callback: FeedbackCallback) => void;
 }
-
-// interface SocketData {
-//   name: string;
-//   age: number;
-// }

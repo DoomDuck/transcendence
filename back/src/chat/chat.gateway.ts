@@ -6,7 +6,14 @@ import { ChatError } from 'chat';
 import { UserDto } from '../user/user.dto';
 import { ChatFeedbackDto } from './chatFeedback.dto';
 import { Id } from '../customType';
-import { Socket, Server } from 'socket.io';
+import {
+  Socket as IOSocketBaseType,
+  Server as IOServerBaseType,
+} from 'socket.io';
+import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+
+type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
+type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -120,13 +127,13 @@ export class ChatGateway
     clientSocket: Socket,
     messageInfo: {
       target: string;
-      text: string;
+      content: string;
     },
   ) {
     const feedback = this.userService.sendMessageToUser(
       clientSocket.handshake.auth.token,
       this.wss,
-      messageInfo.text,
+      messageInfo.content,
       messageInfo.target,
     );
     console.log(feedback);
