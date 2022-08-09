@@ -6,7 +6,14 @@ import { ChatError } from 'chat';
 import { UserDto } from '../user/user.dto';
 import { ChatFeedbackDto } from './chatFeedback.dto';
 import { Id } from '../customType';
-import { Socket, Server } from 'socket.io';
+import {
+  Socket as IOSocketBaseType,
+  Server as IOServerBaseType,
+} from 'socket.io';
+import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+
+type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
+type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -46,12 +53,6 @@ export class ChatGateway
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
     this.userService.disconnection(clientSocket);
-  }
-  //deprecated used to test on hugo.html
-  @SubscribeMessage('chatToServer')
-  handleMessage(message: { sender: string; message: string }) {
-    this.logger.log('chat gateway handle message');
-    this.wss.emit('chatToClient', message);
   }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)

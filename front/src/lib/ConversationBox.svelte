@@ -23,18 +23,13 @@
 		const inputElement = event.target as HTMLInputElement;
 		if (event.key === 'Enter') {
 			const text = inputElement.value;
+			inputElement.value = '';
 			if (!text) return;
 
-			conversation.history = conversation.history.concat({
-				author: '',
-				isMe: true,
-				text: text
-			});
 			dispatch('msgToUser', {
 				interlocutor: conversation.interlocutor,
 				text: text
 			});
-			inputElement.value = '';
 		}
 	}
 </script>

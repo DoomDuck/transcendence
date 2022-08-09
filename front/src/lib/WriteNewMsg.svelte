@@ -1,6 +1,5 @@
 <script lang="ts">
 	import SendMessage from '$lib/SendNewMessage.svelte';
-	import { ChatContext } from './ChatContext';
 	import Modal from './Modal.svelte';
 
 	let sendingMessage = false;

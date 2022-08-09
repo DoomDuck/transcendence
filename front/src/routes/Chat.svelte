@@ -3,17 +3,86 @@
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
 	import ConversationList from '$lib/ConversationList.svelte';
-	import { ChatContext } from '$lib/ChatContext';
+	import type { ConversationEntryType, ConversationType } from '$lib/types';
+	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
+	import {
+		type ServerToClientEvents,
+		type ClientToServerEvents,
+		ChatEvent,
+		type ChatFeedbackDto
+	} from 'chat';
 
+	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
 		{ profilePic: 'cars.jpeg', name: 'coullax' },
 		{ profilePic: 'canard.jpeg', name: 'coullax' }
 	];
 
-	const context: ChatContext = new ChatContext();
+	let conversations: ConversationType[] = [];
+	let channels: ConversationType[] = [];
+
+	const socket: Socket = io('http://localhost:5000/chat', {
+		auth: { token: prompt('your token ?') }
+	});
+
+	socket.on(ChatEvent.MSG_TO_USER, handleDirectMessage);
 
 	function handleMsgToUser(event: CustomEvent) {
-		context.sendDirectMessage(event.detail.interlocutor, event.detail.text);
+		sendDirectMessage(event.detail.interlocutor, event.detail.text);
+	}
+
+	function findConversation(interlocutor: string): number | undefined {
+		const i = conversations.findIndex((conversation) => conversation.interlocutor == interlocutor);
+		if (i == -1) return undefined;
+		return i;
+	}
+
+	function createConversation(interlocutor: string): number {
+		conversations = [{ interlocutor, history: [] }, ...conversations];
+		return 0;
+	}
+
+	function findOrCreateConversation(interlocutor: string): number {
+		return findConversation(interlocutor) ?? createConversation(interlocutor);
+	}
+
+	function addMessageToConversation(interlocutor: string, message: ConversationEntryType) {
+		const i = findOrCreateConversation(interlocutor);
+		const conversation = conversations[i];
+		conversation.history = [...conversation.history, message];
+		conversations.splice(i, 1);
+		conversations = [conversation, ...conversations];
+	}
+
+	function handleDirectMessage(message: { source: string; content: string }) {
+		addMessageToConversation(message.source, {
+			author: message.source,
+			isMe: false,
+			text: message.content
+		});
+
+		console.log(JSON.stringify(message));
+		console.log(JSON.stringify(conversations));
+	}
+	function sendDirectMessage(interlocutor: string, text: string) {
+		socket.emit(
+			ChatEvent.MSG_TO_USER,
+			{
+				target: interlocutor,
+				content: text
+			},
+			(feedback: ChatFeedbackDto) => {
+				if (feedback.success) {
+					addMessageToConversation(interlocutor, {
+						author: '',
+						isMe: true,
+						text: text
+					});
+				} else {
+					alert(`error: ${feedback.errorMessage}`);
+				}
+			}
+		);
 	}
 </script>
 
@@ -30,7 +99,7 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<ConversationList {context} on:msgToUser={handleMsgToUser} />
+		<ConversationList {conversations} on:msgToUser={handleMsgToUser} />
 	</div>
 </div>
 

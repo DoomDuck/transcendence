@@ -11,12 +11,12 @@ import { ChannelManagerService } from '../channelManager/channelManager.service'
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { Id } from '../customType';
+import { ChatEvent } from 'chat';
+import { ChatError } from 'chat';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
 } from 'socket.io';
-import { ChatEvent } from 'chat';
-import { ChatError } from 'chat';
 import { ServerToClientEvents, ClientToServerEvents } from 'chat';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
