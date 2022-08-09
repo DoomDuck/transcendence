@@ -3,7 +3,6 @@
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
 	import ConversationList from '$lib/ConversationList.svelte';
-	import { ChatContext } from '$lib/ChatContext';
 	import type { ConversationEntryType, ConversationType } from '$lib/types';
 	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
 	import {
@@ -21,8 +20,6 @@
 
 	let conversations: ConversationType[] = [];
 	let channels: ConversationType[] = [];
-	//
-
 	const socket: Socket = io('http://localhost:5000/chat', {
 		auth: { token: prompt('your token ?') }
 	});
@@ -36,10 +33,6 @@
 		console.log(JSON.stringify(message));
 		console.log(JSON.stringify(conversations));
 	});
-
-	//
-
-	// const context: ChatContext = new ChatContext(conversations, channels);
 
 	function handleMsgToUser(event: CustomEvent) {
 		sendDirectMessage(event.detail.interlocutor, event.detail.text);

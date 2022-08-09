@@ -54,48 +54,38 @@ export class ChatGateway
     this.logger.log(clientSocket.handshake.auth.token);
     this.userService.disconnection(clientSocket);
   }
-  //deprecated used to test on hugo.html
-  @SubscribeMessage('chatToServer')
-  handleMessage(message: { sender: string; message: string }) {
-    this.logger.log('chat gateway handle message');
-    this.wss.emit('chatToClient', message);
-  }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   handleCreateChannel() {}
+
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   handleMessageChannel(
     clientSocket: Socket,
     dto: { target: string; content: string },
   ) {
     const tempChannel = this.channelManagerService.findChanByName(dto.target);
-    if (!(tempChannel instanceof Channel))
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-    if (
-      !this.userService.msgToChanVerif(
-        clientSocket.handshake.auth.token,
-        tempChannel,
-      )
-    )
-      return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
     const tempSender = this.userService.findOneActive(
       clientSocket.handshake.auth.token,
     );
-    if (!tempSender)
-      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
-    tempChannel.member.forEach((member: Id) => {
+    const feedback = this.channelManagerService.msgToChannelVerif(
+      tempChannel,
+      tempSender,
+    );
+    if (!feedback) return feedback;
+
+    tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
         this.userService.updateChannelConversation(
           clientSocket.handshake.auth.token,
           member,
-          tempChannel,
+          tempChannel!,
           dto.content,
         );
     });
-    this.wss.to(tempChannel.name).emit(ChatEvent.MSG_TO_CHANNEL, {
-      source: tempSender.name,
-      channel: tempChannel.name,
+    this.wss.to(tempChannel!.name).emit(ChatEvent.MSG_TO_CHANNEL, {
+      source: tempSender!.name,
+      channel: tempChannel!.name,
       content: dto.content,
     });
     return new ChatFeedbackDto(true);
@@ -137,7 +127,6 @@ export class ChatGateway
       messageInfo.target,
     );
     console.log(feedback);
-    // return { success: feedback.success, errorMessage: feedback.errorMessage };
     return feedback;
   }
 
@@ -147,5 +136,6 @@ export class ChatGateway
       friendRequest.sender,
       friendRequest.target,
     );
+    return feedback;
   }
 }

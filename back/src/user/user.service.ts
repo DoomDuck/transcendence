@@ -68,7 +68,6 @@ export class UserService {
     this.arrayActiveUser = [];
   }
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
-    // const tempUser= this.findOneActive(chatMessage.sender) as ActiveUser;
     let chatMessageDto: ChatMessageDto[];
     chatMessageDto = [];
     chatMessage.forEach((message) =>
@@ -297,17 +296,34 @@ export class UserService {
   }
 
   disconnection(clientSocket: Socket) {
-    const activeUser = this.arrayActiveUser.find(
-      (user) => user.id === clientSocket.handshake.auth.token,
-    );
+    const activeUser = this.findOneActive(clientSocket.handshake.auth.token);
     if (activeUser) {
-      if (activeUser.socketUser.length === 1) this.arrayActiveUser;
+      if (activeUser.socketUser.length === 1) {
+        activeUser.joinedChannel.forEach((channel) =>
+          this.channelManagerService.leaveChannel(channel, activeUser.id),
+        );
+        this.arrayActiveUser = this.arrayActiveUser.slice(
+          this.arrayActiveUser.indexOf(activeUser),
+          1,
+        );
+      }
+      activeUser.socketUser = activeUser.socketUser.slice(
+        activeUser.socketUser.indexOf(clientSocket),
+        1,
+      );
     }
+  }
+  leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
+    if (channel.member.find((id) => id === activeUser.id) === undefined)
+      return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
+    this.channelManagerService.leaveChannel(channel, activeUser.id);
+    activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+    return new ChatFeedbackDto(true);
   }
   sendMessageToUser(
     senderId: Id,
     wss: Server,
-    text: string,
+    content: string,
     target: string,
   ): ChatFeedbackDto {
     let logger = new Logger('sendMessageToUser');
@@ -321,11 +337,11 @@ export class UserService {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
           wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-            source: tempUserTarget.name,
-            content: text,
+            source: tempUserSender.name,
+            content: content,
           }),
         );
-        this.updateUserConversation(tempUserSender, tempUserTarget, text);
+        this.updateUserConversation(tempUserSender, tempUserTarget, content);
         return new ChatFeedbackDto(true);
       } else return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
     } else return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
