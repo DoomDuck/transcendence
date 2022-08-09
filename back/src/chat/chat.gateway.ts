@@ -44,7 +44,7 @@ export class ChatGateway
     this.logger.log(clientSocket.handshake.auth.token);
     this.userService.addOne(
       new UserDto(
-        clientSocket.handshake.auth.token,
+        parseInt(clientSocket.handshake.auth.token),
         clientSocket.handshake.auth.token,
         clientSocket,
       ),
@@ -62,7 +62,7 @@ export class ChatGateway
       clientSocket.handshake.auth.token,
       chanInfo,
     );
-	this.logger.log(this.channelManagerService.findChanAll());
+    this.logger.log(this.channelManagerService.findChanAll());
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)

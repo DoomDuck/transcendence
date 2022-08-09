@@ -97,7 +97,7 @@ export class UserService {
       activeConversationDto.push(
         new ActiveConversationDto(
           // ( await this.channelManagerService.findChanByName(conv.name) as Channel).name,
-			conv.name as string,
+          conv.name as string,
           this.dtoTraductionChatMessage(conv.history),
         ),
       ),
@@ -166,7 +166,7 @@ export class UserService {
       const newUser = new User(userDto.id, userDto.name);
       this.usersRepository.save(newUser);
     }
-    logger.log(this.usersRepository.findOneBy({ id }));
+    logger.log(await this.usersRepository.findOneBy({ id }));
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       logger.log('test2');
