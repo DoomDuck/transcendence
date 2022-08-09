@@ -20,23 +20,15 @@
 
 	let conversations: ConversationType[] = [];
 	let channels: ConversationType[] = [];
+
 	const socket: Socket = io('http://localhost:5000/chat', {
 		auth: { token: prompt('your token ?') }
 	});
-	socket.on(ChatEvent.MSG_TO_USER, (message: any) => {
-		addMessageToConversation(message.source, {
-			author: message.source,
-			isMe: false,
-			text: message.content
-		});
 
-		console.log(JSON.stringify(message));
-		console.log(JSON.stringify(conversations));
-	});
+	socket.on(ChatEvent.MSG_TO_USER, handleDirectMessage);
 
 	function handleMsgToUser(event: CustomEvent) {
 		sendDirectMessage(event.detail.interlocutor, event.detail.text);
-		// context.conversations.find((conversation: ConversationType) => conversation.interlocutor == event.detail.interlocutor)
 	}
 
 	function findConversation(interlocutor: string): number | undefined {
@@ -62,6 +54,16 @@
 		conversations = [conversation, ...conversations];
 	}
 
+	function handleDirectMessage(message: { source: string; content: string }) {
+		addMessageToConversation(message.source, {
+			author: message.source,
+			isMe: false,
+			text: message.content
+		});
+
+		console.log(JSON.stringify(message));
+		console.log(JSON.stringify(conversations));
+	}
 	function sendDirectMessage(interlocutor: string, text: string) {
 		socket.emit(
 			ChatEvent.MSG_TO_USER,
@@ -81,8 +83,6 @@
 				}
 			}
 		);
-		console.log(`interlocutor: ${interlocutor}`);
-		console.log(`text: ${text}`);
 	}
 </script>
 
