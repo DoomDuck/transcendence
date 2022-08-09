@@ -1,34 +1,35 @@
 <script lang="ts">
 	import Modal from './Modal.svelte';
-	import Switch from './Switch.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { ChannelCategory } from 'chat/constants';
 
 	const dispatch = createEventDispatcher();
 
-	let modalVisible = true;
+	let modalVisible = false;
 	let channelCategories = [
-		{ id: 'public', label: 'Public' },
-		{ id: 'protected', label: 'Password-protected' },
-		{ id: 'private', label: 'Private' }
+		{ id: 'public', label: 'Public', value: ChannelCategory.PUBLIC },
+		{ id: 'protected', label: 'Password-protected', value: ChannelCategory.PROTECTED },
+		{ id: 'private', label: 'Private', value: ChannelCategory.PRIVATE }
 	];
 	let channelName: string;
-	let isProtected: boolean;
-	let chosenCategory: string;
-	$: category =
-		chosenCategory == 'public'
-			? ChannelCategory.PUBLIC
-			: chosenCategory == 'protected'
-			? ChannelCategory.PROTECTED
-			: ChannelCategory.PRIVATE;
-	$: isPasswordProtected = chosenCategory == 'protected';
+	let chosenCategory: ChannelCategory;
+	$: isPasswordProtected = chosenCategory == ChannelCategory.PROTECTED;
 	let password: string | undefined;
-	function dispacheCreateChannel() {
+
+	function handleClickOpenModal() {
+		modalVisible = true;
+	}
+	function handleSubmit() {
+		modalVisible = false;
 		dispatch('createChannel', {
 			channel: channelName,
-			category,
+			category: chosenCategory,
 			password
 		});
+	}
+
+	function handleBlur() {
+		channelName = channelName.trim();
 	}
 </script>
 
@@ -37,14 +38,19 @@
 	alt="Create a channel"
 	width="50px"
 	height="50px"
-	on:click={() => (modalVisible = true)}
+	on:click={handleClickOpenModal}
 />
 
 {#if modalVisible}
 	<Modal>
-		<div id="createChannel">
-			<!-- <Switch optionOne="Private Channel" optionTwo="Public Channel" /> -->
-			<input id="channelName" placeholder="Channel Name" bind:value={channelName} required />
+		<form id="createChannel" on:submit|preventDefault={handleSubmit}>
+			<input
+				id="channelName"
+				placeholder="Channel Name"
+				bind:value={channelName}
+				on:blur={handleBlur}
+				required
+			/>
 			<div id="channelTypes">
 				{#each channelCategories as cat}
 					<div class="channelType">
@@ -52,25 +58,18 @@
 							type="radio"
 							id={cat.id}
 							name="channelCategory"
-							value={cat.id}
+							value={cat.value}
 							bind:group={chosenCategory}
 						/>
 						<label for={cat.id}>{cat.label}</label>
 					</div>
-					{#if cat.id === 'protected' && isPasswordProtected}
+					{#if cat.value === ChannelCategory.PROTECTED && isPasswordProtected}
 						<input id="password" placeholder="Type password" bind:value={password} />
 					{/if}
 				{/each}
 			</div>
-			<button
-				on:click={() => {
-					modalVisible = false;
-					dispacheCreateChannel();
-				}}
-			>
-				Create channel
-			</button>
-		</div>
+			<input type="submit" value="Create channel" />
+		</form>
 	</Modal>
 {/if}
 
