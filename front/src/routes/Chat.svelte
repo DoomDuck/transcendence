@@ -3,7 +3,7 @@
 	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
 	import ConversationList from '$lib/ConversationList.svelte';
-	import type { ConversationEntryType, ConversationType } from '$lib/types';
+	import type { ChannelConvType, ConversationEntryType, ConversationType } from '$lib/types';
 	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
 	import {
 		type ServerToClientEvents,
@@ -11,7 +11,7 @@
 		ChatEvent,
 		type ChatFeedbackDto
 	} from 'chat';
-	import type { DMFromServer } from 'chat/constants';
+	import type { CreateChannelToServer, DMFromServer } from 'chat/constants';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
@@ -20,17 +20,13 @@
 	];
 
 	let conversations: ConversationType[] = [];
-	let channels: ConversationType[] = [];
+	let channels: ChannelConvType[] = [];
 
 	const socket: Socket = io('http://localhost:5000/chat', {
 		auth: { token: prompt('your token ?') }
 	});
 
 	socket.on(ChatEvent.MSG_TO_USER, handleDirectMessage);
-
-	function handleMsgToUser(event: CustomEvent) {
-		sendDirectMessage(event.detail.interlocutor, event.detail.text);
-	}
 
 	function findConversation(interlocutor: string): number | undefined {
 		const i = conversations.findIndex((conversation) => conversation.interlocutor == interlocutor);
@@ -65,6 +61,10 @@
 		console.log(JSON.stringify(conversations));
 	}
 
+	function handleMsgToUser(event: CustomEvent) {
+		sendDirectMessage(event.detail.interlocutor, event.detail.text);
+	}
+
 	function sendDirectMessage(interlocutor: string, text: string) {
 		socket.emit(
 			ChatEvent.MSG_TO_USER,
@@ -85,13 +85,29 @@
 			}
 		);
 	}
+
+	function createChannel(channelName: string): number {
+		channels = [{ channelName, history: [] }, ...channels];
+		return 0;
+	}
+
+	function handleCreateChannel(event: CustomEvent<CreateChannelToServer>) {
+		console.log(JSON.stringify(event));
+		socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				createChannel(event.detail.channel);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
+			}
+		});
+	}
 </script>
 
 <div id="chat">
 	<div id="title">
 		<h1>Chat</h1>
 		<div id="options">
-			<CreateChannel />
+			<CreateChannel on:createChannel={handleCreateChannel} />
 			<WriteNewMsg on:msgToUser={handleMsgToUser} />
 		</div>
 	</div>

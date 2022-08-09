@@ -2,24 +2,29 @@
 	import Modal from './Modal.svelte';
 	import Switch from './Switch.svelte';
 	import { createEventDispatcher } from 'svelte';
+import { ChannelCategory } from 'chat/constants';
 
 	const dispatch = createEventDispatcher();
 
 	let modalVisible = true;
-	let mode = 'normal';
-	let isProtected: boolean;
 	let channelCategories = [
 		{ id: 'public', label: 'Public' },
 		{ id: 'protected', label: 'Password-protected' },
 		{ id: 'private', label: 'Private' }
 	];
+  let channelName: string;
+	let isProtected: boolean;
 	let chosenCategory: string;
-	$: isPasswordProtected = chosenCategory === 'protected';
+  $: category = chosenCategory == 'public' ? (ChannelCategory.PUBLIC : (chosenCategory == 'protected' ? ChannelCategory.PROTECTED : ChannelCategory.PRIVATE));
+	$: isPasswordProtected = chosenCategory == 'protected';
 	let password: string | undefined;
-	$: {
-		console.log(`isPasswordProtected: ${isPasswordProtected}`);
-		console.log(`password: ${password}`);
-	}
+	function dispacheCreateChannel() {
+    dispatch("createChannel", {
+      channel: channelName,
+      category,
+      password
+    });
+  }
 </script>
 
 <img
@@ -34,7 +39,7 @@
 	<Modal>
 		<div id="createChannel">
 			<!-- <Switch optionOne="Private Channel" optionTwo="Public Channel" /> -->
-			<input id="channelName" placeholder="Channel Name" required />
+			<input id="channelName" placeholder="Channel Name" bind:value={channelName} required />
 			<div id="channelTypes">
 				{#each channelCategories as cat}
 					<div class="channelType">
@@ -52,7 +57,14 @@
 					{/if}
 				{/each}
 			</div>
-			<button on:click={() => (modalVisible = false)}> Create channel </button>
+			<button
+				on:click={() => {
+					modalVisible = false;
+					dispacheCreateChannel();
+				}}
+			>
+				Create channel
+			</button>
 		</div>
 	</Modal>
 {/if}
