@@ -2,7 +2,7 @@ import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 // import { Channel } from '../channelManager/channelManager.service';
 import { ChatEvent } from 'chat';
-import type { CreateChannelToServer,JoinChannelToServer  } from 'chat';
+import type { CreateChannelToServer, JoinChannelToServer } from 'chat';
 import { ChatError } from 'chat';
 import { UserDto } from '../user/user.dto';
 import { ChatFeedbackDto } from './chatFeedback.dto';
@@ -57,8 +57,11 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
-  handleCreateChannel(clientSocket:Socket,chanInfo : CreateChannelToServer) {
-	this.channelManagerService.createChan(clientSocket.handshake.auth.token,chanInfo);
+  handleCreateChannel(clientSocket: Socket, chanInfo: CreateChannelToServer) {
+    this.channelManagerService.createChan(
+      clientSocket.handshake.auth.token,
+      chanInfo,
+    );
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
@@ -66,7 +69,9 @@ export class ChatGateway
     clientSocket: Socket,
     dto: { target: string; content: string },
   ) {
-    const tempChannel = await this.channelManagerService.findChanByName(dto.target);
+    const tempChannel = await this.channelManagerService.findChanByName(
+      dto.target,
+    );
     const tempSender = this.userService.findOneActive(
       clientSocket.handshake.auth.token,
     );
@@ -95,9 +100,9 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
-  async handleJoinChannel(clientSocket:Socket,joinInfo: JoinChannelToServer ) {
+  async handleJoinChannel(clientSocket: Socket, joinInfo: JoinChannelToServer) {
     let feedback: ChatFeedbackDto;
-    if (!await this.channelManagerService.findChanByName(joinInfo.channel)) {
+    if (!(await this.channelManagerService.findChanByName(joinInfo.channel))) {
       feedback = new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
       return;
     }
@@ -110,7 +115,10 @@ export class ChatGateway
       joinInfo.channel,
     );
     if (feedback.success === true)
-      this.userService.joinChanUser(clientSocket.handshake.auth.token, joinInfo.channel);
+      this.userService.joinChanUser(
+        clientSocket.handshake.auth.token,
+        joinInfo.channel,
+      );
     return feedback;
   }
 

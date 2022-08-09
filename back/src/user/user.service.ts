@@ -70,7 +70,7 @@ export class UserService {
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     let chatMessageDto: ChatMessageDto[];
     chatMessageDto = [];
-	//TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
+    //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
     chatMessage.forEach((message) =>
       chatMessageDto.push(
         new ChatMessageDto(
@@ -82,11 +82,11 @@ export class UserService {
     );
     return chatMessageDto;
   }
-	// might be deprecated
+  // might be deprecated
   // msgToChanVerif(senderId: Id, channel: Channel): boolean {
-    // const tempUser = this.findOneActive(senderId);
-    // if (channel.member.find((id) => id === senderId)) return true;
-    // else return false;
+  // const tempUser = this.findOneActive(senderId);
+  // if (channel.member.find((id) => id === senderId)) return true;
+  // else return false;
   // }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
@@ -189,11 +189,13 @@ export class UserService {
     }
   }
 
- async joinChanUser(userId: Id, channel: string) {
+  async joinChanUser(userId: Id, channel: string) {
     const activeUser = this.arrayActiveUser.find((user) => user.id === userId);
     if (activeUser) {
-      const tempChannel = await this.channelManagerService.findChanByName(channel);      
-	  if (tempChannel)
+      const tempChannel = await this.channelManagerService.findChanByName(
+        channel,
+      );
+      if (tempChannel)
         activeUser.socketUser.forEach((socket: Socket) =>
           socket.join(tempChannel.name),
         );
@@ -217,8 +219,10 @@ export class UserService {
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
       tempSender.friendlist.push(target);
-	  //a test
-		this.usersRepository.update(tempSender.id, {friendlist:tempSender.friendlist})
+      //a test
+      this.usersRepository.update(tempSender.id, {
+        friendlist: tempSender.friendlist,
+      });
       return new ChatFeedbackDto(true);
     } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND);
   }

@@ -5,49 +5,57 @@ import { ChatEvent } from 'chat';
 import { ActiveUser } from '../user/user.service';
 import { ChatError } from 'chat';
 import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
-import  {ChannelCategory} from 'chat';
+import { ChannelCategory } from 'chat';
 import { Server as IOServerBaseType } from 'socket.io';
 import type { CreateChannelToServer } from 'chat';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ServerToClientEvents, ClientToServerEvents } from 'chat';
-import {Channel} from './channel.entity'
+import { Channel } from './channel.entity';
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 //
 // export class Channel {
-  // constructor(
-    // public channelId: Id,
-    // public name: string,
-	// public category : ChannelCategory,
-    // public password: string,
-    // public creator: Id,
-  // ) {
-    // this.name = name;
-    // this.password = password;
-    // this.admin = [];
-    // this.member = [];
-    // this.admin.push(creator);
-    // this.member.push(creator);
-    // this.creator = creator;
-  // }
+// constructor(
+// public channelId: Id,
+// public name: string,
+// public category : ChannelCategory,
+// public password: string,
+// public creator: Id,
+// ) {
+// this.name = name;
+// this.password = password;
+// this.admin = [];
+// this.member = [];
+// this.admin.push(creator);
+// this.member.push(creator);
+// this.creator = creator;
+// }
 //
-  // // To be determinde later
-  // // banned: idnumber[];
-  // member: Id[];
-  // admin: Id[];
+// // To be determinde later
+// // banned: idnumber[];
+// member: Id[];
+// admin: Id[];
 // }
 @Injectable()
 export class ChannelManagerService {
   // private arrayChannel: Channel[];
-  constructor(@InjectRepository(Channel)
-    private channelRepository: Repository<Channel>) {
+  constructor(
+    @InjectRepository(Channel)
+    private channelRepository: Repository<Channel>,
+  ) {
     // this.arrayChannel = [];
   }
 
-  createChan(senderId:Id,chanInfo: CreateChannelToServer): ChatFeedbackDto {
-      this.channelRepository.save(new Channel(chanInfo.channel, senderId,chanInfo.category, chanInfo.password
-	  ));
-	return new ChatFeedbackDto(true);
+  createChan(senderId: Id, chanInfo: CreateChannelToServer): ChatFeedbackDto {
+    this.channelRepository.save(
+      new Channel(
+        chanInfo.channel,
+        senderId,
+        chanInfo.category,
+        chanInfo.password,
+      ),
+    );
+    return new ChatFeedbackDto(true);
   }
 
   leaveChannel(channel: Channel, clientId: Id) {
@@ -55,10 +63,10 @@ export class ChannelManagerService {
     channel.member = channel.member.slice(channel.member.indexOf(clientId), 1);
     channel.admin = channel.admin.slice(channel.admin.indexOf(clientId), 1);
   }
-  findChanByName(name: string): Promise<Channel | null >{
+  findChanByName(name: string): Promise<Channel | null> {
     return this.channelRepository.findOneBy({ name });
-	  // const tempChan = this.arrayChannel.find(
-      // (element) => element.name === chanName,
+    // const tempChan = this.arrayChannel.find(
+    // (element) => element.name === chanName,
     // );
     // if (tempChan === undefined) return undefined;
     // else return tempChan;
@@ -66,22 +74,25 @@ export class ChannelManagerService {
   findChanById(id: Id): Promise<Channel | null> {
     return this.channelRepository.findOneBy({ id });
     // const tempChan = this.arrayChannel.find(
-      // (channel) => channel.channelId === channelId,
+    // (channel) => channel.channelId === channelId,
     // );
     // if (tempChan === undefined) return undefined;
     // else return tempChan;
   }
-  findChanAll(): Promise<Channel[]>   {
+  findChanAll(): Promise<Channel[]> {
     return this.channelRepository.find();
     // if (this.arrayChannel === []) return 'no channel at all';
     // else return this.arrayChannel;
   }
   //Return string is placeholder
-  async joinChan(sender: Id, name: string, password?: string): Promise<ChatFeedbackDto >{
+  async joinChan(
+    sender: Id,
+    name: string,
+    password?: string,
+  ): Promise<ChatFeedbackDto> {
+    const tempChan = await this.channelRepository.findOneBy({ name });
 
-    const tempChan= await this.channelRepository.findOneBy({ name });
-
-    if (!tempChan )
+    if (!tempChan)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
 
     if (tempChan.member.find((element) => element === sender))
@@ -94,34 +105,44 @@ export class ChannelManagerService {
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
     tempChan.member.push(sender);
-	this.channelRepository.update(tempChan.name!,{member :tempChan.member})
+    this.channelRepository.update(tempChan.name!, { member: tempChan.member });
     return new ChatFeedbackDto(true);
   }
   async setPrivate(sender: Id, name: string): Promise<ChatFeedbackDto> {
-
-    const tempChan= await this.channelRepository.findOneBy({ name });
+    const tempChan = await this.channelRepository.findOneBy({ name });
     if (tempChan === null)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
-	this.channelRepository.update(tempChan.name!,{category :ChannelCategory.PRIVATE})
+    this.channelRepository.update(tempChan.name!, {
+      category: ChannelCategory.PRIVATE,
+    });
     return new ChatFeedbackDto(true);
   }
-  async setPassword(sender: Id, name: string, password: string):Promise<ChatFeedbackDto>  {
-
-    const tempChan= await this.channelRepository.findOneBy({ name });
+  async setPassword(
+    sender: Id,
+    name: string,
+    password: string,
+  ): Promise<ChatFeedbackDto> {
+    const tempChan = await this.channelRepository.findOneBy({ name });
     if (tempChan === null)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
 
-	this.channelRepository.update(tempChan.name!,{category :ChannelCategory.PROTECTED})
-	this.channelRepository.update(tempChan.name!,{password :password})
+    this.channelRepository.update(tempChan.name!, {
+      category: ChannelCategory.PROTECTED,
+    });
+    this.channelRepository.update(tempChan.name!, { password: password });
     return new ChatFeedbackDto(true);
   }
-  async setNewAdmin(sender: Id, target: Id, name: string): Promise<ChatFeedbackDto> {
-    const tempChan= await this.channelRepository.findOneBy({ name });
-    
+  async setNewAdmin(
+    sender: Id,
+    target: Id,
+    name: string,
+  ): Promise<ChatFeedbackDto> {
+    const tempChan = await this.channelRepository.findOneBy({ name });
+
     if (tempChan === null)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (tempChan.admin.find((element) => element === sender) === undefined)
@@ -129,18 +150,18 @@ export class ChannelManagerService {
     if (tempChan.admin.find((element) => element === target) != undefined)
       return new ChatFeedbackDto(false, ChatError.ALREADY_ADMIN);
     tempChan.admin.push(target);
-	this.channelRepository.update(tempChan.name!,{admin :tempChan.admin})
+    this.channelRepository.update(tempChan.name!, { admin: tempChan.admin });
     return new ChatFeedbackDto(true);
   }
   // getRoomName(channelId: Id): string | undefined {
-    // const tempChan = this.arrayChannel.find(
-      // (element) => element.channelId === channelId,
-    // );
-//
-    // if (tempChan) {
-      // return tempChan.name;
-    // }
-    // return undefined;
+  // const tempChan = this.arrayChannel.find(
+  // (element) => element.channelId === channelId,
+  // );
+  //
+  // if (tempChan) {
+  // return tempChan.name;
+  // }
+  // return undefined;
   // }
 
   msgToChannelVerif(

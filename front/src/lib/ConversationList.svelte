@@ -11,7 +11,7 @@
 
 <div>
 	<!-- {#key conversations} -->
-	{#each conversations as conversation}
+	{#each conversations as conversation (conversation.interlocutor)}
 		<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
 	{/each}
 	<!-- {/key} -->

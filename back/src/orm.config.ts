@@ -11,6 +11,6 @@ export const config: TypeOrmModuleOptions = {
   host: '127.0.0.1',
   database: 'postgres',
   synchronize: true,
-  entities: [User, DatabaseFile,Channel],
+  entities: [User, DatabaseFile, Channel],
   // entities: ["dist/**/*.entity{.ts,.js}"],
 };
