@@ -6,7 +6,8 @@ import { UserHistoryDto } from './userHistory.dto';
 import { ChatMessageDto } from './userHistory.dto';
 import { ActiveConversationDto } from './userHistory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Channel } from '../channelManager/channelManager.service';
+// import { Channel } from '../channelManager/channelManager.service';
+import { Channel } from '../channelManager/channel.entity';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
@@ -47,8 +48,7 @@ export class ChatMessage {
 }
 
 export class ActiveConversation {
-  constructor(public id: Id, public chatMessage?: ChatMessage) {
-    this.id = id;
+  constructor(public name: string | Id, public chatMessage?: ChatMessage) {
     this.history = [];
     if (chatMessage) this.history.push(chatMessage);
   }
@@ -96,7 +96,8 @@ export class UserService {
     activeConversation.forEach((conv: ActiveConversation) =>
       activeConversationDto.push(
         new ActiveConversationDto(
-          (this.channelManagerService.findChanById(conv.id) as Channel).name,
+          // ( await this.channelManagerService.findChanByName(conv.name) as Channel).name,
+			conv.name as string,
           this.dtoTraductionChatMessage(conv.history),
         ),
       ),
@@ -111,7 +112,7 @@ export class UserService {
     activeConversation.forEach((conv: ActiveConversation) =>
       activeConversationDto.push(
         new ActiveConversationDto(
-          (this.findOneActive(conv.id) as ActiveUser).name,
+          (this.findOneActive(conv.name as number) as ActiveUser).name,
           this.dtoTraductionChatMessage(conv.history),
         ),
       ),
@@ -247,10 +248,10 @@ export class UserService {
     content: string,
   ) {
     const tempSenderConversation = sender.activeUserConversation.find(
-      (conv) => conv.id === target.id,
+      (conv) => conv.name === target.id,
     );
     const tempTargetConversation = sender.activeUserConversation.find(
-      (conv) => conv.id === sender.id,
+      (conv) => conv.name === sender.id,
     );
     if (tempSenderConversation)
       tempSenderConversation.history.push(
@@ -285,7 +286,7 @@ export class UserService {
     const user = this.findOneActive(userId);
     if (sender === undefined || user === undefined) return;
     const tempUserConversation = user.activeChannelConversation.find(
-      (conv) => conv.id === channel.channelId,
+      (conv) => conv.name === channel.name,
     );
     if (tempUserConversation)
       tempUserConversation.history.push(
@@ -294,7 +295,7 @@ export class UserService {
     else
       user.activeChannelConversation.push(
         new ActiveConversation(
-          channel.channelId,
+          channel.name,
           new ChatMessage(sender.id, content, senderId === userId),
         ),
       );

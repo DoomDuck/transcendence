@@ -71,14 +71,14 @@ export class ChannelManagerService {
     // if (tempChan === undefined) return undefined;
     // else return tempChan;
   }
-  findChanById(id: Id): Promise<Channel | null> {
-    return this.channelRepository.findOneBy({ id });
-    // const tempChan = this.arrayChannel.find(
-    // (channel) => channel.channelId === channelId,
-    // );
-    // if (tempChan === undefined) return undefined;
-    // else return tempChan;
-  }
+  // findChanById(id: Id): Promise<Channel | null> {
+    // return this.channelRepository.findOneBy({ id });
+    // // const tempChan = this.arrayChannel.find(
+    // // (channel) => channel.channelId === channelId,
+    // // );
+    // // if (tempChan === undefined) return undefined;
+    // // else return tempChan;
+  // }
   findChanAll(): Promise<Channel[]> {
     return this.channelRepository.find();
     // if (this.arrayChannel === []) return 'no channel at all';
