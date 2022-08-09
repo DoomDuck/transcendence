@@ -1,31 +1,96 @@
-import { Ball } from "./Ball";
-import { Bar } from "./Bar";
-import { EventEmitter } from "events";
-import { PlayersScore } from "./PlayersScore";
+import { GSettings } from "../constants";
+import { GameProducedEvent, type DataChangerEvent } from "../game/events";
+import { collisions } from "./collisions";
+import { GameDataBuffer } from "./data";
+import {
+  applyForces,
+  applySpeed,
+  processExternEvents,
+  propagateBarInputs,
+  updateSpawnable,
+} from "./update";
 
 /**
- * Simple wrapper to encapsulate all entities from the exterior (the Game instance).
+ * GameState is the main class in the hierarchy for the
+ * game's entities
+ * It is responsible for updating itself and handling external events
+ * The data is bufferized (see GameDataBuffer)
+ * The sole purpose the buffer is to allow both
+ * determination and synchronisation in online version
+ * In case of a misunderstanding between server and client,
+ * the past data can be restored and we can recompute what happened since
  */
 export class GameState {
-  ball: Ball;
-  bars: [Bar, Bar];
-  playersScore: PlayersScore;
-
-  constructor(ball: Ball, bar1: Bar, bar2: Bar, playersScore: PlayersScore) {
-    this.ball = ball;
-    this.bars = [bar1, bar2];
-    this.playersScore = playersScore;
-  }
+  data: GameDataBuffer = new GameDataBuffer();
+  eventBuffer: DataChangerEvent[] = [];
 
   reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {
-    this.ball.reset(ballX, ballY, ballSpeedX, ballSpeedY);
-    this.bars[0].reset();
-    this.bars[1].reset();
+    this.data.reset();
+    this.data.current.ball.x = ballX;
+    this.data.current.ball.y = ballY;
+    this.data.current.ball.vx = ballSpeedX;
+    this.data.current.ball.vy = ballSpeedY;
   }
 
-  update(elapsed: number) {
-    this.bars[0].update(elapsed);
-    this.bars[1].update(elapsed);
-    this.ball.update(elapsed, this.bars);
+  update() {
+    this.computeOneStep();
+    this.data.actualNow++;
+    GameProducedEvent.fireAllEvents();
+  }
+
+  computeOneStep() {
+    for (let event of this.eventBuffer) {
+      this.handleEvent(event);
+    }
+    this.eventBuffer = [];
+    processExternEvents(this.data);
+    propagateBarInputs(this.data);
+    updateSpawnable(
+      this.data.current.gravitons,
+      this.data.next.gravitons,
+      GSettings.GRAVITON_LIFESPAN
+    );
+    updateSpawnable(
+      this.data.current.portals,
+      this.data.next.portals,
+      GSettings.PORTAL_LIFESPAN
+    );
+    applyForces(this.data);
+    applySpeed(this.data);
+    collisions(this.data);
+    this.data.advance();
+  }
+
+  handleEvent(event: DataChangerEvent) {
+    if (event.time < 0) return;
+    if (this.data.actualNow - event.time >= 100) {
+      // too old, discard
+      return;
+    }
+    if (event.time >= this.data.currentTime) {
+      this.data.addEvent(event.time, event);
+      return;
+    }
+    if (event.time < this.data.currentTime) {
+      console.log(
+        `PAST, type: '${typeof event}' event.time = ${
+          event.time
+        }, data.currentTime = ${this.data.currentTime}, data.actualNow = ${
+          this.data.actualNow
+        }`
+      );
+      // past event
+      let now = this.data.currentTime;
+      this.data.goBackTo(event.time);
+      this.data.addEventNow(event);
+      while (this.data.currentTime != now) {
+        this.computeOneStep();
+      }
+      return;
+    }
+  }
+
+  registerEvent(event: DataChangerEvent) {
+    this.eventBuffer.push(event);
   }
 }

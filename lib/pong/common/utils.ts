@@ -1,23 +1,46 @@
 /**
- * This file is intended for functions not specific to pong
+ * Utility functions
  */
 
-import { Vector3 } from "three";
-
-const _v = new Vector3();
-
-export function updateVectorDeltaT(
-  v: Vector3,
-  vspeed: Vector3,
-  elapsed: number
-) {
-  _v.copy(vspeed);
-  _v.multiplyScalar(elapsed / 1000);
-  v.add(_v);
-}
+import { GSettings } from "./constants";
 
 export function delay(duration: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, duration);
   });
+}
+
+export class Vector2 {
+  constructor(public x: number = 0, public y: number = 0) {}
+  add(v: Vector2) {
+    return new Vector2(this.x + v.x, this.y + v.y);
+  }
+}
+
+export function randomGravitonCoords(): [number, number] {
+  return [
+    GSettings.GRAVITON_SPAWN_WIDTH * (Math.random() - 0.5),
+    GSettings.GRAVITON_SPAWN_HEIGHT * (Math.random() - 0.5),
+  ];
+}
+
+function rangedRandomValue(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+
+export function randomPortalCoords(): [number, number, number, number] {
+  return [
+    -rangedRandomValue(
+      GSettings.PORTAL_SPAWN_XMIN,
+      GSettings.PORTAL_SPAWN_XMAX
+    ),
+    rangedRandomValue(GSettings.PORTAL_SPAWN_XMIN, GSettings.PORTAL_SPAWN_XMAX),
+    GSettings.PORTAL_SPAWN_HEIGHT * (Math.random() - 0.5),
+    GSettings.PORTAL_SPAWN_HEIGHT * (Math.random() - 0.5),
+  ];
+}
+
+export function removeIfPresent<T>(array: Array<T>, element: T) {
+  const i = array.indexOf(element);
+  if (i != -1) array.splice(i, 1);
 }

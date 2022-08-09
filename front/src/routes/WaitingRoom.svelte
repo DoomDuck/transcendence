@@ -1,5 +1,5 @@
 <div class="waitingRoom">
-	<img src="img/matchPong.gif" alt="waitingPong" width="30%" height="20%" />
+	<img src="matchPong.gif" alt="waitingPong" width="1000vw" height="500px" />
 </div>
 
 <style>
@@ -8,7 +8,7 @@
 		margin: auto;
 	}
 	.waitingRoom {
-		background-image: url('starsSky.jpeg');
+		background-image: url('/starsSky.jpeg');
 		display: flex;
 		width: 100%;
 		height: 100%;
