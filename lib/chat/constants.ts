@@ -3,6 +3,7 @@ export class ChatEvent {
 	static readonly MSG_TO_USER = 'msg to user'
 	static readonly JOIN_CHANNEL = 'join channel'
 	static readonly CREATE_CHANNEL = 'create channel'
+	static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
 	static readonly GAME_INVITE = 'game invite'
 	static readonly FRIEND_INVITE = 'friend invite'
 }
@@ -23,12 +24,8 @@ export class ChatError
 	static readonly NAME_ALREADY_IN_USE = "name already in use";
 	static readonly CHANNEL_IS_PRIVATE = "the channel is private";
 	static readonly INSUFICIENT_PERMISSION = "insuficient permission";
-}
-
-
-export interface ServerToClientEvents {
-  [ChatEvent.MSG_TO_USER]: (dto: {source: string, content: string}) => void;
-  [ChatEvent.MSG_TO_CHANNEL]: (dto: {source: string, channel:string, content: string}) => void;
+	static readonly CANT_INVITE_TO_NON_PRIVATE_CHANNEL = "cant invite to non private channel";
+	static readonly CANT_CREATE_PROTECTED_CHANNEL_WO_PASSW = "cant create protected channel wo passw";
 }
 
 export type ChatFeedbackDto = {
@@ -36,9 +33,35 @@ export type ChatFeedbackDto = {
   errorMessage?: string,
 }
 
-export type FeedbackCallback = (feedback: ChatFeedbackDto) => void
+export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
+
+
+export type DMFromServer =  {source: string, content: string};
+export type DMToServer =  {target: string, content: string};
+export type CMFromServer =  {source: string, channel: string, content: string};
+export type CMToServer =  {channel: string, content: string};
+export type JoinChannelFromServer = {channel: string, newUser: string};
+export type JoinChannelToServer = {channel: string, password?:string};
+export enum ChannelCategory {
+  PUBLIC, PROTECTED, PRIVATE
+}
+export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
+export type InviteChannelFromServer = {channel: string, source: string};
+export type InviteChannelToServer = {channel: string, target: string};
+// export type FromServer = {};
+// export type ToServer = {};
+
+export interface ServerToClientEvents {
+  [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
+  [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
+  [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
+}
 
 export interface ClientToServerEvents {
-  [ChatEvent.MSG_TO_USER]: (dto: {target: string, content: string}, callback: FeedbackCallback) => void;
-  [ChatEvent.MSG_TO_CHANNEL]: (dto: {target: string, content: string}, callback: FeedbackCallback) => void;
+  [ChatEvent.MSG_TO_USER]: (dto: DMToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.MSG_TO_CHANNEL]: (dto: CMToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
 }
