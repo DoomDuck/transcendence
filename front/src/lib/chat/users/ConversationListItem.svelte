@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Profile from './Profile.svelte';
-	import Modal from './Modal.svelte';
+	import Profile from '$lib/Profile.svelte';
+	import Modal from '$lib/Modal.svelte';
 	import ConversationBox from './ConversationBox.svelte';
-	import type { ConversationType } from './types';
+	import type { ConversationType } from '$lib/types';
 
 	// export let name: string;
 	export let conversation: ConversationType;

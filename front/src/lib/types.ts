@@ -10,11 +10,6 @@ export type ConversationType = {
 	history: ConversationEntryType[];
 };
 
-export type ChannelConvType = {
-	channelName: string;
-	history: ConversationEntryType[];
-};
-
 export type DirectMessageType = {
 	interlocutor: string;
 	content: string;

@@ -22,7 +22,7 @@ export class ChannelController {
   }
   // @Post()
   // public createChan(@Body() channelDto: ChannelDto) {
-    // return this.channelManagerService.createChan(channelDto);
+  // return this.channelManagerService.createChan(channelDto);
   // }
 
   // @Get(":id")

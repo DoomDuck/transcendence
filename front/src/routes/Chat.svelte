@@ -1,9 +1,8 @@
 <script lang="ts">
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
-	import WriteNewMsg from '$lib/WriteNewMsg.svelte';
 	import CreateChannel from '$lib/CreateChannel.svelte';
-	import ConversationList from '$lib/ConversationList.svelte';
-	import type { ChannelConvType, ConversationEntryType, ConversationType } from '$lib/types';
+	import ConversationList from '$lib/chat/users/ConversationList.svelte';
+	import type { ConversationEntryType, ConversationType } from '$lib/types';
 	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
 	import {
 		type ServerToClientEvents,
@@ -12,7 +11,7 @@
 		type ChatFeedbackDto
 	} from 'chat';
 	import type { CreateChannelToServer, DMFromServer, DMToServer } from 'chat/constants';
-	import ConversationBox from '$lib/ConversationBox.svelte';
+	import SendNewMessage from '$lib/SendNewMessage.svelte';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
@@ -21,7 +20,7 @@
 	];
 
 	let conversations: ConversationType[] = [];
-	let channels: ChannelConvType[] = [];
+	let channels: ConversationType[] = [];
 
 	// UTILS
 
@@ -38,7 +37,7 @@
 	}
 
 	function createChannel(channelName: string): number {
-		channels = [{ channelName, history: [] }, ...channels];
+		channels = [{ interlocutor: channelName, history: [] }, ...channels];
 		return 0;
 	}
 
@@ -95,7 +94,7 @@
 		<h1>Chat</h1>
 		<div id="options">
 			<CreateChannel on:createChannel={sendCreateChannel} />
-			<WriteNewMsg on:msgToUser={sendDirectMessage} />
+			<SendNewMessage on:msgToUser={sendDirectMessage} />
 		</div>
 	</div>
 

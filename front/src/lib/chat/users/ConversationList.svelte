@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import ConversationListItem from './ConversationListItem.svelte';
-	import { type ConversationType } from './types';
-	import ConversationBox from './ConversationBox.svelte';
+	import { type ConversationType } from '$lib/types';
 
 	export let conversations: ConversationType[];
 	let userHistoryDto;

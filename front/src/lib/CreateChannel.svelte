@@ -5,7 +5,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	let modalVisible = false;
+	let createChanModal = false;
 	let channelCategories = [
 		{ id: 'public', label: 'Public', value: ChannelCategory.PUBLIC },
 		{ id: 'protected', label: 'Password-protected', value: ChannelCategory.PROTECTED },
@@ -17,10 +17,10 @@
 	let password: string | undefined;
 
 	function handleClickOpenModal() {
-		modalVisible = true;
+		createChanModal = true;
 	}
 	function handleSubmit() {
-		modalVisible = false;
+		createChanModal = false;
 		dispatch('createChannel', {
 			channel: channelName,
 			category: chosenCategory,
@@ -41,7 +41,7 @@
 	on:click={handleClickOpenModal}
 />
 
-{#if modalVisible}
+{#if createChanModal}
 	<Modal>
 		<form id="createChannel" on:submit|preventDefault={handleSubmit}>
 			<input

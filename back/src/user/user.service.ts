@@ -97,7 +97,7 @@ export class UserService {
       activeConversationDto.push(
         new ActiveConversationDto(
           // ( await this.channelManagerService.findChanByName(conv.name) as Channel).name,
-			conv.name as string,
+          conv.name as string,
           this.dtoTraductionChatMessage(conv.history),
         ),
       ),

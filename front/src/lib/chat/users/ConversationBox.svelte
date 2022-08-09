@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import GameInvit from './GameInvit.svelte';
-	import Modal from './Modal.svelte';
-	import { type ConversationType } from './types';
+	import GameInvit from '$lib/GameInvit.svelte';
+	import Modal from '$lib/Modal.svelte';
+	import { type ConversationType } from '$lib/types';
 
 	export let conversation: ConversationType;
 
 	const dispatch = createEventDispatcher();
-	let invit = false;
+	let gameInvitModal = false;
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
@@ -44,7 +44,7 @@
 				alt="invite friend to play"
 				width="30px"
 				height="30px"
-				on:click={() => (invit = true)}
+				on:click={() => (gameInvitModal = true)}
 			/>
 		</div>
 	</div>
@@ -59,8 +59,8 @@
 	<input on:keydown={handleKeydown} />
 </div>
 
-{#if invit}
-	<Modal on:close={() => (invit = false)}>
+{#if gameInvitModal}
+	<Modal on:close={() => (gameInvitModal = false)}>
 		<GameInvit name={conversation.interlocutor} />
 	</Modal>
 {/if}
