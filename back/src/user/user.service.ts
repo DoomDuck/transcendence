@@ -166,7 +166,7 @@ export class UserService {
       const newUser = new User(userDto.id, userDto.name);
       this.usersRepository.save(newUser);
     }
-    logger.log(this.usersRepository.findOneBy({ id }));
+    logger.log(await this.usersRepository.findOneBy({ id }));
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       logger.log('test2');

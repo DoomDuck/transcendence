@@ -44,7 +44,7 @@ export class ChatGateway
     this.logger.log(clientSocket.handshake.auth.token);
     this.userService.addOne(
       new UserDto(
-        clientSocket.handshake.auth.token,
+        parseInt(clientSocket.handshake.auth.token),
         clientSocket.handshake.auth.token,
         clientSocket,
       ),
