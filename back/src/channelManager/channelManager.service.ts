@@ -62,12 +62,10 @@ export class ChannelManagerService {
     } else return new ChatFeedbackDto(false, ChatError.NAME_ALREADY_IN_USE);
   }
 
-  leaveChannel(channel:Channel, clientId:Id)
-  {
-	  	if(clientId===channel.creator)
-			channel.creator = -1;
-		channel.member = channel.member.slice(channel.member.indexOf(clientId),1);
-		channel.admin = channel.admin.slice(channel.admin.indexOf(clientId),1);
+  leaveChannel(channel: Channel, clientId: Id) {
+    if (clientId === channel.creator) channel.creator = -1;
+    channel.member = channel.member.slice(channel.member.indexOf(clientId), 1);
+    channel.admin = channel.admin.slice(channel.admin.indexOf(clientId), 1);
   }
   findChanByName(chanName: string): Channel | undefined {
     const tempChan = this.arrayChannel.find(
@@ -155,17 +153,18 @@ export class ChannelManagerService {
     return undefined;
   }
 
-	msgToChannelVerif(channel:Channel | undefined, sender: ActiveUser | undefined):ChatFeedbackDto | true
-	{
-	if (!channel)
-	  return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-	if (!sender)
-	  return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+  msgToChannelVerif(
+    channel: Channel | undefined,
+    sender: ActiveUser | undefined,
+  ): ChatFeedbackDto | true {
+    if (!channel)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (!sender) return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
     if (!channel.member.find((id) => id === sender.id))
-	  return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
+      return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
 
-  	return true
-	}
+    return true;
+  }
 
   //Send invitation
   // sendMessageToChannel(

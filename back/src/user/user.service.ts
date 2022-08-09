@@ -70,6 +70,7 @@ export class UserService {
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     let chatMessageDto: ChatMessageDto[];
     chatMessageDto = [];
+	//TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
     chatMessage.forEach((message) =>
       chatMessageDto.push(
         new ChatMessageDto(
@@ -81,12 +82,12 @@ export class UserService {
     );
     return chatMessageDto;
   }
-
-  msgToChanVerif(senderId: Id, channel: Channel): boolean {
-    const tempUser = this.findOneActive(senderId);
-    if (channel.member.find((id) => id === senderId)) return true;
-    else return false;
-  }
+	// might be deprecated
+  // msgToChanVerif(senderId: Id, channel: Channel): boolean {
+    // const tempUser = this.findOneActive(senderId);
+    // if (channel.member.find((id) => id === senderId)) return true;
+    // else return false;
+  // }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveConversationDto[] {
@@ -199,7 +200,6 @@ export class UserService {
           socket.join(tempChannel.name),
         );
     }
-	
   }
 
   async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto> {
@@ -298,23 +298,28 @@ export class UserService {
 
   disconnection(clientSocket: Socket) {
     const activeUser = this.findOneActive(clientSocket.handshake.auth.token);
-	if (activeUser) {
-      if (activeUser.socketUser.length === 1) 
-		  {
-			activeUser.joinedChannel.forEach((channel)=> this.channelManagerService.leaveChannel(channel,activeUser.id))
-			this.arrayActiveUser= this.arrayActiveUser.slice(this.arrayActiveUser.indexOf(activeUser),1);
-		  }
-			activeUser.socketUser= activeUser.socketUser.slice(activeUser.socketUser.indexOf(clientSocket),1);
+    if (activeUser) {
+      if (activeUser.socketUser.length === 1) {
+        activeUser.joinedChannel.forEach((channel) =>
+          this.channelManagerService.leaveChannel(channel, activeUser.id),
+        );
+        this.arrayActiveUser = this.arrayActiveUser.slice(
+          this.arrayActiveUser.indexOf(activeUser),
+          1,
+        );
+      }
+      activeUser.socketUser = activeUser.socketUser.slice(
+        activeUser.socketUser.indexOf(clientSocket),
+        1,
+      );
     }
   }
-  leaveChannel(activeUser:ActiveUser, channel:Channel):ChatFeedbackDto
-  {
-	 if(channel.member.find((id)=> id===activeUser.id) === undefined)
-		 return new ChatFeedbackDto(false,ChatError.NOT_IN_CHANNEL);
-	this.channelManagerService.leaveChannel(channel,activeUser.id);
-	activeUser.socketUser.forEach((socket)=> socket.leave(channel.name));
-		 return new ChatFeedbackDto(true);
-
+  leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
+    if (channel.member.find((id) => id === activeUser.id) === undefined)
+      return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
+    this.channelManagerService.leaveChannel(channel, activeUser.id);
+    activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+    return new ChatFeedbackDto(true);
   }
   sendMessageToUser(
     senderId: Id,

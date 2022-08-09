@@ -57,21 +57,20 @@ export class ChatGateway
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   handleCreateChannel() {}
 
-
-
-
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   handleMessageChannel(
     clientSocket: Socket,
     dto: { target: string; content: string },
   ) {
     const tempChannel = this.channelManagerService.findChanByName(dto.target);
-	const tempSender = this.userService.findOneActive(
+    const tempSender = this.userService.findOneActive(
       clientSocket.handshake.auth.token,
     );
-	const feedback = this.channelManagerService.msgToChannelVerif(tempChannel, tempSender);
-	if(!feedback)
-		return feedback;
+    const feedback = this.channelManagerService.msgToChannelVerif(
+      tempChannel,
+      tempSender,
+    );
+    if (!feedback) return feedback;
 
     tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
@@ -83,13 +82,11 @@ export class ChatGateway
           dto.content,
         );
     });
-    this.wss
-      .to(tempChannel!.name)
-      .emit(ChatEvent.MSG_TO_CHANNEL, {
-        source: tempSender!.name,
-        channel: tempChannel!.name,
-        content: dto.content,
-      });
+    this.wss.to(tempChannel!.name).emit(ChatEvent.MSG_TO_CHANNEL, {
+      source: tempSender!.name,
+      channel: tempChannel!.name,
+      content: dto.content,
+    });
     return new ChatFeedbackDto(true);
   }
 
@@ -138,6 +135,6 @@ export class ChatGateway
       friendRequest.sender,
       friendRequest.target,
     );
-	return feedback;
+    return feedback;
   }
 }
