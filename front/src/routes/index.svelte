@@ -11,13 +11,17 @@
 		<a sveltekit:prefetch href="/Chat">Chat</a>
 	</h4>
 	<h4 class="typography" style="color: {color}">
+		<a sveltekit:prefetch href="/Leaderboard">Leaderboard</a>
+	</h4>
+	<h4 class="typography" style="color: {color}">
 		<a sveltekit:prefetch href="/">Parameters</a>
 	</h4>
 </nav>
 
 <style>
 	#menu {
-		background-image: url('/starsSky.jpeg');
+		background-image: url('/starsSky.png');
+		background-size: cover;
 		width: 100%;
 		height: 100%;
 		overflow: hidden;

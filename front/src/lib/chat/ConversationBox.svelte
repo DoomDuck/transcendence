@@ -3,7 +3,7 @@
 	import GameInvit from '$lib/GameInvit.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import { type ConversationType } from '$lib/types';
-	import ConversationEntry from '../ConversationEntry.svelte';
+	import ConversationEntry from './ConversationEntry.svelte';
 
 	export let conversation: ConversationType;
 

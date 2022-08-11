@@ -21,7 +21,8 @@
 		overflow: hidden;
 		width: 100%;
 		height: 100%;
-		background-image: url('/starsSky.jpeg');
+		background-image: url('/starsSky.png');
+		background-size: cover;
 	}
 
 	h4 {

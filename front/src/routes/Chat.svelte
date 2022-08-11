@@ -62,6 +62,15 @@
 		}
 	];
 
+	// INITIALISATION
+
+	const socket: Socket = io('http://localhost:5000/chat', {
+		auth: { token: prompt('your token ?') }
+	});
+
+	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
+	socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
+
 	// UTILS
 
 	function addMessageToConversation(
@@ -97,15 +106,7 @@
 		return 0;
 	}
 
-	// INITIALISATION
-
-	const socket: Socket = io('http://localhost:5000/chat', {
-		auth: { token: prompt('your token ?') }
-	});
-
 	// EVENTS FROM SERVER
-
-	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 
 	function receiveDirectMessage(message: DMFromServer) {
 		directConvs = addMessageToConversation(directConvs, message.source, {
@@ -215,7 +216,8 @@
 	#chat {
 		width: 100%;
 		height: 100%;
-		background-image: url('/starsSky.jpeg');
+		background-image: url('/starsSky.png');
+		background-size: cover;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;

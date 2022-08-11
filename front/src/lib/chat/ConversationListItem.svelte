@@ -2,8 +2,8 @@
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import type { ConversationType } from '$lib/types';
-	import ConversationBox from './users/ConversationBox.svelte';
-	import ChannelBox from './channels/ChannelBox.svelte';
+	import ConversationBox from './ConversationBox.svelte';
+	import ChannelBox from './ChannelBox.svelte';
 
 	// export let name: string;
 	export let conversation: ConversationType;
