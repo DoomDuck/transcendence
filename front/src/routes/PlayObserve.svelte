@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Pong from '$lib/Pong.svelte';
+	import Pong from '$lib/pong/Pong.svelte';
 </script>
 
 <div id="Play">

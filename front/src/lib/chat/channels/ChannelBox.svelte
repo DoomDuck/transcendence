@@ -4,11 +4,11 @@
 	import Modal from '$lib/Modal.svelte';
 	import { type ConversationType } from '$lib/types';
 	import ConversationEntry from '../ConversationEntry.svelte';
+	import type { CMToServer } from 'chat/constants';
 
 	export let conversation: ConversationType;
 
-	const dispatch = createEventDispatcher();
-	let gameInvitModal = false;
+	const dispatch = createEventDispatcher<{ msgToChannel: CMToServer }>();
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
@@ -27,9 +27,9 @@
 			inputElement.value = '';
 			if (!text) return;
 
-			dispatch('msgToUser', {
-				interlocutor: conversation.interlocutor,
-				text: text
+			dispatch('msgToChannel', {
+				channel: conversation.interlocutor,
+				content: text
 			});
 		}
 	}
@@ -38,31 +38,15 @@
 <div class="chat">
 	<div id="title">
 		<h2>{conversation.interlocutor}</h2>
-		<div id="options">
-			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
-			<img
-				src="joystick.png"
-				alt="invite friend to play"
-				width="30px"
-				height="30px"
-				on:click={() => (gameInvitModal = true)}
-			/>
-		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as comment}
-			<ConversationEntry isMe={comment.isMe} text={comment.text} />
+			<ConversationEntry isMe={comment.isMe} text={comment.text} author={comment.author} />
 		{/each}
 	</div>
 
 	<input on:keydown={handleKeydown} />
 </div>
-
-{#if gameInvitModal}
-	<Modal on:close={() => (gameInvitModal = false)}>
-		<GameInvit name={conversation.interlocutor} />
-	</Modal>
-{/if}
 
 <style>
 	.chat {
@@ -87,12 +71,5 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5vw;
-	}
-
-	#options {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 12px;
 	}
 </style>

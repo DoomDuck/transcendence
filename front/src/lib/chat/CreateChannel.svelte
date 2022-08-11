@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Modal from './Modal.svelte';
+	import Modal from '$lib/Modal.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { ChannelCategory } from 'chat/constants';
 

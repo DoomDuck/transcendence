@@ -1,6 +1,6 @@
 <script lang="ts">
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
-	import CreateChannel from '$lib/CreateChannel.svelte';
+	import CreateChannel from '$lib/chat/CreateChannel.svelte';
 	import ConversationList from '$lib/chat/users/ConversationList.svelte';
 	import type { ConversationEntryType, ConversationType } from '$lib/types';
 	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
@@ -20,7 +20,28 @@
 	];
 
 	let conversations: ConversationType[] = [];
-	let channels: ConversationType[] = [];
+	let channels: ConversationType[] = [
+		{
+			interlocutor: 'Un groupe de gens',
+			history: [
+				{
+					author: 'me',
+					isMe: true,
+					text: 'Salut,\nJe crée un groupe'
+				},
+				{
+					author: 'Victor',
+					isMe: false,
+					text: 'Pas intéressé'
+				},
+				{
+					author: 'Jean',
+					isMe: false,
+					text: 'Moi non plus'
+				}
+			]
+		}
+	];
 
 	// UTILS
 

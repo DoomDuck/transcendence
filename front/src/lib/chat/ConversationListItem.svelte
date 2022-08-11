@@ -1,12 +1,14 @@
 <script lang="ts">
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import ConversationBox from './ConversationBox.svelte';
 	import type { ConversationType } from '$lib/types';
+	import ConversationBox from './users/ConversationBox.svelte';
+	import ChannelBox from './channels/ChannelBox.svelte';
 
 	// export let name: string;
 	export let conversation: ConversationType;
 	export let hasNewMessage = false;
+	export let isChannel: boolean;
 	//
 	export let image = 'cars.jpeg';
 
@@ -36,7 +38,11 @@
 {/if}
 {#if openConv}
 	<Modal on:close={() => (openConv = false)}>
-		<ConversationBox {conversation} on:msgToUser />
+		{#if isChannel}
+			<ChannelBox {conversation} on:msgToChannel />
+		{:else}
+			<ConversationBox {conversation} on:msgToUser />
+		{/if}
 	</Modal>
 {/if}
 
