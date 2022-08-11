@@ -32,12 +32,15 @@
 
 	/* .interlocutor .conv-entry-author {
 		/* font-size: ; */
+	.user {
+		text-align: right;
+		padding-right: 1em;
+	}
 
 	.user .conv-entry {
 		background-color: #0074d9;
 		color: white;
 		border-radius: 1em 1em 0 1em;
 		word-break: break-all;
-		text-align: right;
 	}
 </style>

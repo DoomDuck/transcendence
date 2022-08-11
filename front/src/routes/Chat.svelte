@@ -1,7 +1,7 @@
 <script lang="ts">
 	import OnlineFriends from '$lib/OnlineFriends.svelte';
 	import CreateChannel from '$lib/chat/CreateChannel.svelte';
-	import ConversationList from '$lib/chat/users/ConversationList.svelte';
+	import ConversationList from '$lib/chat/ConversationList.svelte';
 	import type { ConversationEntryType, ConversationType } from '$lib/types';
 	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
 	import {
@@ -10,17 +10,36 @@
 		ChatEvent,
 		type ChatFeedbackDto
 	} from 'chat';
-	import type { CreateChannelToServer, DMFromServer, DMToServer } from 'chat/constants';
+	import type {
+		CMFromServer,
+		CMToServer,
+		CreateChannelToServer,
+		DMFromServer,
+		DMToServer,
+		JoinChannelToServer
+	} from 'chat/constants';
 	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
+	import JoinChannel from '$lib/chat/JoinChannel.svelte';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
-		{ profilePic: 'cars.jpeg', name: 'coullax' },
-		{ profilePic: 'canard.jpeg', name: 'coullax' }
+		{ profilePic: 'cars.jpeg', name: 'castor' },
+		{ profilePic: 'canard.jpeg', name: 'fourmi' }
 	];
 
-	let conversations: ConversationType[] = [];
-	let channels: ConversationType[] = [
+	let directConvs: ConversationType[] = [
+		{
+			interlocutor: 'maman',
+			history: [
+				{
+					author: 'maman',
+					isMe: false,
+					text: 'salut'
+				}
+			]
+		}
+	];
+	let chanConvs: ConversationType[] = [
 		{
 			interlocutor: 'Un groupe de gens',
 			history: [
@@ -45,20 +64,36 @@
 
 	// UTILS
 
-	function addMessageToConversation(interlocutor: string, message: ConversationEntryType) {
-		const i = conversations.findIndex((conv) => conv.interlocutor == interlocutor);
+	function addMessageToConversation(
+		convs: ConversationType[],
+		interlocutor: string,
+		message: ConversationEntryType
+	): ConversationType[] {
+		const i = convs.findIndex((conv) => conv.interlocutor == interlocutor);
 		let conv: ConversationType;
 		if (i == -1) conv = { interlocutor, history: [] };
 		else {
-			conv = conversations[i];
-			conversations.splice(i, 1);
+			conv = convs[i];
+			convs.splice(i, 1);
 		}
 		conv.history = [...conv.history, message];
-		conversations = [conv, ...conversations];
+		return [conv, ...convs];
+	}
+
+	function addMyMessageToConversation(
+		convs: ConversationType[],
+		interlocutor: string,
+		content: string
+	): ConversationType[] {
+		return addMessageToConversation(convs, interlocutor, {
+			author: '',
+			isMe: true,
+			text: content
+		});
 	}
 
 	function createChannel(channelName: string): number {
-		channels = [{ interlocutor: channelName, history: [] }, ...channels];
+		chanConvs = [{ interlocutor: channelName, history: [] }, ...chanConvs];
 		return 0;
 	}
 
@@ -73,13 +108,21 @@
 	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 
 	function receiveDirectMessage(message: DMFromServer) {
-		addMessageToConversation(message.source, {
+		directConvs = addMessageToConversation(directConvs, message.source, {
 			author: message.source,
 			isMe: false,
 			text: message.content
 		});
-		console.log(JSON.stringify(message));
-		console.log(JSON.stringify(conversations));
+		console.log('received direct message:', JSON.stringify(message));
+	}
+
+	function receiveChannelMessage(message: CMFromServer) {
+		chanConvs = addMessageToConversation(chanConvs, message.channel, {
+			author: message.source,
+			isMe: false,
+			text: message.content
+		});
+		console.log('received channel message:', JSON.stringify(message));
 	}
 
 	// EVENTS TO SERVER
@@ -87,11 +130,11 @@
 	function sendDirectMessage(event: CustomEvent<DMToServer>) {
 		socket.emit(ChatEvent.MSG_TO_USER, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				addMessageToConversation(event.detail.target, {
-					author: '',
-					isMe: true,
-					text: event.detail.content
-				});
+				directConvs = addMyMessageToConversation(
+					directConvs,
+					event.detail.target,
+					event.detail.content
+				);
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
 			}
@@ -99,8 +142,34 @@
 	}
 
 	function sendCreateChannel(event: CustomEvent<CreateChannelToServer>) {
-		console.log(JSON.stringify(event.detail));
+		console.log('sending CreateChannel:', JSON.stringify(event.detail));
 		socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				createChannel(event.detail.channel);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
+			}
+		});
+	}
+
+	function sendChannelMessage(event: CustomEvent<CMToServer>) {
+		console.log('sending ChannelMessage:', JSON.stringify(event.detail));
+		socket.emit(ChatEvent.MSG_TO_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				chanConvs = addMyMessageToConversation(
+					chanConvs,
+					event.detail.channel,
+					event.detail.content
+				);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
+			}
+		});
+	}
+
+	function sendJoinChannel(event: CustomEvent<JoinChannelToServer>) {
+		console.log('sending JoinChannel:', JSON.stringify(event.detail));
+		socket.emit(ChatEvent.JOIN_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				createChannel(event.detail.channel);
 			} else {
@@ -115,6 +184,7 @@
 		<h1>Chat</h1>
 		<div id="options">
 			<CreateChannel on:createChannel={sendCreateChannel} />
+			<JoinChannel on:joinChannel={sendJoinChannel} />
 			<SendNewMessage on:msgToUser={sendDirectMessage} />
 		</div>
 	</div>
@@ -123,7 +193,17 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<ConversationList {conversations} on:msgToUser={sendDirectMessage} />
+		<ConversationList
+			conversations={directConvs}
+			isChannel={false}
+			on:msgToUser={sendDirectMessage}
+		/>
+		<br />
+		<ConversationList
+			conversations={chanConvs}
+			isChannel={true}
+			on:msgToChannel={sendChannelMessage}
+		/>
 	</div>
 </div>
 

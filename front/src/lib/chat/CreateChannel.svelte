@@ -12,7 +12,7 @@
 		{ id: 'private', label: 'Private', value: ChannelCategory.PRIVATE }
 	];
 	let channelName: string;
-	let chosenCategory: ChannelCategory;
+	let chosenCategory: ChannelCategory = ChannelCategory.PUBLIC;
 	$: isPasswordProtected = chosenCategory == ChannelCategory.PROTECTED;
 	let password: string | undefined;
 
