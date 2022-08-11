@@ -20,6 +20,13 @@ export class ChannelController {
   async getChannel(): Promise<Channel[] | string> {
     return this.channelManagerService.findChanAll();
   }
+
+  @Get(':name')
+  public async getUseById(
+    @Param('name') name: string,
+  ): Promise<Channel | null> {
+    return this.channelManagerService.findChanByName(name);
+  }
   // @Post()
   // public createChan(@Body() channelDto: ChannelDto) {
   // return this.channelManagerService.createChan(channelDto);

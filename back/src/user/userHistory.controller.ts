@@ -10,7 +10,7 @@ import {
 
 import { Id } from '../customType';
 import { UserService } from './user.service';
-import { UserHistoryDto } from './userHistory.dto';
+import { UserHistoryDto } from './dto/userHistory.dto';
 
 @Controller('history')
 export class UserHistoryController {

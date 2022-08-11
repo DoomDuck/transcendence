@@ -10,10 +10,10 @@ import {
 
 import { Id } from '../customType';
 import { UserService } from './user.service';
-import { User } from './user.entity';
-import { UserDto } from './user.dto';
-import { UserHistoryDto } from './userHistory.dto';
-import { FriendRequestDto } from './friendRequest.dto';
+import { User } from './entities/user.entity';
+import { UserDto } from './dto/user.dto';
+import { UserHistoryDto } from './dto/userHistory.dto';
+import { FriendRequestDto } from './dto/friendRequest.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { UploadedFile, UseInterceptors } from '@nestjs/common';

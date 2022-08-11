@@ -1,4 +1,4 @@
-import { Id } from '../customType';
+import { Id } from '../../customType';
 import { Socket as IOSocketBaseType } from 'socket.io';
 
 import { ServerToClientEvents, ClientToServerEvents } from 'chat';

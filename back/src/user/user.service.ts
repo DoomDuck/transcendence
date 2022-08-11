@@ -1,16 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { User } from './user.entity';
-import { UserDto } from './user.dto';
+import { User } from './entities/user.entity';
+import { UserDto } from './dto/user.dto';
 import { ChatFeedbackDto } from './../chat/chatFeedback.dto';
-import { UserHistoryDto } from './userHistory.dto';
-import { ChatMessageDto } from './userHistory.dto';
-import { ActiveConversationDto } from './userHistory.dto';
+import { UserHistoryDto } from './dto/userHistory.dto';
+import { ChatMessageDto } from './dto/userHistory.dto';
+import { ActiveConversationDto } from './dto/userHistory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-// import { Channel } from '../channelManager/channelManager.service';
 import { Channel } from '../channelManager/channel.entity';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
+import { MatchHistoryService } from '../matchHistory/matchHistory.service';
 import { Id } from '../customType';
 import { ChatEvent } from 'chat';
 import { ChatError } from 'chat';
@@ -63,6 +63,7 @@ export class UserService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly databaseFilesService: DatabaseFilesService,
+    private readonly matchHistoryService: MatchHistoryService,
     private readonly channelManagerService: ChannelManagerService,
   ) {
     this.arrayActiveUser = [];
@@ -82,12 +83,13 @@ export class UserService {
     );
     return chatMessageDto;
   }
-  // might be deprecated
-  // msgToChanVerif(senderId: Id, channel: Channel): boolean {
-  // const tempUser = this.findOneActive(senderId);
-  // if (channel.member.find((id) => id === senderId)) return true;
-  // else return false;
-  // }
+  getLeaderboard(): Promise<User[]> {
+    return this.usersRepository.find({
+      order: {
+        score: 'ASC', // "DESC"
+      },
+    });
+  }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveConversationDto[] {
@@ -142,7 +144,7 @@ export class UserService {
     return this.usersRepository.find();
   }
   findOneActive(id: Id): ActiveUser | undefined {
-    return this.arrayActiveUser.find((user) => user.id === id);
+    return this.arrayActiveUser.find((user) => user.id == id);
   }
 
   findOneDb(id: Id): Promise<User | null> {
@@ -154,29 +156,31 @@ export class UserService {
   async addOne(userDto: UserDto): Promise<undefined> {
     const id = userDto.id;
     let logger = new Logger('addone');
-
     if (!userDto) return;
     if (!userDto.id) return;
-    logger.log(userDto);
+    logger.log(`userDto = ${userDto.id}`);
     logger.log(id);
 
+    let UserDb = await this.usersRepository.findOneBy({ id });
     logger.log('test1');
-    if ((await this.usersRepository.findOneBy({ id })) === null) {
+    if (UserDb === null) {
       logger.log('dans undefined');
       const newUser = new User(userDto.id, userDto.name);
-      this.usersRepository.save(newUser);
+      UserDb = await this.usersRepository.save(newUser);
+      logger.log('after new user db');
     }
-    logger.log(await this.usersRepository.findOneBy({ id }));
+    logger.log(UserDb.name);
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       logger.log('test2');
       this.arrayActiveUser.push(
-        new ActiveUser(id, userDto.name, userDto.socket),
+        new ActiveUser(UserDb.id, userDto.name, userDto.socket),
       );
     } else {
       logger.log('test3');
       tempUser.socketUser.push(userDto.socket);
     }
+    logger.log('end add one user');
     return undefined;
   }
 
@@ -190,16 +194,23 @@ export class UserService {
     }
   }
 
-  async joinChanUser(userId: Id, channel: string) {
-    const activeUser = this.arrayActiveUser.find((user) => user.id === userId);
+  async joinChanUser(activeUser: ActiveUser, channel: Channel) {
+    let logger = new Logger('joinChanUser');
+
+    logger.log('ici');
+    logger.log(activeUser.id);
+    const dbUser = await this.findOneDb(activeUser.id);
+    if (dbUser === null) return;
+    dbUser.channel.push(channel.name);
+    this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
+
+    logger.log('la');
     if (activeUser) {
-      const tempChannel = await this.channelManagerService.findChanByName(
-        channel,
+      logger.log(activeUser.name);
+      logger.log(activeUser.socketUser);
+      activeUser.socketUser.forEach((socket: Socket) =>
+        socket.join(channel.name),
       );
-      if (tempChannel)
-        activeUser.socketUser.forEach((socket: Socket) =>
-          socket.join(tempChannel.name),
-        );
     }
   }
 

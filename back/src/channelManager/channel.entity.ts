@@ -12,7 +12,7 @@ import { ChannelCategory } from 'chat';
 export class Channel {
   constructor(
     name: string,
-    creator: number,
+    creator: Id,
     category: ChannelCategory,
     password?: string,
   ) {
@@ -20,16 +20,17 @@ export class Channel {
     this.creator = creator;
     this.category = category;
     this.admin = [];
+    this.admin.push(creator);
     this.member = [];
     if (password != undefined) this.password = password;
     else this.password = null;
   }
 
-  @PrimaryColumn()
+  @PrimaryColumn('varchar', { nullable: false })
   name: string;
 
-  @Column({ nullable: false })
-  creator: number;
+  @Column('int', { nullable: false })
+  creator: Id;
 
   @Column({ type: String, nullable: true })
   password: string | null;

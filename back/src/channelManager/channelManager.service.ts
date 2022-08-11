@@ -9,6 +9,7 @@ import { ChannelCategory } from 'chat';
 import { Server as IOServerBaseType } from 'socket.io';
 import type { CreateChannelToServer } from 'chat';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ServerToClientEvents, ClientToServerEvents } from 'chat';
 import { Channel } from './channel.entity';
@@ -45,9 +46,12 @@ export class ChannelManagerService {
   ) {
     // this.arrayChannel = [];
   }
+  private logger: Logger = new Logger('channelManagerService');
 
-  createChan(senderId: Id, chanInfo: CreateChannelToServer): ChatFeedbackDto {
-    this.channelRepository.save(
+  createChan(senderId: Id, chanInfo: CreateChannelToServer): Promise<Channel> {
+    this.logger.log('createChan');
+    this.logger.log(chanInfo.channel);
+    return this.channelRepository.save(
       new Channel(
         chanInfo.channel,
         senderId,
@@ -55,7 +59,7 @@ export class ChannelManagerService {
         chanInfo.password,
       ),
     );
-    return new ChatFeedbackDto(true);
+    //return new ChatFeedbackDto(true);
   }
 
   leaveChannel(channel: Channel, clientId: Id) {
@@ -63,22 +67,18 @@ export class ChannelManagerService {
     channel.member = channel.member.slice(channel.member.indexOf(clientId), 1);
     channel.admin = channel.admin.slice(channel.admin.indexOf(clientId), 1);
   }
-  findChanByName(name: string): Promise<Channel | null> {
+  async findChanByName(name: string): Promise<Channel | null> {
     return this.channelRepository.findOneBy({ name });
-    // const tempChan = this.arrayChannel.find(
-    // (element) => element.name === chanName,
-    // );
-    // if (tempChan === undefined) return undefined;
-    // else return tempChan;
+    // need changes
+    // const entities = await this.channelRepository.find();
+    // // entities.forEach((channel)=> console.log(channel.name));
+    // const res = entities.find((channel)=> channel.name ===name);
+    // if (res)
+    // return res ;
+    // else
+    // return null;
   }
-  // findChanById(id: Id): Promise<Channel | null> {
-  // return this.channelRepository.findOneBy({ id });
-  // // const tempChan = this.arrayChannel.find(
-  // // (channel) => channel.channelId === channelId,
-  // // );
-  // // if (tempChan === undefined) return undefined;
-  // // else return tempChan;
-  // }
+
   findChanAll(): Promise<Channel[]> {
     return this.channelRepository.find();
     // if (this.arrayChannel === []) return 'no channel at all';
@@ -86,26 +86,31 @@ export class ChannelManagerService {
   }
   //Return string is placeholder
   async joinChan(
-    sender: Id,
-    name: string,
+    user: ActiveUser,
+    channel: Channel,
     password?: string,
   ): Promise<ChatFeedbackDto> {
-    const tempChan = await this.channelRepository.findOneBy({ name });
-
-    if (!tempChan)
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-
-    if (tempChan.member.find((element) => element === sender))
+    // if (tempChan === null)
+    // return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    if (
+      channel.member.find((element) => element === user.id) &&
+      user.id != channel.creator
+    )
       return new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL);
-    if (tempChan.category === ChannelCategory.PRIVATE)
+    if (
+      channel.category === ChannelCategory.PRIVATE &&
+      user.id != channel.creator
+    )
       return new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
-
-    if (tempChan.category === ChannelCategory.PROTECTED) {
-      if (!password || password != tempChan.password)
+    if (
+      channel.category === ChannelCategory.PROTECTED &&
+      user.id != channel.creator
+    ) {
+      if (!password || password != channel.password)
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
-    tempChan.member.push(sender);
-    this.channelRepository.update(tempChan.name!, { member: tempChan.member });
+    channel.member.push(user.id);
+    this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
   }
   async setPrivate(sender: Id, name: string): Promise<ChatFeedbackDto> {

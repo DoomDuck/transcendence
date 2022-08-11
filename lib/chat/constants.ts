@@ -65,3 +65,5 @@ export interface ClientToServerEvents {
   [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
 }
+export type  FriendDto = {id : number, name : string};
+export type  LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };

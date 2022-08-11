@@ -6,7 +6,7 @@ import { config } from './orm.config';
 import { userModule } from './user/user.module';
 import { PongGateway } from './pong/pong.gateway';
 import { UserService } from './user/user.service';
-import { UserDto } from './user/user.dto';
+import { UserDto } from './user/dto/user.dto';
 import { GameManagerService } from './pong/game-manager.service';
 
 describe('AppModule', () => {

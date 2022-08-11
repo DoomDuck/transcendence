@@ -1,10 +1,9 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
-// import { Channel } from '../channelManager/channelManager.service';
 import { ChatEvent } from 'chat';
 import type { CreateChannelToServer, JoinChannelToServer } from 'chat';
 import { ChatError } from 'chat';
-import { UserDto } from '../user/user.dto';
+import { UserDto } from '../user/dto/user.dto';
 import { ChatFeedbackDto } from './chatFeedback.dto';
 import { Id } from '../customType';
 import {
@@ -49,6 +48,8 @@ export class ChatGateway
         clientSocket,
       ),
     );
+
+    this.logger.log(`end handle connection`);
   }
   handleDisconnect(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
@@ -57,12 +58,26 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
-  handleCreateChannel(clientSocket: Socket, chanInfo: CreateChannelToServer) {
-    this.channelManagerService.createChan(
+  async handleCreateChannel(
+    clientSocket: Socket,
+    chanInfo: CreateChannelToServer,
+  ) {
+    const newChan = await this.channelManagerService.createChan(
       clientSocket.handshake.auth.token,
       chanInfo,
     );
-    this.logger.log(this.channelManagerService.findChanAll());
+
+    if (!newChan)
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    // this.logger.log('after create');
+    // const entities = await this.channelManagerService.findChanAll();
+    // entities.forEach((channel)=> console.log(channel.name))
+    //need to change with auth integration
+    this.channelManagerService.joinChan(
+      clientSocket.handshake.auth.token,
+      newChan,
+    );
+    return new ChatFeedbackDto(true);
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
@@ -74,14 +89,16 @@ export class ChatGateway
       dto.target,
     );
     const tempSender = this.userService.findOneActive(
-      clientSocket.handshake.auth.token,
+      Number(clientSocket.handshake.auth.token),
     );
+
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
     );
     if (!feedback) return feedback;
-
+    this.logger.log(`sender: ${tempSender!.name}`);
+    this.logger.log(`channel: ${tempChannel!.name}`);
     tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
@@ -92,7 +109,7 @@ export class ChatGateway
           dto.content,
         );
     });
-    this.wss.to(tempChannel!.name).emit(ChatEvent.MSG_TO_CHANNEL, {
+    clientSocket.to(tempChannel!.name).emit(ChatEvent.MSG_TO_CHANNEL, {
       source: tempSender!.name,
       channel: tempChannel!.name,
       content: dto.content,
@@ -103,23 +120,26 @@ export class ChatGateway
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
   async handleJoinChannel(clientSocket: Socket, joinInfo: JoinChannelToServer) {
     let feedback: ChatFeedbackDto;
-    if (!(await this.channelManagerService.findChanByName(joinInfo.channel))) {
-      feedback = new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-      return;
-    }
-    if (!this.userService.findOneDb(clientSocket.handshake.auth.token)) {
-      feedback = new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
-      return;
-    }
-    feedback = await this.channelManagerService.joinChan(
-      clientSocket.handshake.auth.token,
+    const tempChan = await this.channelManagerService.findChanByName(
       joinInfo.channel,
     );
-    if (feedback.success === true)
-      this.userService.joinChanUser(
-        clientSocket.handshake.auth.token,
-        joinInfo.channel,
-      );
+    const tempUser = this.userService.findOneActive(
+      Number(clientSocket.handshake.auth.token),
+    );
+
+    this.logger.log(`any joiner in the  chat ?${tempUser} `);
+    if (!tempChan) {
+      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+    }
+    if (!tempUser) {
+      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+    }
+    feedback = await this.channelManagerService.joinChan(tempUser, tempChan);
+    if (feedback.success === true) {
+      this.logger.log(`joingin chanUSer `);
+      this.userService.joinChanUser(tempUser, tempChan);
+    }
+
     return feedback;
   }
 
