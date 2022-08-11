@@ -1,14 +1,14 @@
 <script lang="ts">
-	import OnlineFriends from '$lib/OnlineFriends.svelte';
+	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import CreateChannel from '$lib/chat/CreateChannel.svelte';
 	import ConversationList from '$lib/chat/ConversationList.svelte';
-	import type { ConversationEntryType, ConversationType } from '$lib/types';
 	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
 	import {
 		type ServerToClientEvents,
 		type ClientToServerEvents,
 		ChatEvent,
-		type ChatFeedbackDto
+		type ChatFeedbackDto,
+		type UserType
 	} from 'chat';
 	import type {
 		CMFromServer,
@@ -20,11 +20,13 @@
 	} from 'chat/constants';
 	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
 	import JoinChannel from '$lib/chat/JoinChannel.svelte';
+	import type { ConversationEntryType, ConversationType } from 'chat/types';
+	import { users } from '$lib/utils';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
-		{ profilePic: 'cars.jpeg', name: 'castor' },
-		{ profilePic: 'canard.jpeg', name: 'fourmi' }
+		{ image: 'cars.jpeg', name: 'castor' },
+		{ image: 'canard.jpeg', name: 'fourmi' }
 	];
 
 	let directConvs: ConversationType[] = [
@@ -39,6 +41,7 @@
 			]
 		}
 	];
+
 	let chanConvs: ConversationType[] = [
 		{
 			interlocutor: 'Un groupe de gens',

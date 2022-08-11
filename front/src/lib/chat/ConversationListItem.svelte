@@ -13,18 +13,24 @@
 	export let image = 'cars.jpeg';
 
 	let showProfile = false;
-	let openConv = false;
+	let showConv = false;
+
+	function openProfile() {
+		if (!showConv) showProfile = true;
+	}
+	function openConv() {
+		if (!showProfile) showConv = true;
+	}
 </script>
 
-<div
-	class="conv"
-	on:click={(e) => {
-		if (e.target == e.currentTarget) {
-			openConv = true;
-		}
-	}}
->
-	<img class="roundedImageConv" src={image} alt="contact" on:click={() => (showProfile = true)} />
+<!-- on:click={(e) => {
+    openConv
+		// if (e.target == e.currentTarget) {
+			showConv = true;
+		// }
+	}} -->
+<div class="conv" on:click={openConv}>
+	<img class="roundedImageConv" src={image} alt="contact" on:click={openProfile} />
 	<h5>{conversation.interlocutor}</h5>
 	{#if hasNewMessage}
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
@@ -36,8 +42,8 @@
 		<Profile {image} name={conversation.interlocutor} />
 	</Modal>
 {/if}
-{#if openConv}
-	<Modal on:close={() => (openConv = false)}>
+{#if showConv}
+	<Modal on:close={() => (showConv = false)}>
 		{#if isChannel}
 			<ChannelBox {conversation} on:msgToChannel />
 		{:else}
