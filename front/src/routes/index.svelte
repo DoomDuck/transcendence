@@ -1,4 +1,9 @@
 <script lang="ts">
+	import { users } from '$lib/utils';
+
+	// $users.findOrFetch(0).then((u) =>
+	//   console.log(JSON.stringify(u))
+	// )
 </script>
 
 <nav id="menu">

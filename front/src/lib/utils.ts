@@ -16,8 +16,9 @@ export class Users {
 }
 
 async function fetchUser(id: number): Promise<UserType> {
-	const reponse = await fetch(`http://localhost:5000/user/${id}`, { method: 'GET' });
-	const result = await reponse.json();
+	const response = await fetch(`http://localhost:5000/user/${id}`, { method: 'GET' });
+	const result = await response.json();
+	console.log(JSON.stringify(response));
 	return result;
 }
 

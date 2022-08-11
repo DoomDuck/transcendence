@@ -6,8 +6,7 @@ import { Repository } from 'typeorm';
 import { Id } from '../customType';
 @Injectable()
 export class MatchHistoryService {
-  constructor() // @InjectRepository(Match)
-  // private matchRepository: Repository<Match>,
+  constructor() // private matchRepository: Repository<Match>, // @InjectRepository(Match)
   {}
   // addOneMatch(player1:User, player2:User, player1score:number, player2score:number)
   // {

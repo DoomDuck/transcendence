@@ -156,8 +156,8 @@ export class UserService {
   async addOne(userDto: UserDto): Promise<undefined> {
     const id = userDto.id;
     let logger = new Logger('addone');
-    if (!userDto) return;
-    if (!userDto.id) return;
+    // if (!userDto) return;
+    // if (!userDto.id) return;
     logger.log(`userDto = ${userDto.id}`);
     logger.log(id);
 
