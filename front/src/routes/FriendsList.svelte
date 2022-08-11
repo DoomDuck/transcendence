@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Friend from '$lib/Friend.svelte';
+	import FriendsListItem from '$lib/FriendsListItem.svelte';
 	export let nameSearch: () => void;
 
 	onMount(async () => {
@@ -9,7 +9,6 @@
 		});
 
 		const result = await reponse.json();
-
 		console.log(result);
 	});
 </script>
@@ -20,8 +19,8 @@
 		<input type="search" placeholder="search..." />
 	</form>
 	<div>
-		<Friend name="Flash McQueen" image="cars.jpeg" />
-		<Friend name="Joey" image="canard.jpeg" />
+		<FriendsListItem name="Flash McQueen" image="cars.jpeg" />
+		<FriendsListItem name="Joey" image="canard.jpeg" />
 	</div>
 </div>
 

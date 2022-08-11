@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Profile from './Profile.svelte';
 	import Modal from './Modal.svelte';
-	import GameInvit from './GameInvit.svelte';
+	import GameInvit from './GameInvitBox.svelte';
+	import GameInvitButton from './GameInvitButton.svelte';
 
 	let showProfile = false;
-	let invit = false;
 
 	export let image: string;
 	export let name: string;
@@ -22,21 +22,8 @@
 			<Profile {image} {name} />
 		</Modal>
 	{/if}
-
 	<p class="name">{name}</p>
-	<img
-		on:click={() => (invit = true)}
-		class="play"
-		src="joystick.png"
-		alt="play"
-		width="40px"
-		height="40px"
-	/>
-	{#if invit}
-		<Modal on:close={() => (invit = false)}>
-			<GameInvit {name} />
-		</Modal>
-	{/if}
+	<GameInvitButton {name} />
 </div>
 
 <style>
@@ -47,11 +34,6 @@
 		display: flex;
 		align-items: center;
 		border: 1px solid #a80a2f;
-	}
-
-	.play {
-		margin-left: auto;
-		padding: 5%;
 	}
 
 	.roundedImageFriend {

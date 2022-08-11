@@ -48,8 +48,6 @@ export enum ChannelCategory {
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: string};
 export type InviteChannelToServer = {channel: string, target: string};
-// export type FromServer = {};
-// export type ToServer = {};
 
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;

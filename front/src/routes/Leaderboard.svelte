@@ -29,25 +29,23 @@
 	// });
 </script>
 
-<div id="leaderboard-container">
+<div id="leaderboard">
 	<h4 id="title">Leaderboard</h4>
-	<div id="leaderboard">
+	<div id="leaderboard-entries">
 		{#each entries as entry, i}
-			<div class="leaderboard-entry">
-				<span class="user-place">{i + 1} - </span>
-				<span class="user-name">{entry.user}</span>
-				<span class="user-score">{entry.score}</span>
-			</div>
+			<!-- <div class="leaderboard-entry"> -->
+			<span class="user-place">{i + 1} - </span>
+			<span class="user-name">{entry.user}</span>
+			<span class="user-score">{entry.score}</span>
+			<!-- </div> -->
 		{/each}
 	</div>
 </div>
 
 <style>
-	#leaderboard-container {
+	:root {
 		background-image: url('/starsSky.png');
 		background-size: cover;
-		width: 100%;
-		height: 100%;
 	}
 
 	#title {
@@ -58,10 +56,10 @@
 		line-height: 100%;
 		-webkit-text-stroke: 1px #ff29ea;
 		text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
-		font-size: 3.5vh;
+		font-size: 3.5em;
 	}
 
-	#leaderboard {
+	#leaderboard-entries {
 		width: 50%;
 		height: auto;
 		margin: auto;
@@ -71,11 +69,11 @@
     justify-content: flex-start;
     gap: 1em;*/
 		display: grid;
+		grid-template-columns: max-content 80% auto;
+		gap: 0.5em;
 	}
 
 	.leaderboard-entry {
-		display: flex;
-		flex-direction: row;
 	}
 
 	.user-place {
@@ -83,9 +81,10 @@
 		color: #fce7ff;
 	}
 	.user-name {
-		background-color: #ffffff;
+		background-color: #c8974d;
+		justify-content: center;
 	}
 	.user-score {
-		background-color: #ffffff;
+		background-color: #7eb227;
 	}
 </style>

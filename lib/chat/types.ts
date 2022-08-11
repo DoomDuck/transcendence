@@ -1,3 +1,20 @@
+export type UserType = {
+  id: number,
+  name: string,
+  image: string,
+  profile: ProfileType
+}
+
+export type ProfileType = {
+  classement: number,
+  matchHistory: MatchOutcomeType[],
+}
+
+export type MatchOutcomeType = {
+  opponent: number,
+  winner: boolean
+}
+
 export type ConversationEntryType = {
 	author: string;
 	text: string;

@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { onDestroy } from 'svelte';
 
 	const dispatch = createEventDispatcher();
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key == 'Escape') {
+			dispatch('close');
+		}
+	}
+	window.addEventListener('keydown', handleKeydown);
+	onDestroy(() => window.removeEventListener('keydown', handleKeydown));
 </script>
 
 <div id="background" on:click={() => dispatch('close')} />
