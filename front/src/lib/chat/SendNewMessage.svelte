@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Modal from '$lib/Modal.svelte';
-	import type { DMToServer } from 'chat/constants';
+	import type { DMToServer } from 'backFrontCommon/chatEvents';
 
 	const dispach = createEventDispatcher<{ msgToUser: DMToServer }>();
 

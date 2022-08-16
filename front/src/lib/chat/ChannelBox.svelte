@@ -2,9 +2,9 @@
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
 	import GameInvit from '$lib/GameInvitBox.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { type ConversationType } from 'chat/types';
+	import { type ConversationType } from '../utils';
 	import ConversationEntry from './ConversationEntry.svelte';
-	import type { CMToServer } from 'chat/constants';
+	import type { CMToServer } from 'backFrontCommon/chatEvents';
 
 	export let conversation: ConversationType;
 

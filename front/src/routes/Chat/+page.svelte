@@ -7,9 +7,8 @@
 		type ServerToClientEvents,
 		type ClientToServerEvents,
 		ChatEvent,
-		type ChatFeedbackDto,
-		type ChatUserType
-	} from 'chat';
+		type ChatFeedbackDto
+	} from 'backFrontCommon';
 	import type {
 		CMFromServer,
 		CMToServer,
@@ -17,11 +16,18 @@
 		DMFromServer,
 		DMToServer,
 		JoinChannelToServer
-	} from 'chat/constants';
+	} from 'backFrontCommon/chatEvents';
 	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
 	import JoinChannel from '$lib/chat/JoinChannel.svelte';
-	import type { ConversationEntryType, ConversationType } from 'chat/types';
-	import { users } from '$lib/utils';
+	import type {
+		ChatMessageDto,
+		ActiveUserConversationDto,
+		ActiveChannelConversationDto,
+		UserHistoryDto
+	} from 'backFrontCommon';
+	// import { users, userConvs, channelConvs } from '$lib/utils';
+	import { type ConversationType, type DirectMessageType } from '$lib/utils';
+	import ConversationBox from '$lib/chat/ConversationBox.svelte';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
@@ -31,32 +37,38 @@
 
 	let directConvs: ConversationType[] = [
 		{
-			interlocutor: 'maman',
+			interlocutor: 'Maman',
 			history: [
 				{
-					author: 'maman',
+					// sender: 0,
+					author: 'Maman',
 					isMe: false,
 					text: 'salut'
 				}
 			]
 		}
 	];
+	// userConvs.update()
 
 	let chanConvs: ConversationType[] = [
 		{
+			// channel: 'Un groupe de gens',
 			interlocutor: 'Un groupe de gens',
 			history: [
 				{
-					author: 'me',
+					// sender: -1,
+					author: '',
 					isMe: true,
 					text: 'Salut,\nJe crée un groupe'
 				},
 				{
+					// sender: 1, //'Victor'
 					author: 'Victor',
 					isMe: false,
 					text: 'Pas intéressé'
 				},
 				{
+					// sender: 2, // 'Jean'
 					author: 'Jean',
 					isMe: false,
 					text: 'Moi non plus'
@@ -86,7 +98,7 @@
 	function addMessageToConversation(
 		convs: ConversationType[],
 		interlocutor: string,
-		message: ConversationEntryType
+		message: DirectMessageType
 	): ConversationType[] {
 		const i = convs.findIndex((conv) => conv.interlocutor == interlocutor);
 		let conv: ConversationType;

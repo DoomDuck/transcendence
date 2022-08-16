@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ConversationListItem from './ConversationListItem.svelte';
-	import { type ConversationType } from 'chat/types';
+	import { type ConversationType } from '../utils';
 
 	export let conversations: ConversationType[];
 	export let isChannel: boolean;

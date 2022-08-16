@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import type { ConversationType } from 'chat/types';
+	import type { ConversationType } from '../utils';
 	import ConversationBox from './ConversationBox.svelte';
 	import ChannelBox from './ChannelBox.svelte';
 

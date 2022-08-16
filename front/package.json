@@ -33,7 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"chat": "file:../lib/chat",
+		"backFrontCommon": "file:../lib/backFrontCommon",
 		"pong": "file:../lib/pong",
 		"socket.io-client": "^4.5.1"
 	}
