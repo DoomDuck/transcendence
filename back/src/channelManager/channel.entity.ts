@@ -6,8 +6,8 @@ import {
   PrimaryGeneratedColumn,
   PrimaryColumn,
 } from 'typeorm';
-import { Id } from '../customType';
-import { ChannelCategory } from 'chat';
+import { Id } from 'backFrontCommon';
+import { ChannelCategory } from 'backFrontCommon';
 @Entity('Channel')
 export class Channel {
   constructor(

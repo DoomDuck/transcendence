@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DatabaseFile } from './entities/databaseFile.entity';
 
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 @Injectable()
 export class DatabaseFilesService {
   constructor(

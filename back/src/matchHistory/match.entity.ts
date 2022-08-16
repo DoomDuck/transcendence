@@ -6,7 +6,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 import { User } from '../user/entities/user.entity';
 @Entity('Match')
 export class Match {

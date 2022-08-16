@@ -8,7 +8,7 @@ import {
   Logger,
 } from '@nestjs/common';
 
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 import { MatchHistoryService } from './matchHistory.service';
 import { User } from '../user/entities/user.entity';
 

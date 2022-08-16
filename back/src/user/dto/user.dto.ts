@@ -1,7 +1,7 @@
-import { Id } from '../../customType';
+import { Id } from 'backfrontcommon';
 import { Socket as IOSocketBaseType } from 'socket.io';
 
-import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+import { ServerToClientEvents, ClientToServerEvents } from 'backfrontcommon';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 

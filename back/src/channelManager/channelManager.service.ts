@@ -1,17 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 import { ChannelDto } from './channel.dto';
-import { ChatEvent } from 'chat';
+import { ChatEvent } from 'backFrontCommon';
 import { ActiveUser } from '../user/user.service';
-import { ChatError } from 'chat';
+import { ChatError } from 'backFrontCommon';
 import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
-import { ChannelCategory } from 'chat';
+import { ChannelCategory } from 'backFrontCommon';
 import { Server as IOServerBaseType } from 'socket.io';
-import type { CreateChannelToServer } from 'chat';
+import type { CreateChannelToServer } from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+import {
+  ChatMessageDto,
+  ActiveUserConversationDto,
+  ActiveChannelConversationDto,
+  UserHistoryDto,
+} from 'backFrontCommon';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import { Channel } from './channel.entity';
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 //
@@ -37,6 +43,7 @@ type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 // member: Id[];
 // admin: Id[];
 // }
+
 @Injectable()
 export class ChannelManagerService {
   // private arrayChannel: Channel[];
@@ -62,6 +69,38 @@ export class ChannelManagerService {
     //return new ChatFeedbackDto(true);
   }
 
+  newChatFeedbackDto(_success: boolean, _errorMessage?: string) {
+    if (_errorMessage)
+      return { success: _success, erorrMessage: _errorMessage };
+    else return { success: _success, erorrMessage: undefined };
+  }
+  newChatMessageDto(
+    _sender: Id,
+    _content: string,
+    _isMe: boolean,
+  ): ChatMessageDto {
+    return { sender: _sender, content: _content, isMe: _isMe };
+  }
+
+  newActiveUserConversationDto(
+    _interlocutor: Id,
+    _history: ChatMessageDto[],
+  ): ActiveUserConversationDto {
+    return { interlocutor: _interlocutor, history: _history };
+  }
+  newActiveChannelConversationDto(
+    _channel: string,
+    _history: ChatMessageDto[],
+  ): ActiveChannelConversationDto {
+    return { channel: _channel, history: _history };
+  }
+
+  newUserHistoryDto(
+    _userHistory: ActiveUserConversationDto[],
+    _channelHistory: ActiveChannelConversationDto[],
+  ) {
+    return { userHistory: _userHistory, channelHistory: _channelHistory };
+  }
   leaveChannel(channel: Channel, clientId: Id) {
     if (clientId === channel.creator) channel.creator = -1;
     channel.member = channel.member.slice(channel.member.indexOf(clientId), 1);

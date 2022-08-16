@@ -1,4 +1,4 @@
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 
 export class ChannelDto {
   constructor(
