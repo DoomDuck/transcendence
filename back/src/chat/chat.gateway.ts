@@ -1,6 +1,8 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { ChatEvent } from 'backFrontCommon';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 import type {
   CreateChannelToServer,
   JoinChannelToServer,
@@ -33,6 +35,8 @@ export class ChatGateway
   @WebSocketServer() wss!: Server;
   constructor(
     private userService: UserService,
+    private configService: ConfigService,
+    private httpService: HttpService,
     private channelManagerService: ChannelManagerService,
   ) {}
   private logger: Logger = new Logger('ChatGateway');
@@ -43,6 +47,18 @@ export class ChatGateway
   handleConnection(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
+    this.logger.log(this.configService.get<string>('PUBLIC_42_APP_ID'));
+    const response = this.httpService.post(
+      `https://api.intra.42.fr/oauth/token/?grant_type=authorization_code/?client_id=${this.configService.get<string>(
+        '42_APP_SECRET',
+      )}/?client_secret=${this.configService.get<string>(
+        'PUBLIC_42_APP_ID',
+      )}/?code=${
+        clientSocket.handshake.auth.token
+      }/?redirect_url=http://fou2lezards.com`,
+      null,
+    );
+    this.logger.log(`in connection${JSON.stringify(response)}`);
     this.userService.addOne(
       new UserDto(
         parseInt(clientSocket.handshake.auth.token),
