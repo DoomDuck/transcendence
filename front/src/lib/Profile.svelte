@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ProfileStats from './ProfileStats.svelte';
 	export let image: string;
-	export let friendName: string;
+	export let name: string;
 	export let iD = 35214;
 	export let bestScore = 359;
 	export let wonGamesRatio = '50%';
@@ -11,7 +11,7 @@
 <div id="Profile">
 	<div>
 		<img class="roundedImageProfile" src={image} alt="profilepic" />
-		<h3>{friendName}</h3>
+		<h3>{name}</h3>
 		<p>iD: {iD}</p>
 	</div>
 	<ProfileStats {bestScore} {wonGamesRatio} {classement} />

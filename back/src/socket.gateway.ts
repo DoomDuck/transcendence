@@ -8,7 +8,14 @@ import type {
 } from '@nestjs/websockets';
 
 import { Logger } from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
+import {
+  Socket as IOSocketBaseType,
+  Server as IOServerBaseType,
+} from 'socket.io';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+
+type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
+type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 @WebSocketGateway({ cors: { origin: true } })
 export class SocketGateway

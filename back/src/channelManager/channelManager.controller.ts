@@ -9,8 +9,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { ChannelManagerService } from './channelManager.service';
-import { ChannelDto } from './channel.dto';
-import { Channel } from './channelManager.service';
+import { Channel } from './channel.entity';
+// import { ChannelDto } from './channel.dto';
+// import { Channel } from './channelManager.service';
 
 @Controller('channel')
 export class ChannelController {
@@ -19,10 +20,17 @@ export class ChannelController {
   async getChannel(): Promise<Channel[] | string> {
     return this.channelManagerService.findChanAll();
   }
-  @Post()
-  public createChan(@Body() channelDto: ChannelDto) {
-    return this.channelManagerService.createChan(channelDto);
+
+  @Get(':name')
+  public async getUseById(
+    @Param('name') name: string,
+  ): Promise<Channel | null> {
+    return this.channelManagerService.findChanByName(name);
   }
+  // @Post()
+  // public createChan(@Body() channelDto: ChannelDto) {
+  // return this.channelManagerService.createChan(channelDto);
+  // }
 
   // @Get(":id")
   // public async getCarById(@Param("id") id: number) {

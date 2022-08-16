@@ -15,10 +15,17 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
+  it('GET /user', () => {
+    const result: request.Test = request(app.getHttpServer())
+      .get('/user')
       .expect(200)
-      .expect('Hello World!');
+      .expect([]);
+
+    // I don't know why yet but it is REQUIRED to return
+    return result;
+  });
+
+  it('GET / should yield 404', () => {
+    return request(app.getHttpServer()).get('/').expect(404);
   });
 });

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Socket } from 'socket.io';
 import { removeIfPresent } from 'pong';
 import { ServerGameContext } from 'pong';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class GameManagerService {
