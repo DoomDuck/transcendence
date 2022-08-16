@@ -1,25 +1,22 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { request_login, login } from '$lib/login';
 	import { onMount } from 'svelte';
+	
+	let error: any | null = null;
 
-	onMount(() => {
-		let params = new URLSearchParams(document.location.search);
-
-		let code = params.get('code');
-		if (code) goto('Main');
+	onMount(async () => {
+		try {
+			if (await login())
+				goto('Main');
+		} catch (error_caught) {
+			error = error_caught.mes;
+		}
 	});
-
-	function on_click() {
-		const LOCATION = 'https://api.intra.42.fr/oauth/authorize';
-		const REDIRECT = encodeURIComponent(window.location.origin);
-		const CLIENT_ID = (window as any).env.PUBLIC_42_APP_ID as string;
-		const URL = `${LOCATION}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT}&response_type=code`;
-
-		window.history.pushState({}, '');
-		window.location.assign(URL);
-	}
 </script>
 
-<button on:click={on_click}> Connect </button>
-
-<div />
+{#if error}
+	<h1>Error logging in {error}</h1>
+{:else}
+ <button on:click={request_login}> Connect </button>
+{/if}
