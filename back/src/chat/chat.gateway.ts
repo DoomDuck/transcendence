@@ -2,6 +2,7 @@ import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { ChatEvent } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
+import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import type {
   CreateChannelToServer,
@@ -44,21 +45,32 @@ export class ChatGateway
     this.logger.log('Initialized chat ');
   }
 
-  handleConnection(clientSocket: Socket) {
+async  handleConnection(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
     this.logger.log(this.configService.get<string>('PUBLIC_42_APP_ID'));
-    const response = this.httpService.post(
-      `https://api.intra.42.fr/oauth/token/?grant_type=authorization_code/?client_id=${this.configService.get<string>(
-        '42_APP_SECRET',
-      )}/?client_secret=${this.configService.get<string>(
+	
+	try {
+	const response = await new Promise<AxiosResponse<any, any>>((success, failure) => {
+      this.httpService.post(
+      `https://api.intra.42.fr/oauth/token/?grant_type=authorization_code&client_id=${this.configService.get<string>(
         'PUBLIC_42_APP_ID',
-      )}/?code=${
+      )}&client_secret=${this.configService.get<string>(
+        'APP_42_SECRET',
+      )}&code=${
         clientSocket.handshake.auth.token
-      }/?redirect_url=http://fou2lezards.com`,
+      }`,
+	  // &redirect_url=http://fou2lezards.com`,
       null,
-    );
-    this.logger.log(`in connection${JSON.stringify(response)}`);
+      ).subscribe({next: success, error: failure })
+    });
+    this.logger.log(`in connection${JSON.stringify(response.data)}`);
+	}
+	catch(e)
+	{
+			
+    this.logger.log(`in connection${JSON.stringify(e)}`);
+	}
     this.userService.addOne(
       new UserDto(
         parseInt(clientSocket.handshake.auth.token),
@@ -69,6 +81,7 @@ export class ChatGateway
 
     this.logger.log(`end handle connection`);
   }
+
   handleDisconnect(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);

@@ -1,23 +1,28 @@
-<script lang="ts">
-	export let color: string = '#6028FF';
+<script>
+	import { users } from '$lib/utils';
+
+	// $users.findOrFetch(0).then((u) =>
+	//   console.log(JSON.stringify(u))
+	// )
 </script>
 
 <nav id="menu">
-	<h1 class="typography" style="color: {color}">Transcendence</h1>
-	<h4 class="typography" style="color: {color}">
+	<h1 class="typography">Transcendence</h1>
+	<h4 class="typography">
 		<a sveltekit:prefetch href="/StartAGame">Game</a>
 	</h4>
-	<h4 class="typography" style="color: {color}">
+	<h4 class="typography">
 		<a sveltekit:prefetch href="/Chat">Chat</a>
 	</h4>
-	<h4 class="typography" style="color: {color}">
-		<a sveltekit:prefetch href="/">Parameters</a>
+	<h4 class="typography">
+		<a sveltekit:prefetch href="/Parameters">Parameters</a>
 	</h4>
 </nav>
 
 <style>
 	#menu {
-		background-image: url('starsSky.jpeg');
+		background-image: url('/starsSky.png');
+		background-size: cover;
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
@@ -29,6 +34,7 @@
 	.typography {
 		font-family: 'Press Start 2P';
 		font-style: normal;
+		color: #6028ff;
 	}
 
 	h1 {
@@ -49,5 +55,8 @@
 		background-color: blue;
 		width: 100%;
 		text-align: center;
+	}
+	a {
+		all: unset;
 	}
 </style>
