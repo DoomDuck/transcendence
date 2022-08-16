@@ -8,6 +8,12 @@ import {
 import { readable, writable } from 'svelte/store';
 import { FrontChatError } from './errors';
 
+import { Socket as IOSocketBaseType } from 'socket.io-client';
+import { type ServerToClientEvents, type ClientToServerEvents } from 'backFrontCommon';
+import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
+
+export type ChatSocket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
+
 type Id = number;
 
 export class Users {
@@ -74,8 +80,20 @@ export class UserConversationList {
 	addMessage(message: ChatMessageDto, interlocutor?: Id): UserConversationList {
 		const convInterlocutor = interlocutor ?? message.sender;
 		let conv = this.convs.find((conv) => conv.dto.interlocutor == convInterlocutor);
-		if (conv == undefined) conv = new UserConversation(message.sender);
+		if (conv == undefined) {
+			conv = new UserConversation(convInterlocutor);
+			this.convs.push(conv);
+		}
 		conv.dto.history.push(message);
+		return this;
+	}
+
+	receiveMessageFromServer(message: DMFromServer): UserConversationList {
+		this.addMessage({
+			sender: message.source,
+			content: message.content,
+			isMe: false
+		});
 		return this;
 	}
 
@@ -90,8 +108,23 @@ export class ChannelConversationList {
 
 	addMessage(message: ChatMessageDto, channel: string): ChannelConversationList {
 		let conv = this.convs.find((conv) => conv.dto.channel == channel);
-		if (conv == undefined) conv = new ChannelConversation(channel);
+		if (conv == undefined) {
+			conv = new ChannelConversation(channel);
+			this.convs.push(conv);
+		}
 		conv.dto.history.push(message);
+		return this;
+	}
+
+	receiveMessageFromServer(message: CMFromServer): ChannelConversationList {
+		this.addMessage(
+			{
+				sender: message.source,
+				content: message.content,
+				isMe: false
+			},
+			message.channel
+		);
 		return this;
 	}
 
@@ -119,5 +152,8 @@ function messageFromMe(content: string): ChatMessageDto {
 export const userConvs = writable(new UserConversationList());
 export const channelConvs = writable(new ChannelConversationList());
 
-export const tokenKey = Symbol();
-export const socketKey = Symbol();
+export const chatContextKey = Symbol();
+export type ChatContext = {
+	token: string;
+	socket: ChatSocket;
+};

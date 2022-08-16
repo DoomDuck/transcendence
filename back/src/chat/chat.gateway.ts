@@ -1,16 +1,18 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
-import { ChatEvent } from 'chat';
-import type { CreateChannelToServer, JoinChannelToServer } from 'chat';
-import { ChatError } from 'chat';
+import { ChatEvent } from 'backFrontCommon';
+import type {
+  CreateChannelToServer,
+  JoinChannelToServer,
+} from 'backFrontCommon';
+import { ChatError, ChatFeedbackDto } from 'backFrontCommon';
 import { UserDto } from '../user/dto/user.dto';
-import { ChatFeedbackDto } from './chatFeedback.dto';
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
 } from 'socket.io';
-import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
@@ -63,12 +65,15 @@ export class ChatGateway
     chanInfo: CreateChannelToServer,
   ) {
     const newChan = await this.channelManagerService.createChan(
-      clientSocket.handshake.auth.token,
+      Number(clientSocket.handshake.auth.token),
       chanInfo,
     );
 
     if (!newChan)
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.CHANNEL_NOT_FOUND,
+      );
     // this.logger.log('after create');
     // const entities = await this.channelManagerService.findChanAll();
     // entities.forEach((channel)=> console.log(channel.name))
@@ -77,7 +82,7 @@ export class ChatGateway
       clientSocket.handshake.auth.token,
       newChan,
     );
-    return new ChatFeedbackDto(true);
+    return this.channelManagerService.newChatFeedbackDto(true);
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
@@ -114,7 +119,7 @@ export class ChatGateway
       channel: tempChannel!.name,
       content: dto.content,
     });
-    return new ChatFeedbackDto(true);
+    return this.channelManagerService.newChatFeedbackDto(true);
   }
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
@@ -129,10 +134,16 @@ export class ChatGateway
 
     this.logger.log(`any joiner in the  chat ?${tempUser} `);
     if (!tempChan) {
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.CHANNEL_NOT_FOUND,
+      );
     }
     if (!tempUser) {
-      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
     }
     feedback = await this.channelManagerService.joinChan(tempUser, tempChan);
     if (feedback.success === true) {
@@ -152,7 +163,7 @@ export class ChatGateway
     },
   ) {
     const feedback = this.userService.sendMessageToUser(
-      clientSocket.handshake.auth.token,
+      Number(clientSocket.handshake.auth.token),
       this.wss,
       messageInfo.content,
       messageInfo.target,

@@ -9,7 +9,7 @@ import {
 import { DatabaseFilesService } from './databaseFile.service';
 import { Readable } from 'stream';
 import { Response } from 'express';
-import { Id } from '../customType';
+import { Id } from 'backFrontCommon';
 @Controller('avatar')
 export class DatabaseFilesController {
   constructor(private readonly databaseFilesService: DatabaseFilesService) {}

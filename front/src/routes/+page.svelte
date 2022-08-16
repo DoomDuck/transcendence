@@ -1,37 +1,39 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
-	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
 	import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
-	import { socketKey, tokenKey } from '$lib/utils';
+	import { chatContextKey, type ChatSocket } from '$lib/utils';
 
-	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
-	let tokenInput: string | undefined;
-	do {
-		tokenInput = prompt('your token ?')?.trim();
-	} while (
-		!(
-			tokenInput !== undefined &&
-			tokenInput.length > 0 &&
-			Number.isInteger(+tokenInput) &&
-			+tokenInput >= 0
-		)
-	);
-	const socket: Socket = io('http://localhost:5000/chat', {
-		auth: { token: tokenInput }
-	});
-	setContext(tokenKey, tokenInput as string);
-	setContext(socketKey, socket);
+	export let color: string = '#6028FF';
+
+	// let tokenInput: string | undefined;
+	// do {
+	// 	tokenInput = prompt('your token ?')?.trim();
+	// } while (
+	// 	!(
+	// 		tokenInput !== undefined &&
+	// 		tokenInput.length > 0 &&
+	// 		Number.isInteger(+tokenInput) &&
+	// 		+tokenInput >= 0
+	// 	)
+	// );
+	// const socket: ChatSocket = io('http://localhost:5000/chat', {
+	// 	auth: { token: tokenInput }
+	// });
+	// setContext(chatContextKey, {
+	//   socket,
+	//   token: tokenInput as string
+	// })
 </script>
 
 <nav id="menu">
-	<h1 class="typography">Transcendence</h1>
-	<h4 class="typography">
+	<h1 class="typography" style="color: {color}">Transcendence</h1>
+	<h4 class="typography" style="color: {color}">
 		<a sveltekit:prefetch href="/StartAGame">Game</a>
 	</h4>
-	<h4 class="typography">
+	<h4 class="typography" style="color: {color}">
 		<a sveltekit:prefetch href="/Chat">Chat</a>
 	</h4>
-	<h4 class="typography">
+	<h4 class="typography" style="color: {color}">
 		<a sveltekit:prefetch href="/Parameters">Parameters</a>
 	</h4>
 </nav>
@@ -51,7 +53,6 @@
 	.typography {
 		font-family: 'Press Start 2P';
 		font-style: normal;
-		color: #6028ff;
 	}
 
 	h1 {

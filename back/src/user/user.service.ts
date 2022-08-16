@@ -2,6 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UserDto } from './dto/user.dto';
 import { ActiveConversationDto } from './dto/userHistory.dto';
+import {
+  ActiveChannelConversationDto,
+  ActiveUserConversationDto,
+} from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channel.entity';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
@@ -76,8 +80,8 @@ export class UserService {
     //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
     chatMessage.forEach((message) =>
       chatMessageDto.push(
-        new ChatMessageDto(
-          (this.findOneActive(message.sender) as ActiveUser).name,
+        this.channelManagerService.newChatMessageDto(
+          (this.findOneActive(message.sender) as ActiveUser).id,
           message.content,
           message.isMe,
         ),
@@ -94,13 +98,12 @@ export class UserService {
   }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
-  ): ActiveConversationDto[] {
-    let activeConversationDto: ActiveConversationDto[];
+  ): ActiveChannelConversationDto[] {
+    let activeConversationDto: ActiveChannelConversationDto[];
     activeConversationDto = [];
     activeConversation.forEach((conv: ActiveConversation) =>
       activeConversationDto.push(
-        new ActiveConversationDto(
-          // ( await this.channelManagerService.findChanByName(conv.name) as Channel).name,
+        this.channelManagerService.newActiveChannelConversationDto(
           conv.name as string,
           this.dtoTraductionChatMessage(conv.history),
         ),
@@ -110,13 +113,13 @@ export class UserService {
   }
   dtoTraductionUserConv(
     activeConversation: ActiveConversation[],
-  ): ActiveConversationDto[] {
-    let activeConversationDto: ActiveConversationDto[];
+  ): ActiveUserConversationDto[] {
+    let activeConversationDto: ActiveUserConversationDto[];
     activeConversationDto = [];
     activeConversation.forEach((conv: ActiveConversation) =>
       activeConversationDto.push(
-        new ActiveConversationDto(
-          (this.findOneActive(conv.name as number) as ActiveUser).name,
+        this.channelManagerService.newActiveUserConversationDto(
+          conv.name as number,
           this.dtoTraductionChatMessage(conv.history),
         ),
       ),
@@ -126,16 +129,16 @@ export class UserService {
   getUserHistory(id: Id): UserHistoryDto | null {
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (tempUser) {
-      return new UserHistoryDto(
+      return this.channelManagerService.newUserHistoryDto(
         this.dtoTraductionUserConv(tempUser.activeUserConversation),
         this.dtoTraductionChannelConv(tempUser.activeChannelConversation),
       );
     } else {
-      return new UserHistoryDto(
+      return this.channelManagerService.newUserHistoryDto(
         [
-          new ActiveConversationDto('gisele', [
-            new ChatMessageDto('couillax', 'max', true),
-            new ChatMessageDto('gisele', 'lol', false),
+          this.channelManagerService.newActiveUserConversationDto(4, [
+            this.channelManagerService.newChatMessageDto(1, 'max', true),
+            this.channelManagerService.newChatMessageDto(4, 'lol', false),
           ]),
         ],
         [],
@@ -226,9 +229,12 @@ export class UserService {
       .where('User.id = :target', { target })
       .getOne();
     if (tempSender === null)
-      return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
     if (tempTarget === null)
-      return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.USER_NOT_FOUND,
+      );
     if (
       tempSender.friendlist.find((friend) => friend === target) === undefined
     ) {
@@ -237,8 +243,12 @@ export class UserService {
       this.usersRepository.update(tempSender.id, {
         friendlist: tempSender.friendlist,
       });
-      return new ChatFeedbackDto(true);
-    } else return new ChatFeedbackDto(false, ChatError.ALREADY_FRIEND);
+      return this.channelManagerService.newChatFeedbackDto(true);
+    } else
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.ALREADY_FRIEND,
+      );
   }
   async addAvatar(
     userId: Id,
@@ -325,19 +335,23 @@ export class UserService {
           this.arrayActiveUser.indexOf(activeUser),
           1,
         );
+      } else {
+        activeUser.socketUser = activeUser.socketUser.slice(
+          activeUser.socketUser.indexOf(clientSocket),
+          1,
+        );
       }
-      activeUser.socketUser = activeUser.socketUser.slice(
-        activeUser.socketUser.indexOf(clientSocket),
-        1,
-      );
     }
   }
   leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
     if (channel.member.find((id) => id === activeUser.id) === undefined)
-      return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.NOT_IN_CHANNEL,
+      );
     this.channelManagerService.leaveChannel(channel, activeUser.id);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
-    return new ChatFeedbackDto(true);
+    return this.channelManagerService.newChatFeedbackDto(true);
   }
   sendMessageToUser(
     senderId: Id,
@@ -361,8 +375,16 @@ export class UserService {
           }),
         );
         this.updateUserConversation(tempUserSender, tempUserTarget, content);
-        return new ChatFeedbackDto(true);
-      } else return new ChatFeedbackDto(false, ChatError.USER_NOT_FOUND);
-    } else return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
+        return this.channelManagerService.newChatFeedbackDto(true);
+      } else
+        return this.channelManagerService.newChatFeedbackDto(
+          false,
+          ChatError.USER_NOT_FOUND,
+        );
+    } else
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
   }
 }

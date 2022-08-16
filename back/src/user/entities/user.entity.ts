@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DatabaseFile } from './databaseFile.entity';
-import { Id } from '../../customType';
+import { Id } from 'backFrontCommon';
 @Entity('User')
 export class User {
   constructor(id: Id, name: string) {

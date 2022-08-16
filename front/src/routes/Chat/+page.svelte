@@ -2,13 +2,7 @@
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import CreateChannel from '$lib/chat/CreateChannel.svelte';
 	import ConversationList from '$lib/chat/ConversationList.svelte';
-	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
-	import {
-		type ServerToClientEvents,
-		type ClientToServerEvents,
-		ChatEvent,
-		type ChatFeedbackDto
-	} from 'backFrontCommon';
+	import { ChatEvent, type ChatFeedbackDto } from 'backFrontCommon';
 	import type {
 		CMFromServer,
 		CMToServer,
@@ -19,71 +13,81 @@
 	} from 'backFrontCommon/chatEvents';
 	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
 	import JoinChannel from '$lib/chat/JoinChannel.svelte';
-	import type {
-		ChatMessageDto,
-		ActiveUserConversationDto,
-		ActiveChannelConversationDto,
-		UserHistoryDto
-	} from 'backFrontCommon';
-	import { users, userConvs, channelConvs, socketKey } from '$lib/utils';
-	import { getContext } from 'svelte';
+	import { userConvs, channelConvs, type ChatSocket } from '$lib/utils';
+	import { io } from 'socket.io-client';
 
-	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
+	// VALUES FOR THE DEBUG OF THE DISPLAY
+
 	let friends = [
 		{ image: 'cars.jpeg', name: 'castor' },
 		{ image: 'canard.jpeg', name: 'fourmi' }
 	];
 
-	// let directConvs: ActiveUserConversationDto[] = [
-	// 	{
-	// 		interlocutor: 0, // 'Maman'
-	// 		history: [
-	// 			{
-	//         sender: 0,
-	// 				isMe: false,
-	// 				content: 'salut'
-	// 			}
-	// 		]
-	// 	}
-	// ];
-	// // userConvs.update()
+	$userConvs.addMessage({
+		sender: 0,
+		isMe: false,
+		content: 'salut'
+	});
+	$channelConvs.addMessage(
+		{
+			sender: -1,
+			isMe: true,
+			content: 'Salut,\nJe crée un groupe'
+		},
+		'Un groupe de gens'
+	);
+	$channelConvs.addMessage(
+		{
+			sender: 1,
+			isMe: false,
+			content: 'Pas intéressé'
+		},
+		'Un groupe de gens'
+	);
+	$channelConvs.addMessage(
+		{
+			sender: 2,
+			isMe: false,
+			content: 'Moi non plus'
+		},
+		'Un groupe de gens'
+	);
 
-	// let chanConvs: ActiveChannelConversationDto[] = [
-	// 	{
-	// 		channel: 'Un groupe de gens',
-	// 		history: [
-	// 			{
-	// 				sender: -1,
-	// 				isMe: true,
-	// 				content: 'Salut,\nJe crée un groupe'
-	// 			},
-	// 			{
-	// 				sender: 1, //'Victor'
-	// 				isMe: false,
-	// 				content: 'Pas intéressé'
-	// 			},
-	// 			{
-	// 				sender: 2, // 'Jean'
-	// 				isMe: false,
-	// 				content: 'Moi non plus'
-	// 			}
-	// 		]
-	// 	}
-	// ];
+	console.log('LEN:', $channelConvs.convs.length);
 
 	// INITIALISATION
 
-	const socket: Socket = getContext(socketKey);
+	// DEBUG FOR THE AUTH
 
+	let tokenInput: string | undefined;
+	do {
+		tokenInput = prompt('your token ?')?.trim();
+	} while (
+		!(
+			tokenInput !== undefined &&
+			tokenInput.length > 0 &&
+			Number.isInteger(+tokenInput) &&
+			+tokenInput >= 0
+		)
+	);
+
+	// console.log('has context:', hasContext(chatContextKey));
+	// const socket: ChatSocket = getContext<ChatContext>(chatContextKey).socket;
+	const socket: ChatSocket = io('http://localhost:5000/chat', {
+		auth: { token: tokenInput }
+	});
 	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 	socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
+
 	// EVENTS FROM SERVER
 
 	function receiveDirectMessage(message: DMFromServer) {
+		$userConvs = $userConvs.receiveMessageFromServer(message);
 		console.log('received direct message:', JSON.stringify(message));
 	}
 
 	function receiveChannelMessage(message: CMFromServer) {
+		$channelConvs = $channelConvs.receiveMessageFromServer(message);
 		console.log('received channel message:', JSON.stringify(message));
 	}
 
@@ -92,12 +96,6 @@
 	function sendDirectMessage(event: CustomEvent<DMToServer>) {
 		socket.emit(ChatEvent.MSG_TO_USER, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				// directConvs = addMyMessageToConversation(
-				// 	directConvs,
-				// 	event.detail.target,
-				// 	event.detail.content
-				// );
-				// userConvs.update(() => $userConvs)
 				$userConvs = $userConvs.addMessageFromMe(event.detail.content, event.detail.target);
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
@@ -122,11 +120,6 @@
 		socket.emit(ChatEvent.MSG_TO_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				$channelConvs = $channelConvs.addMessageFromMe(event.detail.content, event.detail.channel);
-				// chanConvs = addMyMessageToConversation(
-				// 	chanConvs,
-				// 	event.detail.channel,
-				// 	event.detail.content
-				// );
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
 			}
