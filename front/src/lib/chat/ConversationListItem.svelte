@@ -1,14 +1,17 @@
 <script lang="ts">
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import type { ConversationType } from '../utils';
+	import {
+		ChannelConversation,
+		type DisplayableConversation,
+		type UserConversation
+	} from '../utils';
 	import ConversationBox from './ConversationBox.svelte';
 	import ChannelBox from './ChannelBox.svelte';
 
 	// export let name: string;
-	export let conversation: ConversationType;
+	export let conversation: UserConversation | ChannelConversation;
 	export let hasNewMessage = false;
-	export let isChannel: boolean;
 	//
 	export let image = 'cars.jpeg';
 
@@ -31,7 +34,7 @@
 	}} -->
 <div class="conv" on:click={openConv}>
 	<img class="roundedImageConv" src={image} alt="contact" on:click={openProfile} />
-	<h5>{conversation.interlocutor}</h5>
+	<h5>{conversation.displayName}</h5>
 	{#if hasNewMessage}
 		<img class="notif" src="notification.png" alt="notif" width="35" height="35" />
 	{/if}
@@ -39,12 +42,12 @@
 
 {#if showProfile}
 	<Modal on:close={() => (showProfile = false)}>
-		<Profile {image} name={conversation.interlocutor} />
+		<Profile {image} name={conversation.displayName} />
 	</Modal>
 {/if}
 {#if showConv}
 	<Modal on:close={() => (showConv = false)}>
-		{#if isChannel}
+		{#if conversation instanceof ChannelConversation}
 			<ChannelBox {conversation} on:msgToChannel />
 		{:else}
 			<ConversationBox {conversation} on:msgToUser />

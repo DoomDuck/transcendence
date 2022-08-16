@@ -1,10 +1,12 @@
-import type {
-	ActiveChannelConversationDto,
-	ActiveUserConversationDto,
-	ChatMessageDto,
-	ChatUserDto
+import {
+	ChatError,
+	type ActiveChannelConversationDto,
+	type ActiveUserConversationDto,
+	type ChatMessageDto,
+	type ChatUserDto
 } from 'backFrontCommon';
 import { readable, writable } from 'svelte/store';
+import { FrontChatError } from './errors';
 
 type Id = number;
 
@@ -29,7 +31,12 @@ async function fetchUser(id: number): Promise<ChatUserDto> {
 
 export const users = readable(new Users());
 
-export class UserConversation {
+export interface DisplayableConversation {
+	displayName: string;
+	history: ChatMessageDto[];
+}
+
+export class UserConversation implements DisplayableConversation {
 	dto: ActiveUserConversationDto;
 	constructor(interlocutor: Id) {
 		this.dto = {
@@ -37,9 +44,15 @@ export class UserConversation {
 			history: []
 		};
 	}
+	get displayName(): string {
+		return `${this.dto.interlocutor}`; // to change with users store
+	}
+	get history(): ChatMessageDto[] {
+		return this.dto.history;
+	}
 }
 
-export class ChannelConversation {
+export class ChannelConversation implements DisplayableConversation {
 	dto: ActiveChannelConversationDto;
 	constructor(channel: string) {
 		this.dto = {
@@ -47,39 +60,64 @@ export class ChannelConversation {
 			history: []
 		};
 	}
+	get displayName(): string {
+		return this.dto.channel;
+	}
+	get history(): ChatMessageDto[] {
+		return this.dto.history;
+	}
 }
 
-// export class UserConversationList {
-//   convs: UserConversation[] = [];
+export class UserConversationList {
+	convs: UserConversation[] = [];
 
-//   addMessage(message: ChatMessageDto):  {
-//     let conv = this.convs.find((conv) => conv.dto.interlocutor == message.sender);
-// 		if (conv == undefined)
-//       conv = new UserConversation(message.sender);
-// 		conv.dto.history.push(message);
-//   }
-// }
+	addMessage(message: ChatMessageDto, interlocutor?: Id): UserConversationList {
+		const convInterlocutor = interlocutor ?? message.sender;
+		let conv = this.convs.find((conv) => conv.dto.interlocutor == convInterlocutor);
+		if (conv == undefined) conv = new UserConversation(message.sender);
+		conv.dto.history.push(message);
+		return this;
+	}
 
-// export class ChannelConversationList {
-//   convs: ChannelConversation[] = [];
+	addMessageFromMe(content: string, interlocutor: number): UserConversationList {
+		this.addMessage(messageFromMe(content), interlocutor);
+		return this;
+	}
+}
 
-//   addMessage(channel: string, message: ChatMessageDto):  {
-//     let conv = this.convs.find((conv) => conv.dto.channel == channel);
-// 		if (conv == undefined)
-//       conv = new ChannelConversation(channel);
-// 		conv.dto.history.push(message);
-//   }
-// }
+export class ChannelConversationList {
+	convs: ChannelConversation[] = [];
 
-// export const userConvs = writable(new UserConversationList());
-// export const channelConvs = writable(new ChannelConversationList());
+	addMessage(message: ChatMessageDto, channel: string): ChannelConversationList {
+		let conv = this.convs.find((conv) => conv.dto.channel == channel);
+		if (conv == undefined) conv = new ChannelConversation(channel);
+		conv.dto.history.push(message);
+		return this;
+	}
 
-export type ConversationType = {
-	interlocutor: string;
-	history: DirectMessageType[];
-};
-export type DirectMessageType = {
-	author: string;
-	isMe: boolean;
-	text: string;
-};
+	addMessageFromMe(content: string, channel: string): ChannelConversationList {
+		this.addMessage(messageFromMe(content), channel);
+		return this;
+	}
+
+	create(channel: string): ChannelConversationList {
+		if (this.convs.find((conv) => conv.dto.channel == channel) == undefined) {
+			this.convs.push(new ChannelConversation(channel));
+		}
+		return this;
+	}
+}
+
+function messageFromMe(content: string): ChatMessageDto {
+	return {
+		sender: -1,
+		isMe: true,
+		content
+	};
+}
+
+export const userConvs = writable(new UserConversationList());
+export const channelConvs = writable(new ChannelConversationList());
+
+export const tokenKey = Symbol();
+export const socketKey = Symbol();

@@ -25,9 +25,8 @@
 		ActiveChannelConversationDto,
 		UserHistoryDto
 	} from 'backFrontCommon';
-	// import { users, userConvs, channelConvs } from '$lib/utils';
-	import { type ConversationType, type DirectMessageType } from '$lib/utils';
-	import ConversationBox from '$lib/chat/ConversationBox.svelte';
+	import { users, userConvs, channelConvs, socketKey } from '$lib/utils';
+	import { getContext } from 'svelte';
 
 	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 	let friends = [
@@ -35,116 +34,56 @@
 		{ image: 'canard.jpeg', name: 'fourmi' }
 	];
 
-	let directConvs: ConversationType[] = [
-		{
-			interlocutor: 'Maman',
-			history: [
-				{
-					// sender: 0,
-					author: 'Maman',
-					isMe: false,
-					text: 'salut'
-				}
-			]
-		}
-	];
-	// userConvs.update()
+	// let directConvs: ActiveUserConversationDto[] = [
+	// 	{
+	// 		interlocutor: 0, // 'Maman'
+	// 		history: [
+	// 			{
+	//         sender: 0,
+	// 				isMe: false,
+	// 				content: 'salut'
+	// 			}
+	// 		]
+	// 	}
+	// ];
+	// // userConvs.update()
 
-	let chanConvs: ConversationType[] = [
-		{
-			// channel: 'Un groupe de gens',
-			interlocutor: 'Un groupe de gens',
-			history: [
-				{
-					// sender: -1,
-					author: '',
-					isMe: true,
-					text: 'Salut,\nJe crée un groupe'
-				},
-				{
-					// sender: 1, //'Victor'
-					author: 'Victor',
-					isMe: false,
-					text: 'Pas intéressé'
-				},
-				{
-					// sender: 2, // 'Jean'
-					author: 'Jean',
-					isMe: false,
-					text: 'Moi non plus'
-				}
-			]
-		}
-	];
+	// let chanConvs: ActiveChannelConversationDto[] = [
+	// 	{
+	// 		channel: 'Un groupe de gens',
+	// 		history: [
+	// 			{
+	// 				sender: -1,
+	// 				isMe: true,
+	// 				content: 'Salut,\nJe crée un groupe'
+	// 			},
+	// 			{
+	// 				sender: 1, //'Victor'
+	// 				isMe: false,
+	// 				content: 'Pas intéressé'
+	// 			},
+	// 			{
+	// 				sender: 2, // 'Jean'
+	// 				isMe: false,
+	// 				content: 'Moi non plus'
+	// 			}
+	// 		]
+	// 	}
+	// ];
 
 	// INITIALISATION
 
-	let id_str: string | undefined;
-	do {
-		id_str = prompt('your token ?')?.trim();
-	} while (
-		!(id_str !== undefined && id_str.length > 0 && Number.isInteger(+id_str) && +id_str >= 0)
-	);
-	const socket: Socket = io('http://localhost:5000/chat', {
-		auth: { token: id_str }
-	});
-	const id = +id_str;
+	const socket: Socket = getContext(socketKey);
 
 	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 	socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
-
-	// UTILS
-
-	function addMessageToConversation(
-		convs: ConversationType[],
-		interlocutor: string,
-		message: DirectMessageType
-	): ConversationType[] {
-		const i = convs.findIndex((conv) => conv.interlocutor == interlocutor);
-		let conv: ConversationType;
-		if (i == -1) conv = { interlocutor, history: [] };
-		else {
-			conv = convs[i];
-			convs.splice(i, 1);
-		}
-		conv.history = [...conv.history, message];
-		return [conv, ...convs];
-	}
-
-	function addMyMessageToConversation(
-		convs: ConversationType[],
-		interlocutor: string,
-		content: string
-	): ConversationType[] {
-		return addMessageToConversation(convs, interlocutor, {
-			author: '',
-			isMe: true,
-			text: content
-		});
-	}
-
-	function createChannel(channelName: string): number {
-		chanConvs = [{ interlocutor: channelName, history: [] }, ...chanConvs];
-		return 0;
-	}
-
 	// EVENTS FROM SERVER
 
 	function receiveDirectMessage(message: DMFromServer) {
-		directConvs = addMessageToConversation(directConvs, message.source, {
-			author: message.source,
-			isMe: false,
-			text: message.content
-		});
 		console.log('received direct message:', JSON.stringify(message));
 	}
 
 	function receiveChannelMessage(message: CMFromServer) {
-		chanConvs = addMessageToConversation(chanConvs, message.channel, {
-			author: message.source,
-			isMe: false,
-			text: message.content
-		});
 		console.log('received channel message:', JSON.stringify(message));
 	}
 
@@ -153,11 +92,13 @@
 	function sendDirectMessage(event: CustomEvent<DMToServer>) {
 		socket.emit(ChatEvent.MSG_TO_USER, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				directConvs = addMyMessageToConversation(
-					directConvs,
-					event.detail.target,
-					event.detail.content
-				);
+				// directConvs = addMyMessageToConversation(
+				// 	directConvs,
+				// 	event.detail.target,
+				// 	event.detail.content
+				// );
+				// userConvs.update(() => $userConvs)
+				$userConvs = $userConvs.addMessageFromMe(event.detail.content, event.detail.target);
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
 			}
@@ -168,7 +109,8 @@
 		console.log('sending CreateChannel:', JSON.stringify(event.detail));
 		socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				createChannel(event.detail.channel);
+				// createChannel(event.detail.channel);
+				$channelConvs = $channelConvs.create(event.detail.channel);
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
 			}
@@ -179,11 +121,12 @@
 		console.log('sending ChannelMessage:', JSON.stringify(event.detail));
 		socket.emit(ChatEvent.MSG_TO_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				chanConvs = addMyMessageToConversation(
-					chanConvs,
-					event.detail.channel,
-					event.detail.content
-				);
+				$channelConvs = $channelConvs.addMessageFromMe(event.detail.content, event.detail.channel);
+				// chanConvs = addMyMessageToConversation(
+				// 	chanConvs,
+				// 	event.detail.channel,
+				// 	event.detail.content
+				// );
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
 			}
@@ -194,7 +137,7 @@
 		console.log('sending JoinChannel:', JSON.stringify(event.detail));
 		socket.emit(ChatEvent.JOIN_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				createChannel(event.detail.channel);
+				$channelConvs = $channelConvs.create(event.detail.channel);
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
 			}
@@ -216,17 +159,9 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<ConversationList
-			conversations={directConvs}
-			isChannel={false}
-			on:msgToUser={sendDirectMessage}
-		/>
+		<ConversationList conversations={$userConvs} on:msgToUser={sendDirectMessage} />
 		<br />
-		<ConversationList
-			conversations={chanConvs}
-			isChannel={true}
-			on:msgToChannel={sendChannelMessage}
-		/>
+		<ConversationList conversations={$channelConvs} on:msgToChannel={sendChannelMessage} />
 	</div>
 </div>
 

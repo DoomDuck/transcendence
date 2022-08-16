@@ -2,11 +2,11 @@
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
 	import GameInvit from '$lib/GameInvitBox.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { type ConversationType } from '../utils';
+	import { type ChannelConversation } from '../utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { CMToServer } from 'backFrontCommon/chatEvents';
 
-	export let conversation: ConversationType;
+	export let conversation: ChannelConversation;
 
 	const dispatch = createEventDispatcher<{ msgToChannel: CMToServer }>();
 	let div: HTMLDivElement;
@@ -28,7 +28,7 @@
 			if (!text) return;
 
 			dispatch('msgToChannel', {
-				channel: conversation.interlocutor,
+				channel: conversation.dto.channel,
 				content: text
 			});
 		}
@@ -37,11 +37,12 @@
 
 <div class="chat">
 	<div id="title">
-		<h2>{conversation.interlocutor}</h2>
+		<h2>{conversation.displayName}</h2>
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as comment}
-			<ConversationEntry isMe={comment.isMe} text={comment.text} author={comment.author} />
+			<!-- to change with users store -->
+			<ConversationEntry isMe={comment.isMe} text={comment.content} author={`${comment.sender}`} />
 		{/each}
 	</div>
 

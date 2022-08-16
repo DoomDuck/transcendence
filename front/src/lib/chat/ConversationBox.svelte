@@ -2,10 +2,11 @@
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
 	import GameInvit from '$lib/GameInvitBox.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { type ConversationType } from '../utils';
+	import { UserConversation } from '../utils';
 	import ConversationEntry from './ConversationEntry.svelte';
+	import type { DMToServer } from 'backFrontCommon/chatEvents';
 
-	export let conversation: ConversationType;
+	export let conversation: UserConversation;
 
 	const dispatch = createEventDispatcher();
 	let gameInvitModal = false;
@@ -28,7 +29,7 @@
 			if (!text) return;
 
 			dispatch('msgToUser', {
-				interlocutor: conversation.interlocutor,
+				target: conversation.dto.interlocutor,
 				text: text
 			});
 		}
@@ -37,7 +38,7 @@
 
 <div class="chat">
 	<div id="title">
-		<h2>{conversation.interlocutor}</h2>
+		<h2>{conversation.displayName}</h2>
 		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
 			<img
@@ -51,7 +52,7 @@
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as comment}
-			<ConversationEntry isMe={comment.isMe} text={comment.text} />
+			<ConversationEntry isMe={comment.isMe} text={comment.content} />
 		{/each}
 	</div>
 
@@ -60,7 +61,8 @@
 
 {#if gameInvitModal}
 	<Modal on:close={() => (gameInvitModal = false)}>
-		<GameInvit name={conversation.interlocutor} />
+		<!-- to change  -->
+		<GameInvit name={`${conversation.dto.interlocutor}`} />
 	</Modal>
 {/if}
 

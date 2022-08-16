@@ -1,9 +1,26 @@
 <script lang="ts">
-	import { users } from '$lib/utils';
+	import { setContext } from 'svelte';
+	import { io, Socket as IOSocketBaseType } from 'socket.io-client';
+	import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
+	import { socketKey, tokenKey } from '$lib/utils';
 
-	// $users.findOrFetch(0).then((u) =>
-	//   console.log(JSON.stringify(u))
-	// )
+	type Socket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
+	let tokenInput: string | undefined;
+	do {
+		tokenInput = prompt('your token ?')?.trim();
+	} while (
+		!(
+			tokenInput !== undefined &&
+			tokenInput.length > 0 &&
+			Number.isInteger(+tokenInput) &&
+			+tokenInput >= 0
+		)
+	);
+	const socket: Socket = io('http://localhost:5000/chat', {
+		auth: { token: tokenInput }
+	});
+	setContext(tokenKey, tokenInput as string);
+	setContext(socketKey, socket);
 </script>
 
 <nav id="menu">
