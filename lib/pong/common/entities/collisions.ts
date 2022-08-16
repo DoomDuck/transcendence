@@ -95,21 +95,6 @@ function applyBallBarCollision(
       dtCollision * data.next.ball.vy +
       (GSettings.GAME_STEP_S - dtCollision) * newVy;
     data.next.ball.vy = newVy;
-    GameProducedEvent.produceEvent(
-      GameEvent.BALL_BAR_COLLISION,
-      barId,
-      data.currentTime + 1,
-      data.next.ball.x,
-      data.next.ball.y,
-      data.next.ball.vx,
-      data.next.ball.vy
-    );
-  } else {
-    GameProducedEvent.produceEvent(
-      GameEvent.NO_BALL_BAR_COLLISION,
-      barId,
-      data.currentTime + 1
-    );
   }
 }
 

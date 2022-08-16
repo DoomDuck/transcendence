@@ -160,15 +160,6 @@ export const LEFT = Direction.LEFT;
 export const RIGHT = Direction.RIGHT;
 
 export class GameEvent {
-  // enum Send {
-  //     ....
-  // }
-  // enum Receive {
-  //     ....
-  // }
-  // enum FromServer {
-  //     ....
-  // }
   // key: string, time: GameTime
   static readonly SEND_BAR_EVENT = "sendBarEvent";
   // key: string, time: GameTime
@@ -177,38 +168,23 @@ export class GameEvent {
   static readonly START = "start";
   // pauseTime: number
   static readonly PAUSE = "pause";
-  // // elapsed: number
-  // static readonly UPDATE = "update";
-  // time: number, x: number, y: number, speedX: number, speedY: number
-  static readonly SET_BALL = "receiveSetBall";
   // playerId: number
   static readonly GOAL = "goal";
   // playerId: number
   static readonly BALL_OUT = "ballOut";
   // ballSpeedX: number, ballSpeedY: number
   static readonly RESET = "reset";
-  // time: number
-  static readonly NO_BALL_BAR_COLLISION = "noBallBarCollision";
-  // time: number, x: number, y: number, speedX: number, speedY: number
-  static readonly BALL_BAR_COLLISION = "ballBarCollision";
   //
   static readonly READY = "ready";
   // time: number, x: number, y: number
   static readonly SPAWN_GRAVITON = "spawnGraviton";
   // time: number, x1: number, y1: number, x2: number, y2: number
   static readonly SPAWN_PORTAL = "spawnPortal";
-  //
-  static readonly GAME_OVER = "gameOver";
   // GameData
   static readonly OBSERVER_UPDATE = "observerUpdate";
+  // playerId: number
+  static readonly PLAYER_ID_CONFIRMED = "playerIdConfirmed";
 }
-
-// export type BarKeyDownEvent = [KeyValue, number];
-// export type BarKeyUpEvent = [KeyValue, number];
-// export type BarPositionEvent = [number, number];
-// export type BallEvent = [number, number, number, number, number];
-// export type ResetEvent = [number, number, number, number];
-// export type GoalEvent = [number];
 
 export enum KeyValue {
   UP,
