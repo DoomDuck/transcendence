@@ -8,7 +8,7 @@
 
 	export let conversation: UserConversation;
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{ msgToUser: DMToServer }>();
 	let gameInvitModal = false;
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
@@ -24,13 +24,13 @@
 	function handleKeydown(event: KeyboardEvent) {
 		const inputElement = event.target as HTMLInputElement;
 		if (event.key === 'Enter') {
-			const text = inputElement.value;
+			const content = inputElement.value;
 			inputElement.value = '';
-			if (!text) return;
+			if (!content) return;
 
 			dispatch('msgToUser', {
 				target: conversation.dto.interlocutor,
-				text: text
+				content
 			});
 		}
 	}

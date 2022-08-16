@@ -360,6 +360,7 @@ export class UserService {
     target: Id,
   ): ChatFeedbackDto {
     let logger = new Logger('sendMessageToUser');
+    logger.log('sending', content, 'to', target);
     const tempUserSender = this.arrayActiveUser.find(
       (user) => user.id == senderId,
     );

@@ -14,7 +14,7 @@
 	} from 'backFrontCommon/chatEvents';
 	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
 	import JoinChannel from '$lib/chat/JoinChannel.svelte';
-	import { userConvs, channelConvs, type ChatSocket } from '$lib/utils';
+	import { userConvs, channelConvs, type ChatSocket, isPositiveInteger } from '$lib/utils';
 	import { io } from 'socket.io-client';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
@@ -63,14 +63,7 @@
 	let tokenInput: string | undefined;
 	do {
 		tokenInput = prompt('your token ?')?.trim();
-	} while (
-		!(
-			tokenInput !== undefined &&
-			tokenInput.length > 0 &&
-			Number.isInteger(+tokenInput) &&
-			+tokenInput >= 0
-		)
-	);
+	} while (!(tokenInput !== undefined && isPositiveInteger(tokenInput)));
 
 	// SOCKET SETUP
 

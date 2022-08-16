@@ -157,6 +157,7 @@ export class ChatGateway
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, messageInfo: DMToServer) {
+    this.logger.log('ChatEvent.MSG_TO_USER:', JSON.stringify(messageInfo));
     const feedback = this.userService.sendMessageToUser(
       Number(clientSocket.handshake.auth.token),
       this.wss,
