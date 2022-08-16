@@ -25,6 +25,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
+import { DMToServer } from 'backFrontCommon';
 
 @WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway
@@ -115,7 +116,7 @@ export class ChatGateway
         );
     });
     clientSocket.to(tempChannel!.name).emit(ChatEvent.MSG_TO_CHANNEL, {
-      source: tempSender!.name,
+      source: tempSender!.id,
       channel: tempChannel!.name,
       content: dto.content,
     });
@@ -155,13 +156,7 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
-  handlePrivMessage(
-    clientSocket: Socket,
-    messageInfo: {
-      target: string;
-      content: string;
-    },
-  ) {
+  handlePrivMessage(clientSocket: Socket, messageInfo: DMToServer) {
     const feedback = this.userService.sendMessageToUser(
       Number(clientSocket.handshake.auth.token),
       this.wss,

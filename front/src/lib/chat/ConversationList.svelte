@@ -18,7 +18,7 @@
 		{/each}
 	{:else}
 		{#each conversations.convs as conversation (conversation.displayName)}
-			<ConversationListItem {conversation} on:msgToUser image="cars.jpeg" />
+			<ConversationListItem {conversation} hasNewMessage={true} on:msgToUser image="cars.jpeg" />
 		{/each}
 	{/if}
 	<!-- {/key} -->

@@ -18,11 +18,18 @@
 	let showProfile = false;
 	let showConv = false;
 
+	let length;
+	$: {
+		length = conversation.history.length;
+		hasNewMessage = true;
+	}
+
 	function openProfile() {
 		if (!showConv) showProfile = true;
 	}
 	function openConv() {
 		if (!showProfile) showConv = true;
+		hasNewMessage = false;
 	}
 </script>
 

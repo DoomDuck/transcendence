@@ -9,6 +9,7 @@
 		CreateChannelToServer,
 		DMFromServer,
 		DMToServer,
+		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
 	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
@@ -71,6 +72,8 @@
 		)
 	);
 
+	// SOCKET SETUP
+
 	// console.log('has context:', hasContext(chatContextKey));
 	// const socket: ChatSocket = getContext<ChatContext>(chatContextKey).socket;
 	const socket: ChatSocket = io('http://localhost:5000/chat', {
@@ -78,6 +81,7 @@
 	});
 	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 	socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
+	socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
 
 	// EVENTS FROM SERVER
 
@@ -91,9 +95,14 @@
 		console.log('received channel message:', JSON.stringify(message));
 	}
 
+	function receiveInviteChannel(message: InviteChannelFromServer) {
+		$channelConvs = $channelConvs.create(message.channel);
+	}
+
 	// EVENTS TO SERVER
 
 	function sendDirectMessage(event: CustomEvent<DMToServer>) {
+		console.log('sending DirectMessage:', JSON.stringify(event.detail));
 		socket.emit(ChatEvent.MSG_TO_USER, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				$userConvs = $userConvs.addMessageFromMe(event.detail.content, event.detail.target);

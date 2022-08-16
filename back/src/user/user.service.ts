@@ -357,20 +357,20 @@ export class UserService {
     senderId: Id,
     wss: Server,
     content: string,
-    target: string,
+    target: Id,
   ): ChatFeedbackDto {
     let logger = new Logger('sendMessageToUser');
     const tempUserSender = this.arrayActiveUser.find(
-      (user) => user.id === senderId,
+      (user) => user.id == senderId,
     );
     const tempUserTarget = this.arrayActiveUser.find(
-      (user) => user.name === target,
+      (user) => user.id == target,
     );
     if (tempUserSender) {
       if (tempUserTarget) {
         tempUserTarget.socketUser.forEach((socket) =>
           wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-            source: tempUserSender.name,
+            source: tempUserSender.id,
             content: content,
           }),
         );
