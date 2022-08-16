@@ -1,11 +1,7 @@
 <script lang="ts">
-	throw new Error(
-		'@migration task: Add data prop (https://github.com/sveltejs/kit/discussions/5774#discussioncomment-3292707)'
-	);
-
 	import { onMount } from 'svelte';
 	import FriendsListItem from '$lib/FriendsListItem.svelte';
-	export let nameSearch: () => void;
+	let nameSearch = () => {};
 
 	onMount(async () => {
 		const reponse = await fetch('http://localhost:5000/user', {

@@ -3,7 +3,7 @@
 	import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
 	import { chatContextKey, type ChatSocket } from '$lib/utils';
 
-	export let color: string = '#6028FF';
+	let color: string = '#6028FF';
 
 	// let tokenInput: string | undefined;
 	// do {
