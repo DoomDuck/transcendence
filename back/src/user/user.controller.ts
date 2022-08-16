@@ -8,16 +8,15 @@ import {
   Logger,
 } from '@nestjs/common';
 
-import { Id } from '../customType';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { UserDto } from './dto/user.dto';
-import { UserHistoryDto } from './dto/userHistory.dto';
 import { FriendRequestDto } from './dto/friendRequest.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Multer } from 'multer';
+import { Id, ChatUserDto } from 'backFrontCommon';
 
 @Controller('user')
 export class UserController {
@@ -53,16 +52,40 @@ export class UserController {
   // public async deleteuserdById(@Param("id") id: idnumber):Promise<User | null> {
   // return this.userService.remove(id);
   // }
+
   @Post('avatar')
-  @UseInterceptors(FileInterceptor('file'))
+  // @UseInterceptors(FileInterceptor('file'))
   async addAvatar(
     @Body() userDto: UserDto,
     @UploadedFile() file: Express.Multer.File,
+    // @Body() addAvatarDto: {userId: Id, image: Blob}
   ): Promise<boolean> {
+    // console.log("uploaded file:", addAvatarDto.image);
     return this.userService.addAvatar(
       userDto.id,
       file.buffer,
       file.originalname,
     );
+  }
+
+  // LUCAS DEBUG
+
+  @Get('chat/:id')
+  async getUserChatData(
+    @Param('id') userId: number,
+  ): Promise<ChatUserDto | null> {
+    const user = await this.userService.findOneDb(userId);
+    if (user === null) return null;
+    return {
+      id: userId,
+      name: user.name,
+      image: '',
+      profile: {
+        ranking: (await this.userService.getLeaderboard()).findIndex(
+          (user2) => user2.id == user.id,
+        ),
+        matchHistory: [],
+      },
+    };
   }
 }

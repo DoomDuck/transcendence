@@ -12,7 +12,7 @@ import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
 } from 'socket.io';
-import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;

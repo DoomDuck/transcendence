@@ -49,11 +49,11 @@
 	}
 
 	#title {
+		display: block;
 		text-align: center;
 		font-family: 'Press start 2P';
 		font-style: normal;
 		color: #6028ff;
-		line-height: 100%;
 		-webkit-text-stroke: 1px #ff29ea;
 		text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
 		font-size: 3.5em;
@@ -71,6 +71,7 @@
 		display: grid;
 		grid-template-columns: max-content 80% auto;
 		gap: 0.5em;
+		font-size: 2.5em;
 	}
 
 	.leaderboard-entry {

@@ -23,8 +23,7 @@
 		"42",
 		"transcendance",
 		"nestjs",
-		"pong",
-    "chat"
+		"pong"
 	],
 	"license": "MIT",
 	"dependencies": {
@@ -48,7 +47,7 @@
 		"socket.io": "^4.5.1",
 		"typeorm": "^0.3.7",
 		"typescript": "^4.7.4",
-		"chat":"file:../lib/chat"
+		"backFrontCommon":"file:../lib/backFrontCommon"
 	},
 	"devDependencies": {
 		"@nestjs/cli": "^9.0.0",

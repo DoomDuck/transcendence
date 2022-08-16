@@ -1,9 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UserDto } from './dto/user.dto';
-import { ChatFeedbackDto } from './../chat/chatFeedback.dto';
-import { UserHistoryDto } from './dto/userHistory.dto';
-import { ChatMessageDto } from './dto/userHistory.dto';
 import { ActiveConversationDto } from './dto/userHistory.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channel.entity';
@@ -11,14 +8,19 @@ import { ChannelManagerService } from '../channelManager/channelManager.service'
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
 import { MatchHistoryService } from '../matchHistory/matchHistory.service';
-import { Id } from '../customType';
-import { ChatEvent } from 'chat';
-import { ChatError } from 'chat';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
 } from 'socket.io';
-import { ServerToClientEvents, ClientToServerEvents } from 'chat';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import {
+  ChatFeedbackDto,
+  UserHistoryDto,
+  Id,
+  ChatEvent,
+  ChatError,
+  ChatMessageDto,
+} from 'backFrontCommon';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;

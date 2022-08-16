@@ -7,8 +7,8 @@ export class ChatEvent {
 	static readonly GAME_INVITE = 'game invite'
 	static readonly FRIEND_INVITE = 'friend invite'
 }
-export class ChatError
-{
+
+export class ChatError {
   static readonly U_DO_NOT_EXIST ="u do not exist"
   static readonly USER_NOT_FOUND ="user not found"
   static readonly USER_OFFLINE ="user offline"
@@ -28,14 +28,6 @@ export class ChatError
 	static readonly CANT_CREATE_PROTECTED_CHANNEL_WO_PASSW = "cant create protected channel wo passw";
 }
 
-export type ChatFeedbackDto = {
-  success: boolean,
-  errorMessage?: string,
-}
-
-export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
-
-
 export type DMFromServer =  {source: string, content: string};
 export type DMToServer =  {target: string, content: string};
 export type CMFromServer =  {source: string, channel: string, content: string};
@@ -48,6 +40,12 @@ export enum ChannelCategory {
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: string};
 export type InviteChannelToServer = {channel: string, target: string};
+
+export type ChatFeedbackDto = {
+  success: boolean,
+  errorMessage?: string,
+}
+export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
 
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
@@ -63,5 +61,3 @@ export interface ClientToServerEvents {
   [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
 }
-export type  FriendDto = {id : number, name : string};
-export type  LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };

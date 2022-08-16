@@ -15,10 +15,7 @@
 		<a sveltekit:prefetch href="/Chat">Chat</a>
 	</h4>
 	<h4 class="typography">
-		<a sveltekit:prefetch href="/Leaderboard">Leaderboard</a>
-	</h4>
-	<h4 class="typography">
-		<a sveltekit:prefetch href="/">Parameters</a>
+		<a sveltekit:prefetch href="/Parameters">Parameters</a>
 	</h4>
 </nav>
 

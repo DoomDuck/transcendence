@@ -6,7 +6,7 @@ module.exports = {
 
   // bundle files from node_modules
   externals: [nodeExternals(
-    {allowlist: ['pong', 'chat']}
+    {allowlist: ['pong', 'backFrontCommon']}
   )],
   externalsPresets: {
     node: true,

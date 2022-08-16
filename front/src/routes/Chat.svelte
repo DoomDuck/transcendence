@@ -8,7 +8,7 @@
 		type ClientToServerEvents,
 		ChatEvent,
 		type ChatFeedbackDto,
-		type UserType
+		type ChatUserType
 	} from 'chat';
 	import type {
 		CMFromServer,
@@ -67,9 +67,16 @@
 
 	// INITIALISATION
 
+	let id_str: string | undefined;
+	do {
+		id_str = prompt('your token ?')?.trim();
+	} while (
+		!(id_str !== undefined && id_str.length > 0 && Number.isInteger(+id_str) && +id_str >= 0)
+	);
 	const socket: Socket = io('http://localhost:5000/chat', {
-		auth: { token: prompt('your token ?') }
+		auth: { token: id_str }
 	});
+	const id = +id_str;
 
 	socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 	socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);

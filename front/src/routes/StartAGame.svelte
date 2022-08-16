@@ -11,6 +11,9 @@
 	<h4>
 		<a sveltekit:prefetch href="/FriendsList">Challenge a friend</a>
 	</h4>
+	<h4>
+		<a sveltekit:prefetch href="/Leaderboard">Leaderboard</a>
+	</h4>
 </nav>
 
 <style>

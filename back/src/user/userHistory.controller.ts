@@ -8,9 +8,8 @@ import {
   Logger,
 } from '@nestjs/common';
 
-import { Id } from '../customType';
+import { Id, UserHistoryDto } from 'backFrontCommon';
 import { UserService } from './user.service';
-import { UserHistoryDto } from './dto/userHistory.dto';
 
 @Controller('history')
 export class UserHistoryController {
