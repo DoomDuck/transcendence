@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client';
-import { PUBLIC_APP_42_ID } from '$env/static/public'; 
+// import { PUBLIC_APP_42_ID } from '$env/static/public'; 
+import { PUBLIC_APP_42_ID } from '$env/static/public';
 import { goto } from '$app/navigation';
 import type { ChatSocket } from '$lib/utils';
 
@@ -22,9 +23,9 @@ export async function login(): Promise<void> {
 		await goto("/Main");
 		return;
 	}
-
-	const redirect_url = encodeURIComponent(window.location.origin);
-	const url = `${LOCATION}?client_id=${PUBLIC_APP_42_ID}&redirect_uri=${redirect_url}&response_type=code`;
-	window.history.pushState({}, '');
-	window.location.assign(url);
+	alert(`result: ${PUBLIC_APP_42_ID}`);
+	// const redirect_url = encodeURIComponent(window.location.origin);
+	// const url = `${LOCATION}?client_id=${env.PUBLIC_APP_42_ID}&redirect_uri=${redirect_url}&response_type=code`;
+	// window.history.pushState({}, '');
+	// window.location.assign(url);
 }
