@@ -368,7 +368,7 @@ export class UserService {
     let logger = new Logger('sendMessageToUser');
     target.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-        source: sender.name,
+        source: sender.id,
         content: content,
       }),
     );
