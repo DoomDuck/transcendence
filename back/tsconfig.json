@@ -4,6 +4,7 @@
         "dat.gui",
         "express",
         "node",
+		"node-fetch",
         "jest"
     ],
     
