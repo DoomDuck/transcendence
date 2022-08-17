@@ -51,15 +51,16 @@ export class ChatGateway
   async handleConnection(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
-    this.logger.log(this.configService.get<string>('PUBLIC_42_APP_ID'));
+    this.logger.log(this.configService.get<string>('PUBLIC_APP_42_ID'));
+    this.logger.log(this.configService.get<string>('APP_42_SECRET'));
 
     try {
-      const body = JSON.stringify({
+        const body = JSON.stringify({
         grant_type: 'authorization_code',
-        client_id: this.configService.get<string>('PUBLIC_42_APP_ID'),
+        client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
         client_secret: this.configService.get<string>('APP_42_SECRET'),
         code: clientSocket.handshake.auth.token,
-        redirect_uri: 'http://localhost:5173',
+        redirect_uri: 'http://127.0.0.1:5173',
       });
       this.logger.log(body);
       const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, {
