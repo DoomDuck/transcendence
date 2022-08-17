@@ -368,11 +368,19 @@ export class UserService {
     let logger = new Logger('sendMessageToUser');
     target.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-        source: sender.name,
+        source: sender.id,
         content: content,
       }),
     );
     this.updateUserConversation(sender, target, content);
     return this.channelManagerService.newChatFeedbackDto(true);
   }
+
+  // blockUser(sender:ActiveUser,target:ActiveUser)
+  // {
+    // const dbUser! = await this.findOneDb(sender.id);
+	// if (dbUser.blocked.find(user => user.blocked.find(target.id)=== undefined))
+		// dbUser.blocked.push(target.id);
+  // }
 }
+

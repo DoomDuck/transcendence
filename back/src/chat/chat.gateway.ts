@@ -8,6 +8,7 @@ import type {
   DMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
+  BlockUserToServer,
 } from 'backFrontCommon';
 import { ChatError, ChatFeedbackDto } from 'backFrontCommon';
 import { UserDto } from '../user/dto/user.dto';
@@ -90,13 +91,29 @@ export class ChatGateway
     this.userService.disconnection(clientSocket);
   }
 
+ // @SubscribeMessage(ChatEvent.BLOCK_USER)
+  // async handleBLockUser(clientSocket:Socket,blockInfo:BlockUserToServer)
+  // {
+    // const sender = this.userService.findOneActiveBySocket(clientSocket);
+		// if (!sender)
+      // return this.channelManagerService.newChatFeedbackDto(
+        // false,
+        // ChatError.U_DO_NOT_EXIST,
+      // );
+	// const target = this.userService.findOneActive(blockInfo.target);
+		// if (!target)
+      // return this.channelManagerService.newChatFeedbackDto(
+        // false,
+        // ChatError.U_DO_NOT_EXIST,
+      // );
+	  // return this.userService.blockUser(sender,target);
+  // }
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   async handleCreateChannel(
     clientSocket: Socket,
     chanInfo: CreateChannelToServer,
   ) {
     const tempUser = this.userService.findOneActiveBySocket(clientSocket);
-
     if (!tempUser)
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -106,7 +123,6 @@ export class ChatGateway
       tempUser,
       chanInfo,
     );
-
     if (!newChan)
       return this.channelManagerService.newChatFeedbackDto(
         false,

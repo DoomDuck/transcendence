@@ -8,6 +8,7 @@ export class ChatEvent {
 	static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
 	static readonly GAME_INVITE = 'game invite'
 	static readonly FRIEND_INVITE = 'friend invite'
+	static readonly BLOCK_USER = 'block user'
 }
 
 export class ChatError {
@@ -19,6 +20,7 @@ export class ChatError {
   static readonly YOU_ARE_BANNED ="you are banned"
   static readonly YOU_ARE_MUTED ="you are muted"
   static readonly YOU_ARE_BLOCKED ="you are blocked"
+  static readonly USER_ALREADY_BLOCKED ="user already blocked"
   static readonly NOT_IN_CHANNEL ="not in channel"
 	static readonly ALREADY_FRIEND = "already friend";
 	static readonly ALREADY_IN_CHANNEL = "already in channel";
@@ -44,7 +46,7 @@ export enum ChannelCategory {
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
-
+export type BlockUserToServer =  {target: Id};
 export type ChatFeedbackDto = {
   success: boolean,
   errorMessage?: string,

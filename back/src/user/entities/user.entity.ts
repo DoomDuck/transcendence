@@ -17,6 +17,7 @@ export class User {
     this.name = name;
     this.friendlist = [];
     this.channel = [];
+    this.blocked = [];
     this.win = 0;
     this.loose = 0;
     this.score = 0;
@@ -29,6 +30,9 @@ export class User {
 
   @Column('int', { array: true, nullable: false })
   friendlist: Id[];
+
+	@Column('int', { array: true, nullable: false })
+ 	blocked: Id[];
 
   @Column('varchar', { array: true, nullable: false })
   channel: string[];
