@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 
 	export let show = false;
 
@@ -16,8 +16,11 @@
 			close();
 		}
 	}
-	window.addEventListener('keydown', handleKeydown);
-	onDestroy(() => window.removeEventListener('keydown', handleKeydown));
+
+	onMount(() => {
+		window.addEventListener('keydown', handleKeydown);
+		return () => window.removeEventListener('keydown', handleKeydown);
+	});
 </script>
 
 {#if show}

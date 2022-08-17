@@ -7,11 +7,12 @@
 	import UserMiniature from '$lib/UserMiniature.svelte';
 	import ConversationListItemText from './ConversationListItemText.svelte';
 	import ConversationBox from '$lib/chat/modals/UserConvBox.svelte';
+	import PendingText from '$lib/chat/modals/UserConvBox.svelte';
 </script>
 
 <div>
 	{#each $userConvs.convs as conversation (conversation.interlocutor)}
-		<ConversationListItem on:msgToUser>
+		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage} on:msgToUser>
 			<UserMiniature slot="icon" userId={conversation.interlocutor} />
 			<ConversationListItemText
 				slot="item-text"
@@ -22,7 +23,7 @@
 	{/each}
 	<br />
 	{#each $channelConvs.convs as conversation (conversation.channel)}
-		<ConversationListItem on:msgToChannel>
+		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage} on:msgToChannel>
 			<RoundedImage slot="icon" imageURL="group_conv_icon.png" />
 			<ConversationListItemText slot="item-text" text={conversation.channel} />
 			<ChannelBox slot="conversation-modal" on:msgToChannel {conversation} />
@@ -30,3 +31,10 @@
 	{/each}
 	<!-- {/key} -->
 </div>
+
+<!-- <style>
+	h5 {
+		font-size: 1em;
+		color: #ff00b8;
+	}
+</style> -->

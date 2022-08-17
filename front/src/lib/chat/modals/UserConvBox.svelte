@@ -34,14 +34,13 @@
 			});
 		}
 	}
-
-	let userDtoPromise = conversation.getInterlocuterAsDto();
 </script>
 
+<!-- to refacto -->
 <div class="chat">
 	<div id="title">
 		<h2>
-			{#await userDtoPromise}
+			{#await conversation.getInterlocuterAsDto()}
 				...
 			{:then user}
 				{user.name}
@@ -59,8 +58,8 @@
 		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
-		{#each conversation.history as comment}
-			<ConversationEntry isMe={comment.isMe} text={comment.content} />
+		{#each conversation.history as message}
+			<ConversationEntry {message} showAuthor={false} />
 		{/each}
 	</div>
 

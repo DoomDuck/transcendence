@@ -19,7 +19,7 @@
 		close();
 		return true;
 	}
-	// TODO: REFACTO MODAL
+
 	function close() {
 		content = '';
 		writeNewMsgModal = false;

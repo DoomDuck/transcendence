@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import GameInvit from '$lib/GameInvitBox.svelte';
-	import Modal from '$lib/Modal.svelte';
 	import { type ChannelConversation } from '$lib/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { CMToServer } from 'backFrontCommon/chatEvents';
@@ -40,9 +38,8 @@
 		<h2>{conversation.channel}</h2>
 	</div>
 	<div class="scrollable" bind:this={div}>
-		{#each conversation.history as comment}
-			<!-- to change with users store -->
-			<ConversationEntry isMe={comment.isMe} text={comment.content} author={`${comment.sender}`} />
+		{#each conversation.history as message}
+			<ConversationEntry {message} showAuthor={true} />
 		{/each}
 	</div>
 
