@@ -5,10 +5,12 @@ import { userModule } from './user/user.module';
 import { PongGateway } from './pong/pong.gateway';
 import { GameManagerService } from './pong/game-manager.service';
 import { ConfigModule } from '@nestjs/config';
+import { join } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '../.env',
+      envFilePath: join(join(process.cwd(), '..'), '.env'),
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(config),
