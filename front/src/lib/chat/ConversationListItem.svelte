@@ -3,9 +3,14 @@
 	export let hasNewMessage: boolean = false;
 
 	let showConv = false;
+	let thisRef: any;
+	function handleClickOpenModal(event: MouseEvent) {
+		if (event.target == thisRef) showConv = true;
+	}
 </script>
 
-<div class="item" on:click={() => (showConv = true)}>
+<!-- <div class="item" bind:this={thisRef} on:click={() => (showConv = true)}> -->
+<div class="item" bind:this={thisRef} on:click={handleClickOpenModal}>
 	<slot name="icon" />
 	<slot name="item-text" />
 	{#if hasNewMessage}

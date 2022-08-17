@@ -1,8 +1,8 @@
 <script lang="ts">
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
-	import CreateChannel from '$lib/chat/CreateChannel.svelte';
+	import CreateChannel from '$lib/chat/modals/CreateChannel.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
-	import { ChatEvent, type ChatFeedbackDto } from 'backFrontCommon';
+	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
 	import type {
 		CMFromServer,
 		CMToServer,
@@ -12,17 +12,14 @@
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
-	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
-	import JoinChannel from '$lib/chat/JoinChannel.svelte';
+	import SendNewMessage from '$lib/chat/modals/SendNewMessage.svelte';
+	import JoinChannel from '$lib/chat/modals/JoinChannel.svelte';
 	import { userConvs, channelConvs, type ChatSocket, isPositiveInteger } from '$lib/utils';
 	import { io } from 'socket.io-client';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
 
-	let friends = [
-		{ image: 'cars.jpeg', name: 'castor' },
-		{ image: 'canard.jpeg', name: 'fourmi' }
-	];
+	let friends = [0, 1];
 
 	$userConvs.addMessage({
 		sender: 0,
@@ -150,7 +147,7 @@
 	<div id="mainContainer">
 		<input class="champ" type="search" placeholder="Search.." />
 
-		<OnlineFriends onlineFriends={friends} />
+		<OnlineFriends {friends} />
 		<br />
 		<ConversationLists on:msgToUser={sendDirectMessage} on:msgToChannel={sendChannelMessage} />
 	</div>

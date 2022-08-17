@@ -5,10 +5,11 @@
 	export let show = false;
 
 	let dispatch = createEventDispatcher();
-	let close = () => {
+	function close(event?: MouseEvent) {
 		show = false;
 		dispatch('close');
-	};
+		event?.stopPropagation();
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key == 'Escape') {
