@@ -29,13 +29,13 @@ export async function login() : Promise<boolean> {
 	
 	await create_socket(code);
   
-	return false;
+	return true;
 }
 
 export async function request_login() {
 		const LOCATION = 'https://api.intra.42.fr/oauth/authorize';
 		const REDIRECT = encodeURIComponent(window.location.origin);
-		const CLIENT_ID = (window as any).env.PUBLIC_42_APP_ID as string;
+		const CLIENT_ID = PUBLIC_APP_ID as string;
 		const URL = `${LOCATION}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT}&response_type=code`;
 
 		window.history.pushState({}, '');
