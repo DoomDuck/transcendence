@@ -3,8 +3,11 @@
 	import { onDestroy } from 'svelte';
 
 	export let show = false;
+
+	let dispatch = createEventDispatcher();
 	let close = () => {
 		show = false;
+		dispatch('close');
 	};
 
 	function handleKeydown(event: KeyboardEvent) {

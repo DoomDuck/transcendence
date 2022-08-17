@@ -4,7 +4,7 @@
 	import type { DMToServer } from 'backFrontCommon/chatEvents';
 	import { isPositiveInteger } from '$lib/utils';
 
-	const dispach = createEventDispatcher<{ msgToUser: DMToServer }>();
+	const dispatch = createEventDispatcher<{ msgToUser: DMToServer }>();
 
 	export let content = '';
 	let writeNewMsgModal = false;
@@ -15,7 +15,7 @@
 	}
 	function handleSubmit(event: SubmitEvent) {
 		if (!isPositiveInteger(targetStr)) return false;
-		dispach('msgToUser', { target: +targetStr, content });
+		dispatch('msgToUser', { target: +targetStr, content });
 		close();
 		return true;
 	}
@@ -32,24 +32,22 @@
 
 <img id="btn-new-message" src="pencil.png" width="40" height="40" alt="write msg" on:click={open} />
 
-{#if writeNewMsgModal}
-	<Modal on:close={close}>
-		<form id="formContainer" on:submit|preventDefault={handleSubmit}>
-			<input
-				id="destinataire"
-				placeholder="To :"
-				contenteditable="true"
-				bind:value={targetStr}
-				on:blur={handleBlur}
-				required
-			/> <br />
-			<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
-			<button>
-				<img id="btn-send-msg" src="send.png" alt="send message" />
-			</button>
-		</form>
-	</Modal>
-{/if}
+<Modal bind:show={writeNewMsgModal} on:close={close}>
+	<form id="formContainer" on:submit|preventDefault={handleSubmit}>
+		<input
+			id="destinataire"
+			placeholder="To :"
+			contenteditable="true"
+			bind:value={targetStr}
+			on:blur={handleBlur}
+			required
+		/> <br />
+		<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
+		<button>
+			<img id="btn-send-msg" src="send.png" alt="send message" />
+		</button>
+	</form>
+</Modal>
 
 <style>
 	#formContainer {

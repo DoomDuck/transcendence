@@ -18,7 +18,7 @@
 				slot="item-text"
 				text={$users.findOrFetch(conversation.interlocutor).then((user) => user.name)}
 			/>
-			<ConversationBox slot="conversation-modal" {conversation} />
+			<ConversationBox slot="conversation-modal" on:msgToUser {conversation} />
 		</ConversationListItem>
 	{/each}
 	<br />
@@ -26,7 +26,7 @@
 		<ConversationListItem on:msgToChannel>
 			<RoundedImage slot="icon" imageURL="group_conv_icon.png" />
 			<ConversationListItemText slot="item-text" text={conversation.channel} />
-			<ChannelBox slot="conversation-modal" {conversation} />
+			<ChannelBox slot="conversation-modal" on:msgToChannel {conversation} />
 		</ConversationListItem>
 	{/each}
 	<!-- {/key} -->

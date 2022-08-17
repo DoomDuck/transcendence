@@ -54,8 +54,6 @@
 		'Un groupe de gens'
 	);
 
-	console.log('LEN:', $channelConvs.convs.length);
-
 	// INITIALISATION
 
 	// DEBUG FOR THE AUTH
@@ -109,7 +107,6 @@
 		console.log('sending CreateChannel:', JSON.stringify(event.detail));
 		socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
-				// createChannel(event.detail.channel);
 				$channelConvs = $channelConvs.create(event.detail.channel);
 			} else {
 				alert(`error: ${feedback.errorMessage}`);
@@ -155,7 +152,7 @@
 
 		<OnlineFriends onlineFriends={friends} />
 		<br />
-		<ConversationLists />
+		<ConversationLists on:msgToUser={sendDirectMessage} on:msgToChannel={sendChannelMessage} />
 	</div>
 </div>
 
