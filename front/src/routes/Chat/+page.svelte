@@ -1,7 +1,7 @@
 <script lang="ts">
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import CreateChannel from '$lib/chat/CreateChannel.svelte';
-	import ConversationList from '$lib/chat/ConversationList.svelte';
+	import ConversationLists from '$lib/chat/ConversationLists.svelte';
 	import { ChatEvent, type ChatFeedbackDto } from 'backFrontCommon';
 	import type {
 		CMFromServer,
@@ -154,9 +154,8 @@
 		<input class="champ" type="search" placeholder="Search.." />
 
 		<OnlineFriends onlineFriends={friends} />
-		<ConversationList conversations={$userConvs} on:msgToUser={sendDirectMessage} />
 		<br />
-		<ConversationList conversations={$channelConvs} on:msgToChannel={sendChannelMessage} />
+		<ConversationLists />
 	</div>
 </div>
 

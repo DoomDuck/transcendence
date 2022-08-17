@@ -37,7 +37,7 @@
 
 <div class="chat">
 	<div id="title">
-		<h2>{conversation.displayName}</h2>
+		<h2>{conversation.channel}</h2>
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as comment}

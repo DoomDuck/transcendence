@@ -1,48 +1,21 @@
 import {
-	ChatError,
 	type ActiveChannelConversationDto,
 	type ActiveUserConversationDto,
 	type ChatMessageDto,
 	type ChatUserDto
 } from 'backFrontCommon';
-import { readable, writable } from 'svelte/store';
-import { FrontChatError } from './errors';
+import { writable } from 'svelte/store';
 
 import { Socket as IOSocketBaseType } from 'socket.io-client';
 import { type ServerToClientEvents, type ClientToServerEvents } from 'backFrontCommon';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
+import { usersObject } from './users';
 
 export type ChatSocket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 
 type Id = number;
 
-export class Users {
-	private map: Map<Id, ChatUserDto> = new Map();
-	constructor() {}
-
-	async findOrFetch(id: number): Promise<ChatUserDto> {
-		if (this.map.has(id)) return this.map.get(id) as ChatUserDto;
-		const user = await fetchUser(id);
-		this.map.set(id, user);
-		return user;
-	}
-}
-
-async function fetchUser(id: number): Promise<ChatUserDto> {
-	const response = await fetch(`http://localhost:5000/user/${id}`, { method: 'GET' });
-	const result = await response.json();
-	console.log(JSON.stringify(response));
-	return result;
-}
-
-export const users = readable(new Users());
-
-export interface DisplayableConversation {
-	displayName: string;
-	history: ChatMessageDto[];
-}
-
-export class UserConversation implements DisplayableConversation {
+export class UserConversation {
 	dto: ActiveUserConversationDto;
 	constructor(interlocutor: Id) {
 		this.dto = {
@@ -50,15 +23,18 @@ export class UserConversation implements DisplayableConversation {
 			history: []
 		};
 	}
-	get displayName(): string {
-		return `${this.dto.interlocutor}`; // to change with users store
+	get interlocutor(): Id {
+		return this.dto.interlocutor;
 	}
 	get history(): ChatMessageDto[] {
 		return this.dto.history;
 	}
+	async getInterlocuterAsDto(): Promise<ChatUserDto> {
+		return usersObject.findOrFetch(this.interlocutor);
+	}
 }
 
-export class ChannelConversation implements DisplayableConversation {
+export class ChannelConversation {
 	dto: ActiveChannelConversationDto;
 	constructor(channel: string) {
 		this.dto = {
@@ -66,7 +42,7 @@ export class ChannelConversation implements DisplayableConversation {
 			history: []
 		};
 	}
-	get displayName(): string {
+	get channel(): string {
 		return this.dto.channel;
 	}
 	get history(): ChatMessageDto[] {

@@ -34,11 +34,19 @@
 			});
 		}
 	}
+
+	let userDtoPromise = conversation.getInterlocuterAsDto();
 </script>
 
 <div class="chat">
 	<div id="title">
-		<h2>{conversation.displayName}</h2>
+		<h2>
+			{#await userDtoPromise}
+				...
+			{:then user}
+				{user.name}
+			{/await}
+		</h2>
 		<div id="options">
 			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
 			<img

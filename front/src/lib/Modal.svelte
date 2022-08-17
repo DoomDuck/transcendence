@@ -2,20 +2,26 @@
 	import { createEventDispatcher } from 'svelte';
 	import { onDestroy } from 'svelte';
 
-	const dispatch = createEventDispatcher();
+	export let show = false;
+	let close = () => {
+		show = false;
+	};
+
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key == 'Escape') {
-			dispatch('close');
+			close();
 		}
 	}
 	window.addEventListener('keydown', handleKeydown);
 	onDestroy(() => window.removeEventListener('keydown', handleKeydown));
 </script>
 
-<div id="background" on:click={() => dispatch('close')} />
-<div id="modal">
-	<slot />
-</div>
+{#if show}
+	<div id="background" on:click={close} />
+	<div id="modal">
+		<slot />
+	</div>
+{/if}
 
 <style>
 	#background {

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { setContext } from 'svelte';
-	import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
-	import { chatContextKey, type ChatSocket } from '$lib/utils';
+	// import { setContext } from 'svelte';
+	// import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
+	// import { chatContextKey, type ChatSocket } from '$lib/utils';
+	import { users } from '$lib/users';
 
 	let color: string = '#6028FF';
 
