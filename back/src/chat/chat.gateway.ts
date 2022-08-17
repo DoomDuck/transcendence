@@ -30,6 +30,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
+import { DMToServer } from 'backFrontCommon';
 
 @WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway
@@ -155,7 +156,7 @@ export class ChatGateway
         );
     });
     clientSocket.to(tempChannel!.name).emit(ChatEvent.MSG_TO_CHANNEL, {
-      source: tempSender!.name,
+      source: tempSender!.id,
       channel: tempChannel!.name,
       content: dto.content,
     });

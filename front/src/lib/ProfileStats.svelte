@@ -1,12 +1,15 @@
 <script lang="ts">
-	export let bestScore = 359;
-	export let wonGamesRatio = '50%';
-	export let classement = '3';
-	let opponentHistoric = [
-		{ name: 'Rob', myScore: 148, opponentScore: 75 },
-		{ name: 'Ted', myScore: 25, opponentScore: 248 },
-		{ name: 'Sam', myScore: 95, opponentScore: 24 }
-	];
+	import type { ChatProfileDto } from 'backFrontCommon';
+
+	// export let bestScore = 359;
+	export let profile: ChatProfileDto;
+	// let opponentHistory = [
+	// 	{ name: 'Rob', myScore: 148, opponentScore: 75 },
+	// 	{ name: 'Ted', myScore: 25, opponentScore: 248 },
+	// 	{ name: 'Sam', myScore: 95, opponentScore: 24 }
+	// ];
+	let opponentHistory =
+		profile.matchHistory.length <= 3 ? profile.matchHistory : profile.matchHistory.slice(-3);
 </script>
 
 <div>
@@ -14,26 +17,14 @@
 	<div id="statisticsLine">
 		<div class="stats">
 			<p class="statsValue">
-				{bestScore}
-			</p>
-			<p>Best Score</p>
-		</div>
-		<div class="stats">
-			<p class="statsValue">
-				#{classement}
+				#{profile.ranking}
 			</p>
 			<p>Classement</p>
 		</div>
-		<div class="stats">
-			<p class="statsValue">
-				{wonGamesRatio}
-			</p>
-			<p>Won Games</p>
-		</div>
 	</div>
 	<hr width="200px" />
-	{#each opponentHistoric as { name, myScore, opponentScore }}
-		<p class="gameHistoric">{name} {opponentScore} - {myScore}</p>
+	{#each opponentHistory as { opponent, winner }}
+		<p class="gameHistory">{opponent} {winner ? 'Won :)' : 'Lost :('}</p>
 	{/each}
 </div>
 
@@ -53,7 +44,7 @@
 		font-weight: bolder;
 	}
 
-	.gameHistoric {
+	.gameHistory {
 		display: flex;
 		flex-direction: row;
 		justify-content: space-around;

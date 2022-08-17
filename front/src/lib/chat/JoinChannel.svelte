@@ -29,24 +29,22 @@
 	>Join a channel</button
 >
 
-{#if joinChanModal}
-	<Modal>
-		<form id="joinChannel" on:submit|preventDefault={handleSubmit}>
-			<input
-				id="channelName"
-				placeholder="Channel Name"
-				bind:value={channelName}
-				on:blur={handleBlur}
-				required
-			/>
-			<div id="password">
-				<span>Password (optional): </span>
-				<input bind:value={password} />
-			</div>
-			<input type="submit" value="Join channel" />
-		</form>
-	</Modal>
-{/if}
+<Modal show={joinChanModal}>
+	<form id="joinChannel" on:submit|preventDefault={handleSubmit}>
+		<input
+			id="channelName"
+			placeholder="Channel Name"
+			bind:value={channelName}
+			on:blur={handleBlur}
+			required
+		/>
+		<div id="password">
+			<span>Password (optional): </span>
+			<input bind:value={password} />
+		</div>
+		<input type="submit" value="Join channel" />
+	</form>
+</Modal>
 
 <style>
 	#joinChannel {

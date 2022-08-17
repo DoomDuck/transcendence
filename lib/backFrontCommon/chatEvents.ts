@@ -1,3 +1,5 @@
+import type { Id } from "./general"
+
 export class ChatEvent {
 	static readonly MSG_TO_CHANNEL = "msg to channel"
 	static readonly MSG_TO_USER = 'msg to user'
@@ -26,20 +28,22 @@ export class ChatError {
 	static readonly INSUFICIENT_PERMISSION = "insuficient permission";
 	static readonly CANT_INVITE_TO_NON_PRIVATE_CHANNEL = "cant invite to non private channel";
 	static readonly CANT_CREATE_PROTECTED_CHANNEL_WO_PASSW = "cant create protected channel wo passw";
+
+  static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
 }
 
-export type DMFromServer =  {source: string, content: string};
-export type DMToServer =  {target: string, content: string};
-export type CMFromServer =  {source: string, channel: string, content: string};
+export type DMFromServer =  {source: Id, content: string};
+export type DMToServer =  {target: Id, content: string};
+export type CMFromServer =  {source: Id, channel: string, content: string};
 export type CMToServer =  {channel: string, content: string};
-export type JoinChannelFromServer = {channel: string, newUser: string};
+// export type JoinChannelFromServer = {channel: string, newUser: Id};
 export type JoinChannelToServer = {channel: string, password?:string};
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
 }
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
-export type InviteChannelFromServer = {channel: string, source: string};
-export type InviteChannelToServer = {channel: string, target: string};
+export type InviteChannelFromServer = {channel: string, source: Id};
+export type InviteChannelToServer = {channel: string, target: Id};
 
 export type ChatFeedbackDto = {
   success: boolean,
@@ -50,7 +54,7 @@ export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
-  [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
+  // [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
 }
 

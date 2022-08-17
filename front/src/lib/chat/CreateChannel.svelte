@@ -41,37 +41,35 @@
 	on:click={handleClickOpenModal}
 />
 
-{#if createChanModal}
-	<Modal>
-		<form id="createChannel" on:submit|preventDefault={handleSubmit}>
-			<input
-				id="channelName"
-				placeholder="Channel Name"
-				bind:value={channelName}
-				on:blur={handleBlur}
-				required
-			/>
-			<div id="channelTypes">
-				{#each channelCategories as cat}
-					<div class="channelType">
-						<input
-							type="radio"
-							id={cat.id}
-							name="channelCategory"
-							value={cat.value}
-							bind:group={chosenCategory}
-						/>
-						<label for={cat.id}>{cat.label}</label>
-					</div>
-					{#if cat.value === ChannelCategory.PROTECTED && isPasswordProtected}
-						<input id="password" placeholder="Type password" bind:value={password} />
-					{/if}
-				{/each}
-			</div>
-			<input type="submit" value="Create channel" />
-		</form>
-	</Modal>
-{/if}
+<Modal show={createChanModal}>
+	<form id="createChannel" on:submit|preventDefault={handleSubmit}>
+		<input
+			id="channelName"
+			placeholder="Channel Name"
+			bind:value={channelName}
+			on:blur={handleBlur}
+			required
+		/>
+		<div id="channelTypes">
+			{#each channelCategories as cat}
+				<div class="channelType">
+					<input
+						type="radio"
+						id={cat.id}
+						name="channelCategory"
+						value={cat.value}
+						bind:group={chosenCategory}
+					/>
+					<label for={cat.id}>{cat.label}</label>
+				</div>
+				{#if cat.value === ChannelCategory.PROTECTED && isPasswordProtected}
+					<input id="password" placeholder="Type password" bind:value={password} />
+				{/if}
+			{/each}
+		</div>
+		<input type="submit" value="Create channel" />
+	</form>
+</Modal>
 
 <style>
 	#createChannel {

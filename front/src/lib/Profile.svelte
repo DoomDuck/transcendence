@@ -1,20 +1,25 @@
 <script lang="ts">
+	import type { ChatUserDto } from 'backFrontCommon';
+
 	import ProfileStats from './ProfileStats.svelte';
-	export let image: string;
-	export let name: string;
-	export let iD = 35214;
-	export let bestScore = 359;
-	export let wonGamesRatio = '50%';
-	export let classement = '3';
+	import RoundedImage from '$lib/RoundedImage.svelte';
+	// export let image: string;
+	// export let name: string;
+	// export let iD = 35214;
+	// export let bestScore = 359;
+	// export let wonGamesRatio = '50%';
+	// export let classement = '3';
+	export let user: ChatUserDto;
 </script>
 
-<div id="Profile">
+<div id="profile">
 	<div>
-		<img class="roundedImageProfile" src={image} alt="profilepic" />
-		<h3>{name}</h3>
-		<p>iD: {iD}</p>
+		<!-- <img class="roundedImageProfile" src={image} alt="profilepic" /> -->
+		<RoundedImage imageURL={user.image} />
+		<h3>{user.name}</h3>
+		<p>ID: {user.id}</p>
 	</div>
-	<ProfileStats {bestScore} {wonGamesRatio} {classement} />
+	<ProfileStats profile={user.profile} />
 </div>
 
 <style>
@@ -31,19 +36,7 @@
 		line-height: 0%;
 	}
 
-	.roundedImageProfile {
-		overflow: hidden;
-		border-radius: 4em;
-		width: 6em;
-		height: 6em;
-		margin-top: 2%;
-		margin-left: auto;
-		margin-right: auto;
-		margin-bottom: 0%;
-		display: block;
-	}
-
-	#Profile {
+	#profile {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
