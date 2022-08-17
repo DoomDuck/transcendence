@@ -2,4 +2,4 @@
 	import OAuth from './OAuth.svelte';
 </script>
 
-<OAuth/>
+<OAuth />

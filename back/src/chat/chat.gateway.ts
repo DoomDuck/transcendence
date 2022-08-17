@@ -5,10 +5,11 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosResponse } from 'axios';
 import { HttpService } from '@nestjs/axios';
 import type {
+  DMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
 } from 'backFrontCommon';
-import { ChatError, ChatFeedbackDto } from 'backFrontCommon';
+import {  ChatError, ChatFeedbackDto } from 'backFrontCommon';
 import { UserDto } from '../user/dto/user.dto';
 import { Id } from 'backFrontCommon';
 import {
@@ -16,6 +17,7 @@ import {
   Server as IOServerBaseType,
 } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import fetch from 'node-fetch';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
@@ -45,41 +47,51 @@ export class ChatGateway
     this.logger.log('Initialized chat ');
   }
 
-async  handleConnection(clientSocket: Socket) {
+  async handleConnection(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
     this.logger.log(clientSocket.handshake.auth.token);
     this.logger.log(this.configService.get<string>('PUBLIC_42_APP_ID'));
-	
-	try {
-	const response = await new Promise<AxiosResponse<any, any>>((success, failure) => {
-      this.httpService.post(
-      `https://api.intra.42.fr/oauth/token/?grant_type=authorization_code&client_id=${this.configService.get<string>(
-        'PUBLIC_42_APP_ID',
-      )}&client_secret=${this.configService.get<string>(
-        'APP_42_SECRET',
-      )}&code=${
-        clientSocket.handshake.auth.token
-      }`,
-	  // &redirect_url=http://fou2lezards.com`,
-      null,
-      ).subscribe({next: success, error: failure })
-    });
-    this.logger.log(`in connection${JSON.stringify(response.data)}`);
-	}
-	catch(e)
-	{
-			
-    this.logger.log(`in connection${JSON.stringify(e)}`);
-	}
-    this.userService.addOne(
+
+    try {
+		const body = JSON.stringify({
+		"grant_type": 'authorization_code',
+		"client_id": this.configService.get<string>(
+                'PUBLIC_42_APP_ID'),
+		"client_secret":this.configService.get<string>(
+                'APP_42_SECRET',
+              ),
+		"code":clientSocket.handshake.auth.token,
+		"redirect_uri":'http://localhost:5173'
+		});
+		this.logger.log(body);
+		const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, { 
+			method: 'POST', 
+			body,
+			headers: {'Content-Type': 'application/json'},
+		});
+		const r2 = await reponse.json();
+		this.logger.log(r2);
+		const access_token = r2.access_token;
+
+	const headers = {
+		"Authorization":"Bearer " + access_token,
+	};
+
+	const r = await fetch('https://api.intra.42.fr/v2/me/', {headers});
+	  const data = await r.json();
+	  this.logger.log(data.id, data.login);
+         this.userService.addOne(
       new UserDto(
-        parseInt(clientSocket.handshake.auth.token),
-        clientSocket.handshake.auth.token,
+		  data.id,
+		  data.login,
         clientSocket,
       ),
     );
-
     this.logger.log(`end handle connection`);
+	}
+	catch (e: any) {
+      this.logger.log(`in connection fail `, e);
+    }
   }
 
   handleDisconnect(clientSocket: Socket) {
@@ -93,8 +105,15 @@ async  handleConnection(clientSocket: Socket) {
     clientSocket: Socket,
     chanInfo: CreateChannelToServer,
   ) {
+	  const tempUser = this.userService.findOneActiveBySocket(clientSocket);
+
+	if (!tempUser)
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
     const newChan = await this.channelManagerService.createChan(
-      Number(clientSocket.handshake.auth.token),
+      tempUser,
       chanInfo,
     );
 
@@ -103,12 +122,8 @@ async  handleConnection(clientSocket: Socket) {
         false,
         ChatError.CHANNEL_NOT_FOUND,
       );
-    // this.logger.log('after create');
-    // const entities = await this.channelManagerService.findChanAll();
-    // entities.forEach((channel)=> console.log(channel.name))
-    //need to change with auth integration
     this.channelManagerService.joinChan(
-      clientSocket.handshake.auth.token,
+      tempUser,
       newChan,
     );
     return this.channelManagerService.newChatFeedbackDto(true);
@@ -122,11 +137,20 @@ async  handleConnection(clientSocket: Socket) {
     const tempChannel = await this.channelManagerService.findChanByName(
       dto.target,
     );
-    const tempSender = this.userService.findOneActive(
-      Number(clientSocket.handshake.auth.token),
-    );
 
-    const feedback = this.channelManagerService.msgToChannelVerif(
+	if (!tempChannel)
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
+	const tempSender = this.userService.findOneActiveBySocket(clientSocket);
+	if (!tempSender) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
+    }
+	    const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
     );
@@ -137,8 +161,8 @@ async  handleConnection(clientSocket: Socket) {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
         this.userService.updateChannelConversation(
-          clientSocket.handshake.auth.token,
-          member,
+          tempSender,
+          tempUser,
           tempChannel!,
           dto.content,
         );
@@ -157,9 +181,8 @@ async  handleConnection(clientSocket: Socket) {
     const tempChan = await this.channelManagerService.findChanByName(
       joinInfo.channel,
     );
-    const tempUser = this.userService.findOneActive(
-      Number(clientSocket.handshake.auth.token),
-    );
+    const tempUser = this.userService.findOneActiveBySocket(
+    clientSocket);
 
     this.logger.log(`any joiner in the  chat ?${tempUser} `);
     if (!tempChan) {
@@ -176,7 +199,7 @@ async  handleConnection(clientSocket: Socket) {
     }
     feedback = await this.channelManagerService.joinChan(tempUser, tempChan);
     if (feedback.success === true) {
-      this.logger.log(`joingin chanUSer `);
+      this.logger.log(`joining chanUSer `);
       this.userService.joinChanUser(tempUser, tempChan);
     }
 
@@ -186,16 +209,30 @@ async  handleConnection(clientSocket: Socket) {
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(
     clientSocket: Socket,
-    messageInfo: {
-      target: string;
-      content: string;
-    },
+	dm : DMToServer,
   ) {
+
+    const sender = this.userService.findOneActiveBySocket(
+		clientSocket);
+	if (!sender) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
+    }
+	const target = this.userService.findOneActiveByName(
+		dm.target);
+	if (!target) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.USER_NOT_FOUND,
+      );
+    }
     const feedback = this.userService.sendMessageToUser(
-      Number(clientSocket.handshake.auth.token),
+      sender,
       this.wss,
-      messageInfo.content,
-      messageInfo.target,
+      dm.content,
+      target,
     );
     console.log(feedback);
     return feedback;

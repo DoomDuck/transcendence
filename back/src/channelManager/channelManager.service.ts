@@ -55,13 +55,13 @@ export class ChannelManagerService {
   }
   private logger: Logger = new Logger('channelManagerService');
 
-  createChan(senderId: Id, chanInfo: CreateChannelToServer): Promise<Channel> {
+  createChan(activeUser: ActiveUser, chanInfo: CreateChannelToServer): Promise<Channel> {
     this.logger.log('createChan');
     this.logger.log(chanInfo.channel);
     return this.channelRepository.save(
       new Channel(
         chanInfo.channel,
-        senderId,
+        activeUser.id,
         chanInfo.category,
         chanInfo.password,
       ),

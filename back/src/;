@@ -369,7 +369,17 @@ export class UserService {
             content: content,
           }),
         );
-        this.updateUserConversation(sender, target, content);
+        this.updateUserConversation(tempUserSender, tempUserTarget, content);
         return this.channelManagerService.newChatFeedbackDto(true);
-      }   
+      } else
+        return this.channelManagerService.newChatFeedbackDto(
+          false,
+          ChatError.USER_NOT_FOUND,
+        );
+    } else
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_DO_NOT_EXIST,
+      );
+  }
 }

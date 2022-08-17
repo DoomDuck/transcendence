@@ -7,7 +7,7 @@
 		if (mode == optionOne) mode = optionTwo;
 		else mode = optionOne;
 	}
-	
+
 	$: let a = b;
 </script>
 
