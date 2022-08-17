@@ -152,11 +152,14 @@ export class UserService {
     return this.arrayActiveUser.find((user) => user.id == id);
   }
   findOneActiveBySocket(clientSocket: Socket): ActiveUser | undefined {
-    return this.arrayActiveUser.find((user) => (user.socketUser.find((socket)=> socket ===clientSocket))!= undefined);
+    return this.arrayActiveUser.find(
+      (user) =>
+        user.socketUser.find((socket) => socket === clientSocket) != undefined,
+    );
   }
- findOneActiveByName(name: string): ActiveUser | undefined {
-    return this.arrayActiveUser.find((user) =>user.name ===name );
- }
+  findOneActiveByName(name: string): ActiveUser | undefined {
+    return this.arrayActiveUser.find((user) => user.name === name);
+  }
   findOneDb(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
@@ -363,13 +366,13 @@ export class UserService {
     target: ActiveUser,
   ): ChatFeedbackDto {
     let logger = new Logger('sendMessageToUser');
-        target.socketUser.forEach((socket) =>
-          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-            source: sender.name,
-            content: content,
-          }),
-        );
-        this.updateUserConversation(sender, target, content);
-        return this.channelManagerService.newChatFeedbackDto(true);
-      }   
+    target.socketUser.forEach((socket) =>
+      wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
+        source: sender.name,
+        content: content,
+      }),
+    );
+    this.updateUserConversation(sender, target, content);
+    return this.channelManagerService.newChatFeedbackDto(true);
+  }
 }

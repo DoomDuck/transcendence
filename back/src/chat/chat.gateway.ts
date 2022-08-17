@@ -9,7 +9,7 @@ import type {
   CreateChannelToServer,
   JoinChannelToServer,
 } from 'backFrontCommon';
-import {  ChatError, ChatFeedbackDto } from 'backFrontCommon';
+import { ChatError, ChatFeedbackDto } from 'backFrontCommon';
 import { UserDto } from '../user/dto/user.dto';
 import { Id } from 'backFrontCommon';
 import {
@@ -53,43 +53,33 @@ export class ChatGateway
     this.logger.log(this.configService.get<string>('PUBLIC_42_APP_ID'));
 
     try {
-		const body = JSON.stringify({
-		"grant_type": 'authorization_code',
-		"client_id": this.configService.get<string>(
-                'PUBLIC_42_APP_ID'),
-		"client_secret":this.configService.get<string>(
-                'APP_42_SECRET',
-              ),
-		"code":clientSocket.handshake.auth.token,
-		"redirect_uri":'http://localhost:5173'
-		});
-		this.logger.log(body);
-		const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, { 
-			method: 'POST', 
-			body,
-			headers: {'Content-Type': 'application/json'},
-		});
-		const r2 = await reponse.json();
-		this.logger.log(r2);
-		const access_token = r2.access_token;
+      const body = JSON.stringify({
+        grant_type: 'authorization_code',
+        client_id: this.configService.get<string>('PUBLIC_42_APP_ID'),
+        client_secret: this.configService.get<string>('APP_42_SECRET'),
+        code: clientSocket.handshake.auth.token,
+        redirect_uri: 'http://localhost:5173',
+      });
+      this.logger.log(body);
+      const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, {
+        method: 'POST',
+        body,
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const r2 = await reponse.json();
+      this.logger.log(r2);
+      const access_token = r2.access_token;
 
-	const headers = {
-		"Authorization":"Bearer " + access_token,
-	};
+      const headers = {
+        Authorization: 'Bearer ' + access_token,
+      };
 
-	const r = await fetch('https://api.intra.42.fr/v2/me/', {headers});
-	  const data = await r.json();
-	  this.logger.log(data.id, data.login);
-         this.userService.addOne(
-      new UserDto(
-		  data.id,
-		  data.login,
-        clientSocket,
-      ),
-    );
-    this.logger.log(`end handle connection`);
-	}
-	catch (e: any) {
+      const r = await fetch('https://api.intra.42.fr/v2/me/', { headers });
+      const data = await r.json();
+      this.logger.log(data.id, data.login);
+      this.userService.addOne(new UserDto(data.id, data.login, clientSocket));
+      this.logger.log(`end handle connection`);
+    } catch (e: any) {
       this.logger.log(`in connection fail `, e);
     }
   }
@@ -105,9 +95,9 @@ export class ChatGateway
     clientSocket: Socket,
     chanInfo: CreateChannelToServer,
   ) {
-	  const tempUser = this.userService.findOneActiveBySocket(clientSocket);
+    const tempUser = this.userService.findOneActiveBySocket(clientSocket);
 
-	if (!tempUser)
+    if (!tempUser)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
@@ -122,10 +112,7 @@ export class ChatGateway
         false,
         ChatError.CHANNEL_NOT_FOUND,
       );
-    this.channelManagerService.joinChan(
-      tempUser,
-      newChan,
-    );
+    this.channelManagerService.joinChan(tempUser, newChan);
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
@@ -138,19 +125,19 @@ export class ChatGateway
       dto.target,
     );
 
-	if (!tempChannel)
+    if (!tempChannel)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
       );
-	const tempSender = this.userService.findOneActiveBySocket(clientSocket);
-	if (!tempSender) {
+    const tempSender = this.userService.findOneActiveBySocket(clientSocket);
+    if (!tempSender) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
       );
     }
-	    const feedback = this.channelManagerService.msgToChannelVerif(
+    const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
     );
@@ -181,8 +168,7 @@ export class ChatGateway
     const tempChan = await this.channelManagerService.findChanByName(
       joinInfo.channel,
     );
-    const tempUser = this.userService.findOneActiveBySocket(
-    clientSocket);
+    const tempUser = this.userService.findOneActiveBySocket(clientSocket);
 
     this.logger.log(`any joiner in the  chat ?${tempUser} `);
     if (!tempChan) {
@@ -207,22 +193,16 @@ export class ChatGateway
   }
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
-  handlePrivMessage(
-    clientSocket: Socket,
-	dm : DMToServer,
-  ) {
-
-    const sender = this.userService.findOneActiveBySocket(
-		clientSocket);
-	if (!sender) {
+  handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
+    const sender = this.userService.findOneActiveBySocket(clientSocket);
+    if (!sender) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
       );
     }
-	const target = this.userService.findOneActiveByName(
-		dm.target);
-	if (!target) {
+    const target = this.userService.findOneActiveByName(dm.target);
+    if (!target) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
