@@ -30,7 +30,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
-import { DMToServer } from 'backFrontCommon';
 
 @WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway
@@ -202,7 +201,7 @@ export class ChatGateway
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    const target = this.userService.findOneActiveByName(dm.target);
+    const target = this.userService.findOneActive(dm.target);
     if (!target) {
       return this.channelManagerService.newChatFeedbackDto(
         false,

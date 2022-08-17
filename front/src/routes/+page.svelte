@@ -1,10 +1,4 @@
 <script lang="ts">
-<<<<<<< HEAD
-	import OAuth from './OAuth.svelte';
-</script>
-
-<OAuth />
-=======
 	// import { setContext } from 'svelte';
 	// import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
 	// import { chatContextKey, type ChatSocket } from '$lib/utils';
@@ -85,4 +79,3 @@
 		all: unset;
 	}
 </style>
->>>>>>> main

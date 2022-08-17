@@ -6,11 +6,11 @@ import * as path from 'path';
 export default defineConfig(({ command, mode }) => {
 	void command; // Ignore
 	void mode;
-	const project_root = path.join(process.cwd(), "..");
+	const project_root = path.join(process.cwd(), '..');
 
 	return {
 		plugins: [sveltekit()],
 		envDir: project_root,
-		envPrefix: 'PUBLIC_',
-	}
-}); 
+		envPrefix: 'PUBLIC_'
+	};
+});
