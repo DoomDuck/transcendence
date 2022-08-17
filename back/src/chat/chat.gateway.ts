@@ -91,22 +91,22 @@ export class ChatGateway
     this.userService.disconnection(clientSocket);
   }
 
- // @SubscribeMessage(ChatEvent.BLOCK_USER)
+  // @SubscribeMessage(ChatEvent.BLOCK_USER)
   // async handleBLockUser(clientSocket:Socket,blockInfo:BlockUserToServer)
   // {
-    // const sender = this.userService.findOneActiveBySocket(clientSocket);
-		// if (!sender)
-      // return this.channelManagerService.newChatFeedbackDto(
-        // false,
-        // ChatError.U_DO_NOT_EXIST,
-      // );
-	// const target = this.userService.findOneActive(blockInfo.target);
-		// if (!target)
-      // return this.channelManagerService.newChatFeedbackDto(
-        // false,
-        // ChatError.U_DO_NOT_EXIST,
-      // );
-	  // return this.userService.blockUser(sender,target);
+  // const sender = this.userService.findOneActiveBySocket(clientSocket);
+  // if (!sender)
+  // return this.channelManagerService.newChatFeedbackDto(
+  // false,
+  // ChatError.U_DO_NOT_EXIST,
+  // );
+  // const target = this.userService.findOneActive(blockInfo.target);
+  // if (!target)
+  // return this.channelManagerService.newChatFeedbackDto(
+  // false,
+  // ChatError.U_DO_NOT_EXIST,
+  // );
+  // return this.userService.blockUser(sender,target);
   // }
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   async handleCreateChannel(

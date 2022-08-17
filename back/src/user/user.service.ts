@@ -378,9 +378,8 @@ export class UserService {
 
   // blockUser(sender:ActiveUser,target:ActiveUser)
   // {
-    // const dbUser! = await this.findOneDb(sender.id);
-	// if (dbUser.blocked.find(user => user.blocked.find(target.id)=== undefined))
-		// dbUser.blocked.push(target.id);
+  // const dbUser! = await this.findOneDb(sender.id);
+  // if (dbUser.blocked.find(user => user.blocked.find(target.id)=== undefined))
+  // dbUser.blocked.push(target.id);
   // }
 }
-

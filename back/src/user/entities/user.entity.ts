@@ -31,8 +31,8 @@ export class User {
   @Column('int', { array: true, nullable: false })
   friendlist: Id[];
 
-	@Column('int', { array: true, nullable: false })
- 	blocked: Id[];
+  @Column('int', { array: true, nullable: false })
+  blocked: Id[];
 
   @Column('varchar', { array: true, nullable: false })
   channel: string[];
