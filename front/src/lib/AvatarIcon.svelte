@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
-	export let imageURL: string;
+	export let imageURL: string | undefined;
+	export let type: 'user' | 'channel';
 
 	const dispatch = createEventDispatcher();
 
@@ -11,18 +12,27 @@
 	}
 </script>
 
-<img class="rounded-image" src={imageURL} alt="contact" on:click={handleClick} />
+<img
+	class="icon"
+	class:user-icon={type == 'user'}
+	src={imageURL}
+	alt="contact"
+	on:click={handleClick}
+/>
 
 <style>
-	.rounded-image {
+	.icon {
 		overflow: hidden;
-		-webkit-border-radius: 50px;
-		border-radius: 30px;
-		width: 60px;
-		height: 60px;
+		width: 64px;
+		height: 64px;
 		margin-left: 1%;
 		margin-right: 2%;
 		margin-top: auto;
 		margin-bottom: auto;
+	}
+
+	.user-icon {
+		-webkit-border-radius: 50%;
+		border-radius: 50%;
 	}
 </style>

@@ -3,7 +3,7 @@
 	import Modal from '$lib/Modal.svelte';
 	import { users } from '$lib/users';
 	import type { Id } from 'backFrontCommon';
-	import RoundedImage from '$lib/RoundedImage.svelte';
+	import AvatarIcon from '$lib/AvatarIcon.svelte';
 
 	export let userId: Id;
 	const userPromise = $users.findOrFetch(userId);
@@ -12,9 +12,9 @@
 </script>
 
 {#await userPromise}
-	<RoundedImage imageURL="awaiting.png" />
+	<AvatarIcon type={'user'} imageURL="awaiting.png" />
 {:then user}
-	<RoundedImage imageURL={user.image} on:clickOnImage={() => (showProfile = true)} />
+	<AvatarIcon type={'user'} imageURL={user.image} on:clickOnImage={() => (showProfile = true)} />
 	<Modal bind:show={showProfile}>
 		<Profile {user} />
 	</Modal>

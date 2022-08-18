@@ -2,13 +2,13 @@
 	import type { ChatUserDto } from 'backFrontCommon';
 
 	import ProfileStats from './ProfileStats.svelte';
-	import RoundedImage from '$lib/RoundedImage.svelte';
+	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	export let user: ChatUserDto;
 </script>
 
 <div id="profile">
 	<div>
-		<RoundedImage imageURL={user.image} />
+		<AvatarIcon type={'user'} imageURL={user.image} />
 		<h3>{user.name}</h3>
 		<p>ID: {user.id}</p>
 	</div>
