@@ -5,7 +5,7 @@
 	import { UserConversation } from '$lib/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { DMToServer } from 'backFrontCommon/chatEvents';
-	import BlockUser from './BlockUserButton.svelte';
+	import BlockUser from '../buttons/BlockUserButton.svelte';
 
 	export let conversation: UserConversation;
 

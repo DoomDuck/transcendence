@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SendNewMessageModal from './SendNewMessageModal.svelte';
+	import SendNewMessageModal from '../modals/SendNewMessageModal.svelte';
 
 	let show = false;
 </script>

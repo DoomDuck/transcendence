@@ -3,11 +3,10 @@
 	import { users } from '../users';
 	import { userConvs, channelConvs } from '$lib/utils';
 	import RoundedImage from '$lib/RoundedImage.svelte';
-	import ChannelBox from '$lib/chat/modals/ChannelConvBox.svelte';
+	import ChannelBox from '$lib/chat/conversationBoxes/ChannelConvBox.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
 	import ConversationListItemText from './ConversationListItemText.svelte';
-	import ConversationBox from '$lib/chat/modals/UserConvBox.svelte';
-	import PendingText from '$lib/chat/modals/UserConvBox.svelte';
+	import ConversationBox from './conversationBoxes/UserConvBox.svelte';
 </script>
 
 <div>
@@ -29,12 +28,4 @@
 			<ChannelBox slot="conversation-modal" on:msgToChannel {conversation} />
 		</ConversationListItem>
 	{/each}
-	<!-- {/key} -->
 </div>
-
-<!-- <style>
-	h5 {
-		font-size: 1em;
-		color: #ff00b8;
-	}
-</style> -->

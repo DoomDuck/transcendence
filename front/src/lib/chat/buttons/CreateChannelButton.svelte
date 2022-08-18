@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CreateChannelModal from './CreateChannelModal.svelte';
+	import CreateChannelModal from '../modals/CreateChannelModal.svelte';
 	let show = false;
 </script>
 

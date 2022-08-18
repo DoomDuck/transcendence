@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getSocket } from '$lib/login';
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
-	import CreateChannel from '$lib/chat/modals/CreateChannelButton.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
 	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
 	import type {
@@ -13,8 +12,9 @@
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
-	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
-	import JoinChannel from '$lib/chat/JoinChannel.svelte';
+	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
+	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
+	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { userConvs, channelConvs } from '$lib/utils';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
@@ -139,9 +139,9 @@
 	<div id="title">
 		<h1>Chat</h1>
 		<div id="options">
-			<CreateChannel on:createChannel={sendCreateChannel} />
-			<JoinChannel on:joinChannel={sendJoinChannel} />
-			<SendNewMessage on:msgToUser={sendDirectMessage} />
+			<CreateChannelButton on:createChannel={sendCreateChannel} />
+			<JoinChannelButton on:joinChannel={sendJoinChannel} />
+			<SendNewMessageButton on:msgToUser={sendDirectMessage} />
 		</div>
 	</div>
 
