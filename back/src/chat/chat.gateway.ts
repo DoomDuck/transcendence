@@ -44,20 +44,32 @@ export class ChatGateway
   afterInit(server: any) {
     this.logger.log('Initialized chat ');
   }
+  
+  // Random login for guest
+  generateRandomId() : number {
+    return Math.floor(Math.random() * 1_000);
+  }
 
   async handleConnection(clientSocket: Socket) {
-    this.logger.log(`Client connected: ${clientSocket.id}`);
-    this.logger.log(clientSocket.handshake.auth.token);
+    let code = clientSocket.handshake.auth.code;
+    this.logger.log(`Client connected: ${clientSocket.id}`, code);
+
+    // Guest login
+    // TODO: Don't use random id
+    if (!(typeof code == 'string')) {
+      let id = this.generateRandomId();
+      await this.userService.addOne(new UserDto(id, `guest-${id}`, clientSocket));
+      return;
+    }
 
     try {
       const body = JSON.stringify({
         grant_type: 'authorization_code',
         client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
         client_secret: this.configService.get<string>('APP_42_SECRET'),
-        code: clientSocket.handshake.auth.token,
+        code,
         redirect_uri: this.configService.get<string>('REDIRECT_URI'),
       });
-      this.logger.log(body);
       const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, {
         method: 'POST',
         body,
@@ -83,7 +95,7 @@ export class ChatGateway
 
   handleDisconnect(clientSocket: Socket) {
     this.logger.log(`Client connected: ${clientSocket.id}`);
-    this.logger.log(clientSocket.handshake.auth.token);
+    this.logger.log(clientSocket.handshake.auth.code);
     this.userService.disconnection(clientSocket);
   }
 
