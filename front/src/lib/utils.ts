@@ -10,10 +10,29 @@ import { Socket as IOSocketBaseType } from 'socket.io-client';
 import { type ServerToClientEvents, type ClientToServerEvents } from 'backFrontCommon';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import { usersObject } from './users';
+import type { TypeMap } from 'backFrontCommon/general';
 
 export type ChatSocket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
 
 type Id = number;
+
+type ChatMessageGameInvit = {
+	source: Id;
+	valid: boolean;
+};
+
+type ChatMessageEntry = TypeMap<{ message: ChatMessageDto; gameInvite: ChatMessageGameInvit }>;
+
+export class ConversationHistory {
+	private history: ChatMessageEntry[] = [];
+
+	addMessage(message: ChatMessageDto) {
+		this.history.push({ key: 'message', payload: message });
+	}
+	addGameInvite(gameInvite: ChatMessageGameInvit) {
+		this.history.push({ key: 'gameInvite', payload: gameInvite });
+	}
+}
 
 export abstract class Conversation<DTOType extends { history: ChatMessageDto[] }> {
 	hasNewMessage: boolean = false;

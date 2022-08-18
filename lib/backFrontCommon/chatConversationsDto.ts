@@ -1,9 +1,14 @@
 import type { Id } from "./general";
 
 export type ChatMessageDto = {
-  sender: Id,
-  content: string,
-  isMe: boolean
+  sender: Id;
+  content: string;
+  isMe: boolean;
+}
+
+export type ChatGameInviteMessageDto = {
+  sender: Id;
+  valid: boolean;
 }
 
 export type ActiveUserConversationDto = {

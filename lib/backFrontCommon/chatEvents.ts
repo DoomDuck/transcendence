@@ -44,6 +44,10 @@ export enum ChannelCategory {
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
+export type GameInviteFromServer = { source: Id };
+export type GameInviteToServer = { target: Id };
+export type FriendInviteFromServer = { source: Id };
+export type FriendInviteToServer = { target: Id };
 
 export type ChatFeedbackDto = {
   success: boolean,
@@ -56,6 +60,8 @@ export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
+  [ChatEvent.GAME_INVITE]: (dto: GameInviteFromServer) => void;
+  [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }
 
 export interface ClientToServerEvents {
@@ -64,4 +70,6 @@ export interface ClientToServerEvents {
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteToServer, callback: FeedbackCallback) => void;
 }

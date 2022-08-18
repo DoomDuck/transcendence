@@ -39,7 +39,7 @@
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as message}
-			<ConversationEntry {message} showAuthor={true} />
+			<ConversationEntry {message} type={'channel'} />
 		{/each}
 	</div>
 

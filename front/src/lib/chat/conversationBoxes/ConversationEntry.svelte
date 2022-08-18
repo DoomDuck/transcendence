@@ -1,14 +1,15 @@
 <script lang="ts">
 	import PendingText from '$lib/PendingText.svelte';
+	import UserMiniature from '$lib/UserMiniature.svelte';
 	import { users } from '$lib/users';
 	import type { ChatMessageDto } from 'backFrontCommon';
 
 	export let message: ChatMessageDto;
-	export let showAuthor: boolean;
+	export let type: 'user' | 'channel';
 </script>
 
 <article class={message.isMe ? 'user' : 'interlocutor'}>
-	{#if showAuthor && !message.isMe}
+	{#if type == 'channel' && !message.isMe}
 		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)} />
 	{/if}
 	<span class="conv-entry">{message.content}</span>
