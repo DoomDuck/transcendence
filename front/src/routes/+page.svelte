@@ -1,5 +1,5 @@
 <script>
-	import OAuth from '$lib/OAuth.svelte';
+	import Login from '$lib/Login.svelte';
 </script>
 
-<OAuth />
+<Login/>
