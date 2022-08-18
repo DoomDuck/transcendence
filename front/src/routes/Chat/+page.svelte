@@ -1,6 +1,6 @@
 <script lang="ts">
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
-	import CreateChannel from '$lib/chat/modals/CreateChannel.svelte';
+	import CreateChannel from '$lib/chat/modals/CreateChannelButton.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
 	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
 	import type {
@@ -12,8 +12,8 @@
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
-	import SendNewMessage from '$lib/chat/modals/SendNewMessage.svelte';
-	import JoinChannel from '$lib/chat/modals/JoinChannel.svelte';
+	import SendNewMessage from '$lib/chat/modals/SendNewMessageButton.svelte';
+	import JoinChannel from '$lib/chat/modals/JoinChannelButton.svelte';
 	import { userConvs, channelConvs, type ChatSocket, isPositiveInteger } from '$lib/utils';
 	import { io } from 'socket.io-client';
 

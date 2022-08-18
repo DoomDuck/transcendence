@@ -3,9 +3,9 @@
 	import { createEventDispatcher } from 'svelte';
 	import { ChannelCategory } from 'backFrontCommon';
 
-	const dispatch = createEventDispatcher();
+	export let show = false;
 
-	let createChanModal = false;
+	const dispatch = createEventDispatcher();
 	let channelCategories = [
 		{ id: 'public', label: 'Public', value: ChannelCategory.PUBLIC },
 		{ id: 'protected', label: 'Password-protected', value: ChannelCategory.PROTECTED },
@@ -16,11 +16,8 @@
 	$: isPasswordProtected = chosenCategory == ChannelCategory.PROTECTED;
 	let password: string | undefined;
 
-	function handleClickOpenModal() {
-		createChanModal = true;
-	}
 	function handleSubmit() {
-		createChanModal = false;
+		show = false;
 		dispatch('createChannel', {
 			channel: channelName,
 			category: chosenCategory,
@@ -33,15 +30,7 @@
 	}
 </script>
 
-<img
-	src="addGroup.png"
-	alt="Create a channel"
-	width="50px"
-	height="50px"
-	on:click={handleClickOpenModal}
-/>
-
-<Modal show={createChanModal}>
+<Modal bind:show>
 	<form id="createChannel" on:submit|preventDefault={handleSubmit}>
 		<input
 			id="channelName"
@@ -89,8 +78,5 @@
 		justify-items: left;
 		gap: 10px;
 		padding: 10px;
-	}
-	img {
-		float: right;
 	}
 </style>
