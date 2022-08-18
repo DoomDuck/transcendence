@@ -4,15 +4,13 @@ import { LoginService } from './login.service';
 
 @Controller('login')
 export class LoginController {
-    private logger: Logger = new Logger('Login');
+  private logger: Logger = new Logger('Login');
 
-    constructor(
-        private loginService: LoginService,
-    ) { }
+  constructor(private loginService: LoginService) {}
 
-    @Get()
-    login(@Res() response: Response) : void {
-        this.logger.log("User just logged in!")
-        response.redirect(this.loginService.auth_url);
-    }
-};
+  @Get()
+  login(@Res() response: Response): void {
+    this.logger.log('User just logged in!');
+    response.redirect(this.loginService.auth_url);
+  }
+}

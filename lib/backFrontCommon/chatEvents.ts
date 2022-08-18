@@ -36,7 +36,7 @@ export type DMFromServer =  {source: Id, content: string};
 export type DMToServer =  {target: Id, content: string};
 export type CMFromServer =  {source: Id, channel: string, content: string};
 export type CMToServer =  {channel: string, content: string};
-// export type JoinChannelFromServer = {channel: string, newUser: Id};
+export type JoinChannelFromServer = {channel: string, newUser: Id};
 export type JoinChannelToServer = {channel: string, password?:string};
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
@@ -54,7 +54,7 @@ export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
-  // [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
+  [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
 }
 

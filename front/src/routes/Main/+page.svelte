@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {getSocket} from '$lib/login';
+	import { getSocket } from '$lib/login';
 	import { onMount } from 'svelte';
 
 	// import { users } from '$lib/users';
@@ -26,10 +26,9 @@
 	//   socket,
 	//   token: tokenInput as string
 	// })
-	
+
 	onMount(async () => {
 		let socket = await getSocket();
-
 	});
 </script>
 

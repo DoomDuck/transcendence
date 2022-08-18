@@ -8,7 +8,7 @@ let socket : ChatSocket | null = null;
 
 // Returns the socket or moves back to Login page
 export async function getSocket(): Promise<ChatSocket> {
-	if (!socket) await goto("/");
+	if (!socket) await goto('/');
 	return socket!;
 }
 

@@ -1,16 +1,15 @@
 <script lang="ts">
+	import PendingText from '$lib/PendingText.svelte';
+
 	export let text: string | Promise<string>;
-	const promisedText = Promise.resolve(text);
 </script>
 
-{#await promisedText}
-	<h5>...</h5>
-{:then text}
-	<h5>{text}</h5>
-{/await}
+<div class="item-text">
+	<PendingText tag="h5" {text} />
+</div>
 
 <style>
-	h5 {
+	.item-text {
 		font-size: 1em;
 		color: #ff00b8;
 	}

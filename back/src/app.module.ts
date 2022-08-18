@@ -5,7 +5,7 @@ import { userModule } from './user/user.module';
 import { PongGateway } from './pong/pong.gateway';
 import { GameManagerService } from './pong/game-manager.service';
 import { ConfigModule } from '@nestjs/config';
-import { LoginModule } from './login/login.module'; 
+import { LoginModule } from './login/login.module';
 import { join } from 'path';
 
 @Module({

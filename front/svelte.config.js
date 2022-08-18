@@ -8,7 +8,7 @@ export default {
 	}),
 	kit: {
 		env: {
-			publicPrefix: 'PUBLIC_',
+			publicPrefix: 'PUBLIC_'
 		},
 		adapter: adapter({
 			// default options are shown. On some platforms

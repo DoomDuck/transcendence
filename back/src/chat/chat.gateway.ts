@@ -63,7 +63,7 @@ export class ChatGateway
     }
 
     try {
-        const body = JSON.stringify({
+      const body = JSON.stringify({
         grant_type: 'authorization_code',
         client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
         client_secret: this.configService.get<string>('APP_42_SECRET'),

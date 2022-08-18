@@ -1,14 +1,17 @@
 <script lang="ts">
-	export let isMe: boolean;
-	export let text: string;
-	export let author: string | undefined = undefined;
+	import PendingText from '$lib/PendingText.svelte';
+	import { users } from '$lib/users';
+	import type { ChatMessageDto } from 'backFrontCommon';
+
+	export let message: ChatMessageDto;
+	export let showAuthor: boolean;
 </script>
 
-<article class={isMe ? 'user' : 'interlocutor'}>
-	{#if author !== undefined && !isMe}
-		<span class="conv-entry-author">{author}</span>
+<article class={message.isMe ? 'user' : 'interlocutor'}>
+	{#if showAuthor && !message.isMe}
+		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)} />
 	{/if}
-	<span class="conv-entry">{text}</span>
+	<span class="conv-entry">{message.content}</span>
 </article>
 
 <style>
@@ -30,8 +33,6 @@
 		border-radius: 1em 1em 1em 0;
 	}
 
-	/* .interlocutor .conv-entry-author {
-		/* font-size: ; */
 	.user {
 		text-align: right;
 		padding-right: 1em;

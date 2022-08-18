@@ -74,8 +74,8 @@ export class ChannelManagerService {
 
   newChatFeedbackDto(_success: boolean, _errorMessage?: string) {
     if (_errorMessage)
-      return { success: _success, erorrMessage: _errorMessage };
-    else return { success: _success, erorrMessage: undefined };
+      return { success: _success, errorMessage: _errorMessage };
+    else return { success: _success, errorMessage: undefined };
   }
   newChatMessageDto(
     _sender: Id,

@@ -1,19 +1,15 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
+	import type { JoinChannelToServer } from 'backFrontCommon';
 	import { createEventDispatcher } from 'svelte';
-	import { ChannelCategory } from 'backFrontCommon';
+	export let show = false;
 
-	const dispatch = createEventDispatcher();
-
-	let joinChanModal = false;
+	const dispatch = createEventDispatcher<{ joinChannel: JoinChannelToServer }>();
 	let channelName: string;
 	let password: string | undefined;
 
-	function handleClickOpenModal() {
-		joinChanModal = true;
-	}
 	function handleSubmit() {
-		joinChanModal = false;
+		show = false;
 		dispatch('joinChannel', {
 			channel: channelName,
 			password
@@ -25,11 +21,7 @@
 	}
 </script>
 
-<button alt="Create a channel" width="50px" height="50px" on:click={handleClickOpenModal}
-	>Join a channel</button
->
-
-<Modal show={joinChanModal}>
+<Modal bind:show>
 	<form id="joinChannel" on:submit|preventDefault={handleSubmit}>
 		<input
 			id="channelName"
