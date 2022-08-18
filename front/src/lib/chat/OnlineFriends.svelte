@@ -1,7 +1,6 @@
 <script lang="ts">
 	import UserMiniature from '$lib/UserMiniature.svelte';
-	import type { ChatUserDto, Id } from 'backFrontCommon';
-	import { users } from '$lib/users';
+	import type { Id } from 'backFrontCommon';
 
 	export let friends: Id[];
 </script>
