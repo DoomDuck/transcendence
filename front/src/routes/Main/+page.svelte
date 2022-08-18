@@ -26,10 +26,6 @@
 	//   socket,
 	//   token: tokenInput as string
 	// })
-
-	onMount(async () => {
-		let socket = await getSocket();
-	});
 </script>
 
 <nav id="menu">
@@ -44,8 +40,6 @@
 		<a sveltekit:prefetch href="/Parameters">Parameters</a>
 	</h4>
 </nav>
-
-console.log("coucou la session ouverte");
 
 <style>
 	#menu {
