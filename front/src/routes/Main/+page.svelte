@@ -40,6 +40,9 @@
 	<h4 class="typography" style="color: {color}">
 		<a sveltekit:prefetch href="/Chat">Chat</a>
 	</h4>
+	<!-- <h4 class="typography" style="color: {color}">
+    <a sveltekit:prefetch href="/Parameters">Parameters</a>
+  </h4> -->
 	<h4 class="typography" style="color: {color}">
 		<a sveltekit:prefetch href="/Parameters">Parameters</a>
 	</h4>
