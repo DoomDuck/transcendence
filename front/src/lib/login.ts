@@ -1,33 +1,24 @@
-import { readable } from 'svelte/store';
-import type { Readable } from 'svelte/store';
+import { io } from 'socket.io-client';
+import { goto } from '$app/navigation';
+import type { ChatSocket } from '$lib/utils';
 
-export const credentials: Readable<null | string> = readable(null);
+let socket: ChatSocket | null = null;
 
-export async function get_token(code: string): Promise<string> {
-	const response = await fetch(`${window.location.origin}/login?code=${code}`);
-	const data = await response.json();
-	if (!data.success) throw Error('Could not exchange code for token');
-	return data.message;
+// Returns the socket or moves back to Login page
+export async function getSocket(): Promise<ChatSocket> {
+	if (!socket) await goto('/');
+	return socket!;
 }
 
 // Login if request_login has been successful
 // Throws an exception on failure
-export async function login(): Promise<boolean> {
-	let code = new URLSearchParams(document.location.search).get('code');
-
-	if (!code) return false;
-
-	await get_token(code);
-
-	return false;
-}
-
-export async function request_login() {
-	const LOCATION = 'https://api.intra.42.fr/oauth/authorize';
-	const REDIRECT = encodeURIComponent(window.location.origin);
-	const CLIENT_ID = (window as any).env.PUBLIC_42_APP_ID as string;
-	const URL = `${LOCATION}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT}&response_type=code`;
-
+export async function login(): Promise<void> {
+	const code = new URLSearchParams(document.location.search).get('code');
+	if (code) {
+		socket = io('http://localhost:5000/chat', { auth: { token: code } });
+		await goto('/Main');
+		return;
+	}
 	window.history.pushState({}, '');
-	window.location.assign(URL);
+	window.location.assign('http://localhost:5000/login');
 }

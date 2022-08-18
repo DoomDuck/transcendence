@@ -151,7 +151,15 @@ export class UserService {
   findOneActive(id: Id): ActiveUser | undefined {
     return this.arrayActiveUser.find((user) => user.id == id);
   }
-
+  findOneActiveBySocket(clientSocket: Socket): ActiveUser | undefined {
+    return this.arrayActiveUser.find(
+      (user) =>
+        user.socketUser.find((socket) => socket === clientSocket) != undefined,
+    );
+  }
+  findOneActiveByName(name: string): ActiveUser | undefined {
+    return this.arrayActiveUser.find((user) => user.name === name);
+  }
   findOneDb(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
@@ -300,32 +308,30 @@ export class UserService {
       );
   }
   updateChannelConversation(
-    senderId: Id,
-    userId: Id,
+    sender: ActiveUser,
+    user: ActiveUser,
     channel: Channel,
     content: string,
   ) {
-    const sender = this.findOneActive(senderId);
-    const user = this.findOneActive(userId);
     if (sender === undefined || user === undefined) return;
     const tempUserConversation = user.activeChannelConversation.find(
       (conv) => conv.name === channel.name,
     );
     if (tempUserConversation)
       tempUserConversation.history.push(
-        new ChatMessage(sender.id, content, senderId === userId),
+        new ChatMessage(sender.id, content, sender === user),
       );
     else
       user.activeChannelConversation.push(
         new ActiveConversation(
           channel.name,
-          new ChatMessage(sender.id, content, senderId === userId),
+          new ChatMessage(sender.id, content, sender === user),
         ),
       );
   }
 
   disconnection(clientSocket: Socket) {
-    const activeUser = this.findOneActive(clientSocket.handshake.auth.token);
+    const activeUser = this.findOneActiveBySocket(clientSocket);
     if (activeUser) {
       if (activeUser.socketUser.length === 1) {
         activeUser.joinedChannel.forEach((channel) =>
@@ -354,38 +360,19 @@ export class UserService {
     return this.channelManagerService.newChatFeedbackDto(true);
   }
   sendMessageToUser(
-    senderId: Id,
+    sender: ActiveUser,
     wss: Server,
     content: string,
-    target: Id,
+    target: ActiveUser,
   ): ChatFeedbackDto {
     let logger = new Logger('sendMessageToUser');
-    logger.log('sending', content, 'to', target);
-    const tempUserSender = this.arrayActiveUser.find(
-      (user) => user.id == senderId,
+    target.socketUser.forEach((socket) =>
+      wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
+        source: sender.id,
+        content: content,
+      }),
     );
-    const tempUserTarget = this.arrayActiveUser.find(
-      (user) => user.id == target,
-    );
-    if (tempUserSender) {
-      if (tempUserTarget) {
-        tempUserTarget.socketUser.forEach((socket) =>
-          wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-            source: tempUserSender.id,
-            content: content,
-          }),
-        );
-        this.updateUserConversation(tempUserSender, tempUserTarget, content);
-        return this.channelManagerService.newChatFeedbackDto(true);
-      } else
-        return this.channelManagerService.newChatFeedbackDto(
-          false,
-          ChatError.USER_NOT_FOUND,
-        );
-    } else
-      return this.channelManagerService.newChatFeedbackDto(
-        false,
-        ChatError.U_DO_NOT_EXIST,
-      );
+    this.updateUserConversation(sender, target, content);
+    return this.channelManagerService.newChatFeedbackDto(true);
   }
 }
