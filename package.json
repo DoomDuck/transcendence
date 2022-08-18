@@ -31,7 +31,4 @@
 		"url": "https://github.com/DoomDuck/transcendence/issues"
 	},
 	"homepage": "https://github.com/DoomDuck/transcendence#readme",
-	"dependencies": {
-		"axios": "^0.27.2"
-	}
 }
