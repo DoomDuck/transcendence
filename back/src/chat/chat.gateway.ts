@@ -1,6 +1,6 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
-import { ChatEvent } from 'backFrontCommon';
+import { ChatEvent, LoginEvent } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import type {
@@ -28,6 +28,7 @@ import {
   OnGatewayInit,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { LoginService } from 'src/login/login.service';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: '/chat' })
@@ -36,6 +37,7 @@ export class ChatGateway
 {
   @WebSocketServer() wss!: Server;
   constructor(
+    private loginService: LoginService,
     private userService: UserService,
     private configService: ConfigService,
     private channelManagerService: ChannelManagerService,
@@ -85,7 +87,15 @@ export class ChatGateway
 
       const r = await fetch('https://api.intra.42.fr/v2/me/', { headers });
       const data = await r.json();
+      
       this.logger.log(data.id, data.login);
+      
+      // Force 2FA for every user
+      // TODO: Only enable if required
+      clientSocket.emit(LoginEvent.TOTP_URI, )
+      this.loginService.generateTotpURI()
+
+      
       this.userService.addOne(new UserDto(data.id, data.login, clientSocket));
       this.logger.log(`end handle connection`);
     } catch (e: any) {

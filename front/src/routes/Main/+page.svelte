@@ -1,9 +1,4 @@
 <script lang="ts">
-	import { test } from '$lib/2fa';
-	import { onMount } from 'svelte';
-
-	onMount(test);
-
 	let color: string = '#6028FF';
 </script>
 

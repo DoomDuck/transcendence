@@ -18,14 +18,14 @@
 
 <nav id="menu">
 	{#if !loginPromise}
-			<h1 class="typography">Login</h1>
-			<h4 class="typography" on:click={loginAs('user')}> User </h4>
-			<h4 class="typography" on:click={loginAs('guest')}> Guest </h4>
+			<h1>Login</h1>
+			<h4 on:click={loginAs('user')}> User </h4>
+			<h4 on:click={loginAs('guest')}> Guest </h4>
 	{:else}
 		{#await loginPromise}
-			<h1>Logging in...</h1>
+			<h1> Logging in... </h1>
 		{:catch}
-			<h1>Could not loggin an error occured</h1>
+			<h1> Could not loggin an error occured </h1>
 		{/await}
 	{/if}
 </nav>
@@ -42,7 +42,8 @@
 		align-items: center;
 	}
 
-	.typography {
+	/* Typographie */ 
+	h1, h4 {
 		font-family: 'Press Start 2P';
 		font-style: normal;
 		color: #6028FF;
@@ -66,8 +67,5 @@
 		background-color: blue;
 		width: 100%;
 		text-align: center;
-	}
-	a {
-		all: unset;
 	}
 </style>

@@ -17,6 +17,7 @@ export async function preLogin() : Promise<void> {
 	const code = new URLSearchParams(document.location.search).get('code');
 	if (!code) return;
 	socket = io('http://localhost:5000/chat', { auth: { code } });
+	socket.on()
 	await goto(LOGGIN_SUCCESS_ROUTE);
 }
 
