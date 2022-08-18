@@ -1,26 +1,26 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { login, guestLogin, preLogin } from '$lib/login';
-	
+
 	onMount(preLogin);
 
 	let loginPromise: null | Promise<void> = null;
-	
+
 	const loginCallbacks = {
 		user: login,
-		guest: guestLogin,
+		guest: guestLogin
 	};
-	
-	function loginAs(userOrGuest: 'user'| 'guest') {
-		return () => loginPromise = loginCallbacks[userOrGuest]();
+
+	function loginAs(userOrGuest: 'user' | 'guest') {
+		return () => (loginPromise = loginCallbacks[userOrGuest]());
 	}
 </script>
 
 <nav id="menu">
 	{#if !loginPromise}
-			<h1 class="typography">Login</h1>
-			<h4 class="typography" on:click={loginAs('user')}> User </h4>
-			<h4 class="typography" on:click={loginAs('guest')}> Guest </h4>
+		<h1 class="typography">Login</h1>
+		<h4 class="typography" on:click={loginAs('user')}>User</h4>
+		<h4 class="typography" on:click={loginAs('guest')}>Guest</h4>
 	{:else}
 		{#await loginPromise}
 			<h1>Logging in...</h1>
@@ -45,7 +45,7 @@
 	.typography {
 		font-family: 'Press Start 2P';
 		font-style: normal;
-		color: #6028FF;
+		color: #6028ff;
 	}
 
 	h1 {

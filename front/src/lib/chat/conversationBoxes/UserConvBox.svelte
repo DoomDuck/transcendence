@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import GameInvit from '$lib/GameInvitBox.svelte';
+	import GameInvit from '$lib/chat/modals/GameInviteModal.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import { UserConversation } from '$lib/utils';
 	import ConversationEntry from './ConversationEntry.svelte';

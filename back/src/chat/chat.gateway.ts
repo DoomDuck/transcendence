@@ -44,9 +44,9 @@ export class ChatGateway
   afterInit(server: any) {
     this.logger.log('Initialized chat ');
   }
-  
+
   // Random login for guest
-  generateRandomId() : number {
+  generateRandomId(): number {
     return Math.floor(Math.random() * 1_000);
   }
 
@@ -58,7 +58,9 @@ export class ChatGateway
     // TODO: Don't use random id
     if (!(typeof code == 'string')) {
       let id = this.generateRandomId();
-      await this.userService.addOne(new UserDto(id, `guest-${id}`, clientSocket));
+      await this.userService.addOne(
+        new UserDto(id, `guest-${id}`, clientSocket),
+      );
       return;
     }
 

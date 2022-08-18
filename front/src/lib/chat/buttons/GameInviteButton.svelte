@@ -1,6 +1,6 @@
 <script lang="ts">
-	import GameInvitBox from './GameInvitBox.svelte';
-	import Modal from './Modal.svelte';
+	import GameInvitBox from '../modals/GameInviteModal.svelte';
+	import Modal from '$lib/Modal.svelte';
 
 	let invitModal = false;
 	export let name: string;
