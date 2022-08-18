@@ -1,9 +1,6 @@
 import { io } from 'socket.io-client';
-import { PUBLIC_APP_42_ID } from '$env/static/public'; 
 import { goto } from '$app/navigation';
 import type { ChatSocket } from '$lib/utils';
-
-const LOCATION = 'https://api.intra.42.fr/oauth/authorize';
 
 let socket : ChatSocket | null = null;
 
@@ -22,9 +19,6 @@ export async function login(): Promise<void> {
 		await goto("/Main");
 		return;
 	}
-
-	const redirect_url = encodeURIComponent(window.location.origin);
-	const url = `${LOCATION}?client_id=${PUBLIC_APP_42_ID}&redirect_uri=${redirect_url}&response_type=code`;
 	window.history.pushState({}, '');
-	window.location.assign(url);
+	window.location.assign('http://localhost:5000/login');
 }

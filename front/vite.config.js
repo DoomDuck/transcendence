@@ -3,11 +3,8 @@ import { defineConfig } from 'vite';
 import * as path from 'path';
 
 /** @type {import('vite').UserConfig} */
-export default defineConfig(({ command, mode }) => {
-	void command; // Ignore
-	void mode;
+export default defineConfig(() => {
 	const project_root = path.join(process.cwd(), '..');
-
 	return {
 		plugins: [sveltekit()],
 		envDir: project_root,
