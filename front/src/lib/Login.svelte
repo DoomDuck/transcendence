@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { login, guestLogin, preLogin } from '$lib/login';
+	import { login, guestLogin, preLogin } from '$lib/ts/login';
 
 	onMount(preLogin);
 
@@ -66,8 +66,5 @@
 		background-color: blue;
 		width: 100%;
 		text-align: center;
-	}
-	a {
-		all: unset;
 	}
 </style>

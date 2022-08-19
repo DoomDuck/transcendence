@@ -10,11 +10,9 @@ import { Socket as IOSocketBaseType } from 'socket.io-client';
 import { type ServerToClientEvents, type ClientToServerEvents } from 'backFrontCommon';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import { usersObject } from './users';
-import type { TypeMap } from 'backFrontCommon/general';
+import type { Id, TypeMap } from 'backFrontCommon/general';
 
 export type ChatSocket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
-
-type Id = number;
 
 type ChatMessageGameInvit = {
 	source: Id;

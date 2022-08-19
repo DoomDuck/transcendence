@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { users } from '$lib/users';
+	import { users } from '$lib/ts/users';
 	import type { Id } from 'backFrontCommon';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 

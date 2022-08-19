@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ConversationListItem from './ConversationListItem.svelte';
-	import { users } from '../users';
-	import { userConvs, channelConvs } from '$lib/utils';
+	import { users } from '../ts/users';
+	import { userConvs, channelConvs } from '$lib/ts/utils';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelBox from '$lib/chat/conversationBoxes/ChannelConvBox.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';

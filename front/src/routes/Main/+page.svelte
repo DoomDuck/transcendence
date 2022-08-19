@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getSocket } from '$lib/login';
+	import { getSocket } from '$lib/ts/login';
 	import { onMount } from 'svelte';
 
 	// import { users } from '$lib/users';

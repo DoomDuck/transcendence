@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 import { goto } from '$app/navigation';
-import type { ChatSocket } from '$lib/utils';
+import type { ChatSocket } from './utils';
 
 const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 

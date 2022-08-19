@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getSocket } from '$lib/login';
+	import { getSocket } from '$lib/ts/login';
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
 	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
@@ -9,13 +9,16 @@
 		CreateChannelToServer,
 		DMFromServer,
 		DMToServer,
+		GameInviteFromServer,
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { userConvs, channelConvs } from '$lib/utils';
+	import { userConvs, channelConvs } from '$lib/ts/utils';
+	import { invits, gameInvitsMethods } from '$lib/ts/gameInvite';
+	import { onMount } from 'svelte';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
 
@@ -59,6 +62,12 @@
 		socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 		socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
 		socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
+		socket.on(ChatEvent.GAME_INVITE, () => receiveGameInvite);
+	});
+
+	//DEBUG
+	onMount(() => {
+		receiveGameInvite({ source: 2 });
 	});
 
 	// EVENTS FROM SERVER
@@ -75,6 +84,10 @@
 
 	function receiveInviteChannel(message: InviteChannelFromServer) {
 		$channelConvs = $channelConvs.create(message.channel);
+	}
+
+	function receiveGameInvite(message: GameInviteFromServer) {
+		gameInvitsMethods.add(message.source);
 	}
 
 	// EVENTS TO SERVER

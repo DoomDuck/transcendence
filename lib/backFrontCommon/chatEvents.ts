@@ -1,3 +1,5 @@
+import type { UserHistoryDto } from "./chatConversationsDto"
+import type { ChatUserDto } from "./chatUserProfileDto"
 import type { Id } from "./general"
 
 export class ChatEvent {
@@ -8,6 +10,11 @@ export class ChatEvent {
 	static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
 	static readonly GAME_INVITE = 'game invite'
 	static readonly FRIEND_INVITE = 'friend invite'
+  static readonly POST_AVATAR=  'post_avatar'
+  static readonly GET_USER = 'get_user'
+  static readonly GET_FRIENDS =  'get_friends '
+  static readonly GET_LEADERBOARD = 'get_leaderboard'
+  static readonly GET_CHAT_HISTORY = 'get_chat_history'
 }
 
 export class ChatError {
@@ -46,14 +53,24 @@ export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
 export type GameInviteFromServer = { source: Id };
 export type GameInviteToServer = { target: Id };
-export type FriendInviteFromServer = { source: Id };
 export type FriendInviteToServer = { target: Id };
+export type PostAvatar = { imageDataUrl: string };
+export type GetUser = { target: Id };
+
+export type LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };
+export type GetLeaderBoardResponse = { items: LeaderboardItemDto[] };
 
 export type ChatFeedbackDto = {
   success: boolean,
   errorMessage?: string,
 }
 export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
+export type RequestFeedbackDto<Result> = {
+  success: boolean,
+  errorMessage?: string,
+  result?: Result,
+}
+export type FeedbackCallbackWithResult<Result> = (feedback: RequestFeedbackDto<Result>) => void;
 
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
@@ -61,7 +78,8 @@ export interface ServerToClientEvents {
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteFromServer) => void;
-  [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
+
+  // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }
 
 export interface ClientToServerEvents {
@@ -72,4 +90,9 @@ export interface ClientToServerEvents {
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.POST_AVATAR]: (dto: PostAvatar, callback: FeedbackCallback) => void;
+  [ChatEvent.GET_USER]: (dto: GetUser, callback: FeedbackCallbackWithResult<ChatUserDto>) => void;
+  [ChatEvent.GET_FRIENDS]: (callback: RequestFeedbackDto<Id[]>) => void;
+  [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
+  [ChatEvent.GET_CHAT_HISTORY]: (callback: RequestFeedbackDto<UserHistoryDto>) => void;
 }

@@ -2,7 +2,7 @@
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
 	import GameInvit from '$lib/chat/modals/GameInviteModal.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { UserConversation } from '$lib/utils';
+	import { UserConversation } from '$lib/ts/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { DMToServer } from 'backFrontCommon/chatEvents';
 	import BlockUser from '../buttons/BlockUserButton.svelte';

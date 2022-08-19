@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PendingText from '$lib/PendingText.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
-	import { users } from '$lib/users';
+	import { users } from '$lib/ts/users';
 	import type { ChatMessageDto } from 'backFrontCommon';
 
 	export let message: ChatMessageDto;

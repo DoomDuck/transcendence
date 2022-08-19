@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import { type ChannelConversation } from '$lib/utils';
+	import { type ChannelConversation } from '$lib/ts/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { CMToServer } from 'backFrontCommon/chatEvents';
 
