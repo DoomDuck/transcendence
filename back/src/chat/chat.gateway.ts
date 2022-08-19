@@ -60,7 +60,7 @@ export class ChatGateway
         client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
         client_secret: this.configService.get<string>('APP_42_SECRET'),
         code: clientSocket.handshake.auth.token,
-        redirect_uri: 'http://127.0.0.1:5173',
+        redirect_uri: 'http://localhost:5173',
       });
       this.logger.log(body);
       const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, {
