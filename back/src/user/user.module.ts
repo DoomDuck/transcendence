@@ -14,7 +14,8 @@ import { Channel } from '../channelManager/channel.entity';
 import { DatabaseFile } from './entities/databaseFile.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatGateway } from '../chat/chat.gateway';
-import { ConfigModule } from '@nestjs/config';
+import { LoginService } from '../login/login.service';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
@@ -35,6 +36,7 @@ import { ConfigModule } from '@nestjs/config';
     UserService,
     DatabaseFilesService,
     ChannelManagerService,
+    LoginService,
   ],
 })
 export class userModule {}
