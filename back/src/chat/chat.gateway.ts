@@ -1,21 +1,19 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
-import { ChatEvent, LoginEvent } from 'backFrontCommon';
+import { ChatEvent, ChatError, ChatFeedbackDto, LoginEvent } from 'backFrontCommon';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import { Id } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios';
 import type {
   DMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
 } from 'backFrontCommon';
-import { ChatError, ChatFeedbackDto } from 'backFrontCommon';
 import { UserDto } from '../user/dto/user.dto';
-import { Id } from 'backFrontCommon';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
 } from 'socket.io';
-import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import fetch from 'node-fetch';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
@@ -28,7 +26,7 @@ import {
   OnGatewayInit,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { LoginService } from 'src/login/login.service';
+import { LoginService } from '../login/login.service';
 import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({ namespace: '/chat' })
@@ -72,31 +70,42 @@ export class ChatGateway
         code,
         redirect_uri: this.configService.get<string>('REDIRECT_URI'),
       });
-      const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, {
+      let response  = await fetch(`https://api.intra.42.fr/oauth/token/`, {
         method: 'POST',
-        body,
         headers: { 'Content-Type': 'application/json' },
+        body,
       });
-      const r2 = await reponse.json();
-      this.logger.log(r2);
-      const access_token = r2.access_token;
+      if (!response.ok) {
+        throw new Error(`Could not fetch token: ${response.statusText}`);
+      }
+      let data = await response.json();
+      const access_token = data.access_token;
 
       const headers = {
         Authorization: 'Bearer ' + access_token,
       };
 
-      const r = await fetch('https://api.intra.42.fr/v2/me/', { headers });
-      const data = await r.json();
+      response = await fetch('https://api.intra.42.fr/v2/me/', { headers });
+      if (!response.ok) {
+        throw new Error(`Could not fetch user id: ${response.statusText}`);
+      }
+      data = await response.json();
+      if (!(typeof data == "object")) {
+        throw new Error("Invalid body type");
+      }
+      const {id, login} = data;
+      if (!(typeof id == "number" && typeof login == "string")) {
+        throw new Error(`Could not fetch id or login properly`);
+      }
       
-      this.logger.log(data.id, data.login);
+      this.logger.log(this.loginService.generateTotpURI());
       
       // Force 2FA for every user
       // TODO: Only enable if required
-      clientSocket.emit(LoginEvent.TOTP_URI, )
-      this.loginService.generateTotpURI()
-
+      // clientSocket.emit(LoginEvent.TOTP_URI, )
+      // this.loginService.generateTotpURI()
       
-      this.userService.addOne(new UserDto(data.id, data.login, clientSocket));
+      this.userService.addOne(new UserDto(id, login, clientSocket));
       this.logger.log(`end handle connection`);
     } catch (e: any) {
       this.logger.log(`in connection fail `, e);
