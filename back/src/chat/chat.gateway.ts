@@ -26,8 +26,8 @@ import {
   OnGatewayInit,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { LoginService } from '../login/login.service';
 import { Logger } from '@nestjs/common';
+import { TOTP, Secret } from 'otpauth';
 
 @WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway
@@ -35,7 +35,6 @@ export class ChatGateway
 {
   @WebSocketServer() wss!: Server;
   constructor(
-    private loginService: LoginService,
     private userService: UserService,
     private configService: ConfigService,
     private channelManagerService: ChannelManagerService,
@@ -50,6 +49,26 @@ export class ChatGateway
     return Math.floor(Math.random() * 1_000);
   }
 
+  
+  async pass_totp_check(socket: Socket, totp: TOTP): Promise<boolean> {
+    this.logger.debug("pass_totp_check");
+    try {
+      const token = await new Promise<string>(r => socket.once(LoginEvent.TOTP_CHECK, r));
+      this.logger.debug("TOTP_CHECK");
+      const delta = totp.validate({token});
+      const success = delta === 0;
+    
+      this.logger.debug("validated");
+      socket.emit(LoginEvent.TOTP_RESULT, success);
+    
+      this.logger.debug("finished");
+      return success;
+    } catch (e) {
+      this.logger.error(e);
+    }
+    return false;
+  }
+  
   async handleConnection(clientSocket: Socket) {
     let code = clientSocket.handshake.auth.code;
     this.logger.log(`Client connected: ${clientSocket.id}`, code);
@@ -58,11 +77,13 @@ export class ChatGateway
     // TODO: Don't use random id
     if (!(typeof code == 'string')) {
       let id = this.generateRandomId();
+      // TODO: Don't add guest to DB
       await this.userService.addOne(new UserDto(id, `guest-${id}`, clientSocket));
       return;
     }
 
     try {
+      // Get 42 token
       const body = JSON.stringify({
         grant_type: 'authorization_code',
         client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
@@ -79,33 +100,72 @@ export class ChatGateway
         throw new Error(`Could not fetch token: ${response.statusText}`);
       }
       let data = await response.json();
-      const access_token = data.access_token;
+      if (!(typeof data == "object")) {
+        throw new Error("Invalid body type");
+      }
+      const {access_token} = data;
+      if (!(typeof access_token == "string")) {
+        throw new Error("Could not extract token");
+      }
 
-      const headers = {
-        Authorization: 'Bearer ' + access_token,
-      };
-
+      // Get user info
+      const headers = { Authorization: 'Bearer ' + access_token };
       response = await fetch('https://api.intra.42.fr/v2/me/', { headers });
       if (!response.ok) {
         throw new Error(`Could not fetch user id: ${response.statusText}`);
       }
       data = await response.json();
-      if (!(typeof data == "object")) {
+      
+      // Check user info
+      if (!(typeof data == "object"))
         throw new Error("Invalid body type");
-      }
       const {id, login} = data;
-      if (!(typeof id == "number" && typeof login == "string")) {
+      if (!(typeof id == "number" && typeof login == "string"))
         throw new Error(`Could not fetch id or login properly`);
+      
+      // Add user to server
+      await this.userService.addOne(new UserDto(id, login, clientSocket));
+
+      // Check if user has 2fa setup
+      const user = await this.userService.findOneDb(id);
+      if (!user) throw new Error(`Could not find created user`);
+
+      // TODO move to some config
+      const TOTP_DESCRIPTION = {
+        issuer: "Transcendance",
+        label: "2fa",
+      };
+
+      // Check totp requirement
+      const {totpSecret} = user;
+      clientSocket.emit(LoginEvent.TOTP_IS_REQUIRED, !!totpSecret);
+
+
+      let totp : TOTP;
+       // 2fa
+      if (totpSecret) {
+        totp = new TOTP({
+          secret: Secret.fromHex(totpSecret),
+          ...TOTP_DESCRIPTION
+        });
+      } else {
+        // For now force TOTP setup
+        // TODO: Move totp setup to settings
+        await new Promise<void>(r => clientSocket.once(LoginEvent.TOTP_DEMAND_SETUP, r));
+        this.logger.debug("Creating new token");
+        totp = new TOTP(TOTP_DESCRIPTION);
+        clientSocket.emit(LoginEvent.TOTP_SETUP, totp.toString());
+        this.logger.debug("Sent token");
+      }
+      if (!this.pass_totp_check(clientSocket, totp)) {
+        clientSocket.disconnect();
+        return;
       }
       
-      this.logger.log(this.loginService.generateTotpURI());
-      
-      // Force 2FA for every user
-      // TODO: Only enable if required
-      // clientSocket.emit(LoginEvent.TOTP_URI, )
-      // this.loginService.generateTotpURI()
-      
-      this.userService.addOne(new UserDto(id, login, clientSocket));
+      if (!totpSecret) {
+        await this.userService.updateTotp(user, totp.secret.hex);
+      }
+
       this.logger.log(`end handle connection`);
     } catch (e: any) {
       this.logger.log(`in connection fail `, e);

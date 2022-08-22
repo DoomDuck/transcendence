@@ -1,7 +1,14 @@
 import type { Id } from "./general"
 
+/**
+ * Events required to Login
+ */
 export class LoginEvent {
-  static readonly TOTP_URI = "totp uri";
+  static readonly TOTP_IS_REQUIRED = "totp is required";
+  static readonly TOTP_DEMAND_SETUP = "totp demand setup";
+  static readonly TOTP_SETUP = "totp setup";
+  static readonly TOTP_CHECK = "totp check";
+  static readonly TOTP_RESULT = "totp result";
 }
 
 export class ChatEvent {
@@ -59,7 +66,11 @@ export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
-  [LoginEvent.TOTP_URI]: (uri: string) => void;
+
+  // Login
+  [LoginEvent.TOTP_IS_REQUIRED]: (is_required: boolean) => void;
+  [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
+  [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
 }
 
 export interface ClientToServerEvents {
@@ -68,4 +79,8 @@ export interface ClientToServerEvents {
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
+  
+  // Login
+  [LoginEvent.TOTP_CHECK]: (token: string) => void,
+  [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
 }

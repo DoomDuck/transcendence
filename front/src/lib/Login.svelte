@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { login, guestLogin, preLogin } from '$lib/login';
-	
+
+	console.log("Logging..");
+
 	onMount(preLogin);
 
 	let loginPromise: null | Promise<void> = null;
-	
+
 	const loginCallbacks = {
 		user: login,
 		guest: guestLogin,
