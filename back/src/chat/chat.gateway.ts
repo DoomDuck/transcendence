@@ -49,7 +49,6 @@ export class ChatGateway
     return Math.floor(Math.random() * 1_000);
   }
 
-  
   async pass_totp_check(socket: Socket, totp: TOTP): Promise<boolean> {
     this.logger.debug("pass_totp_check");
     try {
@@ -69,16 +68,16 @@ export class ChatGateway
     return false;
   }
   
-  async handleConnection(clientSocket: Socket) {
-    let code = clientSocket.handshake.auth.code;
-    this.logger.log(`Client connected: ${clientSocket.id}`, code);
+  async handleConnection(socket: Socket) {
+    let code = socket.handshake.auth.code;
+    this.logger.log(`Client connected: ${socket.id}`, code);
 
     // Guest login
     // TODO: Don't use random id
     if (!(typeof code == 'string')) {
       let id = this.generateRandomId();
       // TODO: Don't add guest to DB
-      await this.userService.addOne(new UserDto(id, `guest-${id}`, clientSocket));
+      await this.userService.addOne(new UserDto(id, `guest-${id}`, socket));
       return;
     }
 
@@ -124,7 +123,7 @@ export class ChatGateway
         throw new Error(`Could not fetch id or login properly`);
       
       // Add user to server
-      await this.userService.addOne(new UserDto(id, login, clientSocket));
+      await this.userService.addOne(new UserDto(id, login, socket));
 
       // Check if user has 2fa setup
       const user = await this.userService.findOneDb(id);
@@ -138,7 +137,7 @@ export class ChatGateway
 
       // Check totp requirement
       const {totpSecret} = user;
-      clientSocket.emit(LoginEvent.TOTP_IS_REQUIRED, !!totpSecret);
+      socket.emit(LoginEvent.TOTP_REQUIREMENTS, !!totpSecret);
 
 
       let totp : TOTP;
@@ -151,14 +150,14 @@ export class ChatGateway
       } else {
         // For now force TOTP setup
         // TODO: Move totp setup to settings
-        await new Promise<void>(r => clientSocket.once(LoginEvent.TOTP_DEMAND_SETUP, r));
+        await new Promise<void>(r => socket.once(LoginEvent.TOTP_DEMAND_SETUP, r));
         this.logger.debug("Creating new token");
         totp = new TOTP(TOTP_DESCRIPTION);
-        clientSocket.emit(LoginEvent.TOTP_SETUP, totp.toString());
+        socket.emit(LoginEvent.TOTP_SETUP, totp.toString());
         this.logger.debug("Sent token");
       }
-      if (!this.pass_totp_check(clientSocket, totp)) {
-        clientSocket.disconnect();
+      if (!this.pass_totp_check(socket, totp)) {
+        socket.disconnect();
         return;
       }
       

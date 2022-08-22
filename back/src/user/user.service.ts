@@ -188,6 +188,13 @@ export class UserService {
     }
     logger.log('end add one user');
   }
+  
+
+  async addOneGuest(socket: Socket) {
+    // TODO: Better guests than random id
+    const id = Math.floor(Math.random() * 1000);
+    await this.addOne(new UserDto(id, `guest-${id}`, socket));
+  }
 
   addNewSocketUser(userId: Id, newSocket: Socket) {
     const activeUser = this.arrayActiveUser.find((user) => user.id === userId);

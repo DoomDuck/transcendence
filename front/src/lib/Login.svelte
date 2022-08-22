@@ -2,8 +2,6 @@
 	import { onMount } from 'svelte';
 	import { login, guestLogin, preLogin } from '$lib/login';
 
-	console.log("Logging..");
-
 	onMount(preLogin);
 
 	let loginPromise: null | Promise<void> = null;
@@ -18,53 +16,19 @@
 	}
 </script>
 
-<nav id="menu">
-	{#if !loginPromise}
-			<h1>Login</h1>
-			<h4 on:click={loginAs('user')}> User </h4>
-			<h4 on:click={loginAs('guest')}> Guest </h4>
-	{:else}
-		{#await loginPromise}
-			<h1> Logging in... </h1>
-		{:catch}
-			<h1> Could not loggin an error occured </h1>
-		{/await}
-	{/if}
-</nav>
+{#if !loginPromise}
+	<h1>Login</h1>
+	<h4 on:click={loginAs('user')}> User </h4>
+	<h4 on:click={loginAs('guest')}> Guest </h4>
+{:else}
+	{#await loginPromise}
+		<h1> Logging in... </h1>
+	{:catch}
+		<h1> Could not loggin an error occured </h1>
+	{/await}
+{/if}
 
 <style>
-	#menu {
-		background-image: url('/starsSky.png');
-		background-size: cover;
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	/* Typographie */ 
-	h1, h4 {
-		font-family: 'Press Start 2P';
-		font-style: normal;
-		color: #6028FF;
-	}
-
-	h1 {
-		line-height: 300%;
-		-webkit-text-stroke: 2px #ff29ea;
-		text-shadow: 6px 6px 6px purple, 6px 6px 6px purple;
-		font-size: 6vh;
-	}
-
-	h4 {
-		line-height: 350%;
-		-webkit-text-stroke: 1px #ff29ea;
-		text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
-		font-size: 3.5vh;
-	}
-
 	h4:hover {
 		background-color: blue;
 		width: 100%;

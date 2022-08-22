@@ -4,7 +4,7 @@ import type { Id } from "./general"
  * Events required to Login
  */
 export class LoginEvent {
-  static readonly TOTP_IS_REQUIRED = "totp is required";
+  static readonly TOTP_REQUIREMENTS = "totp requirements";
   static readonly TOTP_DEMAND_SETUP = "totp demand setup";
   static readonly TOTP_SETUP = "totp setup";
   static readonly TOTP_CHECK = "totp check";
@@ -68,7 +68,7 @@ export interface ServerToClientEvents {
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
 
   // Login
-  [LoginEvent.TOTP_IS_REQUIRED]: (is_required: boolean) => void;
+  [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
   [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
   [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
 }
