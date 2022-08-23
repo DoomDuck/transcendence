@@ -11,7 +11,6 @@ import {
 } from '@nestjs/websockets';
 import { Socket as IOSocketBaseType } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
-import { Logger } from '@nestjs/common';
 import fetch from 'node-fetch';
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 
@@ -105,7 +104,7 @@ export class LoginGateway implements
         socket.emit(LoginEvent.TOTP_RESULT, success);
         if (!success) return;
 
-        this.userService.addOne(client.user);
+        await this.userService.addOne(client.user);
         this.clientsRequiringTotp.delete(socket);
     }
     
@@ -136,9 +135,9 @@ export class LoginGateway implements
         let code = socket.handshake.auth.code;
 
         if (typeof code == 'string') {
-            this.handleUser(socket, code);
+            await this.handleUser(socket, code);
         } else {
-            this.handleGuest(socket);
+            await this.handleGuest(socket);
         }
     }
 }

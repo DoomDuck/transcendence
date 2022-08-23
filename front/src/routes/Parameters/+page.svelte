@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { state } from '$lib/ts/state';
 	import ProfileParams from '$lib/ProfileParams.svelte';
 	export let avatar: string;
 	export let name = 'Ted';
@@ -21,7 +22,7 @@
 	</div>
 	<div id="lastParams">
 		<div><input type="checkbox" checked={twoFactorsAuth} /> Two factors authentication</div>
-		<button id="disco"> Disconnect </button>
+		<button id="disco" on:click={state.disconnect}> Disconnect </button>
 	</div>
 </div>
 
