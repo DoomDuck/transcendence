@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from './orm.config';
-import { userModule } from './user/user.module';
+import { UserModule } from './user/user.module';
 import { PongGateway } from './pong/pong.gateway';
 import { GameManagerService } from './pong/game-manager.service';
 import { ConfigModule } from '@nestjs/config';
@@ -15,7 +15,7 @@ import { join } from 'path';
       isGlobal: true,
     }),
     TypeOrmModule.forRoot(config),
-    userModule,
+    UserModule,
     LoginModule,
   ],
   controllers: [],

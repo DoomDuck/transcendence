@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getSocket } from '$lib/ts/login';
+	import { state } from '$lib/ts/state';
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
 	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
@@ -59,14 +59,14 @@
 
 	// SOCKET SETUP
 
-	getSocket().then((socket) => {
-		socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
-		socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
-		socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
-		socket.on(ChatEvent.GAME_INVITE, receiveGameInvite);
-		socket.on(ChatEvent.GAME_ACCEPT, receiveGameAccept);
-		socket.on(ChatEvent.GAME_REFUSE, receiveGameRefuse);
-	});
+	// console.log('has context:', hasContext(chatContextKey));
+	// const socket: ChatSocket = getContext<ChatContext>(chatContextKey).socket;
+	state.socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
+	state.socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
+	state.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
+	state.socket.on(ChatEvent.GAME_INVITE, () => receiveGameInvite);
+	state.socket.on(ChatEvent.GAME_ACCEPT, () => receiveGameAccept);
+	state.socket.on(ChatEvent.GAME_REFUSE, () => receiveGameRefuse);
 
 	//DEBUG
 	onMount(() => {
@@ -102,9 +102,9 @@
 
 	// EVENTS TO SERVER
 
-	async function sendDirectMessage(event: CustomEvent<DMToServer>) {
+	function sendDirectMessage(event: CustomEvent<DMToServer>) {
 		console.log('sending DirectMessage:', JSON.stringify(event.detail));
-		(await getSocket()).emit(ChatEvent.MSG_TO_USER, event.detail, (feedback: ChatFeedbackDto) => {
+		state.socket.emit(ChatEvent.MSG_TO_USER, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				$userConvs = $userConvs.addMessageFromMe(event.detail.content, event.detail.target);
 			} else {
@@ -113,42 +113,31 @@
 		});
 	}
 
-	async function sendCreateChannel(event: CustomEvent<CreateChannelToServer>) {
+	function sendCreateChannel(event: CustomEvent<CreateChannelToServer>) {
 		console.log('sending CreateChannel:', JSON.stringify(event.detail));
-		(await getSocket()).emit(
-			ChatEvent.CREATE_CHANNEL,
-			event.detail,
-			(feedback: ChatFeedbackDto) => {
-				if (feedback.success) {
-					$channelConvs = $channelConvs.create(event.detail.channel);
-				} else {
-					alert(`error: ${feedback.errorMessage}`);
-				}
+		state.socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				$channelConvs = $channelConvs.create(event.detail.channel);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
 			}
-		);
+		});
 	}
 
-	async function sendChannelMessage(event: CustomEvent<CMToServer>) {
+	function sendChannelMessage(event: CustomEvent<CMToServer>) {
 		console.log('sending ChannelMessage:', JSON.stringify(event.detail));
-		(await getSocket()).emit(
-			ChatEvent.MSG_TO_CHANNEL,
-			event.detail,
-			(feedback: ChatFeedbackDto) => {
-				if (feedback.success) {
-					$channelConvs = $channelConvs.addMessageFromMe(
-						event.detail.content,
-						event.detail.channel
-					);
-				} else {
-					alert(`error: ${feedback.errorMessage}`);
-				}
+		state.socket.emit(ChatEvent.MSG_TO_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				$channelConvs = $channelConvs.addMessageFromMe(event.detail.content, event.detail.channel);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
 			}
-		);
+		});
 	}
 
-	async function sendJoinChannel(event: CustomEvent<JoinChannelToServer>) {
+	function sendJoinChannel(event: CustomEvent<JoinChannelToServer>) {
 		console.log('sending JoinChannel:', JSON.stringify(event.detail));
-		(await getSocket()).emit(ChatEvent.JOIN_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+		state.socket.emit(ChatEvent.JOIN_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				$channelConvs = $channelConvs.create(event.detail.channel);
 			} else {

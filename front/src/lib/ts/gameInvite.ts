@@ -1,5 +1,5 @@
 import { ChatEvent, type Id } from 'backFrontCommon';
-import { getSocket } from './login';
+import { state } from '$lib/ts/state';
 import { PopupCategory, popups, type CanBePopup, popupMethods } from './popups';
 import { usersObject } from './users';
 
@@ -26,16 +26,12 @@ export class ReceivedGameInvite implements CanBePopup {
 		return 'Accept';
 	}
 	onClose() {
-		getSocket().then((socket) => {
-			socket.emit(ChatEvent.GAME_REFUSE, { target: this.sender });
-		});
+		state.socket.emit(ChatEvent.GAME_REFUSE, { target: this.sender });
 	}
 	onAccept() {
-		getSocket().then((socket) => {
-			socket.emit(ChatEvent.GAME_ACCEPT, { target: this.sender }, () =>
-				popupMethods.removePopup(this)
-			);
-		});
+		state.socket.emit(ChatEvent.GAME_ACCEPT, { target: this.sender }, () =>
+			popupMethods.removePopup(this)
+		);
 	}
 	revoke() {
 		this.popupCategory = PopupCategory.ERROR;
@@ -64,9 +60,7 @@ export class SentGameInvite implements CanBePopup {
 		return false;
 	}
 	onClose() {
-		getSocket().then((socket) => {
-			socket.emit(ChatEvent.GAME_REFUSE, { target: this.target });
-		});
+		state.socket.emit(ChatEvent.GAME_REFUSE, { target: this.target });
 	}
 }
 
@@ -79,11 +73,9 @@ function revokeReceivedGameInvite(sender: Id) {
 }
 
 function sendGameInvite(target: Id) {
-	getSocket().then((socket) => {
-		socket.emit(ChatEvent.GAME_INVITE, { target }, () =>
-			popupMethods.addPopup(new SentGameInvite(target))
-		);
-	});
+	state.socket.emit(ChatEvent.GAME_INVITE, { target }, () =>
+		popupMethods.addPopup(new SentGameInvite(target))
+	);
 }
 
 function receiveGameInvite(source: Id) {

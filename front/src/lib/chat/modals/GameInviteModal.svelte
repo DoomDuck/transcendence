@@ -3,13 +3,11 @@
 	import type { ChatUserDto } from 'backFrontCommon';
 	import { gameInviteMethods } from '$lib/ts/gameInvite';
 	export let user: ChatUserDto;
-	// const dispatch = createEventDispatcher<{sendGameInvite: GameInviteToServer}>();
 </script>
 
 <div id="invitation">
 	<Switch optionOne="Classic Mode" optionTwo="Special Mode" />
-	<a sveltekit:prefetch href="/WaitingRoom">
-		<!-- <button on:click={ () => dispatch('sendGameInvite', { target: user.id }) }> -->
+	<a href="/WaitingRoom">
 		<button on:click={() => gameInviteMethods.send(user.id)}>
 			Invit {user.name} to play
 		</button>

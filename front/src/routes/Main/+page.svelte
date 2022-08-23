@@ -1,46 +1,17 @@
 <script lang="ts">
-	import { getSocket } from '$lib/ts/login';
-	import { onMount } from 'svelte';
-
-	// import { users } from '$lib/users';
-
 	let color: string = '#6028FF';
-
-	// import { setContext } from 'svelte';
-	// import type { ClientToServerEvents, ServerToClientEvents } from 'backFrontCommon';
-	// let tokenInput: string | undefined;
-	// do {
-	// 	tokenInput = prompt('your token ?')?.trim();
-	// } while (
-	// 	!(
-	// 		tokenInput !== undefined &&
-	// 		tokenInput.length > 0 &&
-	// 		Number.isInteger(+tokenInput) &&
-	// 		+tokenInput >= 0
-	// 	)
-	// );
-	// const socket: ChatSocket = io('http://localhost:5000/chat', {
-	// 	auth: { token: tokenInput }
-	// });
-	// setContext(chatContextKey, {
-	//   socket,
-	//   token: tokenInput as string
-	// })
 </script>
 
 <nav id="menu">
 	<h1 class="typography" style="color: {color}">Transcendence</h1>
 	<h4 class="typography" style="color: {color}">
-		<a sveltekit:prefetch href="/StartAGame">Game</a>
+		<a href="/StartAGame">Game</a>
 	</h4>
 	<h4 class="typography" style="color: {color}">
-		<a sveltekit:prefetch href="/Chat">Chat</a>
+		<a href="/Chat">Chat</a>
 	</h4>
-	<!-- <h4 class="typography" style="color: {color}">
-    <a sveltekit:prefetch href="/Parameters">Parameters</a>
-  </h4> -->
 	<h4 class="typography" style="color: {color}">
-		<a sveltekit:prefetch href="/Parameters">Parameters</a>
+		<a href="/Parameters">Parameters</a>
 	</h4>
 </nav>
 

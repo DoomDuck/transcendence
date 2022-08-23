@@ -31,26 +31,21 @@ type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
-    this.pending_invite = false;
-    this.ingame = false;
-    this.socketUser = [];
-    this.joinedChannel = [];
-    this.activeUserConversation = [];
-    this.activeChannelConversation = [];
     if (newSocket) this.socketUser.push(newSocket);
   }
-  pending_invite: boolean;
-  ingame: boolean;
-  socketUser: Socket[];
-  joinedChannel: Channel[];
-  activeUserConversation: ActiveConversation[];
-  activeChannelConversation: ActiveConversation[];
+  pending_invite: boolean = false;
+  ingame: boolean = false;
+  socketUser: Socket[] = [];
+  joinedChannel: Channel[] = [];
+  activeUserConversation: ActiveConversation[] = [];
+  activeChannelConversation: ActiveConversation[] = [];
 }
 export class ChatMessage {
-  constructor(public sender: Id, public content: string, public isMe: boolean) {
-    this.sender = sender;
-    this.content = content;
-  }
+  constructor(
+    public sender: Id,
+    public content: string,
+    public isMe: boolean,
+  ) {}
 }
 
 export class ActiveConversation {
@@ -63,7 +58,7 @@ export class ActiveConversation {
 
 @Injectable()
 export class UserService {
-  arrayActiveUser: ActiveUser[];
+  arrayActiveUser: ActiveUser[] = [];
 
   constructor(
     @InjectRepository(User)
@@ -71,9 +66,7 @@ export class UserService {
     private readonly databaseFilesService: DatabaseFilesService,
     private readonly matchHistoryService: MatchHistoryService,
     private readonly channelManagerService: ChannelManagerService,
-  ) {
-    this.arrayActiveUser = [];
-  }
+  ) {}
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     let chatMessageDto: ChatMessageDto[];
     chatMessageDto = [];
@@ -166,8 +159,7 @@ export class UserService {
   async remove(id: Id): Promise<void> {
     await this.usersRepository.delete(id);
   }
-
-  async addOne(userDto: UserDto): Promise<undefined> {
+  async addOne(userDto: UserDto): Promise<void> {
     const id = userDto.id;
     let logger = new Logger('addone');
     // if (!userDto) return;
@@ -195,7 +187,12 @@ export class UserService {
       tempUser.socketUser.push(userDto.socket);
     }
     logger.log('end add one user');
-    return undefined;
+  }
+
+  async addOneGuest(socket: Socket) {
+    // TODO: Better guests than random id
+    const id = Math.floor(Math.random() * 1000);
+    await this.addOne(new UserDto(id, `guest-${id}`, socket));
   }
 
   addNewSocketUser(userId: Id, newSocket: Socket) {
@@ -259,6 +256,7 @@ export class UserService {
         ChatError.ALREADY_FRIEND,
       );
   }
+
   async addAvatar(
     userId: Id,
     imageBuffer: Buffer,
@@ -274,6 +272,7 @@ export class UserService {
     //A MODIFIER
     return true;
   }
+
   updateUserConversation(
     sender: ActiveUser,
     target: ActiveUser,
@@ -308,12 +307,14 @@ export class UserService {
         ),
       );
   }
+
   updateChannelConversation(
     sender: ActiveUser,
     user: ActiveUser,
     channel: Channel,
     content: string,
   ) {
+    // This shouldn't be tested as undefined should not be a possible value
     if (sender === undefined || user === undefined) return;
     const tempUserConversation = user.activeChannelConversation.find(
       (conv) => conv.name === channel.name,
@@ -331,25 +332,32 @@ export class UserService {
       );
   }
 
+  // Update user totpSecret (to enable or disable it)
+  async updateTotp(user: User, totpSecret: string | null) {
+    await this.usersRepository.update({ id: user.id }, { totpSecret });
+  }
+
   disconnection(clientSocket: Socket) {
     const activeUser = this.findOneActiveBySocket(clientSocket);
-    if (activeUser) {
-      if (activeUser.socketUser.length === 1) {
-        activeUser.joinedChannel.forEach((channel) =>
-          this.channelManagerService.leaveChannel(channel, activeUser.id),
-        );
-        this.arrayActiveUser = this.arrayActiveUser.slice(
-          this.arrayActiveUser.indexOf(activeUser),
-          1,
-        );
-      } else {
-        activeUser.socketUser = activeUser.socketUser.slice(
-          activeUser.socketUser.indexOf(clientSocket),
-          1,
-        );
-      }
+    if (!activeUser) {
+      return;
+    }
+    if (activeUser.socketUser.length === 1) {
+      activeUser.joinedChannel.forEach((channel) =>
+        this.channelManagerService.leaveChannel(channel, activeUser.id),
+      );
+      this.arrayActiveUser = this.arrayActiveUser.slice(
+        this.arrayActiveUser.indexOf(activeUser),
+        1,
+      );
+    } else {
+      activeUser.socketUser = activeUser.socketUser.slice(
+        activeUser.socketUser.indexOf(clientSocket),
+        1,
+      );
     }
   }
+
   leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
     if (channel.member.find((id) => id === activeUser.id) === undefined)
       return this.channelManagerService.newChatFeedbackDto(
@@ -366,7 +374,6 @@ export class UserService {
     content: string,
     target: ActiveUser,
   ): ChatFeedbackDto {
-    let logger = new Logger('sendMessageToUser');
     target.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
         source: sender.id,
