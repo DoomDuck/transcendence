@@ -1,5 +1,5 @@
 export type { Id } from './general';
-export { ChatEvent, ChatError } from './chatEvents';
+export { ChatEvent, ChatError, LoginEvent } from './chatEvents';
 export type {DMToServer,  JoinChannelToServer, CreateChannelToServer, ServerToClientEvents, ClientToServerEvents, ChatFeedbackDto } from './chatEvents';
 export { ChannelCategory } from './chatEvents';
 export type { ChatUserDto, ChatProfileDto, ChatMatchOutcomeDto } from './chatUserProfileDto';

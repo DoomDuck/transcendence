@@ -5,7 +5,7 @@
 
 <div id="invitation">
 	<Switch optionOne="Classic Mode" optionTwo="Special Mode" />
-	<a sveltekit:prefetch href="/WaitingRoom">
+	<a href="/WaitingRoom">
 		<button>
 			Invit {name} to play
 		</button>

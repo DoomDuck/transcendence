@@ -4,7 +4,7 @@
 </script>
 
 <h4>
-	<Text><a sveltekit:prefetch {href}><slot /></a></Text>
+	<Text><a {href}><slot /></a></Text>
 </h4>
 
 <style>

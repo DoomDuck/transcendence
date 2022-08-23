@@ -1,6 +1,6 @@
 import { ChatEvent, type ChatUserDto, type Id } from 'backFrontCommon';
 import { writable, type Writable } from 'svelte/store';
-import { getSocket } from './login';
+import { state } from '$lib/ts/state';
 import { usersObject } from './users';
 
 export type GameInviteDto = {
@@ -57,14 +57,12 @@ function revoke(sender: Id, errorMessage: string) {
 }
 
 function accept(sender: Id) {
-	getSocket().then((socket) => {
-		socket.emit(
-			// 'Response' game invite
-			ChatEvent.GAME_INVITE,
-			{ target: sender },
-			() => removeBySender(sender) // feedback
-		);
-	});
+	state.socket.emit(
+		// 'Response' game invite
+		ChatEvent.GAME_INVITE,
+		{ target: sender },
+		() => removeBySender(sender) // feedback
+	);
 }
 
 export const gameInvitsMethods = {

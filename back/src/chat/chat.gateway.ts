@@ -1,21 +1,19 @@
 import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
-import { ChatEvent } from 'backFrontCommon';
+import { ChatEvent, ChatError, ChatFeedbackDto, LoginEvent } from 'backFrontCommon';
+import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import { Id } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
-import { HttpService } from '@nestjs/axios';
 import type {
   DMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
 } from 'backFrontCommon';
-import { ChatError, ChatFeedbackDto } from 'backFrontCommon';
 import { UserDto } from '../user/dto/user.dto';
-import { Id } from 'backFrontCommon';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
 } from 'socket.io';
-import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import fetch from 'node-fetch';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
@@ -29,6 +27,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
+import { TOTP, Secret } from 'otpauth';
 
 @WebSocketGateway({ namespace: '/chat' })
 export class ChatGateway
@@ -50,21 +49,42 @@ export class ChatGateway
     return Math.floor(Math.random() * 1_000);
   }
 
-  async handleConnection(clientSocket: Socket) {
-    let code = clientSocket.handshake.auth.code;
-    this.logger.log(`Client connected: ${clientSocket.id}`, code);
+  async pass_totp_check(socket: Socket, totp: TOTP): Promise<boolean> {
+    this.logger.debug("pass_totp_check");
+    try {
+      const token = await new Promise<string>(r => socket.once(LoginEvent.TOTP_CHECK, r));
+      this.logger.debug("TOTP_CHECK");
+      const delta = totp.validate({token});
+      const success = delta === 0;
+    
+      this.logger.debug("validated");
+      socket.emit(LoginEvent.TOTP_RESULT, success);
+    
+      this.logger.debug("finished");
+      return success;
+    } catch (e) {
+      this.logger.error(e);
+    }
+    return false;
+  }
+  
+  async handleConnection(socket: Socket) {
+    let code = socket.handshake.auth.code;
+    this.logger.log(`Client connected: ${socket.id}`, code);
 
     // Guest login
     // TODO: Don't use random id
     if (!(typeof code == 'string')) {
       let id = this.generateRandomId();
+      // TODO: Don't add guest to DB
       await this.userService.addOne(
-        new UserDto(id, `guest-${id}`, clientSocket),
+        new UserDto(id, `guest-${id}`, socket),
       );
       return;
     }
 
     try {
+      // Get 42 token
       const body = JSON.stringify({
         grant_type: 'authorization_code',
         client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
@@ -72,23 +92,81 @@ export class ChatGateway
         code,
         redirect_uri: this.configService.get<string>('REDIRECT_URI'),
       });
-      const reponse = await fetch(`https://api.intra.42.fr/oauth/token/`, {
+      let response  = await fetch(`https://api.intra.42.fr/oauth/token/`, {
         method: 'POST',
-        body,
         headers: { 'Content-Type': 'application/json' },
+        body,
       });
-      const r2 = await reponse.json();
-      this.logger.log(r2);
-      const access_token = r2.access_token;
+      if (!response.ok) {
+        throw new Error(`Could not fetch token: ${response.statusText}`);
+      }
+      let data = await response.json();
+      if (!(typeof data == "object")) {
+        throw new Error("Invalid body type");
+      }
+      const {access_token} = data;
+      if (!(typeof access_token == "string")) {
+        throw new Error("Could not extract token");
+      }
 
-      const headers = {
-        Authorization: 'Bearer ' + access_token,
+      // Get user info
+      const headers = { Authorization: 'Bearer ' + access_token };
+      response = await fetch('https://api.intra.42.fr/v2/me/', { headers });
+      if (!response.ok) {
+        throw new Error(`Could not fetch user id: ${response.statusText}`);
+      }
+      data = await response.json();
+      
+      // Check user info
+      if (!(typeof data == "object"))
+        throw new Error("Invalid body type");
+      const {id, login} = data;
+      if (!(typeof id == "number" && typeof login == "string"))
+        throw new Error(`Could not fetch id or login properly`);
+      
+      // Add user to server
+      await this.userService.addOne(new UserDto(id, login, socket));
+
+      // Check if user has 2fa setup
+      const user = await this.userService.findOneDb(id);
+      if (!user) throw new Error(`Could not find created user`);
+
+      // TODO move to some config
+      const TOTP_DESCRIPTION = {
+        issuer: "Transcendance",
+        label: "2fa",
       };
 
-      const r = await fetch('https://api.intra.42.fr/v2/me/', { headers });
-      const data = await r.json();
-      this.logger.log(data.id, data.login);
-      this.userService.addOne(new UserDto(data.id, data.login, clientSocket));
+      // Check totp requirement
+      const {totpSecret} = user;
+      socket.emit(LoginEvent.TOTP_REQUIREMENTS, !!totpSecret);
+
+
+      let totp : TOTP;
+       // 2fa
+      if (totpSecret) {
+        totp = new TOTP({
+          secret: Secret.fromHex(totpSecret),
+          ...TOTP_DESCRIPTION
+        });
+      } else {
+        // For now force TOTP setup
+        // TODO: Move totp setup to settings
+        await new Promise<void>(r => socket.once(LoginEvent.TOTP_DEMAND_SETUP, r));
+        this.logger.debug("Creating new token");
+        totp = new TOTP(TOTP_DESCRIPTION);
+        socket.emit(LoginEvent.TOTP_SETUP, totp.toString());
+        this.logger.debug("Sent token");
+      }
+      if (!this.pass_totp_check(socket, totp)) {
+        socket.disconnect();
+        return;
+      }
+      
+      if (!totpSecret) {
+        await this.userService.updateTotp(user, totp.secret.hex);
+      }
+
       this.logger.log(`end handle connection`);
     } catch (e: any) {
       this.logger.log(`in connection fail `, e);

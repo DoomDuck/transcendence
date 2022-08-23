@@ -3,7 +3,7 @@
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from './orm.config';
-import { userModule } from './user/user.module';
+import { UserModule } from './user/user.module';
 import { PongGateway } from './pong/pong.gateway';
 import { UserService } from './user/user.service';
 import { UserDto } from './user/dto/user.dto';
@@ -15,7 +15,7 @@ describe('AppModule', () => {
 
   beforeEach(async () => {
     appModule = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot(config), userModule],
+      imports: [TypeOrmModule.forRoot(config), UserModule],
       controllers: [],
       providers: [PongGateway, GameManagerService],
     }).compile();
