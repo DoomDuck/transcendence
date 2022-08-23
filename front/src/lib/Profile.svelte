@@ -3,18 +3,11 @@
 
 	import ProfileStats from './ProfileStats.svelte';
 	import RoundedImage from '$lib/RoundedImage.svelte';
-	// export let image: string;
-	// export let name: string;
-	// export let iD = 35214;
-	// export let bestScore = 359;
-	// export let wonGamesRatio = '50%';
-	// export let classement = '3';
 	export let user: ChatUserDto;
 </script>
 
 <div id="profile">
 	<div>
-		<!-- <img class="roundedImageProfile" src={image} alt="profilepic" /> -->
 		<RoundedImage imageURL={user.image} />
 		<h3>{user.name}</h3>
 		<p>ID: {user.id}</p>

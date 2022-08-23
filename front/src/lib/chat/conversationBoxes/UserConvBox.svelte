@@ -2,9 +2,10 @@
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
 	import GameInvit from '$lib/GameInvitBox.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { UserConversation } from '../utils';
+	import { UserConversation } from '$lib/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { DMToServer } from 'backFrontCommon/chatEvents';
+	import BlockUser from '../buttons/BlockUserButton.svelte';
 
 	export let conversation: UserConversation;
 
@@ -34,45 +35,41 @@
 			});
 		}
 	}
-
-	let userDtoPromise = conversation.getInterlocuterAsDto();
 </script>
 
+<!-- to refacto -->
 <div class="chat">
 	<div id="title">
-		<h2>
-			{#await userDtoPromise}
-				...
-			{:then user}
-				{user.name}
-			{/await}
-		</h2>
-		<div id="options">
-			<img src="blockingIcon.png" alt="block user" width="25px" height="25px" />
-			<img
-				src="joystick.png"
-				alt="invite friend to play"
-				width="30px"
-				height="30px"
-				on:click={() => (gameInvitModal = true)}
-			/>
-		</div>
+		{#await conversation.getInterlocuterAsDto()}
+			<h2>...</h2>
+		{:then user}
+			<h2>{user.name}</h2>
+			<div id="options">
+				<!-- <img src="blockingIcon.png" alt="block user" width="25px" height="25px" /> -->
+				<BlockUser {user} />
+				<img
+					src="joystick.png"
+					alt="invite friend to play"
+					width="30px"
+					height="30px"
+					on:click={() => (gameInvitModal = true)}
+				/>
+			</div>
+		{/await}
 	</div>
 	<div class="scrollable" bind:this={div}>
-		{#each conversation.history as comment}
-			<ConversationEntry isMe={comment.isMe} text={comment.content} />
+		{#each conversation.history as message}
+			<ConversationEntry {message} showAuthor={false} />
 		{/each}
 	</div>
 
 	<input on:keydown={handleKeydown} />
 </div>
 
-{#if gameInvitModal}
-	<Modal on:close={() => (gameInvitModal = false)}>
-		<!-- to change  -->
-		<GameInvit name={`${conversation.dto.interlocutor}`} />
-	</Modal>
-{/if}
+<Modal bind:show={gameInvitModal}>
+	<!-- to change  -->
+	<GameInvit name={`${conversation.dto.interlocutor}`} />
+</Modal>
 
 <style>
 	.chat {

@@ -1,15 +1,27 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
+	import type { ActiveChannelConversationDto, ActiveUserConversationDto } from 'backFrontCommon';
+	import NotificationIcon from './NotificationIcon.svelte';
+
 	export let hasNewMessage: boolean = false;
 
 	let showConv = false;
+	let thisRef: any;
+
+	function handleClickOpenModal(event: MouseEvent) {
+		if (event.target == thisRef) showConv = true;
+	}
+
+	$: {
+		if (hasNewMessage && showConv) hasNewMessage = false;
+	}
 </script>
 
-<div class="item" on:click={() => (showConv = true)}>
+<div class="item" bind:this={thisRef} on:click={handleClickOpenModal}>
 	<slot name="icon" />
 	<slot name="item-text" />
 	{#if hasNewMessage}
-		<img class="notif" src="notification.png" alt="notif" />
+		<NotificationIcon />
 	{/if}
 </div>
 
@@ -25,12 +37,5 @@
 		background: #040128;
 		display: flex;
 		border: 1px solid #ff00b8;
-	}
-
-	.notif {
-		margin-left: auto;
-		padding: 5%;
-		width: 35px;
-		height: 35px;
 	}
 </style>

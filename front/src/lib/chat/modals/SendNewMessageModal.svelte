@@ -7,32 +7,28 @@
 	const dispatch = createEventDispatcher<{ msgToUser: DMToServer }>();
 
 	export let content = '';
-	let writeNewMsgModal = false;
+	export let show = false;
 	let targetStr = '';
 
 	function handleBlur(event: FocusEvent) {
 		targetStr = targetStr.trim();
 	}
 	function handleSubmit(event: SubmitEvent) {
+		// DEBUG
 		if (!isPositiveInteger(targetStr)) return false;
 		dispatch('msgToUser', { target: +targetStr, content });
 		close();
 		return true;
 	}
-	// TODO: REFACTO MODAL
+
 	function close() {
 		content = '';
-		writeNewMsgModal = false;
+		show = false;
 		targetStr = '';
-	}
-	function open() {
-		writeNewMsgModal = true;
 	}
 </script>
 
-<img id="btn-new-message" src="pencil.png" width="40" height="40" alt="write msg" on:click={open} />
-
-<Modal bind:show={writeNewMsgModal} on:close={close}>
+<Modal bind:show on:close={close}>
 	<form id="formContainer" on:submit|preventDefault={handleSubmit}>
 		<input
 			id="destinataire"
@@ -64,10 +60,6 @@
 	#message {
 		width: 100%;
 		height: 5em;
-	}
-
-	#btn-new-message {
-		float: right;
 	}
 	#btn-send-msg {
 		width: 2em;

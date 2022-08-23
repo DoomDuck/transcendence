@@ -9,6 +9,10 @@ export class ChatEvent {
 	static readonly GAME_INVITE = 'game invite'
 	static readonly FRIEND_INVITE = 'friend invite'
 	static readonly BLOCK_USER = 'block user'
+	static readonly BAN_USER = 'ban user'
+	static readonly MUTE_USER = 'mute user'
+	static readonly BANNED_NOTIF = 'you are banned from a chan'
+	static readonly MUTED_NOTIF = 'you are muted from a chan'
 }
 
 export class ChatError {
@@ -20,7 +24,11 @@ export class ChatError {
   static readonly YOU_ARE_BANNED ="you are banned"
   static readonly YOU_ARE_MUTED ="you are muted"
   static readonly YOU_ARE_BLOCKED ="you are blocked"
-  static readonly USER_ALREADY_BLOCKED ="user already blocked"
+  static readonly ALREADY_BLOCKED ="user already blocked"
+  static readonly ALREADY_BANNED ="user already banned"
+  static readonly ALREADY_MUTED ="user already muted"
+  static readonly NOT_BANNED ="user not banned"
+  static readonly NOT_MUTED ="user not muted"
   static readonly NOT_IN_CHANNEL ="not in channel"
 	static readonly ALREADY_FRIEND = "already friend";
 	static readonly ALREADY_IN_CHANNEL = "already in channel";
@@ -38,15 +46,21 @@ export type DMFromServer =  {source: Id, content: string};
 export type DMToServer =  {target: Id, content: string};
 export type CMFromServer =  {source: Id, channel: string, content: string};
 export type CMToServer =  {channel: string, content: string};
-// export type JoinChannelFromServer = {channel: string, newUser: Id};
+export type JoinChannelFromServer = {channel: string, newUser: Id};
 export type JoinChannelToServer = {channel: string, password?:string};
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
 }
+
+export type FriendInviteToServer = {target:Id};
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
 export type BlockUserToServer =  {target: Id};
+export type BanUserToServer =  {channel:string,target: Id, duration:number};
+export type BanUserFromServer =  {channel:string,sender:Id, duration:number};
+export type MuteUserToServer =  {channel:string,target: Id, duration:number};
+export type MuteUserFromServer =  {channel:string,sender: Id, duration:number};
 export type ChatFeedbackDto = {
   success: boolean,
   errorMessage?: string,
@@ -56,8 +70,10 @@ export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
 export interface ServerToClientEvents {
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
-  // [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
+  [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
+  [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer ) => void;
 }
 
 export interface ClientToServerEvents {
@@ -66,4 +82,6 @@ export interface ClientToServerEvents {
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
 }

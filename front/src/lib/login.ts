@@ -1,30 +1,32 @@
 import { io } from 'socket.io-client';
-import { PUBLIC_APP_42_ID } from '$env/static/public'; 
 import { goto } from '$app/navigation';
 import type { ChatSocket } from '$lib/utils';
 
-const LOCATION = 'https://api.intra.42.fr/oauth/authorize';
+const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 
-let socket : ChatSocket | null = null;
+let socket: ChatSocket | null = null;
 
 // Returns the socket or moves back to Login page
 export async function getSocket(): Promise<ChatSocket> {
-	if (!socket) await goto("/");
+	if (!socket) await goto('/');
 	return socket!;
 }
 
-// Login if request_login has been successful
-// Throws an exception on failure
-export async function login(): Promise<void> {
+// To call to check if being redirected 42 OAuth
+export async function preLogin(): Promise<void> {
 	const code = new URLSearchParams(document.location.search).get('code');
-	if (code) {
-		socket = io('http://localhost:5000/chat', { auth: { token: code } });
-		await goto("/Main");
-		return;
-	}
+	if (!code) return;
+	socket = io('http://localhost:5000/chat', { auth: { code } });
+	await goto(LOGGIN_SUCCESS_ROUTE);
+}
 
-	const redirect_url = encodeURIComponent(window.location.origin);
-	const url = `${LOCATION}?client_id=${PUBLIC_APP_42_ID}&redirect_uri=${redirect_url}&response_type=code`;
+// Login to 42
+export async function login(): Promise<void> {
 	window.history.pushState({}, '');
-	window.location.assign(url);
+	window.location.assign('http://localhost:5000/login');
+}
+
+export async function guestLogin(): Promise<void> {
+	socket = io('http://localhost:5000/chat');
+	await goto(LOGGIN_SUCCESS_ROUTE);
 }

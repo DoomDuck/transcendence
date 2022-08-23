@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { getSocket } from '$lib/login';
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
-	import CreateChannel from '$lib/chat/CreateChannel.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
-	import { ChatEvent, type ChatFeedbackDto } from 'backFrontCommon';
+	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
 	import type {
 		CMFromServer,
 		CMToServer,
@@ -13,16 +12,14 @@
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
-	import SendNewMessage from '$lib/chat/SendNewMessage.svelte';
-	import JoinChannel from '$lib/chat/JoinChannel.svelte';
+	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
+	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
+	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { userConvs, channelConvs } from '$lib/utils';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
 
-	let friends = [
-		{ image: 'cars.jpeg', name: 'castor' },
-		{ image: 'canard.jpeg', name: 'fourmi' }
-	];
+	let friends = [0, 1];
 
 	$userConvs.addMessage({
 		sender: 0,
@@ -54,7 +51,6 @@
 		'Un groupe de gens'
 	);
 
-
 	// SOCKET SETUP
 
 	// console.log('has context:', hasContext(chatContextKey));
@@ -63,7 +59,7 @@
 		socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 		socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
 		socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
-	})
+	});
 
 	// EVENTS FROM SERVER
 
@@ -96,24 +92,35 @@
 
 	async function sendCreateChannel(event: CustomEvent<CreateChannelToServer>) {
 		console.log('sending CreateChannel:', JSON.stringify(event.detail));
-		(await getSocket()).emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
-			if (feedback.success) {
-				$channelConvs = $channelConvs.create(event.detail.channel);
-			} else {
-				alert(`error: ${feedback.errorMessage}`);
+		(await getSocket()).emit(
+			ChatEvent.CREATE_CHANNEL,
+			event.detail,
+			(feedback: ChatFeedbackDto) => {
+				if (feedback.success) {
+					$channelConvs = $channelConvs.create(event.detail.channel);
+				} else {
+					alert(`error: ${feedback.errorMessage}`);
+				}
 			}
-		});
+		);
 	}
 
 	async function sendChannelMessage(event: CustomEvent<CMToServer>) {
 		console.log('sending ChannelMessage:', JSON.stringify(event.detail));
-		(await getSocket()).emit(ChatEvent.MSG_TO_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
-			if (feedback.success) {
-				$channelConvs = $channelConvs.addMessageFromMe(event.detail.content, event.detail.channel);
-			} else {
-				alert(`error: ${feedback.errorMessage}`);
+		(await getSocket()).emit(
+			ChatEvent.MSG_TO_CHANNEL,
+			event.detail,
+			(feedback: ChatFeedbackDto) => {
+				if (feedback.success) {
+					$channelConvs = $channelConvs.addMessageFromMe(
+						event.detail.content,
+						event.detail.channel
+					);
+				} else {
+					alert(`error: ${feedback.errorMessage}`);
+				}
 			}
-		});
+		);
 	}
 
 	async function sendJoinChannel(event: CustomEvent<JoinChannelToServer>) {
@@ -132,16 +139,16 @@
 	<div id="title">
 		<h1>Chat</h1>
 		<div id="options">
-			<CreateChannel on:createChannel={sendCreateChannel} />
-			<JoinChannel on:joinChannel={sendJoinChannel} />
-			<SendNewMessage on:msgToUser={sendDirectMessage} />
+			<CreateChannelButton on:createChannel={sendCreateChannel} />
+			<JoinChannelButton on:joinChannel={sendJoinChannel} />
+			<SendNewMessageButton on:msgToUser={sendDirectMessage} />
 		</div>
 	</div>
 
 	<div id="mainContainer">
 		<input class="champ" type="search" placeholder="Search.." />
 
-		<OnlineFriends onlineFriends={friends} />
+		<OnlineFriends {friends} />
 		<br />
 		<ConversationLists on:msgToUser={sendDirectMessage} on:msgToChannel={sendChannelMessage} />
 	</div>

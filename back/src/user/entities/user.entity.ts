@@ -3,12 +3,14 @@ import {
   Column,
   JoinColumn,
   OneToOne,
+  OneToMany,
   ManyToMany,
   PrimaryColumn,
   JoinTable,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DatabaseFile } from './databaseFile.entity';
+import { Match } from '../../matchHistory/match.entity';
 import { Id } from 'backFrontCommon';
 @Entity('User')
 export class User {
@@ -18,10 +20,12 @@ export class User {
     this.friendlist = [];
     this.channel = [];
     this.blocked = [];
+    this.blockedFrom = [];
     this.win = 0;
     this.loose = 0;
     this.score = 0;
-    this.match = [];
+    this.matchAsPlayerOne = [];
+    this.matchAsPlayerTwo = [];
   }
   @PrimaryColumn('int')
   id: Id;
@@ -33,6 +37,9 @@ export class User {
 
   @Column('int', { array: true, nullable: false })
   blocked: Id[];
+
+  @Column('int', { array: true, nullable: false })
+  blockedFrom: Id[];
 
   @Column('varchar', { array: true, nullable: false })
   channel: string[];
@@ -52,6 +59,10 @@ export class User {
   @Column({ nullable: true })
   public avatarId?: Id;
 
-  @Column('int', { array: true, nullable: false })
-  match: Id[];
+  @OneToMany(() => Match, (match) => match.playerOne)
+  matchAsPlayerOne: Match[];
+  @OneToMany(() => Match, (match) => match.playerTwo)
+  matchAsPlayerTwo: Match[];
+  // @Column('int', { array: true, nullable: false })
+  // match: Id[];
 }

@@ -11,8 +11,8 @@ import { User } from '../user/entities/user.entity';
 @Entity('Match')
 export class Match {
   constructor(
-    playerOne: Id,
-    playertwo: Id,
+    playerOne: User,
+    playertwo: User,
     playerOneScore: number,
     playertwoScore: number,
     winner: Id,
@@ -27,11 +27,11 @@ export class Match {
   @PrimaryGeneratedColumn()
   id?: Id;
 
-  @Column({ type: 'int', nullable: false })
-  playerOne: Id;
+  @ManyToOne(() => User, (user) => user.matchAsPlayerOne)
+  playerOne: User;
 
-  @Column({ type: 'int', nullable: false })
-  playerTwo: Id;
+  @ManyToOne(() => User, (user) => user.matcAsPlayertwo)
+  playerTwo: User;
 
   @JoinColumn({ name: 'playerOne' })
   @Column('varchar', { array: true, nullable: false })

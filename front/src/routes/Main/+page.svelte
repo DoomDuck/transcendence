@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {getSocket} from '$lib/login';
+	import { getSocket } from '$lib/login';
 	import { onMount } from 'svelte';
 
 	// import { users } from '$lib/users';
@@ -26,11 +26,6 @@
 	//   socket,
 	//   token: tokenInput as string
 	// })
-	
-	onMount(async () => {
-		let socket = await getSocket();
-
-	});
 </script>
 
 <nav id="menu">
@@ -45,8 +40,6 @@
 		<a sveltekit:prefetch href="/Parameters">Parameters</a>
 	</h4>
 </nav>
-
-console.log("coucou la session ouverte");
 
 <style>
 	#menu {

@@ -7,6 +7,9 @@ export default {
 		sourceMap: true
 	}),
 	kit: {
+		env: {
+			publicPrefix: 'PUBLIC_'
+		},
 		adapter: adapter({
 			// default options are shown. On some platforms
 			// these options are set automatically — see below

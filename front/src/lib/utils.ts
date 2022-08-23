@@ -15,38 +15,43 @@ export type ChatSocket = IOSocketBaseType<ServerToClientEvents, ClientToServerEv
 
 type Id = number;
 
-export class UserConversation {
-	dto: ActiveUserConversationDto;
+export abstract class Conversation<DTOType extends { history: ChatMessageDto[] }> {
+	hasNewMessage: boolean = false;
+	constructor(public dto: DTOType) {}
+
+	get history(): ChatMessageDto[] {
+		return this.dto.history;
+	}
+	addMessage(message: ChatMessageDto) {
+		this.history.push(message);
+		if (!message.isMe) this.hasNewMessage = true;
+	}
+}
+
+export class UserConversation extends Conversation<ActiveUserConversationDto> {
 	constructor(interlocutor: Id) {
-		this.dto = {
+		super({
 			interlocutor,
 			history: []
-		};
+		});
 	}
 	get interlocutor(): Id {
 		return this.dto.interlocutor;
-	}
-	get history(): ChatMessageDto[] {
-		return this.dto.history;
 	}
 	async getInterlocuterAsDto(): Promise<ChatUserDto> {
 		return usersObject.findOrFetch(this.interlocutor);
 	}
 }
 
-export class ChannelConversation {
-	dto: ActiveChannelConversationDto;
+export class ChannelConversation extends Conversation<ActiveChannelConversationDto> {
 	constructor(channel: string) {
-		this.dto = {
+		super({
 			channel,
 			history: []
-		};
+		});
 	}
 	get channel(): string {
 		return this.dto.channel;
-	}
-	get history(): ChatMessageDto[] {
-		return this.dto.history;
 	}
 }
 
@@ -60,7 +65,8 @@ export class UserConversationList {
 			conv = new UserConversation(convInterlocutor);
 			this.convs.push(conv);
 		}
-		conv.dto.history.push(message);
+		conv.addMessage(message);
+		// conv.dto.history.push(message);
 		return this;
 	}
 
@@ -88,7 +94,8 @@ export class ChannelConversationList {
 			conv = new ChannelConversation(channel);
 			this.convs.push(conv);
 		}
-		conv.dto.history.push(message);
+		conv.addMessage(message);
+		// conv.dto.history.push(message);
 		return this;
 	}
 
