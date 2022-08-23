@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GameInvitButton from './chat/buttons/GameInviteButton.svelte';
+	import GameInviteButton from './chat/buttons/GameInviteButton.svelte';
 	import UserMiniature from './UserMiniature.svelte';
 	import type { ChatUserDto } from 'backFrontCommon';
 
@@ -9,7 +9,7 @@
 <div class="friend">
 	<UserMiniature userId={friend.id} />
 	<p class="name">{friend.name}</p>
-	<GameInvitButton name={friend.name} />
+	<GameInviteButton user={friend} />
 </div>
 
 <style>

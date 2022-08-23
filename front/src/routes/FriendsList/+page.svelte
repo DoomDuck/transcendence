@@ -2,20 +2,27 @@
 	import { onMount } from 'svelte';
 	import FriendsListItem from '$lib/FriendsListItem.svelte';
 	import type { ChatUserDto } from 'backFrontCommon';
+	import { users } from '$lib/ts/users';
 
 	let nameSearch = () => {};
 
 	// DEBUG : loading all users as friend
-	let users: ChatUserDto[] = [];
-
-	onMount(async () => {
-		const reponse = await fetch('http://localhost:5000/user', {
-			method: 'GET'
+	let friends: ChatUserDto[] = [];
+	[0, 1, 2].forEach((id) => {
+		$users.findOrFetch(id).then((_) => {
+			friends.push(_);
+			friends = friends;
 		});
-
-		users = await reponse.json();
-		console.log(users);
 	});
+
+	// onMount(async () => {
+	// 	const reponse = await fetch('http://localhost:5000/user', {
+	// 		method: 'GET'
+	// 	});
+
+	// 	users = await reponse.json();
+	// 	console.log(users);
+	// });
 	// (DEBUG)
 </script>
 
@@ -24,8 +31,8 @@
 	<form on:submit|preventDefault={nameSearch}>
 		<input type="search" placeholder="search..." />
 	</form>
-	{#each users as user}
-		<FriendsListItem friend={user} />
+	{#each friends as friend}
+		<FriendsListItem {friend} />
 	{/each}
 </div>
 

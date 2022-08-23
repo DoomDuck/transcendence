@@ -1,13 +1,17 @@
 <script lang="ts">
 	import Switch from '$lib/Switch.svelte';
-	export let name: string;
+	import type { ChatUserDto } from 'backFrontCommon';
+	import { gameInviteMethods } from '$lib/ts/gameInvite';
+	export let user: ChatUserDto;
+	// const dispatch = createEventDispatcher<{sendGameInvite: GameInviteToServer}>();
 </script>
 
 <div id="invitation">
 	<Switch optionOne="Classic Mode" optionTwo="Special Mode" />
 	<a sveltekit:prefetch href="/WaitingRoom">
-		<button>
-			Invit {name} to play
+		<!-- <button on:click={ () => dispatch('sendGameInvite', { target: user.id }) }> -->
+		<button on:click={() => gameInviteMethods.send(user.id)}>
+			Invit {user.name} to play
 		</button>
 	</a>
 </div>

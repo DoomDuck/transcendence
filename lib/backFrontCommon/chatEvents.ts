@@ -9,6 +9,8 @@ export class ChatEvent {
 	static readonly CREATE_CHANNEL = 'create channel'
 	static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
 	static readonly GAME_INVITE = 'game invite'
+	static readonly GAME_ACCEPT = 'game accept'
+	static readonly GAME_REFUSE = 'game refuse'
 	static readonly FRIEND_INVITE = 'friend invite'
   static readonly POST_AVATAR=  'post_avatar'
   static readonly GET_USER = 'get_user'
@@ -35,7 +37,6 @@ export class ChatError {
 	static readonly INSUFICIENT_PERMISSION = "insuficient permission";
 	static readonly CANT_INVITE_TO_NON_PRIVATE_CHANNEL = "cant invite to non private channel";
 	static readonly CANT_CREATE_PROTECTED_CHANNEL_WO_PASSW = "cant create protected channel wo passw";
-
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
 }
 
@@ -53,6 +54,10 @@ export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
 export type GameInviteFromServer = { source: Id };
 export type GameInviteToServer = { target: Id };
+export type GameAcceptFromServer = { source: Id };
+export type GameAcceptToServer = { target: Id };
+export type GameRefuseFromServer = { source: Id, reason?: string };
+export type GameRefuseToServer = { target: Id, reason?: string };
 export type FriendInviteToServer = { target: Id };
 export type PostAvatar = { imageDataUrl: string };
 export type GetUser = { target: Id };
@@ -78,6 +83,8 @@ export interface ServerToClientEvents {
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelFromServer) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteFromServer) => void;
+  [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptFromServer) => void;
+  [ChatEvent.GAME_REFUSE]: (dto: GameRefuseFromServer) => void;
 
   // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }
@@ -88,11 +95,13 @@ export interface ClientToServerEvents {
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.CREATE_CHANNEL]: (dto: CreateChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
-  [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.POST_AVATAR]: (dto: PostAvatar, callback: FeedbackCallback) => void;
   [ChatEvent.GET_USER]: (dto: GetUser, callback: FeedbackCallbackWithResult<ChatUserDto>) => void;
   [ChatEvent.GET_FRIENDS]: (callback: RequestFeedbackDto<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: RequestFeedbackDto<UserHistoryDto>) => void;
+  [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
+	[ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
+	[ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
 }

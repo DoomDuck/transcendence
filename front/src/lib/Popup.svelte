@@ -1,15 +1,20 @@
 <script lang="ts">
-	import type { GameInviteDto } from './ts/gameInvite';
-	import { gameInvitsMethods } from './ts/gameInvite';
+	import { onMount } from 'svelte';
+	import { popupMethods, type CanBePopup } from './ts/popups';
 
-	export let invite: GameInviteDto;
+	export let popup: CanBePopup;
 
-	$: alertCategory = invite.valid ? 'alert-warning' : 'alert-danger';
-
-	// DEBUG
-	function debug() {
-		gameInvitsMethods.revoke(invite.sender, 'NOPE');
-	}
+	let acceptButton: HTMLButtonElement;
+	let closeButton: HTMLButtonElement;
+	onMount(() => {
+		if (popup.hasButton && popup.onAccept) {
+			acceptButton.onclick = popup.onAccept.bind(popup);
+		}
+		closeButton.onclick = () => {
+			if (popup.onClose) popup.onClose();
+			popupMethods.removePopup(popup);
+		};
+	});
 </script>
 
 <svelte:head>
@@ -34,14 +39,18 @@
 </svelte:head>
 
 <div class="popup">
-	<div class="alert {alertCategory} alert-dismissible fade show" role="alert" style="margin: 0">
-		{#if invite.valid}
-			You have been invited by {invite.senderName} to play
-			<button type="button" class="btn btn-primary text-right">Accept</button>
-		{:else}
-			{invite.errorMessage}
+	<div
+		class="alert {popup.popupCategory} alert-dismissible fade show"
+		role="alert"
+		style="margin: 0"
+	>
+		{popup.text}
+		{#if popup.hasButton}
+			<button type="button" class="btn btn-primary text-right" bind:this={acceptButton}
+				>{popup.buttonLabel}</button
+			>
 		{/if}
-		<button type="button" aria-label="Close" on:click={debug}>
+		<button type="button" aria-label="Close" bind:this={closeButton}>
 			<span aria-hidden="true">&times;</span>
 		</button>
 	</div>

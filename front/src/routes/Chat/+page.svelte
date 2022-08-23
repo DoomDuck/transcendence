@@ -9,7 +9,9 @@
 		CreateChannelToServer,
 		DMFromServer,
 		DMToServer,
+		GameAcceptFromServer,
 		GameInviteFromServer,
+		GameRefuseFromServer,
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
@@ -17,8 +19,9 @@
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { userConvs, channelConvs } from '$lib/ts/utils';
-	import { invits, gameInvitsMethods } from '$lib/ts/gameInvite';
+	import { gameInviteMethods } from '$lib/ts/gameInvite';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
 
@@ -56,18 +59,18 @@
 
 	// SOCKET SETUP
 
-	// console.log('has context:', hasContext(chatContextKey));
-	// const socket: ChatSocket = getContext<ChatContext>(chatContextKey).socket;
 	getSocket().then((socket) => {
 		socket.on(ChatEvent.MSG_TO_USER, receiveDirectMessage);
 		socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
 		socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
-		socket.on(ChatEvent.GAME_INVITE, () => receiveGameInvite);
+		socket.on(ChatEvent.GAME_INVITE, receiveGameInvite);
+		socket.on(ChatEvent.GAME_ACCEPT, receiveGameAccept);
+		socket.on(ChatEvent.GAME_REFUSE, receiveGameRefuse);
 	});
 
 	//DEBUG
 	onMount(() => {
-		receiveGameInvite({ source: 2 });
+		receiveGameInvite({ source: 0 });
 	});
 
 	// EVENTS FROM SERVER
@@ -87,8 +90,15 @@
 	}
 
 	function receiveGameInvite(message: GameInviteFromServer) {
-		gameInvitsMethods.add(message.source);
+		gameInviteMethods.send(message.source);
 	}
+
+	async function receiveGameAccept(message: GameAcceptFromServer) {
+		// MAYBE
+		await goto('/PlayOnline');
+	}
+
+	async function receiveGameRefuse(message: GameRefuseFromServer) {}
 
 	// EVENTS TO SERVER
 
