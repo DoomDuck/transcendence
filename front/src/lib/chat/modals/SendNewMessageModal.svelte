@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import Modal from '$lib/Modal.svelte';
 	import type { DMToServer } from 'backFrontCommon/chatEvents';
-	import { isPositiveInteger } from '$lib/utils';
+	import { isPositiveInteger } from '$lib/ts/utils';
 
 	const dispatch = createEventDispatcher<{ msgToUser: DMToServer }>();
 

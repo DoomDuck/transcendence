@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import { type ChannelConversation } from '$lib/utils';
+	import { type ChannelConversation } from '$lib/ts/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { CMToServer } from 'backFrontCommon/chatEvents';
 
@@ -39,7 +39,7 @@
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as message}
-			<ConversationEntry {message} showAuthor={true} />
+			<ConversationEntry {message} type={'channel'} />
 		{/each}
 	</div>
 

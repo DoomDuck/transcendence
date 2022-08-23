@@ -14,27 +14,26 @@
 		<input type="checkbox" on:click={toggleMode} />
 		<span class="slider round" />
 	</label>
+</div>
+<div id="mode">
 	{mode}
 </div>
 
 <style>
+	#mode {
+		text-align: center;
+	}
 	.switch {
 		position: relative;
 		display: inline-block;
-		width: 60px;
-		height: 34px;
+		width: 40px;
+		height: 20px;
 	}
 
 	.SwitchContainer {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-
-	.switch input {
-		opacity: 0;
-		width: 0;
-		height: 0;
 	}
 
 	.slider {
@@ -52,10 +51,10 @@
 	.slider:before {
 		position: absolute;
 		content: '';
-		height: 26px;
-		width: 26px;
-		left: 4px;
-		bottom: 4px;
+		height: 16px;
+		width: 16px;
+		left: 3px;
+		bottom: 3px;
 		background-color: white;
 		-webkit-transition: 0.4s;
 		transition: 0.4s;
@@ -70,13 +69,13 @@
 	}
 
 	input:checked + .slider:before {
-		-webkit-transform: translateX(26px);
-		-ms-transform: translateX(26px);
-		transform: translateX(26px);
+		-webkit-transform: translateX(18px);
+		-ms-transform: translateX(18px);
+		transform: translateX(18px);
 	}
 
 	.slider.round {
-		border-radius: 34px;
+		border-radius: 21px;
 	}
 
 	.slider.round:before {

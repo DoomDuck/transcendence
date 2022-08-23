@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ConversationListItem from './ConversationListItem.svelte';
-	import { users } from '../users';
-	import { userConvs, channelConvs } from '$lib/utils';
-	import RoundedImage from '$lib/RoundedImage.svelte';
+	import { users } from '../ts/users';
+	import { userConvs, channelConvs } from '$lib/ts/utils';
+	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelBox from '$lib/chat/conversationBoxes/ChannelConvBox.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
 	import ConversationListItemText from './ConversationListItemText.svelte';
@@ -23,7 +23,7 @@
 	<br />
 	{#each $channelConvs.convs as conversation (conversation.channel)}
 		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage} on:msgToChannel>
-			<RoundedImage slot="icon" imageURL="group_conv_icon.png" />
+			<AvatarIcon type={'channel'} slot="icon" imageURL="group_conv_icon.png" />
 			<ConversationListItemText slot="item-text" text={conversation.channel} />
 			<ChannelBox slot="conversation-modal" on:msgToChannel {conversation} />
 		</ConversationListItem>

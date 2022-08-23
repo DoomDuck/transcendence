@@ -1,9 +1,9 @@
 import type { Id } from "./general";
 
 export type ChatMessageDto = {
-  sender: Id,
-  content: string,
-  isMe: boolean
+  sender: Id;
+  content: string;
+  isMe: boolean;
 }
 
 export type ActiveUserConversationDto = {
@@ -22,4 +22,3 @@ export type UserHistoryDto = {
 }
 
 // export type  FriendDto = {id : number, name : string};
-export type  LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };

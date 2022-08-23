@@ -158,7 +158,6 @@ export class UserService {
   async remove(id: Id): Promise<void> {
     await this.usersRepository.delete(id);
   }
-  
   async addOne(userDto: UserDto): Promise<void> {
     const id = userDto.id;
     let logger = new Logger('addone');

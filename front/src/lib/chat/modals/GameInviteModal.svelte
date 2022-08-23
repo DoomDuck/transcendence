@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Switch from './Switch.svelte';
+	import Switch from '$lib/Switch.svelte';
 	export let name: string;
 </script>
 

@@ -34,7 +34,7 @@
 	<form id="createChannel" on:submit|preventDefault={handleSubmit}>
 		<input
 			id="channelName"
-			placeholder="Channel Name"
+			placeholder="Channel Name :"
 			bind:value={channelName}
 			on:blur={handleBlur}
 			required

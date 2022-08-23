@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { login, guestLogin, preLogin } from '$lib/login';
+	import { login, guestLogin, preLogin } from '$lib/ts/login';
 
 	onMount(preLogin);
 </script>

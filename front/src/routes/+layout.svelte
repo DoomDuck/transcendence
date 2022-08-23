@@ -1,5 +1,10 @@
+<script>
+	import GameInvitePopups from '$lib/GameInvitePopups.svelte';
+</script>
+
 <div id="background">
   <slot/>
+	<GameInvitePopups />
 </div>
 
 <style>

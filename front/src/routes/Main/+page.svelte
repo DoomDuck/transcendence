@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { state } from '$lib/state';
 	let color: string = '#6028FF';
 </script>
 
