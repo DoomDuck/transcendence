@@ -6,6 +6,7 @@
 		ClientGameContextOnlinePlayer,
 		ClientGameContext
 	} from 'pong';
+	import { state } from '$lib/ts/state';
 	export let online: boolean;
 	export let observe: boolean;
 
@@ -24,8 +25,8 @@
 
 		let ctx: ClientGameContext;
 		if (online) {
-			if (observe) ctx = new ClientGameContextOnlineObserver(onFinish);
-			else ctx = new ClientGameContextOnlinePlayer(onFinish);
+			if (observe) ctx = new ClientGameContextOnlineObserver(state.socket, onFinish);
+			else ctx = new ClientGameContextOnlinePlayer(state.socket, onFinish);
 		} else ctx = new ClientGameContextOffline(onFinish);
 		ctx.animate();
 		ctx.startGame();

@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { Id } from 'backFrontCommon';
 import { ChannelDto } from './channel.dto';
 import { ChatEvent } from 'backFrontCommon';
+import { User } from '../user/entities/user.entity';
 import { ActiveUser } from '../user/user.service';
 import { ChatError } from 'backFrontCommon';
 import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
 import { ChannelCategory } from 'backFrontCommon';
+
 import { Server as IOServerBaseType } from 'socket.io';
 import type { CreateChannelToServer } from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import {
+  BanUserFromServer,
   ChatMessageDto,
   ActiveUserConversationDto,
   ActiveChannelConversationDto,
@@ -20,39 +23,13 @@ import {
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import { Channel } from './channel.entity';
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
-//
-// export class Channel {
-// constructor(
-// public channelId: Id,
-// public name: string,
-// public category : ChannelCategory,
-// public password: string,
-// public creator: Id,
-// ) {
-// this.name = name;
-// this.password = password;
-// this.admin = [];
-// this.member = [];
-// this.admin.push(creator);
-// this.member.push(creator);
-// this.creator = creator;
-// }
-//
-// // To be determinde later
-// // banned: idnumber[];
-// member: Id[];
-// admin: Id[];
-// }
 
 @Injectable()
 export class ChannelManagerService {
-  // private arrayChannel: Channel[];
   constructor(
     @InjectRepository(Channel)
     private channelRepository: Repository<Channel>,
-  ) {
-    // this.arrayChannel = [];
-  }
+  ) {}
   private logger: Logger = new Logger('channelManagerService');
 
   createChan(
@@ -104,10 +81,10 @@ export class ChannelManagerService {
   ) {
     return { userHistory: _userHistory, channelHistory: _channelHistory };
   }
-  leaveChannel(channel: Channel, clientId: Id) {
-    if (clientId === channel.creator) channel.creator = -1;
-    channel.member = channel.member.slice(channel.member.indexOf(clientId), 1);
-    channel.admin = channel.admin.slice(channel.admin.indexOf(clientId), 1);
+  leaveChannel(channel: Channel, user: ActiveUser) {
+    if (user.id === channel.creator) channel.creator = -1;
+    channel.member = channel.member.slice(channel.member.indexOf(user.id), 1);
+    channel.admin = channel.admin.slice(channel.admin.indexOf(user.id), 1);
   }
   async findChanByName(name: string): Promise<Channel | null> {
     return this.channelRepository.findOneBy({ name });
@@ -132,8 +109,6 @@ export class ChannelManagerService {
     channel: Channel,
     password?: string,
   ): Promise<ChatFeedbackDto> {
-    // if (tempChan === null)
-    // return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (
       channel.member.find((element) => element === user.id) &&
       user.id != channel.creator
@@ -151,6 +126,7 @@ export class ChannelManagerService {
       if (!password || password != channel.password)
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
+    this.logger.log(`user == ${user.id}added`);
     channel.member.push(user.id);
     this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
@@ -221,6 +197,76 @@ export class ChannelManagerService {
     if (!channel.member.find((id) => id === sender.id))
       return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
     return true;
+  }
+
+  banUser(
+    sender: ActiveUser,
+    target: ActiveUser,
+    channel: Channel,
+    duration: number,
+    wss: Server,
+  ): ChatFeedbackDto {
+    if (channel.admin.find((admin) => admin === sender.id) === undefined)
+      return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
+    if (channel.banned.find((banned) => target.id === banned) != undefined)
+      return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
+    else {
+      target.socketUser.forEach((socket) =>
+        wss.to(socket.id).emit(ChatEvent.BANNED_NOTIF, {
+          channel: channel.name,
+          sender: sender.id,
+          duration: duration,
+        }),
+      );
+      channel.banned.push(target.id);
+      this.channelRepository.update(channel.name, { banned: channel.banned });
+      setTimeout(this.unBanUser, duration * 1000);
+      return new ChatFeedbackDto(true);
+    }
+  }
+
+  unBanUser(user: User, channel: Channel): ChatFeedbackDto {
+    if (channel.banned.find((banned) => user.id === banned) === undefined)
+      return new ChatFeedbackDto(false, ChatError.NOT_BANNED);
+    else {
+      channel.banned = channel.banned.slice(channel.banned.indexOf(user.id), 1);
+      this.channelRepository.update(channel.name, { banned: channel.banned });
+      return new ChatFeedbackDto(true);
+    }
+  }
+  muteUser(
+    sender: ActiveUser,
+    target: ActiveUser,
+    channel: Channel,
+    duration: number,
+    wss: Server,
+  ): ChatFeedbackDto {
+    if (channel.admin.find((admin) => admin === sender.id) === undefined)
+      return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
+    if (channel.muted.find((muted) => target.id === muted) != undefined)
+      return new ChatFeedbackDto(false, ChatError.ALREADY_MUTED);
+    else {
+      target.socketUser.forEach((socket) =>
+        wss.to(socket.id).emit(ChatEvent.MUTED_NOTIF, {
+          channel: channel.name,
+          sender: sender.id,
+          duration: duration,
+        }),
+      );
+      channel.muted.push(target.id);
+      this.channelRepository.update(channel.name, { muted: channel.muted });
+      setTimeout(this.unMuteUser, duration * 1000);
+      return new ChatFeedbackDto(true);
+    }
+  }
+  unMuteUser(user: User, channel: Channel): ChatFeedbackDto {
+    if (channel.muted.find((muted) => user.id === muted) === undefined)
+      return new ChatFeedbackDto(false, ChatError.NOT_MUTED);
+    else {
+      channel.muted = channel.muted.slice(channel.muted.indexOf(user.id), 1);
+      this.channelRepository.update(channel.name, { muted: channel.muted });
+      return new ChatFeedbackDto(true);
+    }
   }
 
   //Send invitation

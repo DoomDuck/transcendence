@@ -9,7 +9,9 @@
 		CreateChannelToServer,
 		DMFromServer,
 		DMToServer,
+		GameAcceptFromServer,
 		GameInviteFromServer,
+		GameRefuseFromServer,
 		InviteChannelFromServer,
 		JoinChannelToServer
 	} from 'backFrontCommon/chatEvents';
@@ -17,8 +19,9 @@
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { userConvs, channelConvs } from '$lib/ts/utils';
-	import { invits, gameInvitsMethods } from '$lib/ts/gameInvite';
+	import { gameInviteMethods } from '$lib/ts/gameInvite';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
 
@@ -62,10 +65,12 @@
 	state.socket.on(ChatEvent.MSG_TO_CHANNEL, receiveChannelMessage);
 	state.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, receiveInviteChannel);
 	state.socket.on(ChatEvent.GAME_INVITE, () => receiveGameInvite);
+	state.socket.on(ChatEvent.GAME_ACCEPT, () => receiveGameAccept);
+	state.socket.on(ChatEvent.GAME_REFUSE, () => receiveGameRefuse);
 
 	//DEBUG
 	onMount(() => {
-		receiveGameInvite({ source: 2 });
+		receiveGameInvite({ source: 0 });
 	});
 
 	// EVENTS FROM SERVER
@@ -85,8 +90,15 @@
 	}
 
 	function receiveGameInvite(message: GameInviteFromServer) {
-		gameInvitsMethods.add(message.source);
+		gameInviteMethods.send(message.source);
 	}
+
+	async function receiveGameAccept(message: GameAcceptFromServer) {
+		// MAYBE
+		await goto('/PlayOnline');
+	}
+
+	async function receiveGameRefuse(message: GameRefuseFromServer) {}
 
 	// EVENTS TO SERVER
 
@@ -103,35 +115,24 @@
 
 	function sendCreateChannel(event: CustomEvent<CreateChannelToServer>) {
 		console.log('sending CreateChannel:', JSON.stringify(event.detail));
-		state.socket.emit(
-			ChatEvent.CREATE_CHANNEL,
-			event.detail,
-			(feedback: ChatFeedbackDto) => {
-				if (feedback.success) {
-					$channelConvs = $channelConvs.create(event.detail.channel);
-				} else {
-					alert(`error: ${feedback.errorMessage}`);
-				}
+		state.socket.emit(ChatEvent.CREATE_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				$channelConvs = $channelConvs.create(event.detail.channel);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
 			}
-		);
+		});
 	}
 
 	function sendChannelMessage(event: CustomEvent<CMToServer>) {
 		console.log('sending ChannelMessage:', JSON.stringify(event.detail));
-		state.socket.emit(
-			ChatEvent.MSG_TO_CHANNEL,
-			event.detail,
-			(feedback: ChatFeedbackDto) => {
-				if (feedback.success) {
-					$channelConvs = $channelConvs.addMessageFromMe(
-						event.detail.content,
-						event.detail.channel
-					);
-				} else {
-					alert(`error: ${feedback.errorMessage}`);
-				}
+		state.socket.emit(ChatEvent.MSG_TO_CHANNEL, event.detail, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				$channelConvs = $channelConvs.addMessageFromMe(event.detail.content, event.detail.channel);
+			} else {
+				alert(`error: ${feedback.errorMessage}`);
 			}
-		);
+		});
 	}
 
 	function sendJoinChannel(event: CustomEvent<JoinChannelToServer>) {

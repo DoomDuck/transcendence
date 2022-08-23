@@ -7,11 +7,8 @@ import { ClientGameContext } from "./ClientGameContext";
  * ClientGameContextOnlinePlayer and ClientGameContextOnlineObserver
  */
 export abstract class ClientGameContextOnline extends ClientGameContext {
-  socket: Socket;
-
-  constructor(onFinish: () => void) {
+  constructor(public socket: Socket, onFinish: () => void) {
     super(onFinish);
-    this.socket = io("http://localhost:5000/pong");
 
     this.transmitEventFromServerToGame(GameEvent.RESET);
     this.transmitEventFromServerToGame(GameEvent.GOAL);

@@ -22,6 +22,8 @@ export class Channel {
     this.admin = [];
     this.admin.push(creator);
     this.member = [];
+    this.muted = [];
+    this.banned = [];
     if (password != undefined) this.password = password;
     else this.password = null;
   }
@@ -40,6 +42,12 @@ export class Channel {
 
   @Column('int', { array: true, nullable: true })
   member: Id[];
+
+  @Column('int', { array: true, nullable: true })
+  muted: Id[];
+
+  @Column('int', { array: true, nullable: true })
+  banned: Id[];
 
   @Column({ type: 'enum', enum: ChannelCategory, nullable: false })
   category: ChannelCategory;

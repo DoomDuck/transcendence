@@ -1,9 +1,10 @@
 <script lang="ts">
-	import GameInvitBox from '../modals/GameInviteModal.svelte';
+	import GameInviteModal from '../modals/GameInviteModal.svelte';
 	import Modal from '$lib/Modal.svelte';
+	import type { ChatUserDto } from 'backFrontCommon';
 
 	let invitModal = false;
-	export let name: string;
+	export let user: ChatUserDto;
 </script>
 
 <img
@@ -16,7 +17,7 @@
 />
 {#if invitModal}
 	<Modal on:close={() => (invitModal = false)}>
-		<GameInvitBox {name} />
+		<GameInviteModal {user} />
 	</Modal>
 {/if}
 

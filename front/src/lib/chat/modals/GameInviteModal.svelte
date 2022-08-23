@@ -1,13 +1,15 @@
 <script lang="ts">
 	import Switch from '$lib/Switch.svelte';
-	export let name: string;
+	import type { ChatUserDto } from 'backFrontCommon';
+	import { gameInviteMethods } from '$lib/ts/gameInvite';
+	export let user: ChatUserDto;
 </script>
 
 <div id="invitation">
 	<Switch optionOne="Classic Mode" optionTwo="Special Mode" />
 	<a href="/WaitingRoom">
-		<button>
-			Invit {name} to play
+		<button on:click={() => gameInviteMethods.send(user.id)}>
+			Invit {user.name} to play
 		</button>
 	</a>
 </div>

@@ -5,14 +5,9 @@ import {
 	type ChatUserDto
 } from 'backFrontCommon';
 import { writable } from 'svelte/store';
-
-import { Socket as IOSocketBaseType } from 'socket.io-client';
-import { type ServerToClientEvents, type ClientToServerEvents } from 'backFrontCommon';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import { usersObject } from './users';
-import type { Id, TypeMap } from 'backFrontCommon/general';
-
-export type ChatSocket = IOSocketBaseType<ServerToClientEvents, ClientToServerEvents>;
+import type { ClientSocket, Id, TypeMap } from 'backFrontCommon/general';
 
 type ChatMessageGameInvit = {
 	source: Id;
@@ -155,7 +150,7 @@ export const channelConvs = writable(new ChannelConversationList());
 export const chatContextKey = Symbol();
 export type ChatContext = {
 	token: string;
-	socket: ChatSocket;
+	socket: ClientSocket;
 };
 
 export function isPositiveInteger(s: string) {

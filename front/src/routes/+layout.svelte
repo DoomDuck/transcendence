@@ -1,10 +1,14 @@
 <script>
-	import GameInvitePopups from '$lib/GameInvitePopups.svelte';
+	import Popups from '$lib/Popups.svelte';
+	import { popupMethods } from '$lib/ts/popups';
+	import { ReceivedGameInvite, SentGameInvite } from '$lib/ts/gameInvite';
+	popupMethods.addPopup(new ReceivedGameInvite(0));
+	popupMethods.addPopup(new SentGameInvite(1));
 </script>
 
 <div id="background">
-  <slot/>
-	<GameInvitePopups />
+	<slot />
+	<Popups />
 </div>
 
 <style>
@@ -18,12 +22,12 @@
 		flex-direction: column;
 		align-items: center;
 	}
-  
-  :global(h1, h2, h3, h4)  {
+
+	:global(h1, h2, h3, h4) {
 		font-family: 'Press Start 2P';
 		font-style: normal;
-		color: #6028FF;
-  }
+		color: #6028ff;
+	}
 
 	:global(h1) {
 		line-height: 300%;

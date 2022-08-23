@@ -6,8 +6,8 @@
 </script>
 
 <h1>Login</h1>
-<h4 on:click={login}> User </h4>
-<h4 on:click={guestLogin}> Guest </h4>
+<h4 on:click={login}>User</h4>
+<h4 on:click={guestLogin}>Guest</h4>
 
 <style>
 	h4:hover {

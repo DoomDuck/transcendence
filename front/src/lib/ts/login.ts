@@ -5,7 +5,7 @@ export function preLogin() {
 	// Check for code parmeter in URL
 	const code = new URLSearchParams(document.location.search).get('code');
 	if (!code) return;
-	
+
 	state.connect(code);
 }
 

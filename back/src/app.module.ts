@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config } from './orm.config';
 import { UserModule } from './user/user.module';
-import { PongGateway } from './pong/pong.gateway';
 import { GameManagerService } from './pong/game-manager.service';
 import { ConfigModule } from '@nestjs/config';
 import { LoginModule } from './login/login.module';
 import { join } from 'path';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -19,6 +19,6 @@ import { join } from 'path';
     LoginModule,
   ],
   controllers: [],
-  providers: [PongGateway, GameManagerService],
+  providers: [GameManagerService, AppGateway],
 })
 export class AppModule {}

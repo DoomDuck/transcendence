@@ -1,77 +1,89 @@
-import { ChatEvent, type ChatUserDto, type Id } from 'backFrontCommon';
-import { writable, type Writable } from 'svelte/store';
+import { ChatEvent, type Id } from 'backFrontCommon';
 import { state } from '$lib/ts/state';
+import { PopupCategory, popups, type CanBePopup, popupMethods } from './popups';
 import { usersObject } from './users';
 
-export type GameInviteDto = {
-	sender: Id;
-	senderName: string;
-	valid: boolean;
-	errorMessage?: string;
-};
+export class ReceivedGameInvite implements CanBePopup {
+	public popupCategory = PopupCategory.WARNING;
+	public errorMessage?: string = undefined;
+	public text: string;
+	private valid: boolean = true;
 
-let _invits: GameInviteDto[] = [];
-export const invits: Writable<GameInviteDto[]> = writable([]);
-invits.subscribe((_) => (_invits = _));
+	constructor(public sender: Id) {
+		this.text = '';
+		usersObject.findOrFetch(sender).then(({ name }) => {
+			if (this.valid) {
+				this.text = `You have been invited by ${name} to play`;
+				popups.update((_) => _);
+			}
+		});
+	}
 
-function findBySender(sender: Id): GameInviteDto | undefined {
-	return _invits.find((invite) => invite.sender == sender);
+	get hasButton(): boolean {
+		return true;
+	}
+	get buttonLabel(): string {
+		return 'Accept';
+	}
+	onClose() {
+		state.socket.emit(ChatEvent.GAME_REFUSE, { target: this.sender });
+	}
+	onAccept() {
+		state.socket.emit(ChatEvent.GAME_ACCEPT, { target: this.sender }, () =>
+			popupMethods.removePopup(this)
+		);
+	}
+	revoke() {
+		this.popupCategory = PopupCategory.ERROR;
+		this.text = 'Invitation cancelled';
+		this.valid = false;
+		popups.update((_) => _);
+		setTimeout(() => {
+			popupMethods.removePopup(this);
+		}, 1000);
+	}
 }
 
-function removeByReference(_invite: GameInviteDto) {
-	invits.update((_) => _.filter((invite) => invite !== _invite));
+export class SentGameInvite implements CanBePopup {
+	public popupCategory = PopupCategory.WARNING;
+	public text: string;
+
+	constructor(public target: Id) {
+		this.text = '';
+		usersObject.findOrFetch(target).then(({ name }) => {
+			this.text = `You have invited ${name}...`;
+			popups.update((_) => _);
+		});
+	}
+
+	get hasButton(): boolean {
+		return false;
+	}
+	onClose() {
+		state.socket.emit(ChatEvent.GAME_REFUSE, { target: this.target });
+	}
 }
 
-function removeBySender(sender: Id) {
-	invits.update((_) => _.filter((invite) => invite.sender != sender));
+function revokeReceivedGameInvite(sender: Id) {
+	popups.update((_) => {
+		const invite = _.find((popup) => popup instanceof ReceivedGameInvite && popup.sender == sender);
+		if (invite !== undefined) (invite as ReceivedGameInvite).revoke();
+		return _;
+	});
 }
 
-function removeByIndex(i: number) {
-	invits.update((_) => _.splice(i, 1));
-}
-
-function add(sender: Id) {
-	removeBySender(sender);
-	usersObject.findOrFetch(sender).then((user: ChatUserDto) =>
-		invits.update((_) =>
-			_.concat({
-				sender,
-				senderName: user.name,
-				valid: true
-			})
-		)
+function sendGameInvite(target: Id) {
+	state.socket.emit(ChatEvent.GAME_INVITE, { target }, () =>
+		popupMethods.addPopup(new SentGameInvite(target))
 	);
 }
 
-function revoke(sender: Id, errorMessage: string) {
-	const invite = findBySender(sender);
-	console.log('FOUND ', invite);
-	if (invite === undefined) return;
-	invite.valid = false;
-	invite.errorMessage = errorMessage;
-	invits.update((_) => _);
-	setTimeout(() => {
-		removeByReference(invite);
-		console.log('AH ', invite);
-	}, 1000);
+function receiveGameInvite(source: Id) {
+	popupMethods.addPopup(new ReceivedGameInvite(source));
 }
 
-function accept(sender: Id) {
-	state.socket.emit(
-		// 'Response' game invite
-		ChatEvent.GAME_INVITE,
-		{ target: sender },
-		() => removeBySender(sender) // feedback
-	);
-}
-
-export const gameInvitsMethods = {
-	add,
-	revoke,
-	accept,
-	removeByIndex
+export const gameInviteMethods = {
+	send: sendGameInvite,
+	receive: receiveGameInvite,
+	revokeReceivedGameInvite
 };
-
-// DEBUG
-// add(0);
-// add(1);
