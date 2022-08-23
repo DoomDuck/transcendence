@@ -97,8 +97,6 @@ export class LoginGateway implements
     
     @SubscribeMessage(LoginEvent.TOTP_CHECK)
     async onTotpCheck(socket: Socket, token: string) {
-        const logger = new Logger("TotpCheck");
-        logger.debug("Start");
         const client = this.clientsRequiringTotp.get(socket)!;
 
         const delta = client.totp.validate({token});
