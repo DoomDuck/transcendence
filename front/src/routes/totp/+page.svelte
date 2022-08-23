@@ -3,7 +3,6 @@
   const CODE_LENGTH = 6;
 
   let code : string = "";
-  let verifying: boolean = false;
   
   function updateCode(ev: KeyboardEvent) {
     if (ev.key == "Backspace")
@@ -20,7 +19,6 @@
         
   function submit() {
     state.sendTotpToken(code);
-    verifying = true;
   }
 </script>
 
@@ -28,8 +26,4 @@
 
 
 <h1>2FA Code</h1>
-{#if verifying}
-  <h1>Verifying..</h1>
-{:else}
-  <h1>{code.padEnd(CODE_LENGTH, '_').split('').join(' ')}</h1>
-{/if}
+<h1>{code.padEnd(CODE_LENGTH, '_').split('').join(' ')}</h1>

@@ -11,6 +11,8 @@ import {
 } from '@nestjs/websockets';
 import { Socket as IOSocketBaseType } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import { Logger } from '@nestjs/common';
+import fetch from 'node-fetch';
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 const TOTP_DESCRIPTION = {
@@ -84,6 +86,8 @@ export class LoginGateway implements
     async onTotpDemandSetup(socket: Socket) {
         const totp = new TOTP(TOTP_DESCRIPTION);
         socket.emit(LoginEvent.TOTP_SETUP, totp.toString());
+        
+        // TODO
   
         // if (!totpSecret) {
         //     await this.userService.updateTotp(userInDb, totp.secret.hex);
@@ -93,6 +97,8 @@ export class LoginGateway implements
     
     @SubscribeMessage(LoginEvent.TOTP_CHECK)
     async onTotpCheck(socket: Socket, token: string) {
+        const logger = new Logger("TotpCheck");
+        logger.debug("Start");
         const client = this.clientsRequiringTotp.get(socket)!;
 
         const delta = client.totp.validate({token});

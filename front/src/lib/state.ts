@@ -1,15 +1,20 @@
 import { io } from 'socket.io-client';
-import { goto } from '$app/navigation';
 import type { ChatSocket } from '$lib/utils';
 import { LoginEvent } from 'backFrontCommon';
+import { goto } from '$app/navigation';
 
 const LOGGIN_ROUTE : string = "/";
 const LOGGIN_TOTP_ROUTE : string = "/totp";
-const LOGGIN_SUCCESS_ROUTE : string = "/Main";
+export const LOGGIN_SUCCESS_ROUTE : string = "/Main";
+
+const LOGGIN_ROUTES = [
+    LOGGIN_ROUTE,
+    LOGGIN_TOTP_ROUTE,
+];
 
 class State {
     private safeSocket : ChatSocket | null = null;
-    private requiresTotp: boolean = false;
+    private requireTotp: boolean = false;
     
     get socket() : ChatSocket {
         if (!this.safeSocket)
@@ -21,10 +26,14 @@ class State {
         return !!this.safeSocket;
     }
     
+    get loggedIn() : boolean {
+        return this.connected && !this.requireTotp;
+    }
+    
     connect(code?: string) {
         if (this.connected)
             throw new Error("Allready connected");
-	    this.safeSocket = io('http://localhost:5000/chat', { auth: { code } });
+	    this.safeSocket = io('http://localhost:5000/login', { auth: { code } });
         this.setupHooks();
         if (!code)
             goto(LOGGIN_SUCCESS_ROUTE);
@@ -60,20 +69,24 @@ class State {
     }
     
     onTotpRequirements(isRequired: boolean) {
-        this.requiresTotp = isRequired;
+        this.requireTotp = isRequired;
         goto(isRequired ? LOGGIN_TOTP_ROUTE : LOGGIN_SUCCESS_ROUTE);
     }
     
     onTotpResult(success: boolean) {
-        console.log(`totp result ${success}`);
+        this.requireTotp = false;
         goto(success ? LOGGIN_SUCCESS_ROUTE : LOGGIN_ROUTE);
     }
     
-    // Use in +layout.svelte
+    // Used in +layout.svelte
     forceRoute() : string | null {
         if (!this.connected) return LOGGIN_ROUTE;
-        if (this.requiresTotp) return LOGGIN_TOTP_ROUTE;
+        if (this.requireTotp) return LOGGIN_TOTP_ROUTE;
         return null;
+    }
+    
+    isBlocked(pathname: string): boolean {
+        return this.loggedIn && LOGGIN_ROUTES.includes(pathname);
     }
 }
 
