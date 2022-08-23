@@ -13,7 +13,7 @@ import { User } from './entities/user.entity';
 import { Channel } from '../channelManager/channel.entity';
 import { DatabaseFile } from './entities/databaseFile.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChatGateway } from '../chat/chat.gateway';
+import { ChatService } from '../chat/chat.service';
 
 @Module({
   imports: [
@@ -21,19 +21,22 @@ import { ChatGateway } from '../chat/chat.gateway';
     HttpModule,
   ],
   controllers: [
-    
     UserController,
     UserHistoryController,
     DatabaseFilesController,
     ChannelController,
   ],
   providers: [
-    
-    ChatGateway,
+    ChatService,
     UserService,
     DatabaseFilesService,
     ChannelManagerService,
   ],
-  exports: [UserService],
+  exports: [
+    UserService,
+    ChatService,
+    DatabaseFilesService,
+    ChannelManagerService,
+  ],
 })
 export class UserModule {}

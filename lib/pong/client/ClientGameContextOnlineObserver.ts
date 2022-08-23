@@ -1,3 +1,4 @@
+import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 
@@ -7,9 +8,8 @@ import { ClientGameContextOnline } from "./ClientGameContextOnline";
 export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
   ballOutAlreadyEmitted: boolean = false;
 
-  constructor(onFinish: () => void) {
-    //, public observer = false) {
-    super(onFinish);
+  constructor(socket: Socket, onFinish: () => void) {
+    super(socket, onFinish);
     this.socket.on("connect", () => {
       console.log("connected to server");
 

@@ -1,22 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Delete,
-  Body,
-  Param,
-  Logger,
-} from '@nestjs/common';
-
+import { Controller, Get, Post, Body, Param, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { UserDto } from './dto/user.dto';
-import { FriendRequestDto } from './dto/friendRequest.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
-import { UploadedFile, UseInterceptors } from '@nestjs/common';
-import { Multer } from 'multer';
+import { UploadedFile } from '@nestjs/common';
 import { Id, ChatUserDto } from 'backFrontCommon';
+import { Multer } from 'multer';
 
 @Controller('user')
 export class UserController {
@@ -35,7 +24,7 @@ export class UserController {
   public postUser(@Body() user: UserDto) {
     return this.userService.addOne(user);
   }
-  
+
   @Get(':id')
   public async getUseById(@Param('id') id: Id): Promise<User | null> {
     return this.userService.findOneDb(id);

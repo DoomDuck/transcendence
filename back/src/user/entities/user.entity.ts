@@ -19,12 +19,6 @@ export class User {
     this.id = id;
     this.name = name;
     this.friendlist = [];
-    this.channel = [];
-    this.blocked = [];
-    this.blockedFrom = [];
-    this.win = 0;
-    this.loose = 0;
-    this.score = 0;
     // this.matchAsPlayerOne = [];
     // this.matchAsPlayerTwo = [];
   }
@@ -36,21 +30,23 @@ export class User {
   @Column('int', { array: true })
   friendlist: Id[] = [];
 
-  @Column('int', { array: true, nullable: false })
-  blocked: Id[];
+  @Column('int', { array: true })
+  blocked: Id[] = [];
 
-  @Column('int', { array: true, nullable: false })
-  blockedFrom: Id[];
+  @Column('int', { array: true })
+  blockedFrom: Id[] = [];
 
-  @Column('varchar', { array: true, nullable: false })
-  channel: string[];
+  @Column('varchar', { array: true })
+  channel: string[] = [];
 
   @JoinColumn({ name: 'avatarId' })
   @OneToOne(() => DatabaseFile, { nullable: true })
   @Column({ type: 'int' })
   win: number = 0;
+
   @Column({ type: 'int' })
   loose: number = 0;
+
   @Column({ type: 'int' })
   score: number = 0;
 
@@ -70,4 +66,4 @@ export class User {
   // matchAsPlayerTwo: Match[];
   // // @Column('int', { array: true, nullable: false })
   // // match: Id[];
- }
+}

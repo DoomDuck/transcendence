@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import type { ChatSocket } from '$lib/utils';
+import type { ClientSocket as Socket } from 'backFrontCommon';
 import { LoginEvent } from 'backFrontCommon';
 import { goto } from '$app/navigation';
 
@@ -10,10 +10,10 @@ export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
 class State {
-	private safeSocket: ChatSocket | null = null;
+	private safeSocket: Socket | null = null;
 	private requireTotp: boolean = false;
 
-	get socket(): ChatSocket {
+	get socket(): Socket {
 		if (!this.safeSocket) throw new Error('Socket not initialized');
 		return this.safeSocket;
 	}
@@ -27,8 +27,9 @@ class State {
 	}
 
 	connect(code?: string) {
+		console.log();
 		if (this.connected) throw new Error('Allready connected');
-		this.safeSocket = io('http://localhost:5000/login', { auth: { code } });
+		this.safeSocket = io('http://localhost:5000/', { auth: { code } });
 		this.setupHooks();
 		if (!code) goto(LOGGIN_SUCCESS_ROUTE);
 	}

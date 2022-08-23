@@ -32,8 +32,8 @@ export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
     if (newSocket) this.socketUser.push(newSocket);
   }
-  pending_invite: boolean = false;
-  ingame: boolean = false;
+  pending_invite = false;
+  ingame = false;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
@@ -66,8 +66,7 @@ export class UserService {
     private readonly channelManagerService: ChannelManagerService,
   ) {}
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
-    let chatMessageDto: ChatMessageDto[];
-    chatMessageDto = [];
+    const chatMessageDto: ChatMessageDto[] = [];
     //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
     chatMessage.forEach((message) =>
       chatMessageDto.push(
@@ -90,8 +89,7 @@ export class UserService {
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveChannelConversationDto[] {
-    let activeConversationDto: ActiveChannelConversationDto[];
-    activeConversationDto = [];
+    const activeConversationDto: ActiveChannelConversationDto[] = [];
     activeConversation.forEach((conv: ActiveConversation) =>
       activeConversationDto.push(
         this.channelManagerService.newActiveChannelConversationDto(
@@ -105,8 +103,7 @@ export class UserService {
   dtoTraductionUserConv(
     activeConversation: ActiveConversation[],
   ): ActiveUserConversationDto[] {
-    let activeConversationDto: ActiveUserConversationDto[];
-    activeConversationDto = [];
+    const activeConversationDto: ActiveUserConversationDto[] = [];
     activeConversation.forEach((conv: ActiveConversation) =>
       activeConversationDto.push(
         this.channelManagerService.newActiveUserConversationDto(
@@ -142,7 +139,7 @@ export class UserService {
   getSocketListStringFromId(activeId: Id): string[] {
     const activeUser = this.findOneActive(activeId);
     if (!activeUser) return [];
-    let result: string[] = [];
+    const result: string[] = [];
     activeUser.socketUser.forEach((socket) => result.push(socket.id));
     return result;
   }
@@ -195,14 +192,14 @@ export class UserService {
 
   async addOne(userDto: UserDto): Promise<void> {
     const id = userDto.id;
-    let logger = new Logger('addone');
+    const logger = new Logger('addone');
 
     logger.log(`userDto = ${userDto.id}`);
     logger.log(id);
     let i = 0;
     let UserDb = await this.findOneDb(id);
     if (UserDb === null) {
-      while (this.findOneDbByName(userDto.name) != undefined) {
+      while (await this.findOneDbByName(userDto.name)) {
         i++;
         userDto.name = userDto.name + i;
       }
@@ -238,7 +235,7 @@ export class UserService {
   }
 
   async joinChanUser(activeUser: ActiveUser, channel: Channel) {
-    let logger = new Logger('joinChanUser');
+    const logger = new Logger('joinChanUser');
 
     logger.log('ici');
     logger.log(activeUser.id);
@@ -391,8 +388,7 @@ export class UserService {
     content: string,
     target: ActiveUser,
   ): Promise<ChatFeedbackDto> {
-    let logger = new Logger('sendMessageToUser');
-    if (!(await this.isBlocked(sender, target))) {
+    if (await this.isBlocked(sender, target)) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.YOU_ARE_BLOCKED,

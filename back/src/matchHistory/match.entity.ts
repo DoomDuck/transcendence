@@ -30,18 +30,18 @@
 //   // @ManyToOne(() => User, (user) => user.matchAsPlayerOne)
 //   // playerOne: User;
 
-  // @ManyToOne(() => User, (user) => user.matcAsPlayertwo)
-  // playerTwo: User;
+// @ManyToOne(() => User, (user) => user.matcAsPlayertwo)
+// playerTwo: User;
 
-  // @JoinColumn({ name: 'playerOne' })
-  // @Column('varchar', { array: true, nullable: false })
-  // playerOneScore: number;
-  // @JoinColumn({ name: 'playertwo' })
-  // @Column('varchar', { array: true, nullable: false })
-  // playertwoScore: number;
+// @JoinColumn({ name: 'playerOne' })
+// @Column('varchar', { array: true, nullable: false })
+// playerOneScore: number;
+// @JoinColumn({ name: 'playertwo' })
+// @Column('varchar', { array: true, nullable: false })
+// playertwoScore: number;
 
-  // @Column({ type: 'int', nullable: false })
-  // winner: number;
-  // @CreateDateColumn()
-  // createdDate!: Date;
+// @Column({ type: 'int', nullable: false })
+// winner: number;
+// @CreateDateColumn()
+// createdDate!: Date;
 //}

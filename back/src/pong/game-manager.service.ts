@@ -18,8 +18,6 @@ export class GameManagerService {
   }
 
   addObserver(socket: Socket, gameId: number) {
-    // TOCHANGE (debug): need to work with the front part
-    // currently: launch a game before observing
     this.games[0].addObserver(socket);
     console.log('OBSERVER INCOOOOOOOOOOOMINNNNG');
   }

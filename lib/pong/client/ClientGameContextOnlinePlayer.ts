@@ -1,3 +1,4 @@
+import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
 import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
@@ -9,8 +10,8 @@ import { setupKeyboardOnline } from "./game";
 export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
   ballOutAlreadyEmitted: boolean = false;
 
-  constructor(onFinish: () => void) {
-    super(onFinish);
+  constructor(socket: Socket, onFinish: () => void) {
+    super(socket, onFinish);
     this.socket.on("connect", () => {
       console.log("connected to server");
       this.socket.emit("joinMatchMaking");
