@@ -35,14 +35,7 @@ export class UserController {
   public postUser(@Body() user: UserDto) {
     return this.userService.addOne(user);
   }
-  @Post('friendRequest')
-  public addFriend(@Body() friendRequest: FriendRequestDto) {
-    return this.userService.addFriend(
-      friendRequest.sender,
-      friendRequest.target,
-    );
-  }
-
+  
   @Get(':id')
   public async getUseById(@Param('id') id: Id): Promise<User | null> {
     return this.userService.findOneDb(id);

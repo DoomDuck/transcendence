@@ -11,7 +11,6 @@ import { Channel } from '../channelManager/channel.entity';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
-import { MatchHistoryService } from '../matchHistory/matchHistory.service';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
@@ -64,7 +63,6 @@ export class UserService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private readonly databaseFilesService: DatabaseFilesService,
-    private readonly matchHistoryService: MatchHistoryService,
     private readonly channelManagerService: ChannelManagerService,
   ) {}
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
@@ -141,6 +139,13 @@ export class UserService {
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
   }
+  getSocketListStringFromId(activeId: Id): string[] {
+    const activeUser = this.findOneActive(activeId);
+    if (!activeUser) return [];
+    let result: string[] = [];
+    activeUser.socketUser.forEach((socket) => result.push(socket.id));
+    return result;
+  }
   findOneActive(id: Id): ActiveUser | undefined {
     return this.arrayActiveUser.find((user) => user.id == id);
   }
@@ -150,40 +155,68 @@ export class UserService {
         user.socketUser.find((socket) => socket === clientSocket) != undefined,
     );
   }
+  async getArrayBlockedFrom(activeUser: ActiveUser): Promise<string[]> {
+    const userDb = await this.findOneDb(activeUser.id);
+    if (!userDb) return [];
+    let result: string[] = [];
+    userDb.blockedFrom.forEach(
+      (blocked) =>
+        (result = result.concat(this.getSocketListStringFromId(blocked))),
+    );
+    return result;
+  }
+
   findOneActiveByName(name: string): ActiveUser | undefined {
     return this.arrayActiveUser.find((user) => user.name === name);
   }
   findOneDb(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
+  async findOneDbBySocket(clientSocket: Socket): Promise<User | null> {
+    const tempUser = this.findOneActiveBySocket(clientSocket);
+    if (!tempUser) return null;
+    return this.usersRepository.findOneBy({ id: tempUser.id });
+  }
+  findOneDbByName(name: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ name });
+  }
   async remove(id: Id): Promise<void> {
     await this.usersRepository.delete(id);
   }
+  async isBlocked(
+    activeUser: ActiveUser,
+    blockedUser: ActiveUser,
+  ): Promise<boolean> {
+    const tempUserDb = await this.findOneDb(activeUser.id);
+    if (tempUserDb!.blocked.find((blocked) => blocked === blockedUser.id))
+      return true;
+    else return false;
+  }
+
   async addOne(userDto: UserDto): Promise<void> {
     const id = userDto.id;
     let logger = new Logger('addone');
-    // if (!userDto) return;
-    // if (!userDto.id) return;
+
     logger.log(`userDto = ${userDto.id}`);
     logger.log(id);
-
-    let UserDb = await this.usersRepository.findOneBy({ id });
-    logger.log('test1');
+    let i = 0;
+    let UserDb = await this.findOneDb(id);
     if (UserDb === null) {
-      logger.log('dans undefined');
-      const newUser = new User(userDto.id, userDto.name);
-      UserDb = await this.usersRepository.save(newUser);
-      logger.log('after new user db');
+      while (this.findOneDbByName(userDto.name) != undefined) {
+        i++;
+        userDto.name = userDto.name + i;
+      }
+      UserDb = await this.usersRepository.save(
+        new User(userDto.id, userDto.name),
+      );
     }
     logger.log(UserDb.name);
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
-      logger.log('test2');
       this.arrayActiveUser.push(
         new ActiveUser(UserDb.id, userDto.name, userDto.socket),
       );
     } else {
-      logger.log('test3');
       tempUser.socketUser.push(userDto.socket);
     }
     logger.log('end add one user');
@@ -195,8 +228,7 @@ export class UserService {
     await this.addOne(new UserDto(id, `guest-${id}`, socket));
   }
 
-  addNewSocketUser(userId: Id, newSocket: Socket) {
-    const activeUser = this.arrayActiveUser.find((user) => user.id === userId);
+  addNewSocketUser(activeUser: ActiveUser, newSocket: Socket) {
     if (activeUser) {
       activeUser.socketUser.push(newSocket);
       activeUser.joinedChannel.forEach((channel: Channel) =>
@@ -215,9 +247,10 @@ export class UserService {
     dbUser.channel.push(channel.name);
     this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
 
-    logger.log('la');
     if (activeUser) {
-      logger.log(activeUser.name);
+      logger.log(
+        `la active name = ${activeUser.name} channel name = ${channel.name}`,
+      );
       logger.log(activeUser.socketUser);
       activeUser.socketUser.forEach((socket: Socket) =>
         socket.join(channel.name),
@@ -225,29 +258,14 @@ export class UserService {
     }
   }
 
-  async addFriend(sender: Id, target: Id): Promise<ChatFeedbackDto> {
-    const tempSender = await this.usersRepository
-      .createQueryBuilder('User')
-      .where('User.id = :sender', { sender })
-      .getOne();
-    const tempTarget = await this.usersRepository
-      .createQueryBuilder('User')
-      .where('User.id = :target', { target })
-      .getOne();
-    if (tempSender === null)
-      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    if (tempTarget === null)
-      return this.channelManagerService.newChatFeedbackDto(
-        false,
-        ChatError.USER_NOT_FOUND,
-      );
+  async addFriend(sender: User, target: User): Promise<ChatFeedbackDto> {
     if (
-      tempSender.friendlist.find((friend) => friend === target) === undefined
+      sender.friendlist.find((friend) => friend === target.id) === undefined
     ) {
-      tempSender.friendlist.push(target);
+      sender.friendlist.push(target.id);
       //a test
-      this.usersRepository.update(tempSender.id, {
-        friendlist: tempSender.friendlist,
+      this.usersRepository.update(sender.id, {
+        friendlist: sender.friendlist,
       });
       return this.channelManagerService.newChatFeedbackDto(true);
     } else
@@ -339,22 +357,21 @@ export class UserService {
 
   disconnection(clientSocket: Socket) {
     const activeUser = this.findOneActiveBySocket(clientSocket);
-    if (!activeUser) {
-      return;
-    }
-    if (activeUser.socketUser.length === 1) {
-      activeUser.joinedChannel.forEach((channel) =>
-        this.channelManagerService.leaveChannel(channel, activeUser.id),
-      );
-      this.arrayActiveUser = this.arrayActiveUser.slice(
-        this.arrayActiveUser.indexOf(activeUser),
-        1,
-      );
-    } else {
-      activeUser.socketUser = activeUser.socketUser.slice(
-        activeUser.socketUser.indexOf(clientSocket),
-        1,
-      );
+    if (activeUser) {
+      if (activeUser.socketUser.length === 1) {
+        activeUser.joinedChannel.forEach((channel) =>
+          this.channelManagerService.leaveChannel(channel, activeUser),
+        );
+        this.arrayActiveUser = this.arrayActiveUser.slice(
+          this.arrayActiveUser.indexOf(activeUser),
+          1,
+        );
+      } else {
+        activeUser.socketUser = activeUser.socketUser.slice(
+          activeUser.socketUser.indexOf(clientSocket),
+          1,
+        );
+      }
     }
   }
 
@@ -364,16 +381,23 @@ export class UserService {
         false,
         ChatError.NOT_IN_CHANNEL,
       );
-    this.channelManagerService.leaveChannel(channel, activeUser.id);
+    this.channelManagerService.leaveChannel(channel, activeUser);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
     return this.channelManagerService.newChatFeedbackDto(true);
   }
-  sendMessageToUser(
+  async sendMessageToUser(
     sender: ActiveUser,
     wss: Server,
     content: string,
     target: ActiveUser,
-  ): ChatFeedbackDto {
+  ): Promise<ChatFeedbackDto> {
+    let logger = new Logger('sendMessageToUser');
+    if (!(await this.isBlocked(sender, target))) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.YOU_ARE_BLOCKED,
+      );
+    }
     target.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
         source: sender.id,
@@ -382,5 +406,22 @@ export class UserService {
     );
     this.updateUserConversation(sender, target, content);
     return this.channelManagerService.newChatFeedbackDto(true);
+  }
+
+  blockUser(sender: User, target: User): ChatFeedbackDto {
+    if (sender.blocked.find((user) => user === target.id) === undefined)
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.ALREADY_BLOCKED,
+      );
+    else {
+      sender.blocked.push(target.id);
+      target.blockedFrom.push(sender.id);
+      this.usersRepository.update(sender.id, { blocked: sender.blocked });
+      this.usersRepository.update(target.id, {
+        blockedFrom: target.blockedFrom,
+      });
+      return this.channelManagerService.newChatFeedbackDto(true);
+    }
   }
 }

@@ -1,5 +1,16 @@
-import { Entity, Column, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+  ManyToMany,
+  PrimaryColumn,
+  JoinTable,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { DatabaseFile } from './databaseFile.entity';
+// import { Match } from '../../matchHistory/match.entity';
 import { Id } from 'backFrontCommon';
 
 @Entity('User')
@@ -7,6 +18,15 @@ export class User {
   constructor(id: Id, name: string) {
     this.id = id;
     this.name = name;
+    this.friendlist = [];
+    this.channel = [];
+    this.blocked = [];
+    this.blockedFrom = [];
+    this.win = 0;
+    this.loose = 0;
+    this.score = 0;
+    // this.matchAsPlayerOne = [];
+    // this.matchAsPlayerTwo = [];
   }
   @PrimaryColumn('int')
   id: Id;
@@ -16,8 +36,14 @@ export class User {
   @Column('int', { array: true })
   friendlist: Id[] = [];
 
-  @Column('varchar', { array: true })
-  channel: string[] = [];
+  @Column('int', { array: true, nullable: false })
+  blocked: Id[];
+
+  @Column('int', { array: true, nullable: false })
+  blockedFrom: Id[];
+
+  @Column('varchar', { array: true, nullable: false })
+  channel: string[];
 
   @JoinColumn({ name: 'avatarId' })
   @OneToOne(() => DatabaseFile, { nullable: true })
@@ -32,13 +58,16 @@ export class User {
   @Column({ nullable: true })
   public avatarId?: Id;
 
-  @Column('int', { array: true })
-  match: Id[] = [];
-
   /**
    * 2-Factor Auth TOTP secret in hex
    */
   // TODO: check if one should use undefined or null
   @Column('varchar', { nullable: true })
   totpSecret: string | null = null;
-}
+  // @OneToMany(() => Match, (match) => match.playerOne)
+  // matchAsPlayerOne: Match[];
+  // @OneToMany(() => Match, (match) => match.playerTwo)
+  // matchAsPlayerTwo: Match[];
+  // // @Column('int', { array: true, nullable: false })
+  // // match: Id[];
+ }

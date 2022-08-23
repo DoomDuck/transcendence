@@ -28,6 +28,11 @@ export class ChatEvent {
   static readonly GET_FRIENDS =  'get_friends '
   static readonly GET_LEADERBOARD = 'get_leaderboard'
   static readonly GET_CHAT_HISTORY = 'get_chat_history'
+  static readonly BLOCK_USER = 'block user'
+	static readonly BAN_USER = 'ban user'
+	static readonly MUTE_USER = 'mute user'
+	static readonly BANNED_NOTIF = 'you are banned from a chan'
+	static readonly MUTED_NOTIF = 'you are muted from a chan'
 }
 
 export class ChatError {
@@ -48,6 +53,11 @@ export class ChatError {
   static readonly INSUFICIENT_PERMISSION = "insuficient permission";
   static readonly CANT_INVITE_TO_NON_PRIVATE_CHANNEL = "cant invite to non private channel";
   static readonly CANT_CREATE_PROTECTED_CHANNEL_WO_PASSW = "cant create protected channel wo passw";
+  static readonly ALREADY_BLOCKED ="user already blocked";
+  static readonly ALREADY_BANNED ="user already banned";
+  static readonly ALREADY_MUTED ="user already muted";
+  static readonly NOT_BANNED ="user not banned";
+  static readonly NOT_MUTED ="user not muted";
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
 }
 
@@ -60,6 +70,8 @@ export type JoinChannelToServer = {channel: string, password?:string};
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
 }
+
+export type FriendInviteToServer = {target:Id};
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
@@ -69,13 +81,17 @@ export type GameAcceptFromServer = { source: Id };
 export type GameAcceptToServer = { target: Id };
 export type GameRefuseFromServer = { source: Id, reason?: string };
 export type GameRefuseToServer = { target: Id, reason?: string };
-export type FriendInviteToServer = { target: Id };
 export type PostAvatar = { imageDataUrl: string };
 export type GetUser = { target: Id };
 
 export type LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };
 export type GetLeaderBoardResponse = { items: LeaderboardItemDto[] };
 
+export type BlockUserToServer =  {target: Id};
+export type BanUserToServer =  {channel:string,target: Id, duration:number};
+export type BanUserFromServer =  {channel:string,sender:Id, duration:number};
+export type MuteUserToServer =  {channel:string,target: Id, duration:number};
+export type MuteUserFromServer =  {channel:string,sender: Id, duration:number};
 export type ChatFeedbackDto = {
   success: boolean,
   errorMessage?: string,
@@ -103,6 +119,8 @@ export interface ServerToClientEvents {
   [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
   [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
   [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
+  [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer ) => void;
 }
 
 export interface ClientToServerEvents {
@@ -124,4 +142,6 @@ export interface ClientToServerEvents {
   // Login
   [LoginEvent.TOTP_CHECK]: (token: string) => void,
   [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
+  [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
 }

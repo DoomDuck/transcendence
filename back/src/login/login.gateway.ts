@@ -22,7 +22,7 @@ const TOTP_DESCRIPTION = {
 
 @WebSocketGateway({ namespace: '/login' })
 export class LoginGateway
-  implements OnGatewayConnection<Socket>, OnGatewayDisconnect<Socket>
+  implements OnGatewayConnection<Socket>
 {
   private clientsRequiringTotp = new Map<
     Socket,

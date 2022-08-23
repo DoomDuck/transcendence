@@ -3,12 +3,12 @@ import { UserController } from './user.controller';
 import { UserHistoryController } from './userHistory.controller';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { ChannelController } from '../channelManager/channelManager.controller';
-import { MatchHistoryController } from '../matchHistory/matchHistory.controller';
+
 import { DatabaseFilesController } from './databaseFile.controller';
 import { HttpModule } from '@nestjs/axios';
 import { UserService } from './user.service';
 import { DatabaseFilesService } from './databaseFile.service';
-import { MatchHistoryService } from '../matchHistory/matchHistory.service';
+
 import { User } from './entities/user.entity';
 import { Channel } from '../channelManager/channel.entity';
 import { DatabaseFile } from './entities/databaseFile.entity';
@@ -21,14 +21,14 @@ import { ChatGateway } from '../chat/chat.gateway';
     HttpModule,
   ],
   controllers: [
-    MatchHistoryController,
+    
     UserController,
     UserHistoryController,
     DatabaseFilesController,
     ChannelController,
   ],
   providers: [
-    MatchHistoryService,
+    
     ChatGateway,
     UserService,
     DatabaseFilesService,
