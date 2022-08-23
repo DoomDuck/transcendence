@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { state } from '$lib/state';
+  import { state } from '$lib/ts/state';
   const CODE_LENGTH = 6;
 
   let code : string = "";

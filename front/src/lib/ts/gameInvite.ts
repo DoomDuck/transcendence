@@ -1,6 +1,6 @@
 import { ChatEvent, type ChatUserDto, type Id } from 'backFrontCommon';
 import { writable, type Writable } from 'svelte/store';
-import { state } from '$lib/state';
+import { state } from '$lib/ts/state';
 import { usersObject } from './users';
 
 export type GameInviteDto = {

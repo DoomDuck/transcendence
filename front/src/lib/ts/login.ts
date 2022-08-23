@@ -1,4 +1,4 @@
-import { state } from '$lib/state';
+import { state } from '$lib/ts/state';
 
 // Check if being redirected 42 OAuth
 export function preLogin() {

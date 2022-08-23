@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toDataURL } from 'qrcode';
-	import { state } from '$lib/state';
+	import { state } from '$lib/ts/state';
   import { LoginEvent } from 'backFrontCommon';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';

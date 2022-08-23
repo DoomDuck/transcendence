@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 import { browser } from '$app/env';
-import { state, LOGGIN_SUCCESS_ROUTE } from '$lib/state';
+import { state, LOGGIN_SUCCESS_ROUTE } from '$lib/ts/state';
 import { redirect } from '@sveltejs/kit';
 import type { LoadEvent } from "@sveltejs/kit";
 

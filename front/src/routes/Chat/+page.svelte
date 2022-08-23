@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { state } from '$lib/state';
+	import { state } from '$lib/ts/state';
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
 	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
