@@ -158,6 +158,6 @@ export class LoginService {
       socket.disconnect();
       return;
     }
-    this.userService.disconnection(socket);
+	this.userService.disconnection(socket);
   }
 }

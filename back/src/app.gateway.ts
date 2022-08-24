@@ -91,6 +91,8 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
+	  // this.logger.log('disconnection');
+	  this.userService.printAllActiveSocket();	
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
   }
 
