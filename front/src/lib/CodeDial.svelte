@@ -1,24 +1,22 @@
 <script lang="ts">
-  export const CODE_LENGTH = 6;
-        
-  export const submit: (code: string) => void = console.log;
+	export const CODE_LENGTH = 6;
 
-  let code : string = "";
-  
-  function updateCode(ev: KeyboardEvent) {
-    if (ev.key == "Backspace")
-      code = code.slice(0, code.length - 1);
+	export const submit: (code: string) => void = console.log;
 
-    if (code.length == CODE_LENGTH)
-      return;
+	let code: string = '';
 
-    if (ev.key.match(/^\d$/)) {
-      code = code + ev.key;
-      if (code.length == CODE_LENGTH) submit(code);
-    }
-  }
+	function updateCode(ev: KeyboardEvent) {
+		if (ev.key == 'Backspace') code = code.slice(0, code.length - 1);
+
+		if (code.length == CODE_LENGTH) return;
+
+		if (ev.key.match(/^\d$/)) {
+			code = code + ev.key;
+			if (code.length == CODE_LENGTH) submit(code);
+		}
+	}
 </script>
 
-<svelte:window on:keydown={updateCode}/>
+<svelte:window on:keydown={updateCode} />
 
 <h1>{code.padEnd(CODE_LENGTH, '_').split('').join(' ')}</h1>

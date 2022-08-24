@@ -7,7 +7,7 @@ import { ActiveUser } from '../user/user.service';
 import { ChatError } from 'backFrontCommon';
 import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
 import { ChannelCategory } from 'backFrontCommon';
-
+import * as bcrypt from 'bcrypt';
 import { Server as IOServerBaseType } from 'socket.io';
 import type { CreateChannelToServer } from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,18 +32,27 @@ export class ChannelManagerService {
   ) {}
   private logger: Logger = new Logger('channelManagerService');
 
-  createChan(
+  async createChan(
     activeUser: ActiveUser,
     chanInfo: CreateChannelToServer,
   ): Promise<Channel> {
     this.logger.log('createChan');
     this.logger.log(chanInfo.channel);
+	if(chanInfo.category ===ChannelCategory.PROTECTED)
     return this.channelRepository.save(
       new Channel(
         chanInfo.channel,
         activeUser.id,
         chanInfo.category,
-        chanInfo.password,
+		 await bcrypt.hash(chanInfo.password!,10),
+      ),
+    );
+	else
+	return this.channelRepository.save(
+      new Channel(
+        chanInfo.channel,
+        activeUser.id,
+        chanInfo.category,
       ),
     );
     //return new ChatFeedbackDto(true);
@@ -123,7 +132,7 @@ export class ChannelManagerService {
       channel.category === ChannelCategory.PROTECTED &&
       user.id != channel.creator
     ) {
-      if (!password || password != channel.password)
+      if (!password || await bcrypt.compare(password, channel.passHash!) )//password != channel.password)
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
     this.logger.log(`user == ${user.id}added`);
@@ -156,7 +165,7 @@ export class ChannelManagerService {
     this.channelRepository.update(tempChan.name!, {
       category: ChannelCategory.PROTECTED,
     });
-    this.channelRepository.update(tempChan.name!, { password: password });
+    this.channelRepository.update(tempChan.name!, { passHash:await bcrypt.hash(password,10) });
     return new ChatFeedbackDto(true);
   }
   async setNewAdmin(

@@ -19,10 +19,10 @@ import {
 } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import {
-	MyInfo,
-UserInfoFromServer,
-UserInfoToServer,
-RequestFeedbackDto,
+  MyInfo,
+  UserInfoFromServer,
+  UserInfoToServer,
+  RequestFeedbackDto,
   ChatFeedbackDto,
   UserHistoryDto,
   Id,
@@ -75,6 +75,13 @@ export class UserService {
     private readonly channelManagerService: ChannelManagerService,
 	private readonly matchHistoryService:MatchHistoryService
   ) {}
+  printAllActiveSocket() {
+    let logger = new Logger('All active');
+    this.arrayActiveUser.forEach((user) => {
+      logger.debug(user.name);
+      user.socketUser.forEach((socket) => logger.debug(socket.id));
+    });
+  }
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
     //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
@@ -367,23 +374,29 @@ export class UserService {
   }
 
   disconnection(clientSocket: Socket) {
+    const logger = new Logger('disconnection');
+    // this.printAllActiveSocket();
+    logger.log(' start');
     const activeUser = this.findOneActiveBySocket(clientSocket);
     if (activeUser) {
       if (activeUser.socketUser.length === 1) {
         activeUser.joinedChannel.forEach((channel) =>
           this.channelManagerService.leaveChannel(channel, activeUser),
         );
-        this.arrayActiveUser = this.arrayActiveUser.slice(
+        this.arrayActiveUser.splice(
           this.arrayActiveUser.indexOf(activeUser),
           1,
         );
       } else {
-        activeUser.socketUser = activeUser.socketUser.slice(
+        activeUser.socketUser.splice(
           activeUser.socketUser.indexOf(clientSocket),
           1,
         );
       }
     }
+    logger.log(' second print');
+    // this.printAllActiveSocket();
+    logger.log('end');
   }
 
   leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
