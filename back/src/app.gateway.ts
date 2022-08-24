@@ -121,12 +121,12 @@ export class AppGateway
     );
   }
 
-  @SubscribeMessage('joinMatchMaking')
-  handleJoinMatchMaking(socket: Socket) {
+  @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
+  handleJoinMatchMaking(socket: Socket, classic: boolean) {
     this.gameManagerService.add(socket);
   }
 
-  @SubscribeMessage('observe')
+  @SubscribeMessage(ChatEvent.GAME_OBSERVE)
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
   }

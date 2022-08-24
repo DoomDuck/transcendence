@@ -15,14 +15,16 @@ import { setupKeyboardOffline } from "./game";
  * Offline version of the game in the client (see ClientGameContext)
  */
 export class ClientGameContextOffline extends ClientGameContext {
-  spawner: Spawner;
+  spawner?: Spawner;
 
-  constructor(onFinish: () => void) {
+  constructor(onFinish: () => void, classic: boolean) {
     super(onFinish);
-    this.spawner = new Spawner(
-      this.spawnGraviton.bind(this),
-      this.spawnPortal.bind(this)
-    );
+    if (!classic) {
+      this.spawner = new Spawner(
+        this.spawnGraviton.bind(this),
+        this.spawnPortal.bind(this)
+      );
+    }
     this.reset(GSettings.BALL_INITIAL_SPEEDX);
 
     // input events
@@ -40,7 +42,7 @@ export class ClientGameContextOffline extends ClientGameContext {
     let animate = (time: DOMHighResTimeStamp) => {
       this.animationHandle = requestAnimationFrame(animate);
       this.gameManager.game.frame();
-      this.spawner.frame();
+      this.spawner?.frame();
       this.gameManager.render(time);
     };
     animate(Date.now());
@@ -49,12 +51,12 @@ export class ClientGameContextOffline extends ClientGameContext {
   startGame() {
     const now = Date.now();
     this.gameManager.game.start(now);
-    this.spawner.start(now);
+    this.spawner?.start(now);
   }
 
   reset(ballSpeedX: number) {
     this.gameManager.game.reset(0, 0, ballSpeedX, 0);
-    this.spawner.reset();
+    this.spawner?.reset();
   }
 
   spawnGraviton() {

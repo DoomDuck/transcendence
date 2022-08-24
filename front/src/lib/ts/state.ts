@@ -1,7 +1,8 @@
 import { io } from 'socket.io-client';
-import type { ClientSocket as Socket } from 'backFrontCommon';
+import { ChatEvent, type ClientSocket as Socket } from 'backFrontCommon';
 import { LoginEvent } from 'backFrontCommon';
 import { goto } from '$app/navigation';
+import type { GameParams } from './gameParams';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -12,6 +13,7 @@ const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 class State {
 	private safeSocket: Socket | null = null;
 	private requireTotp: boolean = false;
+	public gameParams?: GameParams;
 
 	get socket(): Socket {
 		if (!this.safeSocket) throw new Error('Socket not initialized');

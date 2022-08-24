@@ -17,7 +17,10 @@ import { ScorePanels } from "./score";
  * It is instanciated and used in ClientGameManager
  */
 export class Renderer {
+  canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
+  backgroundCanvas: HTMLCanvasElement;
+  backgroundContext: CanvasRenderingContext2D;
   ratio!: number;
   ballRadius!: number;
   barWidth!: number;
@@ -33,8 +36,11 @@ export class Renderer {
   victoryAnimation?: VictoryAnimation;
   scorePanels: ScorePanels;
 
-  constructor(public canvas: HTMLCanvasElement, public data: GameDataBuffer) {
-    this.context = canvas.getContext("2d") as CanvasRenderingContext2D;
+  constructor(public data: GameDataBuffer) {
+    this.canvas = document.getElementById("game-screen") as HTMLCanvasElement;
+    this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+    this.backgroundCanvas = document.getElementById("game-background") as HTMLCanvasElement;
+    this.backgroundContext = this.backgroundCanvas.getContext("2d") as CanvasRenderingContext2D;
     this.gravitonSpriteOpening = new MultiframeSprite(
       "/graviton_opening.png",
       GSettings.GRAVITON_SPRITE_WIDTH,
@@ -67,6 +73,8 @@ export class Renderer {
   handleResize(width: number, height: number) {
     this.canvas.width = width;
     this.canvas.height = height;
+    this.backgroundCanvas.width = width;
+    this.backgroundCanvas.height = height;
     this.ratio = width / GSettings.SCREEN_WIDTH;
     this.ballRadius = this.ratio * GSettings.BALL_RADIUS;
     this.barWidth = this.ratio * GSettings.BAR_WIDTH;
@@ -76,22 +84,23 @@ export class Renderer {
     this.portalWidth = this.ratio * GSettings.PORTAL_WIDTH;
     this.scoreSize = this.ratio * GSettings.SCORE_SIZE;
     this.backgroundBlockSize = height / GSettings.BACKGROUND_N_SUBDIVISIONS;
+    this.createBackground();
   }
 
-  drawBackground() {
+  createBackground() {
     const width = this.canvas.width;
     const height = this.canvas.height;
     const blockSize = this.backgroundBlockSize;
 
-    this.context.fillStyle = "rgb(0, 0, 0)";
-    this.context.fillRect(0, 0, width, height);
+    this.backgroundContext.fillStyle = "rgb(0, 0, 0)";
+    this.backgroundContext.fillRect(0, 0, width, height);
 
-    this.context.fillStyle = GSettings.BACKGROUND_COLOR_GREY;
-    this.context.fillRect(0, 0, width, blockSize);
-    this.context.fillRect(0, height - blockSize, width, blockSize);
+    this.backgroundContext.fillStyle = GSettings.BACKGROUND_COLOR_GREY;
+    this.backgroundContext.fillRect(0, 0, width, blockSize);
+    this.backgroundContext.fillRect(0, height - blockSize, width, blockSize);
 
     for (let step = 1; step < GSettings.BACKGROUND_N_SUBDIVISIONS; step += 2) {
-      this.context.fillRect(
+      this.backgroundContext.fillRect(
         width / 2 - blockSize / 2,
         step * blockSize,
         blockSize,
@@ -223,16 +232,7 @@ export class Renderer {
       this.victoryAnimation.frame(time);
       return;
     }
-    // this.context.resetTransform();
-    // this.drawScore();
-    this.drawBackground();
-    // this.context.fillStyle = "black";
-    // this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    // this.context.putImageData(this.background, 0, 0);
-    // this.context.putImageData(this.background, 1, 0, 0, 0, this.canvas.width, this.canvas.height);
-    // this.context.putImageData(this.background, -100, -100);
-    // console.log(this.background.data[3]);
-
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBar(this.data.current.bars[0]);
     this.drawBar(this.data.current.bars[1]);
 

@@ -33,6 +33,8 @@ export class ChatEvent {
 	static readonly MUTE_USER = 'mute user'
 	static readonly BANNED_NOTIF = 'you are banned from a chan'
 	static readonly MUTED_NOTIF = 'you are muted from a chan'
+  static readonly JOIN_MATCHMAKING = 'join matchmaking'
+  static readonly GAME_OBSERVE = 'game observe'
 }
 
 export class ChatError {
@@ -138,6 +140,8 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
 	[ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
 	[ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
+  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
+  [ChatEvent.GAME_OBSERVE]: (gameId: Id) => void;
 
   // Login
   [LoginEvent.TOTP_CHECK]: (token: string) => void,
