@@ -17,6 +17,10 @@ import {
 } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import {
+  MyInfo,
+  UserInfoFromServer,
+  UserInfoToServer,
+  RequestFeedbackDto,
   ChatFeedbackDto,
   UserHistoryDto,
   Id,
@@ -33,7 +37,7 @@ export class ActiveUser {
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite = false;
-  ingame = false;
+  inGame = false;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
@@ -65,6 +69,13 @@ export class UserService {
     private readonly databaseFilesService: DatabaseFilesService,
     private readonly channelManagerService: ChannelManagerService,
   ) {}
+  printAllActiveSocket() {
+    let logger = new Logger('All active');
+    this.arrayActiveUser.forEach((user) => {
+      logger.debug(user.name);
+      user.socketUser.forEach((socket) => logger.debug(socket.id));
+    });
+  }
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
     //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
@@ -358,24 +369,26 @@ export class UserService {
   }
 
   disconnection(clientSocket: Socket) {
-    (new Logger("disconnect")).debug("Hello");
+    const logger = new Logger('disconnection');
     const activeUser = this.findOneActiveBySocket(clientSocket);
     if (activeUser) {
       if (activeUser.socketUser.length === 1) {
         activeUser.joinedChannel.forEach((channel) =>
           this.channelManagerService.leaveChannel(channel, activeUser),
         );
-        this.arrayActiveUser = this.arrayActiveUser.slice(
+        this.arrayActiveUser.splice(
           this.arrayActiveUser.indexOf(activeUser),
           1,
         );
       } else {
-        activeUser.socketUser = activeUser.socketUser.slice(
+        activeUser.socketUser.splice(
           activeUser.socketUser.indexOf(clientSocket),
           1,
         );
       }
     }
+    logger.log(' second print');
+    logger.log('end');
   }
 
   leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
@@ -425,5 +438,83 @@ export class UserService {
       });
       return this.channelManagerService.newChatFeedbackDto(true);
     }
+  }
+  MyInfoTransformator(user: User): MyInfo {
+    const activeUser = this.findOneActive(user.id);
+    if (activeUser)
+      return {
+        id: user.id,
+        name: user.name,
+        friendlist: user.friendlist,
+        blocked: user.blocked,
+        channel: user.channel,
+        win: user.win,
+        loose: user.loose,
+        score: user.score,
+        avatarId: user.avatarId,
+        totpSecret: user.totpSecret,
+        inGame: activeUser.inGame,
+      };
+    else
+      return {
+        id: user.id,
+        name: user.name,
+        friendlist: user.friendlist,
+        blocked: user.blocked,
+        channel: user.channel,
+        win: user.win,
+        loose: user.loose,
+        score: user.score,
+        avatarId: user.avatarId,
+        totpSecret: user.totpSecret,
+        inGame: false,
+      };
+  }
+  UserInfoTransformator(user: User): UserInfoFromServer {
+    const activeUser = this.findOneActive(user.id);
+    if (activeUser)
+      return {
+        id: user.id,
+        name: user.name,
+        friendlist: user.friendlist,
+        channel: user.channel,
+        win: user.win,
+        loose: user.loose,
+        score: user.score,
+        avatarId: user.avatarId,
+        isOnline: true,
+        inGame: activeUser.inGame,
+      };
+    else
+      return {
+        id: user.id,
+        name: user.name,
+        friendlist: user.friendlist,
+        channel: user.channel,
+        win: user.win,
+        loose: user.loose,
+        score: user.score,
+        avatarId: user.avatarId,
+        isOnline: false,
+        inGame: false,
+      };
+  }
+  async MyInfo(socket: Socket): Promise<RequestFeedbackDto<MyInfo>> {
+    const user = await this.findOneDbBySocket(socket);
+    if (!user)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    else return { success: true, result: this.MyInfoTransformator(user) };
+  }
+  async UserInfo(
+    socket: Socket,
+    userInfo: UserInfoToServer,
+  ): Promise<RequestFeedbackDto<UserInfoFromServer>> {
+    const sender = await this.findOneDbBySocket(socket);
+    const target = await this.findOneDb(userInfo.target);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    else if (!target)
+      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+    else return { success: true, result: this.UserInfoTransformator(target) };
   }
 }

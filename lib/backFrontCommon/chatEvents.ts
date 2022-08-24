@@ -1,7 +1,6 @@
 import type { UserHistoryDto } from "./chatConversationsDto"
 import type { ChatUserDto } from "./chatUserProfileDto"
 import type { Id } from "./general"
-
 /**
  * Events required to Login
  */
@@ -13,6 +12,12 @@ export class LoginEvent {
   static readonly TOTP_RESULT = "totp result";
 }
 
+export class GetInfoEvent{
+
+  static readonly MY_INFO = "my info";
+  static readonly USER_INFO = "user info";
+
+}
 export class ChatEvent {
   static readonly MSG_TO_CHANNEL = "msg to channel"
   static readonly MSG_TO_USER = 'msg to user'

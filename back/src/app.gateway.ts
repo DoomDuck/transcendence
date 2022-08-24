@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ChatEvent, LoginEvent } from 'backFrontCommon';
+import { ChatEvent, LoginEvent, GetInfoEvent } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import type {
   BanUserToServer,
@@ -9,6 +9,7 @@ import type {
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
+  UserInfoToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
 import {
@@ -42,6 +43,7 @@ export class AppGateway
   constructor(
     private loginService: LoginService,
     private chatService: ChatService,
+    private userService: UserService,
     private gameManagerService: GameManagerService,
   ) {}
 
@@ -89,6 +91,8 @@ export class AppGateway
   // @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
+    // this.logger.log('disconnection');
+    this.userService.printAllActiveSocket();
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
   }
 
@@ -129,5 +133,14 @@ export class AppGateway
   @SubscribeMessage('observe')
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
+  }
+  @SubscribeMessage(GetInfoEvent.MY_INFO)
+  async handleMyInfo(socket: Socket) {
+    return await this.userService.MyInfo(socket);
+  }
+
+  @SubscribeMessage(GetInfoEvent.USER_INFO)
+  async handleUserInfo(socket: Socket, userInfo: UserInfoToServer) {
+    await this.userService.UserInfo(socket, userInfo);
   }
 }

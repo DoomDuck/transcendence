@@ -155,8 +155,6 @@ export class ChatService {
   }
 
   async handlePrivMessage(clientSocket: Socket, dm: DMToServer, wss: Server) {
-    this.logger.log(this.userService.getAllActiveUser());
-    this.logger.log(clientSocket.id);
     const sender = this.userService.findOneActiveBySocket(clientSocket);
     if (!sender) {
       return this.channelManagerService.newChatFeedbackDto(
@@ -198,8 +196,7 @@ export class ChatService {
         ChatError.USER_NOT_FOUND,
       );
     }
-    const feedback = this.userService.addFriend(sender, target);
-    return feedback;
+    return await this.userService.addFriend(sender, target);
   }
 
   async handleBanUser(
