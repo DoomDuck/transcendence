@@ -81,9 +81,9 @@ export enum ChannelCategory {
 }
 
 export type MyInfo = {
-  id: Id, name: string, friendlist: Id[], blocked: Id[] , channel: string[] , win: number , loose: number , score: number , avatarId?: Id,  totpSecret: string | null, inGame:boolean}
+  id: Id, name: string, friendlist: Id[], blocked: Id[] , channel: string[] , win: number , loose: number , score: number , avatar: string | null,  totpSecret: string | null, inGame:boolean}
 export type UserInfoFromServer = {
-id: Id, name: string, friendlist: Id[], channel: string[] , win: number , loose: number , score: number , avatarId?: Id, isOnline: boolean, inGame:boolean
+id: Id, name: string, friendlist: Id[], channel: string[] , win: number , loose: number , score: number , avatar: string | null, isOnline: boolean, inGame:boolean
 }
 export type MatchInfoFromServer={winner: Id, looser: Id, winnerScore : number, looserScore:number, date : Date};
 export type MatchInfoToServer = {target:Id};

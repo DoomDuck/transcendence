@@ -22,7 +22,7 @@ export class Match {
  	 id?: Id;
 @ManyToMany(()=>User,(user)=>user.match)
 	player:User[]
-@Column({ array: true, nullable: false })
+@Column('int',{ array: true})
 	score:number[]	
 @CreateDateColumn()
 	date!: Date;

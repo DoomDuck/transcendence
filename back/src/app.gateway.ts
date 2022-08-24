@@ -47,7 +47,7 @@ export class AppGateway
   @WebSocketServer() wss!: Server;
   constructor(
     private loginService: LoginService,
-	// private matchHistoryService : MatchHistoryService,
+	private matchHistoryService : MatchHistoryService,
     private chatService: ChatService,
     private userService: UserService,
     private gameManagerService: GameManagerService,
@@ -136,30 +136,30 @@ export class AppGateway
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
   }
-// @SubscribeMessage(GetInfoEvent.MY_INFO)
-  // async handleMyInfo(socket: Socket) {
-    // return await this.userService.MyInfo(socket);
-  // }
-//
-// @SubscribeMessage(GetInfoEvent.USER_INFO)
-  // async handleUserInfo(socket: Socket, userInfo:UserInfoToServer ) {
-    // return await this.userService.UserInfo(socket, userInfo);
-  // }
-// @SubscribeMessage(GetInfoEvent.ALL_MATCH)
-  // async handleAllMatch(socket: Socket) {
-    // return  await this.matchHistoryService.getAllMatch();
-  // }
-// @SubscribeMessage(GetInfoEvent.MY_MATCH)
-  // async handleMyMatch(socket: Socket) {
-    // return  await this.userService.getMyMatch(socket);
-  // }
-// @SubscribeMessage(GetInfoEvent.USER_MATCH)
-  // async handleUserMatch(socket: Socket,matchInfo:MatchInfoToServer ) {
-    // return  await this.userService.getUserMatch(socket,matchInfo.target);
-  // }
-//
-// @SubscribeMessage(ChatEvent.GET_USER)
-  // async handleGetUserChat(socket: Socket,userId:GetUser ) {
-    // return await this.userService.getUserChat(socket,userId.target);
-  // }
+@SubscribeMessage(GetInfoEvent.MY_INFO)
+  async handleMyInfo(socket: Socket) {
+	return await this.userService.MyInfo(socket);
+  }
+
+@SubscribeMessage(GetInfoEvent.USER_INFO)
+  async handleUserInfo(socket: Socket, userInfo:UserInfoToServer ) {
+	return await this.userService.UserInfo(socket, userInfo);
+  }
+@SubscribeMessage(GetInfoEvent.ALL_MATCH)
+  async handleAllMatch(socket: Socket) {
+	return  await this.matchHistoryService.getAllMatch();
+  }
+@SubscribeMessage(GetInfoEvent.MY_MATCH)
+  async handleMyMatch(socket: Socket) {
+	return  await this.userService.getMyMatch(socket);
+  }
+@SubscribeMessage(GetInfoEvent.USER_MATCH)
+  async handleUserMatch(socket: Socket,matchInfo:MatchInfoToServer ) {
+	return  await this.userService.getUserMatch(socket,matchInfo.target);
+  }
+
+@SubscribeMessage(ChatEvent.GET_USER)
+  async handleGetUserChat(socket: Socket,userId:GetUser ) {
+	return await this.userService.getUserChat(socket,userId.target);
+  }
 }

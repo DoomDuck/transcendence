@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
+import { Match } from '../matchHistory/match.entity';
 import { UserDto } from './dto/user.dto';
 import { ActiveConversationDto } from './dto/userHistory.dto';
 import {
@@ -30,6 +31,7 @@ RequestFeedbackDto,
 MatchInfoFromServer,
   ChatMessageDto,
 ChatUserDto,
+ChatProfileDto,
 } from 'backFrontCommon';
 
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
@@ -71,7 +73,7 @@ export class UserService {
     private usersRepository: Repository<User>,
     private readonly databaseFilesService: DatabaseFilesService,
     private readonly channelManagerService: ChannelManagerService,
-	// private readonly matchHistoryService:MatchHistoryService
+	private readonly matchHistoryService:MatchHistoryService
   ) {}
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
@@ -87,12 +89,16 @@ export class UserService {
     );
     return chatMessageDto;
   }
-  getLeaderboard(): Promise<User[]> {
-    return this.usersRepository.find({
+  async getLeaderboard(): Promise<User[]> {
+    return await this.usersRepository.find({
       order: {
-        score: 'ASC', // "DESC"
+        score: 'DESC', // "ASC"
       },
     });
+  }
+  async getRanking(user:User):Promise<number>
+  {
+	return (await this.getLeaderboard()).indexOf(user);
   }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
@@ -428,76 +434,88 @@ export class UserService {
       return this.channelManagerService.newChatFeedbackDto(true);
     }
   }
-  // MyInfoTransformator(user:User) : MyInfo
-  // {
-		// const activeUser =this.findOneActive(user.id);
-		// if(activeUser)
-		// return {id: user.id, name: user.name, friendlist: user.friendlist, blocked: user.blocked , channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatar: user.avatar,totpSecret:user.totpSecret, inGame: activeUser.inGame  }
-	// else
-	// return {id: user.id, name: user.name, friendlist: user.friendlist, blocked: user.blocked , channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatar: user.avatar,totpSecret:user.totpSecret, inGame:false  }
-  // }
-// UserInfoTransformator(user:User) : UserInfoFromServer
-  // {
-		// const activeUser =this.findOneActive(user.id);
-		// if(activeUser)
-		// return {id: user.id, name: user.name, friendlist: user.friendlist, channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatarId: user.avatarId, isOnline:true,inGame: activeUser.inGame  }
-	// else
-		// return {id: user.id, name: user.name, friendlist: user.friendlist, channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatarId: user.avatarId, isOnline:false,inGame: false  }
-  // }
-  // async MyInfo(socket:Socket) : Promise<RequestFeedbackDto<MyInfo>>
-  // {
-    // const user = await this.findOneDbBySocket(socket);
-	// if(!user)
-		// return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-	// else
-		// return {success:true, result:this.MyInfoTransformator(user)}
-  // }
-  // async UserInfo(socket:Socket, userInfo:UserInfoToServer) : Promise<RequestFeedbackDto<UserInfoFromServer>>
-  // {
-    // const sender = await this.findOneDbBySocket(socket);
-    // const target = await this.findOneDb(userInfo.target);
-	// if(!sender)
-		// return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-	// else if(!target)
-		// return {success:false, errorMessage:ChatError.USER_NOT_FOUND}
-	// else
-		// return {success:true, result:this.UserInfoTransformator(target)}
-  // }
-  // async getMyMatch(socket:Socket) :Promise<RequestFeedbackDto<MatchInfoFromServer[]>>
-  // {
-//
-    // const userDb = await this.findOneDbBySocket(socket);
-	// let result :MatchInfoFromServer[] = [];
-	// if(!userDb)
-		// return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-	// userDb.match.forEach((match)=> result.push(this.matchHistoryService.MatchDbToMatchDTO(match)))
-	// return {success:true, result:result}
-  // }
-// async getUserMatch(socket:Socket,targetId:Id) :Promise<RequestFeedbackDto<MatchInfoFromServer[]>>
-  // {
-    // const userDb = await this.findOneDbBySocket(socket);
-    // const targetDb = await this.findOneDb(targetId);
-	// let result :MatchInfoFromServer[] = [];
-	// if(!userDb)
-		// return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-	// if(!targetDb)
-		// return {success:false, errorMessage:ChatError.USER_NOT_FOUND}
-	// targetDb.match.forEach((match)=> result.push(this.matchHistoryService.MatchDbToMatchDTO(match)))
-	// return {success:true, result:result}
-  // }
-  // async GetUserChat(socket:Socket, targetId:Id) : Promise<RequestFeedbackDto<ChatUserDto>>
-  // {
-    // const sender = await this.findOneDbBySocket(socket);
-    // const target = await this.findOneDb(targetId);
-	// if(!sender)
-		// return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-	// else if(!target)
-		// return {success:false, errorMessage:ChatError.USER_NOT_FOUND}
-	// else
-		// return {success:true, result:this.userDbToChatUserDTO(target)}
-// }
- // userDbToChatUserDTO(user:User):ChatUserDto
- // {
-	// return 	{id:user.id, name : user.name, image : user.avatar,profile{ramking};
- // }
+  MyInfoTransformator(user:User) : MyInfo
+  {
+		const activeUser =this.findOneActive(user.id);
+		if(activeUser)
+		return {id: user.id, name: user.name, friendlist: user.friendlist, blocked: user.blocked , channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatar: user.avatar,totpSecret:user.totpSecret, inGame: activeUser.inGame  }
+	else
+	return {id: user.id, name: user.name, friendlist: user.friendlist, blocked: user.blocked , channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatar: user.avatar,totpSecret:user.totpSecret, inGame:false  }
+  }
+UserInfoTransformator(user:User) : UserInfoFromServer
+  {
+		const activeUser =this.findOneActive(user.id);
+		if(activeUser)
+		return {id: user.id, name: user.name, friendlist: user.friendlist, channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatar: user.avatar, isOnline:true,inGame: activeUser.inGame  }
+	else
+		return {id: user.id, name: user.name, friendlist: user.friendlist, channel: user.channel, win:  user.win, loose: user.loose , score: user. score, avatar: user.avatar, isOnline:false,inGame: false  }
+  }
+  async MyInfo(socket:Socket) : Promise<RequestFeedbackDto<MyInfo>>
+  {
+	const user = await this.findOneDbBySocket(socket);
+	if(!user)
+		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
+	else
+		return {success:true, result:this.MyInfoTransformator(user)}
+  }
+  async UserInfo(socket:Socket, userInfo:UserInfoToServer) : Promise<RequestFeedbackDto<UserInfoFromServer>>
+  {
+	const sender = await this.findOneDbBySocket(socket);
+	const target = await this.findOneDb(userInfo.target);
+	if(!sender)
+		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
+	else if(!target)
+		return {success:false, errorMessage:ChatError.USER_NOT_FOUND}
+	else
+		return {success:true, result:this.UserInfoTransformator(target)}
+  }
+  async getMyMatch(socket:Socket) :Promise<RequestFeedbackDto<MatchInfoFromServer[]>>
+  {
+
+	const userDb = await this.findOneDbBySocket(socket);
+	let result :MatchInfoFromServer[] = [];
+	if(!userDb)
+		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
+	userDb.match.forEach((match)=> result.push(this.matchHistoryService.MatchDbToMatchDTO(match)))
+	return {success:true, result:result}
+  }
+async getUserMatch(socket:Socket,targetId:Id) :Promise<RequestFeedbackDto<MatchInfoFromServer[]>>
+  {
+	const userDb = await this.findOneDbBySocket(socket);
+	const targetDb = await this.findOneDb(targetId);
+	let result :MatchInfoFromServer[] = [];
+	if(!userDb)
+		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
+	if(!targetDb)
+		return {success:false, errorMessage:ChatError.USER_NOT_FOUND}
+	targetDb.match.forEach((match)=> result.push(this.matchHistoryService.MatchDbToMatchDTO(match)))
+	return {success:true, result:result}
+  }
+  async getUserChat(socket:Socket, targetId:Id) : Promise<RequestFeedbackDto<ChatUserDto>>
+  {
+	const sender = await this.findOneDbBySocket(socket);
+	const target = await this.findOneDb(targetId);
+	if(!sender)
+		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
+	else if(!target)
+		return {success:false, errorMessage:ChatError.USER_NOT_FOUND}
+	else
+		return {success:true, result: await this.userDbToChatUserDTO(target)}
+}
+ 	matchForChatUser(match:Match[]): MatchInfoFromServer[]
+ 	{
+		let result : MatchInfoFromServer[]=[];
+		for(let i = 0 ; i< 3; i++)
+		{
+			result.push(this.matchHistoryService.MatchDbToMatchDTO(match[match.length - i]));
+		}
+		return result;
+		
+	}
+ async userDbToChatUserDTO(user:User):Promise<ChatUserDto>
+  {
+	const tempProfile = {ranking: await this.getRanking(user), matchHistory:this.matchForChatUser(user.match)} 
+	const result ={id:user.id, name : user.name, image : user.avatar, profile:tempProfile}
+	return result;
+  }
 }
