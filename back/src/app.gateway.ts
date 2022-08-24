@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ChatEvent, LoginEvent } from 'backFrontCommon';
+import { ChatEvent, LoginEvent,GetInfoEvent } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
 import type {
@@ -11,6 +11,7 @@ import type {
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
+  UserInfoToServer,
 } from 'backFrontCommon';
 import {
   Socket as IOSocketBaseType,
@@ -44,6 +45,7 @@ export class AppGateway
   constructor(
     private loginService: LoginService,
     private chatService: ChatService,
+    private userService: UserService,
     private gameManagerService: GameManagerService,
   ) {}
 
@@ -129,5 +131,14 @@ export class AppGateway
   @SubscribeMessage('observe')
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
+  }
+@SubscribeMessage(GetInfoEvent.MY_INFO)
+  async handleMyInfo(socket: Socket) {
+    return await this.userService.MyInfo(socket);
+  }
+
+@SubscribeMessage(GetInfoEvent.USER_INFO)
+  async handleUserInfo(socket: Socket, userInfo:UserInfoToServer ) {
+    await this.userService.UserInfo(socket, userInfo);
   }
 }

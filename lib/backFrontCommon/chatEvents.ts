@@ -1,7 +1,6 @@
 import type { UserHistoryDto } from "./chatConversationsDto"
 import type { ChatUserDto } from "./chatUserProfileDto"
 import type { Id } from "./general"
-
 /**
  * Events required to Login
  */
@@ -13,6 +12,12 @@ export class LoginEvent {
   static readonly TOTP_RESULT = "totp result";
 }
 
+export class GetInfoEvent{
+
+  static readonly MY_INFO = "my info";
+  static readonly USER_INFO = "user info";
+
+}
 export class ChatEvent {
 	static readonly MSG_TO_CHANNEL = "msg to channel"
 	static readonly MSG_TO_USER = 'msg to user'
@@ -61,6 +66,7 @@ export class ChatError {
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
 }
 
+
 export type DMFromServer =  {source: Id, content: string};
 export type DMToServer =  {target: Id, content: string};
 export type CMFromServer =  {source: Id, channel: string, content: string};
@@ -71,6 +77,12 @@ export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
 }
 
+export type MyInfo = {
+  id: Id, name: string, friendlist: Id[], blocked: Id[] , channel: string[] , win: number , loose: number , score: number , avatarId?: Id,  totpSecret: string | null, inGame:boolean}
+export type UserInfoFromServer = {
+id: Id, name: string, friendlist: Id[], channel: string[] , win: number , loose: number , score: number , avatarId?: Id, isOnline: boolean, inGame:boolean
+}
+export type UserInfoToServer = {target:Id}
 export type FriendInviteToServer = {target:Id};
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
