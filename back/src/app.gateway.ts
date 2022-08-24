@@ -3,6 +3,7 @@ import { ChatEvent, LoginEvent,GetInfoEvent } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
 import type {
+GetUser,
   BanUserToServer,
   MuteUserToServer,
   DMToServer,
@@ -12,6 +13,7 @@ import type {
   BlockUserToServer,
   FriendInviteToServer,
   UserInfoToServer,
+MatchInfoToServer,
 } from 'backFrontCommon';
 import {
   Socket as IOSocketBaseType,
@@ -31,6 +33,7 @@ import {
 import { LoginService } from './login/login.service';
 import { UserService } from './user/user.service';
 import { ChannelManagerService } from './channelManager/channelManager.service';
+import { MatchHistoryService } from './matchHistory/matchHistory.service';
 import { Logger } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
@@ -44,6 +47,7 @@ export class AppGateway
   @WebSocketServer() wss!: Server;
   constructor(
     private loginService: LoginService,
+	// private matchHistoryService : MatchHistoryService,
     private chatService: ChatService,
     private userService: UserService,
     private gameManagerService: GameManagerService,
@@ -132,13 +136,30 @@ export class AppGateway
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
   }
-@SubscribeMessage(GetInfoEvent.MY_INFO)
-  async handleMyInfo(socket: Socket) {
-    return await this.userService.MyInfo(socket);
-  }
-
-@SubscribeMessage(GetInfoEvent.USER_INFO)
-  async handleUserInfo(socket: Socket, userInfo:UserInfoToServer ) {
-    await this.userService.UserInfo(socket, userInfo);
-  }
+// @SubscribeMessage(GetInfoEvent.MY_INFO)
+  // async handleMyInfo(socket: Socket) {
+    // return await this.userService.MyInfo(socket);
+  // }
+//
+// @SubscribeMessage(GetInfoEvent.USER_INFO)
+  // async handleUserInfo(socket: Socket, userInfo:UserInfoToServer ) {
+    // return await this.userService.UserInfo(socket, userInfo);
+  // }
+// @SubscribeMessage(GetInfoEvent.ALL_MATCH)
+  // async handleAllMatch(socket: Socket) {
+    // return  await this.matchHistoryService.getAllMatch();
+  // }
+// @SubscribeMessage(GetInfoEvent.MY_MATCH)
+  // async handleMyMatch(socket: Socket) {
+    // return  await this.userService.getMyMatch(socket);
+  // }
+// @SubscribeMessage(GetInfoEvent.USER_MATCH)
+  // async handleUserMatch(socket: Socket,matchInfo:MatchInfoToServer ) {
+    // return  await this.userService.getUserMatch(socket,matchInfo.target);
+  // }
+//
+// @SubscribeMessage(ChatEvent.GET_USER)
+  // async handleGetUserChat(socket: Socket,userId:GetUser ) {
+    // return await this.userService.getUserChat(socket,userId.target);
+  // }
 }
