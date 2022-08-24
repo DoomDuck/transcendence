@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ChatEvent, LoginEvent,GetInfoEvent } from 'backFrontCommon';
+import { ChatEvent, LoginEvent, GetInfoEvent } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import { ConfigService } from '@nestjs/config';
 import type {
@@ -91,8 +91,8 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
-	  // this.logger.log('disconnection');
-	  this.userService.printAllActiveSocket();	
+    // this.logger.log('disconnection');
+    this.userService.printAllActiveSocket();
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
   }
 
@@ -134,13 +134,13 @@ export class AppGateway
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
   }
-@SubscribeMessage(GetInfoEvent.MY_INFO)
+  @SubscribeMessage(GetInfoEvent.MY_INFO)
   async handleMyInfo(socket: Socket) {
     return await this.userService.MyInfo(socket);
   }
 
-@SubscribeMessage(GetInfoEvent.USER_INFO)
-  async handleUserInfo(socket: Socket, userInfo:UserInfoToServer ) {
+  @SubscribeMessage(GetInfoEvent.USER_INFO)
+  async handleUserInfo(socket: Socket, userInfo: UserInfoToServer) {
     await this.userService.UserInfo(socket, userInfo);
   }
 }

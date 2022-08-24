@@ -154,7 +154,7 @@ export class ChatService {
     return feedback;
   }
 
-	async  handlePrivMessage(clientSocket: Socket, dm: DMToServer, wss: Server) {
+  async handlePrivMessage(clientSocket: Socket, dm: DMToServer, wss: Server) {
     const sender = this.userService.findOneActiveBySocket(clientSocket);
     if (!sender) {
       return this.channelManagerService.newChatFeedbackDto(
