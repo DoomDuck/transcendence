@@ -1,17 +1,16 @@
 /* eslint-disable prettier/prettier */
 import { ChatEvent, LoginEvent } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
-import { ConfigService } from '@nestjs/config';
 import type {
   BanUserToServer,
   MuteUserToServer,
-  DMToServer,
   CMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
 } from 'backFrontCommon';
+import { DMToServer } from 'backFrontCommon';
 import {
   Socket as IOSocketBaseType,
   Server as IOServerBaseType,
@@ -28,11 +27,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { LoginService } from './login/login.service';
-import { UserService } from './user/user.service';
-import { ChannelManagerService } from './channelManager/channelManager.service';
-import { Logger } from '@nestjs/common';
+import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
+import { CheckDefinedPipe } from './app.validator';
 
 @WebSocketGateway()
 export class AppGateway
@@ -87,6 +85,8 @@ export class AppGateway
     return await this.chatService.handleJoinChannel(clientSocket, joinInfo);
   }
 
+  // @UsePipes(new CheckDefinedPipe())
+  // @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);

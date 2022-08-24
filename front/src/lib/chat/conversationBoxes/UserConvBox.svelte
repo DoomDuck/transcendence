@@ -1,6 +1,6 @@
 <script lang="ts">
+	// import GameInvit from '$lib/chat/modals/GameInviteModal.svelte';
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import GameInvit from '$lib/chat/modals/GameInviteModal.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import { UserConversation } from '$lib/ts/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
@@ -68,7 +68,9 @@
 
 <Modal bind:show={gameInvitModal}>
 	<!-- to change  -->
-	<GameInvit name={`${conversation.dto.interlocutor}`} />
+	<!-- Invalid
+		<GameInvit name={`${conversation.dto.interlocutor}`} /> 
+	-->
 </Modal>
 
 <style>

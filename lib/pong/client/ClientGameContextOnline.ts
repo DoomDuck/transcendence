@@ -1,4 +1,4 @@
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
 import { ClientGameContext } from "./ClientGameContext";
 

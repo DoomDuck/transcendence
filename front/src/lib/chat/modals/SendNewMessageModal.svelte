@@ -10,10 +10,10 @@
 	export let show = false;
 	let targetStr = '';
 
-	function handleBlur(event: FocusEvent) {
+	function handleBlur(_event: FocusEvent) {
 		targetStr = targetStr.trim();
 	}
-	function handleSubmit(event: SubmitEvent) {
+	function handleSubmit(_event: SubmitEvent) {
 		// DEBUG
 		if (!isPositiveInteger(targetStr)) return false;
 		dispatch('msgToUser', { target: +targetStr, content });

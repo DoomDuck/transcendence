@@ -2,7 +2,7 @@
 	import { state } from '$lib/ts/state';
 	import OnlineFriends from '$lib/chat/OnlineFriends.svelte';
 	import ConversationLists from '$lib/chat/ConversationLists.svelte';
-	import { ChatEvent, type ChatFeedbackDto, type ChatUserDto } from 'backFrontCommon';
+	import { ChatEvent, type ChatFeedbackDto } from 'backFrontCommon';
 	import type {
 		CMFromServer,
 		CMToServer,
@@ -93,12 +93,12 @@
 		gameInviteMethods.send(message.source);
 	}
 
-	async function receiveGameAccept(message: GameAcceptFromServer) {
+	async function receiveGameAccept(_message: GameAcceptFromServer) {
 		// MAYBE
 		await goto('/PlayOnline');
 	}
 
-	async function receiveGameRefuse(message: GameRefuseFromServer) {}
+	async function receiveGameRefuse(_message: GameRefuseFromServer) {}
 
 	// EVENTS TO SERVER
 

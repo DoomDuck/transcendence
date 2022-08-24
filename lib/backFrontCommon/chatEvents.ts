@@ -14,25 +14,25 @@ export class LoginEvent {
 }
 
 export class ChatEvent {
-	static readonly MSG_TO_CHANNEL = "msg to channel"
-	static readonly MSG_TO_USER = 'msg to user'
-	static readonly JOIN_CHANNEL = 'join channel'
-	static readonly CREATE_CHANNEL = 'create channel'
-	static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
-	static readonly GAME_INVITE = 'game invite'
-	static readonly GAME_ACCEPT = 'game accept'
-	static readonly GAME_REFUSE = 'game refuse'
-	static readonly FRIEND_INVITE = 'friend invite'
+  static readonly MSG_TO_CHANNEL = "msg to channel"
+  static readonly MSG_TO_USER = 'msg to user'
+  static readonly JOIN_CHANNEL = 'join channel'
+  static readonly CREATE_CHANNEL = 'create channel'
+  static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
+  static readonly GAME_INVITE = 'game invite'
+  static readonly GAME_ACCEPT = 'game accept'
+  static readonly GAME_REFUSE = 'game refuse'
+  static readonly FRIEND_INVITE = 'friend invite'
   static readonly POST_AVATAR=  'post_avatar'
   static readonly GET_USER = 'get_user'
   static readonly GET_FRIENDS =  'get_friends '
   static readonly GET_LEADERBOARD = 'get_leaderboard'
   static readonly GET_CHAT_HISTORY = 'get_chat_history'
   static readonly BLOCK_USER = 'block user'
-	static readonly BAN_USER = 'ban user'
-	static readonly MUTE_USER = 'mute user'
-	static readonly BANNED_NOTIF = 'you are banned from a chan'
-	static readonly MUTED_NOTIF = 'you are muted from a chan'
+  static readonly BAN_USER = 'ban user'
+  static readonly MUTE_USER = 'mute user'
+  static readonly BANNED_NOTIF = 'you are banned from a chan'
+  static readonly MUTED_NOTIF = 'you are muted from a chan'
 }
 
 export class ChatError {
@@ -61,50 +61,193 @@ export class ChatError {
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
 }
 
-export type DMFromServer =  {source: Id, content: string};
-export type DMToServer =  {target: Id, content: string};
-export type CMFromServer =  {source: Id, channel: string, content: string};
-export type CMToServer =  {channel: string, content: string};
-export type JoinChannelFromServer = {channel: string, newUser: Id};
-export type JoinChannelToServer = {channel: string, password?:string};
+export class DMFromServer  {
+  constructor(
+    public source: Id,
+    public content: string,
+  ) { }
+}
+
+export class DMToServer {
+  constructor(
+    public target: Id,
+    public content: string,
+  ) { }
+}
+
+export class CMFromServer  {
+  constructor(
+    public source: Id,
+    public channel: string,
+    public content: string,
+  ) { }
+}
+
+export class CMToServer  {
+  constructor(
+    public channel: string,
+    public content: string,
+  ) { }
+}
+
+export class JoinChannelFromServer {
+  constructor(
+    public channel: string,
+    public newUser: Id,
+  ) { }
+}
+
+export class JoinChannelToServer {
+  constructor(
+    public channel: string,
+    public password?:string,
+  ) { }
+}
+
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
 }
 
-export type FriendInviteToServer = {target:Id};
-export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
-export type InviteChannelFromServer = {channel: string, source: Id};
-export type InviteChannelToServer = {channel: string, target: Id};
-export type GameInviteFromServer = { source: Id };
-export type GameInviteToServer = { target: Id };
-export type GameAcceptFromServer = { source: Id };
-export type GameAcceptToServer = { target: Id };
-export type GameRefuseFromServer = { source: Id, reason?: string };
-export type GameRefuseToServer = { target: Id, reason?: string };
-export type PostAvatar = { imageDataUrl: string };
-export type GetUser = { target: Id };
-
-export type LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };
-export type GetLeaderBoardResponse = { items: LeaderboardItemDto[] };
-
-export type BlockUserToServer =  {target: Id};
-export type BanUserToServer =  {channel:string,target: Id, duration:number};
-export type BanUserFromServer =  {channel:string,sender:Id, duration:number};
-export type MuteUserToServer =  {channel:string,target: Id, duration:number};
-export type MuteUserFromServer =  {channel:string,sender: Id, duration:number};
-export type ChatFeedbackDto = {
-  success: boolean,
-  errorMessage?: string,
+export class FriendInviteToServer {
+  constructor(public target: Id)  { }
 }
+
+export class CreateChannelToServer {
+  constructor(
+    public channel: string,
+    public category: ChannelCategory,
+    public password?: string,
+  ) { }
+}
+
+export class InviteChannelFromServer {
+  constructor(
+    public channel: string,
+    public source: Id
+  ) { }
+}
+
+export class InviteChannelToServer {
+  constructor(
+    public channel: string,
+    public target: Id,
+  ) { }
+}
+
+export class GameInviteFromServer {
+  constructor(public source: Id) { }
+}
+
+export class GameInviteToServer {
+  constructor(public target: Id) { }
+}
+
+export class GameAcceptFromServer {
+  constructor(public source: Id) { }
+}
+
+export class GameAcceptToServer {
+  constructor(public target: Id) { }
+}
+
+export class GameRefuseFromServer {
+  constructor(
+    public source: Id,
+    public reason?: string,
+  ) { }
+}
+
+export class GameRefuseToServer {
+  constructor(
+    public target: Id,
+    public reason?: string,
+  ) { }
+}
+
+export class PostAvatar {
+  constructor(public imageDataUrl: string) {  }
+}
+
+export class GetUser {
+  constructor(public target: Id) { }
+}
+
+export class LeaderboardItemDto {
+  constructor(
+    public id : number,
+    public name : string,
+    public victory : number,
+    public defeat : number,
+    public score : number,
+  ) { }
+}
+
+export class GetLeaderBoardResponse {
+  constructor(public items: LeaderboardItemDto[]) {  }
+}
+
+export class BlockUserToServer  {
+  constructor(public target: Id) { }
+}
+
+export class BanUserToServer  {
+  constructor(
+    public channel:string,
+    public target: Id,
+    public duration:number,
+  ) { }
+}
+
+export class BanUserFromServer  {
+  constructor(
+    public channel:string,
+    public sender:Id,
+    public duration:number,
+  ) { }
+}
+
+export class MuteUserToServer  {
+  constructor(
+    public channel:string,
+    public target: Id,
+    public duration:number,
+  ) { }
+}
+
+export class MuteUserFromServer {
+  constructor(
+    public channel:string,
+    public sender: Id,
+    public duration:number,
+  ) { }
+};
+
+export class ChatFeedbackDto {
+  constructor(
+    public success: boolean,
+    public errorMessage?: string,
+  ) { }
+}
+
 export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
-export type RequestFeedbackDto<Result> = {
-  success: boolean,
-  errorMessage?: string,
-  result?: Result,
+
+export class RequestFeedbackDto<Result> {
+  constructor(
+    public success: boolean,
+    public errorMessage?: string,
+    public result?: Result,
+  ) { }
 }
+
 export type FeedbackCallbackWithResult<Result> = (feedback: RequestFeedbackDto<Result>) => void;
 
 export interface ServerToClientEvents {
+  // Login
+  [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
+  [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
+  [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
+  
+  // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelFromServer) => void;
@@ -112,18 +255,18 @@ export interface ServerToClientEvents {
   [ChatEvent.GAME_INVITE]: (dto: GameInviteFromServer) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptFromServer) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseFromServer) => void;
-
-  // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
-
-  // Login
-  [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
-  [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
-  [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer ) => void;
+
+  // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }
 
 export interface ClientToServerEvents {
+  // Login
+  [LoginEvent.TOTP_CHECK]: (token: string) => void,
+  [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
+  
+  // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMToServer, callback: FeedbackCallback) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMToServer, callback: FeedbackCallback) => void;
   [ChatEvent.JOIN_CHANNEL]: (dto: JoinChannelToServer, callback: FeedbackCallback) => void;
@@ -136,12 +279,8 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: RequestFeedbackDto<UserHistoryDto>) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
-	[ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
-	[ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
-
-  // Login
-  [LoginEvent.TOTP_CHECK]: (token: string) => void,
-  [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
+  [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
 }

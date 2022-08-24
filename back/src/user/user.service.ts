@@ -86,6 +86,11 @@ export class UserService {
       },
     });
   }
+
+  getAllActiveUser() : ActiveUser[] {
+    return this.arrayActiveUser;
+  }
+
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
   ): ActiveChannelConversationDto[] {
@@ -353,6 +358,7 @@ export class UserService {
   }
 
   disconnection(clientSocket: Socket) {
+    (new Logger("disconnect")).debug("Hello");
     const activeUser = this.findOneActiveBySocket(clientSocket);
     if (activeUser) {
       if (activeUser.socketUser.length === 1) {
