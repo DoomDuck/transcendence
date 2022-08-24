@@ -16,6 +16,9 @@ export class GetInfoEvent{
 
   static readonly MY_INFO = "my info";
   static readonly USER_INFO = "user info";
+  static readonly MY_MATCH = "my match info";
+  static readonly USER_MATCH = "user match info";
+  static readonly ALL_MATCH = "all match info";
 
 }
 export class ChatEvent {
@@ -82,6 +85,8 @@ export type MyInfo = {
 export type UserInfoFromServer = {
 id: Id, name: string, friendlist: Id[], channel: string[] , win: number , loose: number , score: number , avatarId?: Id, isOnline: boolean, inGame:boolean
 }
+export type MatchInfoFromServer={winner: Id, looser: Id, winnerScore : number, looserScore:number, date : Date};
+export type MatchInfoToServer = {target:Id};
 export type UserInfoToServer = {target:Id}
 export type FriendInviteToServer = {target:Id};
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
