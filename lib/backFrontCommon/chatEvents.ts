@@ -23,6 +23,7 @@ export class GetInfoEvent{
 }
 export class ChatEvent {
 	static readonly MSG_TO_CHANNEL = "msg to channel"
+	static readonly SET_USERNAME = "set username"
 	static readonly MSG_TO_USER = 'msg to user'
 	static readonly JOIN_CHANNEL = 'join channel'
 	static readonly CREATE_CHANNEL = 'create channel'
@@ -30,7 +31,7 @@ export class ChatEvent {
 	static readonly GAME_INVITE = 'game invite'
 	static readonly GAME_ACCEPT = 'game accept'
 	static readonly GAME_REFUSE = 'game refuse'
-	static readonly FRIEND_INVITE = 'friend invite'
+		static readonly FRIEND_INVITE = 'friend invite'
   static readonly POST_AVATAR=  'post_avatar'
   static readonly GET_USER = 'get_user'
   static readonly GET_FRIENDS =  'get_friends '
@@ -40,7 +41,10 @@ export class ChatEvent {
 	static readonly BAN_USER = 'ban user'
 	static readonly MUTE_USER = 'mute user'
 	static readonly BANNED_NOTIF = 'you are banned from a chan'
+	static readonly CHAN_INVIT_NOTIF = 'you are banned from a chan'
 	static readonly MUTED_NOTIF = 'you are muted from a chan'
+	static readonly SET_PASSWORD = 'set password'
+	static readonly SET_NEW_ADMIN = 'set new admin'
 }
 
 export class ChatError {
@@ -50,6 +54,7 @@ export class ChatError {
   static readonly CHANNEL_NOT_FOUND ="channel not found";
   static readonly WRONG_PASSWORD ="wrong password";
   static readonly YOU_ARE_BANNED ="you are banned";
+  static readonly USER_IS_BANNED ="user is banned";
   static readonly YOU_ARE_MUTED ="you are muted";
   static readonly YOU_ARE_BLOCKED ="you are blocked";
   static readonly NOT_IN_CHANNEL ="not in channel";
@@ -70,6 +75,8 @@ export class ChatError {
 }
 
 
+export type SetPasswordToServer =  {channel: string, password: string};
+export type SetNewAdminToServer =  {channel: string, target: Id};
 export type DMFromServer =  {source: Id, content: string};
 export type DMToServer =  {target: Id, content: string};
 export type CMFromServer =  {source: Id, channel: string, content: string};
@@ -88,6 +95,7 @@ id: Id, name: string, friendlist: Id[], channel: string[] , win: number , loose:
 export type MatchInfoFromServer={winner: Id, looser: Id, winnerScore : number, looserScore:number, date : Date};
 export type MatchInfoToServer = {target:Id};
 export type UserInfoToServer = {target:Id}
+export type SetUsernameToServer = {name:string}
 export type FriendInviteToServer = {target:Id};
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
@@ -100,6 +108,8 @@ export type GameRefuseFromServer = { source: Id, reason?: string };
 export type GameRefuseToServer = { target: Id, reason?: string };
 export type PostAvatar = { imageDataUrl: string };
 export type GetUser = { target: Id };
+export type ChanInviteAccept = { channel: string};
+export type ChanInviteRefuse = { channel: string };
 
 export type LeaderboardItemDto = {id : number, name : string, victory : number, defeat : number, score : number };
 export type GetLeaderBoardResponse = { items: LeaderboardItemDto[] };

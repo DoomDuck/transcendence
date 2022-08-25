@@ -47,14 +47,14 @@ export class User {
 
   @Column({ type: 'int' })
   score: number = 0;
-//
-   @Column({ type:'varchar',nullable: true })
-   avatar:string | null= null;
+  //
+  @Column({ type: 'varchar', nullable: true })
+  avatar: string | null = null;
   // public avatar?: DatabaseFile;
   // @Column({ nullable: true })
   // public avatarId?: Id;
-@ManyToMany(()=>Match, (match)=>match.player )
-	match! : Match[];
+  @ManyToMany(() => Match, (match) => match.player)
+  match!: Match[];
   /**
    * 2-Factor Auth TOTP secret in hex
    */

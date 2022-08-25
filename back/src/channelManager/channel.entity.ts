@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Id } from 'backFrontCommon';
 import { ChannelCategory } from 'backFrontCommon';
+
 @Entity('Channel')
 export class Channel {
   constructor(
@@ -22,6 +23,7 @@ export class Channel {
     this.admin = [];
     this.admin.push(creator);
     this.member = [];
+    this.member.push(creator);
     this.muted = [];
     this.banned = [];
     if (password != undefined) this.passHash = password;
@@ -34,8 +36,8 @@ export class Channel {
   @Column('int', { nullable: false })
   creator: Id;
 
-  @Column({ nullable: true })
-  passHash: string |null;
+  @Column('varchar', { nullable: true })
+  passHash: string | null;
 
   @Column('int', { array: true, nullable: true })
   admin: Id[];

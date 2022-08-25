@@ -3,6 +3,7 @@ import { Id } from 'backFrontCommon';
 import { ChannelDto } from './channel.dto';
 import { ChatEvent } from 'backFrontCommon';
 import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 import { ActiveUser } from '../user/user.service';
 import { ChatError } from 'backFrontCommon';
 import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
@@ -32,29 +33,45 @@ export class ChannelManagerService {
   ) {}
   private logger: Logger = new Logger('channelManagerService');
 
+  isCreator(user: ActiveUser, channel: Channel): boolean {
+    if (channel.creator === user.id) return true;
+    else return false;
+  }
+
+  isAdmin(user: ActiveUser, channel: Channel): boolean {
+    if (channel.admin.find((users) => user.id === users) != undefined)
+      return true;
+    else return false;
+  }
+  isBanned(user: ActiveUser, channel: Channel): boolean {
+    if (channel.banned.find((users) => user.id === users) != undefined)
+      return true;
+    else return false;
+  }
+  isMember(user: ActiveUser, channel: Channel): boolean {
+    if (channel.member.find((users) => user.id === users) != undefined)
+      return true;
+    else return false;
+  }
   async createChan(
     activeUser: ActiveUser,
     chanInfo: CreateChannelToServer,
   ): Promise<Channel> {
     this.logger.log('createChan');
     this.logger.log(chanInfo.channel);
-	if(chanInfo.category ===ChannelCategory.PROTECTED)
-    return this.channelRepository.save(
-      new Channel(
-        chanInfo.channel,
-        activeUser.id,
-        chanInfo.category,
-		 await bcrypt.hash(chanInfo.password!,10),
-      ),
-    );
-	else
-	return this.channelRepository.save(
-      new Channel(
-        chanInfo.channel,
-        activeUser.id,
-        chanInfo.category,
-      ),
-    );
+    if (chanInfo.category === ChannelCategory.PROTECTED)
+      return this.channelRepository.save(
+        new Channel(
+          chanInfo.channel,
+          activeUser.id,
+          chanInfo.category,
+          await bcrypt.hash(chanInfo.password!, 10),
+        ),
+      );
+    else
+      return this.channelRepository.save(
+        new Channel(chanInfo.channel, activeUser.id, chanInfo.category),
+      );
     //return new ChatFeedbackDto(true);
   }
 
@@ -97,42 +114,22 @@ export class ChannelManagerService {
   }
   async findChanByName(name: string): Promise<Channel | null> {
     return this.channelRepository.findOneBy({ name });
-    // need changes
-    // const entities = await this.channelRepository.find();
-    // // entities.forEach((channel)=> console.log(channel.name));
-    // const res = entities.find((channel)=> channel.name ===name);
-    // if (res)
-    // return res ;
-    // else
-    // return null;
   }
 
   findChanAll(): Promise<Channel[]> {
     return this.channelRepository.find();
-    // if (this.arrayChannel === []) return 'no channel at all';
-    // else return this.arrayChannel;
   }
-  //Return string is placeholder
   async joinChan(
     user: ActiveUser,
     channel: Channel,
     password?: string,
   ): Promise<ChatFeedbackDto> {
-    if (
-      channel.member.find((element) => element === user.id) &&
-      user.id != channel.creator
-    )
+    if (channel.member.find((element) => element === user.id))
       return new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL);
-    if (
-      channel.category === ChannelCategory.PRIVATE &&
-      user.id != channel.creator
-    )
+    if (channel.category === ChannelCategory.PRIVATE)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
-    if (
-      channel.category === ChannelCategory.PROTECTED &&
-      user.id != channel.creator
-    ) {
-      if (!password || await bcrypt.compare(password, channel.passHash!) )//password != channel.password)
+    if (channel.category === ChannelCategory.PROTECTED) {
+      if (!password || (await bcrypt.compare(password, channel.passHash!)))
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
     this.logger.log(`user == ${user.id}added`);
@@ -140,61 +137,61 @@ export class ChannelManagerService {
     this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
   }
-  async setPrivate(sender: Id, name: string): Promise<ChatFeedbackDto> {
-    const tempChan = await this.channelRepository.findOneBy({ name });
-    if (tempChan === null)
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-    if (tempChan.admin.find((element) => element === sender) === undefined)
-      return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
-    this.channelRepository.update(tempChan.name!, {
-      category: ChannelCategory.PRIVATE,
-    });
+
+  async joinChanPrivate(
+    user: ActiveUser,
+    channel: Channel,
+  ): Promise<ChatFeedbackDto> {
+    if (
+      channel.member.find((element) => element === user.id) &&
+      user.id != channel.creator
+    )
+      return new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL);
+    channel.member.push(user.id);
+    this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
   }
+  // MIGHT NO BE NEEDED
+  // async setPrivate(sender: Id, name: string): Promise<ChatFeedbackDto> {
+  // const tempChan = await this.channelRepository.findOneBy({ name });
+  // if (tempChan === null)
+  // return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
+  // if (tempChan.admin.find((element) => element === sender) === undefined)
+  // return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
+  // this.channelRepository.update(tempChan.name!, {
+  // category: ChannelCategory.PRIVATE,
+  // });
+  // return new ChatFeedbackDto(true);
+  // }
   async setPassword(
-    sender: Id,
-    name: string,
+    user: ActiveUser,
+    channel: Channel,
     password: string,
   ): Promise<ChatFeedbackDto> {
-    const tempChan = await this.channelRepository.findOneBy({ name });
-    if (tempChan === null)
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-    if (tempChan.admin.find((element) => element === sender) === undefined)
+    if (channel.creator != user.id)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
 
-    this.channelRepository.update(tempChan.name!, {
+    this.channelRepository.update(channel.name!, {
       category: ChannelCategory.PROTECTED,
     });
-    this.channelRepository.update(tempChan.name!, { passHash:await bcrypt.hash(password,10) });
+    this.channelRepository.update(channel.name!, {
+      passHash: await bcrypt.hash(password, 10),
+    });
     return new ChatFeedbackDto(true);
   }
   async setNewAdmin(
-    sender: Id,
-    target: Id,
-    name: string,
+    sender: ActiveUser,
+    target: ActiveUser,
+    channel: Channel,
   ): Promise<ChatFeedbackDto> {
-    const tempChan = await this.channelRepository.findOneBy({ name });
-
-    if (tempChan === null)
-      return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
-    if (tempChan.admin.find((element) => element === sender) === undefined)
+    if (channel.creator != sender.id)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
-    if (tempChan.admin.find((element) => element === target) != undefined)
+    if (channel.admin.find((element) => element === target.id) != undefined)
       return new ChatFeedbackDto(false, ChatError.ALREADY_ADMIN);
-    tempChan.admin.push(target);
-    this.channelRepository.update(tempChan.name!, { admin: tempChan.admin });
+    channel.admin.push(target.id);
+    this.channelRepository.update(channel.name!, { admin: channel.admin });
     return new ChatFeedbackDto(true);
   }
-  // getRoomName(channelId: Id): string | undefined {
-  // const tempChan = this.arrayChannel.find(
-  // (element) => element.channelId === channelId,
-  // );
-  //
-  // if (tempChan) {
-  // return tempChan.name;
-  // }
-  // return undefined;
-  // }
 
   msgToChannelVerif(
     channel: Channel | null,
@@ -278,16 +275,24 @@ export class ChannelManagerService {
     }
   }
 
-  //Send invitation
-  // sendMessageToChannel(
-  // wss: Server,
-  // text:string,
-  // sender: ActiveUser;
-  // channel:Channel,
-  // ) {
-  // channel.member.find((member) => member === messageInfo.sender) !=
-  // undefined
-  // )
-  // }
-  // }
+  inviteUserToChannel(
+    sender: ActiveUser,
+    target: ActiveUser,
+    channel: Channel,
+    wss: Server,
+  ): ChatFeedbackDto {
+    if (!this.isAdmin(sender, channel))
+      return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
+    if (this.isMember(target, channel))
+      return { success: false, errorMessage: ChatError.ALREADY_IN_CHANNEL };
+    if (this.isBanned(target, channel))
+      return { success: false, errorMessage: ChatError.USER_IS_BANNED };
+    target.socketUser.forEach((socket) =>
+      wss.to(socket.id).emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, {
+        channel: channel.name,
+        source: sender.id,
+      }),
+    );
+    return { success: true };
+  }
 }

@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
-import {  Match} from './matchHistory/match.entity';
+import { Match } from './matchHistory/match.entity';
 import { Channel } from './channelManager/channel.entity';
 import { DatabaseFile } from './user/entities/databaseFile.entity';
 

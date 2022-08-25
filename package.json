@@ -30,11 +30,5 @@
 	"bugs": {
 		"url": "https://github.com/DoomDuck/transcendence/issues"
 	},
-	"homepage": "https://github.com/DoomDuck/transcendence#readme",
-	"dependencies": {
-		"bcrypt": "^5.0.1"
-	},
-	"devDependencies": {
-		"@types/bcrypt": "^5.0.0"
-	}
+	"homepage": "https://github.com/DoomDuck/transcendence#readme"
 }

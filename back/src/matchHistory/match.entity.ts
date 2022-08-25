@@ -10,20 +10,16 @@ import { Id } from 'backFrontCommon';
 import { User } from '../user/entities/user.entity';
 @Entity('Match')
 export class Match {
-  constructor(
-	player: User[],
-	score : number[],
-  ) {
-	this.player= player,
-	this.score = score;
+  constructor(player: User[], score: number[]) {
+    (this.player = player), (this.score = score);
   }
 
-@PrimaryGeneratedColumn()
- 	 id?: Id;
-@ManyToMany(()=>User,(user)=>user.match)
-	player:User[]
-@Column('int',{ array: true})
-	score:number[]	
-@CreateDateColumn()
-	date!: Date;
+  @PrimaryGeneratedColumn()
+  id?: Id;
+  @ManyToMany(() => User, (user) => user.match)
+  player: User[];
+  @Column('int', { array: true })
+  score: number[];
+  @CreateDateColumn()
+  date!: Date;
 }
