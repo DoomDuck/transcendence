@@ -13,6 +13,7 @@ import {
   PostAvatar,
 } from 'backFrontCommon';
 import type {
+  UserHistoryDto,
   InviteChannelToServer,
   GetUser,
   SetNewAdminToServer,
@@ -44,7 +45,6 @@ import { Logger } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
 import { ServerSocket as Socket, Server } from 'backFrontCommon';
-
 @WebSocketGateway()
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -246,5 +246,10 @@ export class AppGateway
   @SubscribeMessage(ChatEvent.POST_AVATAR)
   async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
     return await this.userService.handlePostAvatar(socket, avatarInfo);
+  }
+	@SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
+  async handleGetHistory(socket: Socket):Promise<RequestFeedbackDto<UserHistoryDto>>
+  {
+		return this.userService.getUserHistory(socket);
   }
 }

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
-import { UserHistoryController } from './userHistory.controller';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { MatchHistoryService } from '../matchHistory/matchHistory.service';
 import { ChannelController } from '../channelManager/channelManager.controller';
@@ -24,7 +23,6 @@ import { ChatService } from '../chat/chat.service';
   ],
   controllers: [
     UserController,
-    UserHistoryController,
     DatabaseFilesController,
     ChannelController,
   ],
