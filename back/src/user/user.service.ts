@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { Match } from '../matchHistory/match.entity';
 import { UserDto } from './dto/user.dto';
-import { ActiveConversationDto } from './dto/userHistory.dto';
 import {
   ActiveChannelConversationDto,
   ActiveUserConversationDto,
@@ -89,7 +88,6 @@ export class UserService {
   }
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
-    //TRES IMPORTANT A SWITCH DE ACTIVE A DATABASE
     chatMessage.forEach((message) =>
       chatMessageDto.push(
         this.channelManagerService.newChatMessageDto(
@@ -140,24 +138,16 @@ export class UserService {
     );
     return activeConversationDto;
   }
-  getUserHistory(id: Id): UserHistoryDto | null {
-    const tempUser = this.arrayActiveUser.find((user) => user.id === id);
+   async getUserHistory(socket: Socket):Promise<RequestFeedbackDto<UserHistoryDto>>{
+    const tempUser = this.findOneActiveBySocket(socket);
     if (tempUser) {
-      return this.channelManagerService.newUserHistoryDto(
+      return {success:true, result:this.channelManagerService.newUserHistoryDto(
         this.dtoTraductionUserConv(tempUser.activeUserConversation),
         this.dtoTraductionChannelConv(tempUser.activeChannelConversation),
-      );
+      )}
     } else {
-      return this.channelManagerService.newUserHistoryDto(
-        [
-          this.channelManagerService.newActiveUserConversationDto(4, [
-            this.channelManagerService.newChatMessageDto(1, 'max', true),
-            this.channelManagerService.newChatMessageDto(4, 'lol', false),
-          ]),
-        ],
-        [],
-      );
-    }
+		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
+          }
   }
   async setUsername(socket: Socket, name: string): Promise<ChatFeedbackDto> {
     const userDb = await this.findOneDbBySocket(socket);
