@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { ChatUserDto } from 'backFrontCommon';
+	import type { UserInfo } from 'backFrontCommon';
 	import BlockUserModal from '../modals/BlockUserModal.svelte';
 
-	export let user: ChatUserDto;
+	export let user: UserInfo;
 
 	let show = false;
 </script>

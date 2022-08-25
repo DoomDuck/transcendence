@@ -9,8 +9,8 @@ import {
   LoginEvent,
   GetInfoEvent,
   RequestFeedbackDto,
-  ChatUserDto,
   PostAvatar,
+  UserInfo,
 } from 'backFrontCommon';
 import type {
   InviteChannelToServer,
@@ -213,7 +213,7 @@ export class AppGateway
   async handleGetUserChat(
     socket: Socket,
     userId: GetUser,
-  ): Promise<RequestFeedbackDto<ChatUserDto>> {
+  ): Promise<RequestFeedbackDto<UserInfo>> {
     return await this.userService.getUserChat(socket, userId.target);
   }
 

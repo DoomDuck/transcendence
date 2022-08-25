@@ -1,15 +1,6 @@
 <script lang="ts">
-	import type { ChatProfileDto } from 'backFrontCommon';
-
-	// export let bestScore = 359;
-	export let profile: ChatProfileDto;
-	// let opponentHistory = [
-	// 	{ name: 'Rob', myScore: 148, opponentScore: 75 },
-	// 	{ name: 'Ted', myScore: 25, opponentScore: 248 },
-	// 	{ name: 'Sam', myScore: 95, opponentScore: 24 }
-	// ];
-	let opponentHistory =
-		profile.matchHistory.length <= 3 ? profile.matchHistory : profile.matchHistory.slice(-3);
+	import type { UserInfo } from 'backFrontCommon';
+	export let user: UserInfo;
 </script>
 
 <div>
@@ -18,13 +9,13 @@
 		<div class="stats">
 			<p>Classement</p>
 			<p class="statsValue">
-				#{profile.ranking}
+				#{user.ranking}
 			</p>
 		</div>
 	</div>
 	<hr width="200px" />
-	{#each opponentHistory as { opponent, winner }}
-		<p class="gameHistory">{opponent} {winner ? 'Won :)' : 'Lost :('}</p>
+	{#each user.matchHistory as { opponent, winner, score, opponentScore }}
+		<p class="gameHistory">{opponent}: {winner ? 'Won' : 'Lost'} ({score} - {opponentScore})</p>
 	{/each}
 </div>
 

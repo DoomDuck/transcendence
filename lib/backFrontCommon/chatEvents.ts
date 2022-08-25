@@ -1,5 +1,4 @@
 import type { UserHistoryDto } from "./chatConversationsDto"
-import type { ChatUserDto } from "./chatUserProfileDto"
 import type { Id } from "./general"
 /**
  * Events required to Login
@@ -35,6 +34,7 @@ export class ChatEvent {
 	static readonly FRIEND_INVITE = 'friend invite'
   static readonly POST_AVATAR=  'post_avatar'
   static readonly GET_USER = 'get_user'
+  static readonly GET_ME = 'get_me'
   static readonly GET_FRIENDS =  'get_friends '
   static readonly GET_LEADERBOARD = 'get_leaderboard'
   static readonly GET_CHAT_HISTORY = 'get_chat_history'
@@ -92,14 +92,34 @@ export type JoinChannelFromServer = {channel: string, newUser: Id};
 export type JoinChannelToServer = {channel: string, password?:string};
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
-}
+};
 
 export type MyInfo = {
-  id: Id, name: string, friendlist: Id[], blocked: Id[] , channel: string[] , win: number , loose: number , score: number , avatar: string | null,  totpSecret: string | null, inGame:boolean}
-export type UserInfoFromServer = {
-id: Id, name: string, friendlist: Id[], channel: string[] , win: number , loose: number , score: number , avatar: string | null, isOnline: boolean, inGame:boolean
-}
-export type MatchInfoFromServer={winner: Id, looser: Id, winnerScore : number, looserScore:number, date : Date};
+  id: Id, name: string,
+  friendlist: Id[],
+  blocked: Id[],
+  win: number,
+  loose: number,
+  score: number,
+  ranking: number,
+  avatar: string | null,
+  totpSecret: string | null,
+  inGame: boolean
+};
+export type UserInfo = {
+  id: Id,
+  name: string,
+  win: number,
+  loose: number,
+  score: number,
+  ranking: number,
+  avatar: string | null,
+  isOnline: boolean,
+  inGame:boolean,
+  matchHistory: RelativeMatchInfoFromServer[]
+};
+export type MatchInfoFromServer = {winner: Id, looser: Id, winnerScore : number, looserScore:number, date : Date};
+export type RelativeMatchInfoFromServer = {opponent: Id, winner: boolean, score : number, opponentScore: number};
 export type MatchInfoToServer = {target:Id};
 export type UserInfoToServer = {target:Id}
 export type SetUsernameToServer = {name:string}
@@ -172,7 +192,8 @@ export interface ClientToServerEvents {
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.POST_AVATAR]: (dto: PostAvatar, callback: FeedbackCallback) => void;
-  [ChatEvent.GET_USER]: (dto: GetUser, callback: FeedbackCallbackWithResult<ChatUserDto>) => void;
+  [ChatEvent.GET_USER]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
+  [ChatEvent.GET_ME]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [ChatEvent.GET_FRIENDS]: (callback: RequestFeedbackDto<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: RequestFeedbackDto<UserHistoryDto>) => void;

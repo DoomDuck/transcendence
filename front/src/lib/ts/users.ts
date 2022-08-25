@@ -1,75 +1,109 @@
-import { ChatEvent, type ChatUserDto, type Id, type RequestFeedbackDto } from 'backFrontCommon';
+import {
+	ChatEvent,
+	type UserInfo,
+	type Id,
+	type RequestFeedbackDto,
+	type MyInfo
+} from 'backFrontCommon';
 import { readable } from 'svelte/store';
 import { state } from './state';
 
 export class Users {
-	private map: Map<Id, ChatUserDto> = new Map();
+	private map: Map<Id, UserInfo> = new Map();
+	private me?: MyInfo;
+
 	constructor() {
 		//DEBUG
-
 		this.map.set(0, {
 			id: 0,
 			name: 'Maman',
-			image: 'cars.jpeg',
-			profile: {
-				ranking: 0,
-				matchHistory: [
-					{
-						opponent: 1,
-						winner: true
-					}
-				]
-			}
+			avatar: 'cars.jpeg',
+			loose: 0,
+			win: 10,
+			score: 10,
+			inGame: false,
+			isOnline: true
 		});
 		this.map.set(1, {
 			id: 1,
 			name: 'Victor',
-			image: 'cars.jpeg',
-			profile: {
-				ranking: 2,
-				matchHistory: [
-					{
-						opponent: 0,
-						winner: false
-					}
-				]
-			}
+			avatar: 'cars.jpeg',
+			loose: 5,
+			win: 5,
+			score: 0,
+			inGame: false,
+			isOnline: true
 		});
 		this.map.set(2, {
 			id: 2,
 			name: 'Jean-Reno',
-			image: 'cars.jpeg',
-			profile: {
-				ranking: 1,
-				matchHistory: []
-			}
+			avatar: 'cars.jpeg',
+			loose: 10,
+			win: 0,
+			score: -10,
+			inGame: false,
+			isOnline: true
 		});
 	}
 
-	async findOrFetch(id: number): Promise<ChatUserDto> {
-		if (this.map.has(id)) return this.map.get(id) as ChatUserDto;
+	static errorUser(id: number): UserInfo {
+		return {
+			id,
+			name: 'Error',
+			avatar: 'errorUser.png',
+			loose: 0,
+			win: 0,
+			score: 0,
+			inGame: false,
+			isOnline: false
+		};
+	}
+
+	static errorMe(): MyInfo {
+		return {
+			id: 0,
+			name: 'Error',
+			avatar: 'errorUser.png',
+			loose: 0,
+			win: 0,
+			score: 0,
+			inGame: false,
+			blocked: [],
+			friendlist: [],
+			totpSecret: ''
+		};
+	}
+
+	async findOrFetch(id: number): Promise<UserInfo> {
+		if (this.map.has(id)) return this.map.get(id) as UserInfo;
 		const user = await fetchUser(id);
 		this.map.set(id, user);
 		return user;
 	}
+
+	async findOrFetchMyself(): Promise<MyInfo> {
+		if (this.me !== undefined) return this.me;
+		this.me = await fetchMe();
+		return this.me;
+	}
 }
 
-async function fetchUser(id: number): Promise<ChatUserDto> {
-	const feedback: RequestFeedbackDto<ChatUserDto> = await new Promise((resolve) => {
-		state.socket.emit(ChatEvent.GET_USER, { target: id }, (feedback) => resolve(feedback));
+async function fetchUser(id: number): Promise<UserInfo> {
+	const feedback: RequestFeedbackDto<UserInfo> = await new Promise((resolve) => {
+		state.socket.emit(ChatEvent.GET_USER, { target: id }, resolve);
 	});
 	console.log('FEEDBACK:' + JSON.stringify(feedback));
 	if (feedback.success) return feedback.result!;
-	else {
-		// DEBUG
-		return {
-			id: 9999,
-			image: '',
-			name: 'GOGO',
-			profile: { ranking: 0, matchHistory: [] }
-		};
-	}
-	// const result = await response.json();
+	else return Users.errorUser(id);
+}
+
+async function fetchMe(): Promise<MyInfo> {
+	const feedback: RequestFeedbackDto<MyInfo> = await new Promise((resolve) => {
+		state.socket.emit(ChatEvent.GET_ME, resolve);
+	});
+	console.log('FEEDBACK:' + JSON.stringify(feedback));
+	if (feedback.success) return feedback.result!;
+	else return Users.errorMe();
 }
 
 export const usersObject = new Users();

@@ -18,7 +18,7 @@ import { DatabaseFilesService } from './databaseFile.service';
 import { ServerSocket as Socket, Server } from 'backFrontCommon';
 import {
   MyInfo,
-  UserInfoFromServer,
+  UserInfo,
   UserInfoToServer,
   RequestFeedbackDto,
   ChatFeedbackDto,
@@ -493,7 +493,7 @@ export class UserService {
         inGame: false,
       };
   }
-  UserInfoTransformator(user: User): UserInfoFromServer {
+  UserInfoTransformator(user: User): UserInfo {
     const activeUser = this.findOneActive(user.id);
     if (activeUser)
       return {
@@ -531,7 +531,7 @@ export class UserService {
   async UserInfo(
     socket: Socket,
     userInfo: UserInfoToServer,
-  ): Promise<RequestFeedbackDto<UserInfoFromServer>> {
+  ): Promise<RequestFeedbackDto<UserInfo>> {
     const sender = await this.findOneDbBySocket(socket);
     const target = await this.findOneDb(userInfo.target);
     if (!sender)

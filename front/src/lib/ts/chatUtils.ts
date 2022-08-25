@@ -2,7 +2,7 @@ import {
 	type ActiveChannelConversationDto,
 	type ActiveUserConversationDto,
 	type ChatMessageDto,
-	type ChatUserDto
+	type UserInfo
 } from 'backFrontCommon';
 import { writable } from 'svelte/store';
 import type { ChatFeedbackDto, CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
@@ -50,7 +50,7 @@ export class UserConversation extends Conversation<ActiveUserConversationDto> {
 	get interlocutor(): Id {
 		return this.dto.interlocutor;
 	}
-	async getInterlocuterAsDto(): Promise<ChatUserDto> {
+	async getInterlocuterAsDto(): Promise<UserInfo> {
 		return usersObject.findOrFetch(this.interlocutor);
 	}
 }
