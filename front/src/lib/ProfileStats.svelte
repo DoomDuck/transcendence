@@ -16,10 +16,10 @@
 	<hr width="200px" />
 	<div id="statisticsLine">
 		<div class="stats">
+			<p>Classement</p>
 			<p class="statsValue">
 				#{profile.ranking}
 			</p>
-			<p>Classement</p>
 		</div>
 	</div>
 	<hr width="200px" />

@@ -1,16 +1,14 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
-	import type { JoinChannelToServer } from 'backFrontCommon';
-	import { createEventDispatcher } from 'svelte';
+	import { chatMethods } from '$lib/ts/chat';
 	export let show = false;
 
-	const dispatch = createEventDispatcher<{ joinChannel: JoinChannelToServer }>();
 	let channelName: string;
 	let password: string | undefined;
 
 	function handleSubmit() {
 		show = false;
-		dispatch('joinChannel', {
+		chatMethods.sendJoinChannel({
 			channel: channelName,
 			password
 		});

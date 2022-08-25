@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ConversationListItem from './ConversationListItem.svelte';
 	import { users } from '../ts/users';
-	import { userConvs, channelConvs } from '$lib/ts/utils';
+	import { userConvs, channelConvs } from '$lib/ts/chatUtils';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelBox from '$lib/chat/conversationBoxes/ChannelConvBox.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
@@ -11,21 +11,21 @@
 
 <div>
 	{#each $userConvs.convs as conversation (conversation.interlocutor)}
-		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage} on:msgToUser>
+		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage}>
 			<UserMiniature slot="icon" userId={conversation.interlocutor} />
 			<ConversationListItemText
 				slot="item-text"
 				text={$users.findOrFetch(conversation.interlocutor).then((user) => user.name)}
 			/>
-			<ConversationBox slot="conversation-modal" on:msgToUser {conversation} />
+			<ConversationBox slot="conversation-modal" {conversation} />
 		</ConversationListItem>
 	{/each}
 	<br />
 	{#each $channelConvs.convs as conversation (conversation.channel)}
-		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage} on:msgToChannel>
+		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage}>
 			<AvatarIcon type={'channel'} slot="icon" imageURL="group_conv_icon.png" />
 			<ConversationListItemText slot="item-text" text={conversation.channel} />
-			<ChannelBox slot="conversation-modal" on:msgToChannel {conversation} />
+			<ChannelBox slot="conversation-modal" {conversation} />
 		</ConversationListItem>
 	{/each}
 </div>

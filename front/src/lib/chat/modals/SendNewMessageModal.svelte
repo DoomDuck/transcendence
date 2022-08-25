@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Modal from '$lib/Modal.svelte';
-	import type { DMToServer } from 'backFrontCommon/chatEvents';
 	import { isPositiveInteger } from '$lib/ts/utils';
-
-	const dispatch = createEventDispatcher<{ msgToUser: DMToServer }>();
+	import { chatMethods } from '$lib/ts/chat';
 
 	export let content = '';
 	export let show = false;
@@ -16,7 +13,7 @@
 	function handleSubmit(event: SubmitEvent) {
 		// DEBUG
 		if (!isPositiveInteger(targetStr)) return false;
-		dispatch('msgToUser', { target: +targetStr, content });
+		chatMethods.sendDirectMessage({ target: +targetStr, content });
 		close();
 		return true;
 	}

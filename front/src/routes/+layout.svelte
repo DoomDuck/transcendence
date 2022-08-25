@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Popups from '$lib/Popups.svelte';
 </script>
 

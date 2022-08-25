@@ -5,17 +5,14 @@ import { ActiveConversationDto } from './dto/userHistory.dto';
 import {
   ActiveChannelConversationDto,
   ActiveUserConversationDto,
+  ServerToClientEvents,
 } from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channel.entity';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Repository } from 'typeorm';
 import { DatabaseFilesService } from './databaseFile.service';
-import {
-  Socket as IOSocketBaseType,
-  Server as IOServerBaseType,
-} from 'socket.io';
-import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import { ServerSocket as Socket, Server } from 'backFrontCommon';
 import {
   ChatFeedbackDto,
   UserHistoryDto,
@@ -24,9 +21,7 @@ import {
   ChatError,
   ChatMessageDto,
 } from 'backFrontCommon';
-
-type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
-type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
+import EventEmitter from 'events';
 
 export class ActiveUser {
   constructor(public id: Id, public name: string, newSocket?: Socket) {
@@ -38,6 +33,15 @@ export class ActiveUser {
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
   activeChannelConversation: ActiveConversation[] = [];
+  eventEmitter: EventEmitter = new EventEmitter();
+  emitOnAllSockets<Key extends keyof ServerToClientEvents>(
+    event: Key,
+    ...args: Parameters<ServerToClientEvents[Key]>
+  ) {
+    this.socketUser.forEach((socket) => {
+      socket.emit(event, ...args);
+    });
+  }
 }
 export class ChatMessage {
   constructor(
@@ -363,6 +367,7 @@ export class UserService {
           this.arrayActiveUser.indexOf(activeUser),
           1,
         );
+        activeUser.eventEmitter.emit('disconnect');
       } else {
         activeUser.socketUser = activeUser.socketUser.slice(
           activeUser.socketUser.indexOf(clientSocket),

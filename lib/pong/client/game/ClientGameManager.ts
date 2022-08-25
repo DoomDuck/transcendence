@@ -11,7 +11,6 @@ import { Renderer } from "../graphic";
 export class ClientGameManager {
   game: Game;
   container: HTMLDivElement;
-  canvas: HTMLCanvasElement;
   renderer: Renderer;
 
   constructor() {
@@ -21,8 +20,7 @@ export class ClientGameManager {
     this.container = document.getElementById(
       "game-container"
     ) as HTMLDivElement;
-    this.canvas = document.getElementById("game-screen") as HTMLCanvasElement;
-    this.renderer = new Renderer(this.canvas, this.game.state.data);
+    this.renderer = new Renderer(this.game.state.data);
 
     // scene
     this.handleDisplayResize();

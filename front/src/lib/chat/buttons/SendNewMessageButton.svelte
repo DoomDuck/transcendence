@@ -13,7 +13,7 @@
 	on:click={() => (show = true)}
 />
 
-<SendNewMessageModal bind:show on:msgToUser />
+<SendNewMessageModal bind:show />
 
 <style>
 	#btn-new-message {

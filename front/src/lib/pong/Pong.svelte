@@ -7,8 +7,12 @@
 		ClientGameContext
 	} from 'pong';
 	import { state } from '$lib/ts/state';
-	export let online: boolean;
-	export let observe: boolean;
+	import { ChatEvent } from 'backFrontCommon';
+
+	const online = state.gameParams!.online;
+	const observe = state.gameParams!.observe ?? false;
+	const matchmaking = state.gameParams!.matchMaking ?? false;
+	const classic = state.gameParams!.classic ?? false;
 
 	console.log(`online: ${online}`);
 	console.log(`observe: ${observe}`);
@@ -16,6 +20,8 @@
 	let visibilities = ['visible', 'hidden'];
 
 	onMount(() => {
+		if (matchmaking) state.socket.emit(ChatEvent.JOIN_MATCHMAKING, classic);
+
 		const onFinish = () => {
 			// SHOW THE FINISH SCREEN
 			// DO THINGS
@@ -27,13 +33,14 @@
 		if (online) {
 			if (observe) ctx = new ClientGameContextOnlineObserver(state.socket, onFinish);
 			else ctx = new ClientGameContextOnlinePlayer(state.socket, onFinish);
-		} else ctx = new ClientGameContextOffline(onFinish);
+		} else ctx = new ClientGameContextOffline(onFinish, classic);
 		ctx.animate();
 		ctx.startGame();
 	});
 </script>
 
 <div id="game-container">
+	<canvas id="game-background" style="visibility: {visibilities[0]}" />
 	<canvas id="game-screen" style="visibility: {visibilities[0]}" />
 	<div id="gameover-screen" style="visibility: {visibilities[1]}">
 		<p>Game<br />Over</p>
@@ -48,16 +55,16 @@
 		align-items: center;
 		justify-content: center;
 	}
+	#game-background {
+		position: absolute;
+		z-index: 1;
+	}
 	#game-screen {
 		position: absolute;
+		z-index: 2;
 	}
 	#gameover-screen {
 		position: absolute;
 		background-color: white;
 	}
-	/* .player-score {
-    color: rgb(255, 255, 255);
-    font-family: sans-serif;
-    background: rgba(0, 0, 0, 0);
-} */
 </style>

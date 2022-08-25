@@ -22,6 +22,7 @@ export class ChatEvent {
 	static readonly GAME_INVITE = 'game invite'
 	static readonly GAME_ACCEPT = 'game accept'
 	static readonly GAME_REFUSE = 'game refuse'
+	static readonly GAME_CANCEL = 'game cancel'
 	static readonly FRIEND_INVITE = 'friend invite'
   static readonly POST_AVATAR=  'post_avatar'
   static readonly GET_USER = 'get_user'
@@ -33,6 +34,11 @@ export class ChatEvent {
 	static readonly MUTE_USER = 'mute user'
 	static readonly BANNED_NOTIF = 'you are banned from a chan'
 	static readonly MUTED_NOTIF = 'you are muted from a chan'
+  static readonly JOIN_MATCHMAKING = 'join matchmaking'
+  static readonly GAME_OBSERVE = 'game observe'
+  static readonly PLAYER_ID_CONFIRMED = 'player id confirmed'
+  static readonly GOTO_GAME_SCREEN = 'goto game screen'
+  static readonly DELETE_GAME_INVITE = 'delete game invite'
 }
 
 export class ChatError {
@@ -59,6 +65,7 @@ export class ChatError {
   static readonly NOT_BANNED ="user not banned";
   static readonly NOT_MUTED ="user not muted";
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
+  static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
 }
 
 export type DMFromServer =  {source: Id, content: string};
@@ -75,12 +82,15 @@ export type FriendInviteToServer = {target:Id};
 export type CreateChannelToServer = {channel: string, category: ChannelCategory, password?: string};
 export type InviteChannelFromServer = {channel: string, source: Id};
 export type InviteChannelToServer = {channel: string, target: Id};
-export type GameInviteFromServer = { source: Id };
-export type GameInviteToServer = { target: Id };
+export type GameInviteFromServer = { source: Id, classic: boolean };
+export type GameInviteToServer = { target: Id, classic: boolean };
 export type GameAcceptFromServer = { source: Id };
 export type GameAcceptToServer = { target: Id };
 export type GameRefuseFromServer = { source: Id, reason?: string };
 export type GameRefuseToServer = { target: Id, reason?: string };
+export type GameCancelFromServer = { source: Id, reason?: string };
+export type GameCancelToServer = { target: Id, reason?: string };
+export type DeleteGameInviteFromServer = { target: Id };
 export type PostAvatar = { imageDataUrl: string };
 export type GetUser = { target: Id };
 
@@ -112,6 +122,10 @@ export interface ServerToClientEvents {
   [ChatEvent.GAME_INVITE]: (dto: GameInviteFromServer) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptFromServer) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseFromServer) => void;
+  [ChatEvent.GAME_CANCEL]: (dto: GameCancelFromServer) => void;
+  [ChatEvent.GOTO_GAME_SCREEN]: (classic: boolean, callback: () => void) => void;
+  [ChatEvent.PLAYER_ID_CONFIRMED]: (playerId: Id, callback: () => void) => void;
+	[ChatEvent.DELETE_GAME_INVITE]: (dto: DeleteGameInviteFromServer) => void;
 
   // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 
@@ -135,9 +149,12 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_FRIENDS]: (callback: RequestFeedbackDto<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: RequestFeedbackDto<UserHistoryDto>) => void;
+  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
 	[ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
 	[ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
+  [ChatEvent.GAME_OBSERVE]: (gameId: Id) => void;
+  [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
 
   // Login
   [LoginEvent.TOTP_CHECK]: (token: string) => void,
