@@ -13,6 +13,7 @@ import { ServerSocket as Socket } from 'backFrontCommon';
 import { GameInviteToServer } from 'backFrontCommon';
 import { ActiveUser, UserService } from '../user/user.service';
 import { GameCancelToServer } from 'backFrontCommon';
+import { MatchHistoryService } from '../matchHistory/matchHistory.service';
 
 /* eslint-disable */
 
@@ -45,7 +46,10 @@ export class GameManagerService {
   private games: ServerGameContext[] = [];
   private logger: Logger = new Logger('GameManagerService');
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private matchHistoryService: MatchHistoryService,
+    private userService: UserService,
+  ) {}
 
   addMatchmaking(socket: Socket, classic: boolean) {
     if (classic)
@@ -73,17 +77,30 @@ export class GameManagerService {
     }
   }
 
-  startGame(players: [Socket, Socket], classic: boolean) {
-    if (Math.random() > 0.5) players = [players[1], players[0]];
+  async startGame(playerSockets: [Socket, Socket], classic: boolean) {
+    if (Math.random() > 0.5)
+      playerSockets = [playerSockets[1], playerSockets[0]];
+    const onFinish = async (score1: number, score2: number) => {
+      removeIfPresent(this.games, gameInstance);
+      const playerPromises = playerSockets.map((playerSocket) =>
+        this.userService.findOneDbBySocket(playerSocket),
+      );
+      const players = await Promise.all(playerPromises);
+      if (players[0] === null || players[1] === null) return;
+      this.matchHistoryService.addOneMatch(
+        [players[0]!, players[1]!],
+        [score1, score2],
+      );
+    };
     const gameInstance: ServerGameContext = new ServerGameContext(
-      players,
+      playerSockets,
       classic,
-      () => removeIfPresent(this.games, gameInstance),
+      onFinish,
     );
     this.games.push(gameInstance);
     for (let i = 0; i < 2; i++) {
-      players[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
-        players[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
+      playerSockets[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
+        playerSockets[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
           this.logger.log(`player ${i} ready`);
           gameInstance.isReady(i);
         });

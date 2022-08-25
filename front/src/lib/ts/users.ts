@@ -3,7 +3,8 @@ import {
 	type UserInfo,
 	type Id,
 	type RequestFeedbackDto,
-	type MyInfo
+	type MyInfo,
+	GetInfoEvent
 } from 'backFrontCommon';
 import { readable } from 'svelte/store';
 import { state } from './state';
@@ -22,7 +23,9 @@ export class Users {
 			win: 10,
 			score: 10,
 			inGame: false,
-			isOnline: true
+			isOnline: true,
+			ranking: 0,
+			matchHistory: []
 		});
 		this.map.set(1, {
 			id: 1,
@@ -32,7 +35,9 @@ export class Users {
 			win: 5,
 			score: 0,
 			inGame: false,
-			isOnline: true
+			isOnline: true,
+			ranking: 0,
+			matchHistory: []
 		});
 		this.map.set(2, {
 			id: 2,
@@ -42,7 +47,9 @@ export class Users {
 			win: 0,
 			score: -10,
 			inGame: false,
-			isOnline: true
+			isOnline: true,
+			ranking: 0,
+			matchHistory: []
 		});
 	}
 
@@ -55,7 +62,9 @@ export class Users {
 			win: 0,
 			score: 0,
 			inGame: false,
-			isOnline: false
+			isOnline: false,
+			ranking: 0,
+			matchHistory: []
 		};
 	}
 
@@ -70,7 +79,8 @@ export class Users {
 			inGame: false,
 			blocked: [],
 			friendlist: [],
-			totpSecret: ''
+			totpSecret: '',
+			ranking: 0
 		};
 	}
 
@@ -90,7 +100,7 @@ export class Users {
 
 async function fetchUser(id: number): Promise<UserInfo> {
 	const feedback: RequestFeedbackDto<UserInfo> = await new Promise((resolve) => {
-		state.socket.emit(ChatEvent.GET_USER, { target: id }, resolve);
+		state.socket.emit(GetInfoEvent.USER_INFO, { target: id }, resolve);
 	});
 	console.log('FEEDBACK:' + JSON.stringify(feedback));
 	if (feedback.success) return feedback.result!;
@@ -99,7 +109,7 @@ async function fetchUser(id: number): Promise<UserInfo> {
 
 async function fetchMe(): Promise<MyInfo> {
 	const feedback: RequestFeedbackDto<MyInfo> = await new Promise((resolve) => {
-		state.socket.emit(ChatEvent.GET_ME, resolve);
+		state.socket.emit(GetInfoEvent.MY_INFO, resolve);
 	});
 	console.log('FEEDBACK:' + JSON.stringify(feedback));
 	if (feedback.success) return feedback.result!;

@@ -21,11 +21,7 @@ import { ChatService } from '../chat/chat.service';
     TypeOrmModule.forFeature([User, DatabaseFile, Channel, Match]),
     HttpModule,
   ],
-  controllers: [
-    UserController,
-    DatabaseFilesController,
-    ChannelController,
-  ],
+  controllers: [UserController, DatabaseFilesController, ChannelController],
   providers: [
     ChatService,
     MatchHistoryService,

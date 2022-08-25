@@ -15,6 +15,7 @@ import {
   randomGravitonCoords,
   randomPortalCoords,
   removeIfPresent,
+  type FinishCallback,
 } from "../common/utils";
 
 /**
@@ -33,7 +34,7 @@ export class ServerGameContext {
   gameLoopHandle?: ReturnType<typeof setInterval>;
   // observerSendStateQueue: ((Game) => void)[] = [];
 
-  constructor(public players: [Socket, Socket], classic: boolean, public onFinish: () => void) {
+  constructor(public players: [Socket, Socket], classic: boolean, public onFinish: FinishCallback) {
     this.game = new Game();
     for (let [emitter, receiver] of [
       [PLAYER1, PLAYER2],
@@ -163,6 +164,6 @@ export class ServerGameContext {
       observer.disconnect();
     }
     clearInterval(this.gameLoopHandle);
-    this.onFinish();
+    this.onFinish(this.score[0], this.score[1]);
   }
 }

@@ -33,8 +33,6 @@ export class ChatEvent {
 	static readonly GAME_CANCEL = 'game cancel'
 	static readonly FRIEND_INVITE = 'friend invite'
   static readonly POST_AVATAR=  'post_avatar'
-  static readonly GET_USER = 'get_user'
-  static readonly GET_ME = 'get_me'
   static readonly GET_FRIENDS =  'get_friends '
   static readonly GET_LEADERBOARD = 'get_leaderboard'
   static readonly GET_CHAT_HISTORY = 'get_chat_history'
@@ -192,8 +190,6 @@ export interface ClientToServerEvents {
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.POST_AVATAR]: (dto: PostAvatar, callback: FeedbackCallback) => void;
-  [ChatEvent.GET_USER]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
-  [ChatEvent.GET_ME]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [ChatEvent.GET_FRIENDS]: (callback: RequestFeedbackDto<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: RequestFeedbackDto<UserHistoryDto>) => void;
@@ -209,4 +205,8 @@ export interface ClientToServerEvents {
   [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
+
+  // GetInfo
+  [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
+  [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
 }

@@ -209,14 +209,6 @@ export class AppGateway
     return await this.userService.getUserMatch(socket, matchInfo.target);
   }
 
-  @SubscribeMessage(ChatEvent.GET_USER)
-  async handleGetUserChat(
-    socket: Socket,
-    userId: GetUser,
-  ): Promise<RequestFeedbackDto<UserInfo>> {
-    return await this.userService.getUserChat(socket, userId.target);
-  }
-
   @SubscribeMessage(ChatEvent.SET_USERNAME)
   async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {
     return await this.userService.setUsername(socket, setInfo.name);
@@ -247,9 +239,10 @@ export class AppGateway
   async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
     return await this.userService.handlePostAvatar(socket, avatarInfo);
   }
-	@SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
-  async handleGetHistory(socket: Socket):Promise<RequestFeedbackDto<UserHistoryDto>>
-  {
-		return this.userService.getUserHistory(socket);
+  @SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
+  async handleGetHistory(
+    socket: Socket,
+  ): Promise<RequestFeedbackDto<UserHistoryDto>> {
+    return this.userService.getUserHistory(socket);
   }
 }
