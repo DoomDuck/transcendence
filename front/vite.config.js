@@ -8,9 +8,4 @@ export default {
 	server: {
 		fs: { allow: ['..'] },
 	},
-	build: {
-		commonjsOptions: {
-			defaultIsModuleExports: true,
-		}
-	}
 };
