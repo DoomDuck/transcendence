@@ -1,5 +1,6 @@
-import { type ChatUserDto, type Id } from 'backFrontCommon';
+import { ChatEvent, type ChatUserDto, type Id, type RequestFeedbackDto } from 'backFrontCommon';
 import { readable } from 'svelte/store';
+import { state } from './state';
 
 export class Users {
 	private map: Map<Id, ChatUserDto> = new Map();
@@ -54,10 +55,21 @@ export class Users {
 }
 
 async function fetchUser(id: number): Promise<ChatUserDto> {
-	const response = await fetch(`http://localhost:5000/user/${id}`, { method: 'GET' });
-	const result = await response.json();
-	console.log(JSON.stringify(response));
-	return result;
+	const feedback: RequestFeedbackDto<ChatUserDto> = await new Promise((resolve) => {
+		state.socket.emit(ChatEvent.GET_USER, { target: id }, (feedback) => resolve(feedback));
+	});
+	console.log('FEEDBACK:' + JSON.stringify(feedback));
+	if (feedback.success) return feedback.result!;
+	else {
+		// DEBUG
+		return {
+			id: 9999,
+			image: '',
+			name: 'GOGO',
+			profile: { ranking: 0, matchHistory: [] }
+		};
+	}
+	// const result = await response.json();
 }
 
 export const usersObject = new Users();

@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { DatabaseFile } from './databaseFile.entity';
-// import { Match } from '../../matchHistory/match.entity';
+import { Match } from '../../matchHistory/match.entity';
 import { Id } from 'backFrontCommon';
 
 @Entity('User')
@@ -39,8 +39,6 @@ export class User {
   @Column('varchar', { array: true })
   channel: string[] = [];
 
-  @JoinColumn({ name: 'avatarId' })
-  @OneToOne(() => DatabaseFile, { nullable: true })
   @Column({ type: 'int' })
   win: number = 0;
 
@@ -49,11 +47,14 @@ export class User {
 
   @Column({ type: 'int' })
   score: number = 0;
-
-  public avatar?: DatabaseFile;
-  @Column({ nullable: true })
-  public avatarId?: Id;
-
+  //
+  @Column({ type: 'varchar', nullable: true })
+  avatar: string | null = null;
+  // public avatar?: DatabaseFile;
+  // @Column({ nullable: true })
+  // public avatarId?: Id;
+  @ManyToMany(() => Match, (match) => match.player)
+  match!: Match[];
   /**
    * 2-Factor Auth TOTP secret in hex
    */

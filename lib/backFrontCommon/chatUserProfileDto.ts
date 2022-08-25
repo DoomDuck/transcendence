@@ -1,18 +1,15 @@
 import type { Id } from "./general"
+import type { MatchInfoFromServer } from "./chatEvents"
 
 export type ChatUserDto = {
   id: Id,
   name: string,
-  image: string,
+  image: string | null,
   profile: ChatProfileDto
 }
 
 export type ChatProfileDto = {
   ranking: number,
-  matchHistory: ChatMatchOutcomeDto[],
+  matchHistory: MatchInfoFromServer[],
 }
 
-export type ChatMatchOutcomeDto = {
-  opponent: Id,
-  winner: boolean
-}

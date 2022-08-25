@@ -1,3 +1,6 @@
+import { ChatEvent } from 'backFrontCommon';
+import { state } from './state';
+
 export function resize(imageDataURL: string, width: number, height: number): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const canvas = document.createElement('canvas');
@@ -24,13 +27,16 @@ export function resize(imageDataURL: string, width: number, height: number): Pro
 	});
 }
 
-export async function uploadAvatar(imageDataURL: string) {
-	await fetch(`http://localhost:5000/user/avatar`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json'
-		},
-		body: imageDataURL
+export async function uploadAvatar(imageDataUrl: string) {
+	state.socket.emit(ChatEvent.POST_AVATAR, { imageDataUrl }, (feedback) => {
+		alert(JSON.stringify(feedback));
 	});
+	// await fetch(`http://localhost:5000/user/avatar`, {
+	// 	method: 'POST',
+	// 	headers: {
+	// 		'Content-Type': 'application/json',
+	// 		Accept: 'application/json'
+	// 	},
+	// 	body: imageDataUrl
+	// });
 }

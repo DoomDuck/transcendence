@@ -4,6 +4,7 @@ import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Id } from 'backFrontCommon';
 import {
+  ChatFeedbackDto,
   BanUserToServer,
   MuteUserToServer,
   DMToServer,
@@ -15,6 +16,12 @@ import {
   ChatEvent,
   ChatError,
   Server,
+  SetPasswordToServer,
+  SetNewAdminToServer,
+  ChanInviteAccept,
+  ChanInviteRefuse,
+  InviteChannelToServer,
+  InviteChannelFromServer,
   ServerSocket as Socket,
 } from 'backFrontCommon';
 
@@ -154,7 +161,7 @@ export class ChatService {
     return feedback;
   }
 
-  handlePrivMessage(clientSocket: Socket, dm: DMToServer, wss: Server) {
+  async handlePrivMessage(clientSocket: Socket, dm: DMToServer, wss: Server) {
     const sender = this.userService.findOneActiveBySocket(clientSocket);
     if (!sender) {
       return this.channelManagerService.newChatFeedbackDto(
@@ -169,7 +176,7 @@ export class ChatService {
         ChatError.USER_NOT_FOUND,
       );
     }
-    const feedback = this.userService.sendMessageToUser(
+    const feedback = await this.userService.sendMessageToUser(
       sender,
       wss,
       dm.content,
@@ -197,8 +204,7 @@ export class ChatService {
         ChatError.USER_NOT_FOUND,
       );
     }
-    const feedback = this.userService.addFriend(sender, target);
-    return feedback;
+    return await this.userService.addFriend(sender, target);
   }
 
   async handleBanUser(
@@ -278,5 +284,66 @@ export class ChatService {
       wss,
     );
     return feedback;
+  }
+  async setPassword(
+    socket: Socket,
+    setInfo: SetPasswordToServer,
+  ): Promise<ChatFeedbackDto> {
+    const user = this.userService.findOneActiveBySocket(socket);
+    if (!user)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      setInfo.channel,
+    );
+
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+    else
+      return await this.channelManagerService.setPassword(
+        user,
+        channel,
+        setInfo.password,
+      );
+  }
+  async handleSetNewAdmin(
+    socket: Socket,
+    setInfo: SetNewAdminToServer,
+  ): Promise<ChatFeedbackDto> {
+    const user = this.userService.findOneActiveBySocket(socket);
+    if (!user)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      setInfo.channel,
+    );
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+    const target = this.userService.findOneActive(setInfo.target);
+    if (!target)
+      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+    return await this.channelManagerService.setNewAdmin(user, target, channel);
+  }
+
+  async handleInviteChannel(
+    socket: Socket,
+    inviteInfo: InviteChannelToServer,
+    wss: Server,
+  ): Promise<ChatFeedbackDto> {
+    const sender = this.userService.findOneActiveBySocket(socket);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      inviteInfo.channel,
+    );
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+    const target = this.userService.findOneActive(inviteInfo.target);
+    if (!target)
+      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+    return this.channelManagerService.inviteUserToChannel(
+      sender,
+      target,
+      channel,
+      wss,
+    );
   }
 }
