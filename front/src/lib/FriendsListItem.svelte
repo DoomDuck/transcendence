@@ -1,9 +1,9 @@
 <script lang="ts">
 	import GameInviteButton from './chat/buttons/GameInviteButton.svelte';
 	import UserMiniature from './UserMiniature.svelte';
-	import type { ChatUserDto } from 'backFrontCommon';
+	import type { UserInfo } from 'backFrontCommon';
 
-	export let friend: ChatUserDto;
+	export let friend: UserInfo;
 </script>
 
 <div class="friend">

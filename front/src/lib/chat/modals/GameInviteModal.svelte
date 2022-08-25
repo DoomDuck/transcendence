@@ -1,11 +1,11 @@
 <script lang="ts">
 	import Switch from '$lib/Switch.svelte';
-	import type { ChatUserDto } from 'backFrontCommon';
+	import type { UserInfo } from 'backFrontCommon';
 	import { gameInviteMethods } from '$lib/ts/gameInvite';
 	import Modal from '$lib/Modal.svelte';
 
 	export let show = false;
-	export let user: ChatUserDto;
+	export let user: UserInfo;
 
 	let mode: number;
 

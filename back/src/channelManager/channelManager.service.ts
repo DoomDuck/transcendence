@@ -103,7 +103,7 @@ export class ChannelManagerService {
   newUserHistoryDto(
     _userHistory: ActiveUserConversationDto[],
     _channelHistory: ActiveChannelConversationDto[],
-  ):UserHistoryDto {
+  ): UserHistoryDto {
     return { userHistory: _userHistory, channelHistory: _channelHistory };
   }
   leaveChannel(channel: Channel, user: ActiveUser) {
@@ -217,11 +217,12 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
     else {
       target.socketUser.forEach((socket) =>
-        wss.to(socket.id).emit(ChatEvent.BANNED_NOTIF, new BanUserFromServer(
-          channel.name,
-          sender.id,
-          duration,
-        ))
+        wss
+          .to(socket.id)
+          .emit(
+            ChatEvent.BANNED_NOTIF,
+            new BanUserFromServer(channel.name, sender.id, duration),
+          ),
       );
       channel.banned.push(target.id);
       this.channelRepository.update(channel.name, { banned: channel.banned });
@@ -252,11 +253,12 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(false, ChatError.ALREADY_MUTED);
     else {
       target.socketUser.forEach((socket) =>
-        wss.to(socket.id).emit(ChatEvent.MUTED_NOTIF, new MuteUserFromServer(
-          channel.name,
-          sender.id,
-          duration,
-        ))
+        wss
+          .to(socket.id)
+          .emit(
+            ChatEvent.MUTED_NOTIF,
+            new MuteUserFromServer(channel.name, sender.id, duration),
+          ),
       );
       channel.muted.push(target.id);
       this.channelRepository.update(channel.name, { muted: channel.muted });

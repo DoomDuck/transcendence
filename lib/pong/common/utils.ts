@@ -44,3 +44,5 @@ export function removeIfPresent<T>(array: Array<T>, element: T) {
   const i = array.indexOf(element);
   if (i != -1) array.splice(i, 1);
 }
+
+export type FinishCallback = (score1: number, score2: number) => void;

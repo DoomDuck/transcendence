@@ -57,7 +57,7 @@ export class LoginService {
     if (!response.ok)
       throw new Error(`Could not fetch token: ${response.statusText}`);
     const data = await response.json();
-    if (typeof data !== "object") {
+    if (typeof data !== 'object') {
       throw new Error('Invalid body type');
     }
     const { access_token } = data;

@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { UserDto } from './dto/user.dto';
 import { Express } from 'express';
 import { UploadedFile } from '@nestjs/common';
-import { Id, ChatUserDto } from 'backFrontCommon';
+import { Id } from 'backFrontCommon';
 import { Multer } from 'multer';
 
 @Controller('user')
@@ -51,23 +51,4 @@ export class UserController {
   // }
 
   // LUCAS DEBUG
-
-  @Get('chat/:id')
-  async getUserChatData(
-    @Param('id') userId: number,
-  ): Promise<ChatUserDto | null> {
-    const user = await this.userService.findOneDb(userId);
-    if (user === null) return null;
-    return {
-      id: userId,
-      name: user.name,
-      image: '',
-      profile: {
-        ranking: (await this.userService.getLeaderboard()).findIndex(
-          (user2) => user2.id == user.id,
-        ),
-        matchHistory: [],
-      },
-    };
-  }
 }

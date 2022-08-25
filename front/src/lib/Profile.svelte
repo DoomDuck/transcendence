@@ -1,18 +1,18 @@
 <script lang="ts">
-	import type { ChatUserDto } from 'backFrontCommon';
+	import type { UserInfo } from 'backFrontCommon';
 
 	import ProfileStats from './ProfileStats.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
-	export let user: ChatUserDto;
+	export let user: UserInfo;
 </script>
 
 <div id="profile">
 	<div>
-		<AvatarIcon type={'user'} imageURL={user.image} />
+		<AvatarIcon type={'user'} imageURL={user.avatar ?? 'errorUser.png'} />
 		<h3>{user.name}</h3>
 		<p>ID: {user.id}</p>
 	</div>
-	<ProfileStats profile={user.profile} />
+	<ProfileStats {user} />
 </div>
 
 <style>
