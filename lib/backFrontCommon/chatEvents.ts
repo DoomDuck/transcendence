@@ -1,6 +1,8 @@
+import { IsInt, IsString } from "class-validator";
 import type { UserHistoryDto } from "./chatConversationsDto"
 import type { ChatUserDto } from "./chatUserProfileDto"
 import type { Id } from "./general"
+
 /**
  * Events required to Login
  */
@@ -16,6 +18,7 @@ export class GetInfoEvent{
   static readonly MY_INFO = "my info";
   static readonly USER_INFO = "user info";
 }
+
 export class ChatEvent {
   static readonly MSG_TO_CHANNEL = "msg to channel"
   static readonly MSG_TO_USER = 'msg to user'
@@ -109,10 +112,18 @@ export class DMFromServer  {
 }
 
 export class DMToServer {
+  // @IsInt()
+  target: Id;
+  // @IsString()
+  content: string;
+
   constructor(
-    public target: Id,
-    public content: string,
-  ) { }
+    target: Id,
+    content: string,
+  ) {
+    this.target = target;
+    this.content = content;
+  }
 }
 
 export class CMFromServer  {

@@ -28,10 +28,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { LoginService } from './login/login.service';
-import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
-import { CheckDefinedPipe } from './app.validator';
 import { UserService } from './user/user.service';
 
 @WebSocketGateway()
@@ -88,11 +87,7 @@ export class AppGateway
     return await this.chatService.handleJoinChannel(clientSocket, joinInfo);
   }
 
-  // @UsePipes(new CheckDefinedPipe())
-  // @UsePipes(new ValidationPipe())
-  @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
-    // this.logger.log('disconnection');
     this.userService.printAllActiveSocket();
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
   }

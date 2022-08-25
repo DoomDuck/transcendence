@@ -2,8 +2,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 /** @type {import('vite').UserConfig} */
 export default {
-	plugins: [sveltekit()],
+	plugins: [
+		sveltekit(),
+	],
 	server: {
-		fs: { allow: ['..'] }
+		fs: { allow: ['..'] },
+	},
+	build: {
+		commonjsOptions: {
+			defaultIsModuleExports: true,
+		}
 	}
 };

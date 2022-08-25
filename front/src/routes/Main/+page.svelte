@@ -1,18 +1,4 @@
 <script lang="ts">
-	// TODO: remove
-	import { onMount } from 'svelte';
-	import { ChatEvent, DMToServer } from 'backFrontCommon';
-	import { state } from '$lib/ts/state';
-
- 	const o: any = new DMToServer(3, "Hello");
-	// o.ooolalah = 4;
-	// o.target = "Bonjour";
-
-	onMount(() => {
-		state.socket.emit(ChatEvent.MSG_TO_USER, o as DMToServer,
-		console.log);
-	});
-
 	let color: string = '#6028FF';
 </script>
 

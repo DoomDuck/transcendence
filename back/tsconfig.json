@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "types": [
-        "dat.gui",
-        "express",
-        "node",
-		"node-fetch",
-        "jest"
+      "dat.gui",
+      "express",
+      "node",
+      "node-fetch",
+      "jest"
     ],
     
     "outDir": "build/",
