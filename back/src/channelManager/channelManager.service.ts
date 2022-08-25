@@ -104,7 +104,7 @@ export class ChannelManagerService {
   newUserHistoryDto(
     _userHistory: ActiveUserConversationDto[],
     _channelHistory: ActiveChannelConversationDto[],
-  ) {
+  ):UserHistoryDto {
     return { userHistory: _userHistory, channelHistory: _channelHistory };
   }
   leaveChannel(channel: Channel, user: ActiveUser) {
