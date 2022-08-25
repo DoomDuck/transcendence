@@ -1,11 +1,10 @@
 <script lang="ts">
-	export let optionOne = '';
-	export let optionTwo = '';
-	let mode = optionOne;
+	export let options: [string, string];
+	export let mode = 0;
 
 	function toggleMode() {
-		if (mode == optionOne) mode = optionTwo;
-		else mode = optionOne;
+		if (mode == 0) mode = 1;
+		else mode = 0;
 	}
 </script>
 
@@ -16,7 +15,7 @@
 	</label>
 </div>
 <div id="mode">
-	{mode}
+	{options[mode]}
 </div>
 
 <style>

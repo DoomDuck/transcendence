@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
-	import type { ActiveChannelConversationDto, ActiveUserConversationDto } from 'backFrontCommon';
 	import NotificationIcon from './NotificationIcon.svelte';
 
 	export let hasNewMessage: boolean = false;

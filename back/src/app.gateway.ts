@@ -1,7 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { ChatEvent, LoginEvent } from 'backFrontCommon';
-import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
-import { ConfigService } from '@nestjs/config';
+import {
+  ChatEvent,
+  ChatFeedbackDto,
+  GameAcceptToServer,
+  GameCancelToServer,
+  GameInviteToServer,
+  GameRefuseToServer,
+  LoginEvent,
+} from 'backFrontCommon';
 import type {
   BanUserToServer,
   MuteUserToServer,
@@ -13,13 +19,6 @@ import type {
   FriendInviteToServer,
 } from 'backFrontCommon';
 import {
-  Socket as IOSocketBaseType,
-  Server as IOServerBaseType,
-} from 'socket.io';
-
-type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
-type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
-import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -28,11 +27,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { LoginService } from './login/login.service';
-import { UserService } from './user/user.service';
-import { ChannelManagerService } from './channelManager/channelManager.service';
 import { Logger } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
+import { ServerSocket as Socket, Server } from 'backFrontCommon';
 
 @WebSocketGateway()
 export class AppGateway
@@ -53,6 +51,18 @@ export class AppGateway
 
   async handleConnection(socket: Socket) {
     await this.loginService.handleConnection(socket);
+
+    // DEBUG
+    socket.onAny((event: string, ...args: any[]) => {
+      console.log(
+        `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
+      );
+    });
+    socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+      console.log(
+        `[SENDED] event '${event}' with args: ${JSON.stringify(args)}`,
+      );
+    });
   }
 
   handleDisconnect(socket: Socket) {
@@ -123,11 +133,37 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
   handleJoinMatchMaking(socket: Socket, classic: boolean) {
-    this.gameManagerService.add(socket);
+    this.gameManagerService.addMatchmaking(socket, classic);
   }
 
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_INVITE)
+  async handleGameInvite(
+    sourceSocket: Socket,
+    dto: GameInviteToServer,
+  ): Promise<ChatFeedbackDto> {
+    return this.gameManagerService.handleGameInvite(sourceSocket, dto);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_ACCEPT)
+  async handleGameAccept(
+    targetSocket: Socket,
+    dto: GameAcceptToServer,
+  ): Promise<ChatFeedbackDto> {
+    return this.gameManagerService.handleGameAccept(targetSocket, dto);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_REFUSE)
+  async handleGameRefuse(targetSocket: Socket, dto: GameRefuseToServer) {
+    this.gameManagerService.handleGameRefuse(targetSocket, dto);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_CANCEL)
+  async handleGameCancel(sourceSocket: Socket, dto: GameCancelToServer) {
+    this.gameManagerService.handleGameCancel(sourceSocket, dto);
   }
 }

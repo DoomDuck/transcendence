@@ -2,6 +2,7 @@
 	import Pong from '$lib/pong/Pong.svelte';
 	import { gameParamsAreValid } from '$lib/ts/gameParams';
 	import { state } from '$lib/ts/state';
+	import { ChatEvent } from 'backFrontCommon';
 	import { onMount } from 'svelte';
 
 	let background = state.gameParams?.classic ? '/starsSky.png' : '/gameBackground.png';
