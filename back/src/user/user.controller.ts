@@ -35,20 +35,20 @@ export class UserController {
   // return this.userService.remove(id);
   // }
 
-  @Post('avatar')
-  // @UseInterceptors(FileInterceptor('file'))
-  async addAvatar(
-    @Body() userDto: UserDto,
-    @UploadedFile() file: Express.Multer.File,
-    // @Body() addAvatarDto: {userId: Id, image: Blob}
-  ): Promise<boolean> {
-    // console.log("uploaded file:", addAvatarDto.image);
-    return this.userService.addAvatar(
-      userDto.id,
-      file.buffer,
-      file.originalname,
-    );
-  }
+  // @Post('avatar')
+  // // @UseInterceptors(FileInterceptor('file'))
+  // async addAvatar(
+  // @Body() userDto: UserDto,
+  // @UploadedFile() file: Express.Multer.File,
+  // // @Body() addAvatarDto: {userId: Id, image: Blob}
+  // ): Promise<boolean> {
+  // // console.log("uploaded file:", addAvatarDto.image);
+  // return this.userService.addAvatar(
+  // userDto.id,
+  // file.buffer,
+  // file.originalname,
+  // );
+  // }
 
   // LUCAS DEBUG
 

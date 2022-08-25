@@ -2,6 +2,7 @@
 	import Modal from '$lib/Modal.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { ChannelCategory } from 'backFrontCommon';
+	import { chatMethods } from '$lib/ts/chat';
 
 	export let show = false;
 
@@ -18,7 +19,7 @@
 
 	function handleSubmit() {
 		show = false;
-		dispatch('createChannel', {
+		chatMethods.sendCreateChannel({
 			channel: channelName,
 			category: chosenCategory,
 			password

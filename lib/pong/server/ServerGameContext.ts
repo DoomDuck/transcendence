@@ -27,13 +27,13 @@ export class ServerGameContext {
   ready: [boolean, boolean] = [false, false];
   score: [number, number] = [0, 0];
   ballDirection: number = LEFT;
-  spawner: Spawner;
+  spawner?: Spawner;
   observers: Socket[] = [];
   alreadyStarted: boolean = false;
   gameLoopHandle?: ReturnType<typeof setInterval>;
   // observerSendStateQueue: ((Game) => void)[] = [];
 
-  constructor(public players: [Socket, Socket], public onFinish: () => void) {
+  constructor(public players: [Socket, Socket], classic: boolean, public onFinish: () => void) {
     this.game = new Game();
     for (let [emitter, receiver] of [
       [PLAYER1, PLAYER2],
@@ -52,14 +52,16 @@ export class ServerGameContext {
       });
     }
 
-    this.spawner = new Spawner(
-      this.spawnGraviton.bind(this),
-      this.spawnPortal.bind(this)
-    );
+    if (classic) {
+      this.spawner = new Spawner(
+        this.spawnGraviton.bind(this),
+        this.spawnPortal.bind(this)
+      );
+    }
 
     this.gameLoopHandle = setInterval(() => {
       this.game.frame();
-      this.spawner.frame();
+      this.spawner?.frame();
       for (let observer of this.observers) {
         observer.emit(GameEvent.OBSERVER_UPDATE, this.game.state.data.current);
       }
@@ -102,13 +104,13 @@ export class ServerGameContext {
   start(delay: number) {
     const startTime = Date.now() + delay;
     this.broadcastEventPlayersOnly(GameEvent.START, startTime);
-    this.spawner.start(startTime);
+    this.spawner?.start(startTime);
   }
 
   pause(delay: number) {
     const pauseTime = Date.now() + delay;
     this.broadcastEventPlayersOnly(GameEvent.PAUSE, pauseTime);
-    this.spawner.pause(pauseTime);
+    this.spawner?.pause(pauseTime);
   }
 
   reset(ballX: number, ballY: number, ballDirection: Direction) {
@@ -121,7 +123,7 @@ export class ServerGameContext {
       ballSpeedX,
       ballSpeedY
     );
-    this.spawner.reset();
+    this.spawner?.reset();
   }
 
   spawnGraviton() {
@@ -146,7 +148,7 @@ export class ServerGameContext {
   handleGoal(playerId: number) {
     console.log("GOAL !!!");
     this.game.pause();
-    this.spawner.pause();
+    this.spawner?.pause();
     this.broadcastEventEveryone(GameEvent.GOAL, playerId);
     if (this.game.isOver()) {
       this.handleEndOfGame();

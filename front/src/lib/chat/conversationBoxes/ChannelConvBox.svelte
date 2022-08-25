@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import { type ChannelConversation } from '$lib/ts/utils';
 	import ConversationEntry from './ConversationEntry.svelte';
 	import type { CMToServer } from 'backFrontCommon/chatEvents';
+	import { ChannelConversation } from '$lib/ts/chatUtils';
+	import { chatMethods } from '$lib/ts/chat';
 
 	export let conversation: ChannelConversation;
 
-	const dispatch = createEventDispatcher<{ msgToChannel: CMToServer }>();
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
@@ -25,7 +25,7 @@
 			inputElement.value = '';
 			if (!text) return;
 
-			dispatch('msgToChannel', {
+			chatMethods.sendChannelMessage({
 				channel: conversation.dto.channel,
 				content: text
 			});

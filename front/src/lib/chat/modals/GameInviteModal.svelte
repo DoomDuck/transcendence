@@ -2,17 +2,27 @@
 	import Switch from '$lib/Switch.svelte';
 	import type { ChatUserDto } from 'backFrontCommon';
 	import { gameInviteMethods } from '$lib/ts/gameInvite';
+	import Modal from '$lib/Modal.svelte';
+
+	export let show = false;
 	export let user: ChatUserDto;
+
+	let mode: number;
+
+	function sendInvite() {
+		gameInviteMethods.send({ target: user.id, classic: mode == 0 });
+		show = false;
+	}
 </script>
 
-<div id="invitation">
-	<Switch optionOne="Classic Mode" optionTwo="Special Mode" />
-	<a href="/WaitingRoom">
-		<button on:click={() => gameInviteMethods.send(user.id)}>
+<Modal bind:show>
+	<div id="invitation">
+		<Switch options={['Classic Mode', 'WeIrD Mode']} bind:mode />
+		<button on:click={sendInvite}>
 			Invit {user.name} to play
 		</button>
-	</a>
-</div>
+	</div>
+</Modal>
 
 <style>
 	#invitation {

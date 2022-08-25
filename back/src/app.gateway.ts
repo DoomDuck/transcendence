@@ -1,7 +1,21 @@
 /* eslint-disable prettier/prettier */
-import { ChatEvent, LoginEvent, GetInfoEvent } from 'backFrontCommon';
-import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
+import {
+  ChatEvent,
+  ChatFeedbackDto,
+  GameAcceptToServer,
+  GameCancelToServer,
+  GameInviteToServer,
+  GameRefuseToServer,
+  LoginEvent,
+  GetInfoEvent,
+  RequestFeedbackDto,
+  ChatUserDto,
+  PostAvatar,
+} from 'backFrontCommon';
 import type {
+  InviteChannelToServer,
+  GetUser,
+  SetNewAdminToServer,
   BanUserToServer,
   MuteUserToServer,
   CMToServer,
@@ -10,15 +24,11 @@ import type {
   BlockUserToServer,
   FriendInviteToServer,
   UserInfoToServer,
+  MatchInfoToServer,
+  SetPasswordToServer,
+  SetUsernameToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
-import {
-  Socket as IOSocketBaseType,
-  Server as IOServerBaseType,
-} from 'socket.io';
-
-type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
-type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -28,10 +38,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { LoginService } from './login/login.service';
+import { UserService } from './user/user.service';
+import { MatchHistoryService } from './matchHistory/matchHistory.service';
 import { Logger } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
-import { UserService } from './user/user.service';
+import { ServerSocket as Socket, Server } from 'backFrontCommon';
 
 @WebSocketGateway()
 export class AppGateway
@@ -42,6 +54,7 @@ export class AppGateway
   @WebSocketServer() wss!: Server;
   constructor(
     private loginService: LoginService,
+    private matchHistoryService: MatchHistoryService,
     private chatService: ChatService,
     private userService: UserService,
     private gameManagerService: GameManagerService,
@@ -53,6 +66,18 @@ export class AppGateway
 
   async handleConnection(socket: Socket) {
     await this.loginService.handleConnection(socket);
+
+    // DEBUG
+    socket.onAny((event: string, ...args: any[]) => {
+      console.log(
+        `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
+      );
+    });
+    socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+      console.log(
+        `[SENDED] event '${event}' with args: ${JSON.stringify(args)}`,
+      );
+    });
   }
 
   handleDisconnect(socket: Socket) {
@@ -121,14 +146,40 @@ export class AppGateway
     );
   }
 
-  @SubscribeMessage('joinMatchMaking')
-  handleJoinMatchMaking(socket: Socket) {
-    this.gameManagerService.add(socket);
+  @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
+  handleJoinMatchMaking(socket: Socket, classic: boolean) {
+    this.gameManagerService.addMatchmaking(socket, classic);
   }
 
-  @SubscribeMessage('observe')
+  @SubscribeMessage(ChatEvent.GAME_OBSERVE)
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_INVITE)
+  async handleGameInvite(
+    sourceSocket: Socket,
+    dto: GameInviteToServer,
+  ): Promise<ChatFeedbackDto> {
+    return this.gameManagerService.handleGameInvite(sourceSocket, dto);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_ACCEPT)
+  async handleGameAccept(
+    targetSocket: Socket,
+    dto: GameAcceptToServer,
+  ): Promise<ChatFeedbackDto> {
+    return this.gameManagerService.handleGameAccept(targetSocket, dto);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_REFUSE)
+  async handleGameRefuse(targetSocket: Socket, dto: GameRefuseToServer) {
+    this.gameManagerService.handleGameRefuse(targetSocket, dto);
+  }
+
+  @SubscribeMessage(ChatEvent.GAME_CANCEL)
+  async handleGameCancel(sourceSocket: Socket, dto: GameCancelToServer) {
+    this.gameManagerService.handleGameCancel(sourceSocket, dto);
   }
 
   @SubscribeMessage(GetInfoEvent.MY_INFO)
@@ -139,5 +190,59 @@ export class AppGateway
   @SubscribeMessage(GetInfoEvent.USER_INFO)
   async handleUserInfo(socket: Socket, userInfo: UserInfoToServer) {
     return await this.userService.UserInfo(socket, userInfo);
+  }
+
+  @SubscribeMessage(GetInfoEvent.ALL_MATCH)
+  async handleAllMatch(_socket: Socket) {
+    return await this.matchHistoryService.getAllMatch();
+  }
+
+  @SubscribeMessage(GetInfoEvent.MY_MATCH)
+  async handleMyMatch(socket: Socket) {
+    return await this.userService.getMyMatch(socket);
+  }
+
+  @SubscribeMessage(GetInfoEvent.USER_MATCH)
+  async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
+    return await this.userService.getUserMatch(socket, matchInfo.target);
+  }
+
+  @SubscribeMessage(ChatEvent.GET_USER)
+  async handleGetUserChat(
+    socket: Socket,
+    userId: GetUser,
+  ): Promise<RequestFeedbackDto<ChatUserDto>> {
+    return await this.userService.getUserChat(socket, userId.target);
+  }
+
+  @SubscribeMessage(ChatEvent.SET_USERNAME)
+  async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {
+    return await this.userService.setUsername(socket, setInfo.name);
+  }
+
+  @SubscribeMessage(ChatEvent.SET_PASSWORD)
+  async handleSetPassword(socket: Socket, setInfo: SetPasswordToServer) {
+    return await this.chatService.setPassword(socket, setInfo);
+  }
+
+  @SubscribeMessage(ChatEvent.SET_NEW_ADMIN)
+  async handleSetNewAdmin(socket: Socket, setInfo: SetNewAdminToServer) {
+    return await this.chatService.handleSetNewAdmin(socket, setInfo);
+  }
+
+  @SubscribeMessage(ChatEvent.INVITE_TO_PRIVATE_CHANNEL)
+  async handleSetInviteChannel(
+    socket: Socket,
+    inviteInfo: InviteChannelToServer,
+  ) {
+    return await this.chatService.handleInviteChannel(
+      socket,
+      inviteInfo,
+      this.wss,
+    );
+  }
+  @SubscribeMessage(ChatEvent.POST_AVATAR)
+  async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
+    return await this.userService.handlePostAvatar(socket, avatarInfo);
   }
 }

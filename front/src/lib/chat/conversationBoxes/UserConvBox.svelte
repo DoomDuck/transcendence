@@ -1,16 +1,14 @@
 <script lang="ts">
 	// import GameInvit from '$lib/chat/modals/GameInviteModal.svelte';
-	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
-	import Modal from '$lib/Modal.svelte';
-	import { UserConversation } from '$lib/ts/utils';
+	import { beforeUpdate, afterUpdate } from 'svelte';
 	import ConversationEntry from './ConversationEntry.svelte';
-	import type { DMToServer } from 'backFrontCommon/chatEvents';
-	import BlockUser from '../buttons/BlockUserButton.svelte';
+	import BlockUserButton from '../buttons/BlockUserButton.svelte';
+	import GameInviteButton from '../buttons/GameInviteButton.svelte';
+	import { chatMethods } from '$lib/ts/chat';
+	import { UserConversation } from '$lib/ts/chatUtils';
 
 	export let conversation: UserConversation;
 
-	const dispatch = createEventDispatcher<{ msgToUser: DMToServer }>();
-	let gameInvitModal = false;
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
 
@@ -29,7 +27,7 @@
 			inputElement.value = '';
 			if (!content) return;
 
-			dispatch('msgToUser', {
+			chatMethods.sendDirectMessage({
 				target: conversation.dto.interlocutor,
 				content
 			});
@@ -45,15 +43,8 @@
 		{:then user}
 			<h2>{user.name}</h2>
 			<div id="options">
-				<!-- <img src="blockingIcon.png" alt="block user" width="25px" height="25px" /> -->
-				<BlockUser {user} />
-				<img
-					src="joystick.png"
-					alt="invite friend to play"
-					width="30px"
-					height="30px"
-					on:click={() => (gameInvitModal = true)}
-				/>
+				<BlockUserButton {user} />
+				<GameInviteButton {user} />
 			</div>
 		{/await}
 	</div>
@@ -65,13 +56,6 @@
 
 	<input on:keydown={handleKeydown} />
 </div>
-
-<Modal bind:show={gameInvitModal}>
-	<!-- to change  -->
-	<!-- Invalid
-		<GameInvit name={`${conversation.dto.interlocutor}`} /> 
-	-->
-</Modal>
 
 <style>
 	.chat {

@@ -3,6 +3,7 @@ import { GameEvent } from "../common/constants";
 import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
+import { ChatEvent } from "backFrontCommon";
 
 /**
  * Online version of the game in the client as a player (see ClientGameContext)
@@ -12,13 +13,13 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
 
   constructor(socket: Socket, onFinish: () => void) {
     super(socket, onFinish);
-    this.socket.on("connect", () => {
-      console.log("connected to server");
-      this.socket.emit("joinMatchMaking");
-    });
-    this.socket.on("disconnect", () => {
-      console.log("disconnected from server");
-    });
+    // this.socket.on("connect", () => {
+    //   console.log("connected to server");
+    //   this.socket.emit("joinMatchMaking");
+    // });
+    // this.socket.on("disconnect", () => {
+    //   console.log("disconnected from server");
+    // });
 
     // incomming events
     this.transmitEventFromServerToGame(GameEvent.START);
@@ -29,6 +30,15 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
     this.transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.transmitEventFromServerToGame(GameEvent.SPAWN_PORTAL);
     this.transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_EVENT);
+
+    this.socket.on(
+      ChatEvent.PLAYER_ID_CONFIRMED,
+      (playerId: number, ready: () => void) => {
+        setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
+        this.setupBallOutOutgoingEvent(playerId);
+        ready();
+      }
+    );
   }
 
   animate() {
@@ -41,16 +51,7 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
     animate(Date.now());
   }
 
-  startGame() {
-    this.socket.on(
-      "playerIdConfirmed",
-      (playerId: number, ready: () => void) => {
-        setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
-        this.setupBallOutOutgoingEvent(playerId);
-        ready();
-      }
-    );
-  }
+  startGame() {}
 
   private setupBallOutOutgoingEvent(playerId: number) {
     GameProducedEvent.registerEvent(
