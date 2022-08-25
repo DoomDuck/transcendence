@@ -32,6 +32,7 @@ import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
 import { CheckDefinedPipe } from './app.validator';
+import { UserService } from './user/user.service';
 
 @WebSocketGateway()
 export class AppGateway
@@ -134,6 +135,7 @@ export class AppGateway
   handleObserve(socket: Socket, gameId: number) {
     this.gameManagerService.addObserver(socket, gameId);
   }
+
   @SubscribeMessage(GetInfoEvent.MY_INFO)
   async handleMyInfo(socket: Socket) {
     return await this.userService.MyInfo(socket);
@@ -141,6 +143,6 @@ export class AppGateway
 
   @SubscribeMessage(GetInfoEvent.USER_INFO)
   async handleUserInfo(socket: Socket, userInfo: UserInfoToServer) {
-    await this.userService.UserInfo(socket, userInfo);
+    return await this.userService.UserInfo(socket, userInfo);
   }
 }

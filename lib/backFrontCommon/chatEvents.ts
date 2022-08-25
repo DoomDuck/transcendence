@@ -13,10 +13,8 @@ export class LoginEvent {
 }
 
 export class GetInfoEvent{
-
   static readonly MY_INFO = "my info";
   static readonly USER_INFO = "user info";
-
 }
 export class ChatEvent {
   static readonly MSG_TO_CHANNEL = "msg to channel"
@@ -64,6 +62,43 @@ export class ChatError {
   static readonly NOT_BANNED ="user not banned";
   static readonly NOT_MUTED ="user not muted";
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
+}
+
+export class MyInfo {
+  constructor(
+    public id: Id,
+    public name: string,
+    public friendlist: Id[],
+    public blocked: Id[] ,
+    public channel: string[] ,
+    public win: number ,
+    public loose: number ,
+    public score: number ,
+    public totpSecret: string | null,
+    public inGame:boolean,
+    public avatarId?: Id,
+  ) { }
+}
+
+export class UserInfoFromServer {
+  constructor(
+    public id: Id,
+    public name: string,
+    public friendlist: Id[],
+    public channel: string[] ,
+    public win: number ,
+    public loose: number ,
+    public score: number ,
+    public isOnline: boolean,
+    public inGame: boolean,
+    public avatarId?: Id,
+  ) { }
+}
+
+export class UserInfoToServer {
+  constructor(
+    public target:Id,
+  ) {}
 }
 
 export class DMFromServer  {
@@ -270,6 +305,10 @@ export interface ClientToServerEvents {
   // Login
   [LoginEvent.TOTP_CHECK]: (token: string) => void,
   [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
+  
+  // UserInfo
+  [GetInfoEvent.MY_INFO]: (callback: RequestFeedbackDto<MyInfo>) => void;
+  [GetInfoEvent.USER_INFO]: (userInfo: UserInfoToServer, callback: RequestFeedbackDto<UserInfoFromServer>) => void;
   
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMToServer, callback: FeedbackCallback) => void;
