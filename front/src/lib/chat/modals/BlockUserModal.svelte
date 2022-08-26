@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import Modal from '$lib/Modal.svelte';
-	import type { ChatUserDto } from 'backFrontCommon';
+	import type { UserInfo } from 'backFrontCommon';
 
-	export let user: ChatUserDto;
+	export let user: UserInfo;
 	export let show = false;
 
-	const dispatch = createEventDispatcher<{ blockUser: ChatUserDto }>();
+	const dispatch = createEventDispatcher<{ blockUser: UserInfo }>();
 
 	function handleBlockUser() {
 		dispatch('blockUser', user);

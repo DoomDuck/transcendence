@@ -9,8 +9,9 @@ import {
   LoginEvent,
   GetInfoEvent,
   RequestFeedbackDto,
-  ChatUserDto,
   PostAvatar,
+  MatchInfoToServer,
+  UserInfoToServer,
 } from 'backFrontCommon';
 import type {
   UserHistoryDto,
@@ -24,8 +25,8 @@ import type {
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
-  UserInfoToServer,
-  MatchInfoToServer,
+  UserInfo,
+  MatchInfoFromServer,
   SetPasswordToServer,
   SetUsernameToServer,
 } from 'backFrontCommon';
@@ -111,7 +112,7 @@ export class AppGateway
   async handleJoinChannel(clientSocket: Socket, joinInfo: JoinChannelToServer) {
     return await this.chatService.handleJoinChannel(clientSocket, joinInfo);
   }
-
+  @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
     this.userService.printAllActiveSocket();
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
@@ -207,14 +208,6 @@ export class AppGateway
     return await this.userService.getUserMatch(socket, matchInfo.target);
   }
 
-  @SubscribeMessage(ChatEvent.GET_USER)
-  async handleGetUserChat(
-    socket: Socket,
-    userId: GetUser,
-  ): Promise<RequestFeedbackDto<ChatUserDto>> {
-    return await this.userService.getUserChat(socket, userId.target);
-  }
-
   @SubscribeMessage(ChatEvent.SET_USERNAME)
   async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {
     return await this.userService.setUsername(socket, setInfo.name);
@@ -245,9 +238,10 @@ export class AppGateway
   async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
     return await this.userService.handlePostAvatar(socket, avatarInfo);
   }
-	@SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
-  async handleGetHistory(socket: Socket):Promise<RequestFeedbackDto<UserHistoryDto>>
-  {
-		return this.userService.getUserHistory(socket);
+  @SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
+  async handleGetHistory(
+    socket: Socket,
+  ): Promise<RequestFeedbackDto<UserHistoryDto>> {
+    return this.userService.getUserHistory(socket);
   }
 }

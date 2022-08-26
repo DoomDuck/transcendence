@@ -1,12 +1,12 @@
 <script lang="ts">
 	import FriendsListItem from '$lib/FriendsListItem.svelte';
-	import type { ChatUserDto } from 'backFrontCommon';
 	import { users } from '$lib/ts/users';
+	import type { UserInfo } from 'backFrontCommon';
 
 	let nameSearch = () => {};
 
 	// DEBUG : loading all users as friend
-	let friends: ChatUserDto[] = [];
+	let friends: UserInfo[] = [];
 	[0, 1, 2].forEach((id) => {
 		$users.findOrFetch(id).then((_) => {
 			friends.push(_);

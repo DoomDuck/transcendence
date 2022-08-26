@@ -4,6 +4,7 @@ import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
 import { ChatEvent } from "backFrontCommon";
+import type { FinishCallback } from "../common/utils";
 
 /**
  * Online version of the game in the client as a player (see ClientGameContext)
@@ -11,7 +12,7 @@ import { ChatEvent } from "backFrontCommon";
 export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
   ballOutAlreadyEmitted: boolean = false;
 
-  constructor(socket: Socket, onFinish: () => void) {
+  constructor(socket: Socket, onFinish: FinishCallback) {
     super(socket, onFinish);
     // this.socket.on("connect", () => {
     //   console.log("connected to server");

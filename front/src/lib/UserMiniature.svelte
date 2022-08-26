@@ -6,15 +6,19 @@
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 
 	export let userId: Id;
-	const userPromise = $users.findOrFetch(userId);
 
+	const userPromise = $users.findOrFetch(userId);
 	let showProfile = false;
 </script>
 
 {#await userPromise}
-	<AvatarIcon type={'user'} imageURL="awaiting.png" />
+	<AvatarIcon type={'user'} imageURL="hourglass.png" />
 {:then user}
-	<AvatarIcon type={'user'} imageURL={user.image} on:clickOnImage={() => (showProfile = true)} />
+	<AvatarIcon
+		type={'user'}
+		imageURL={user.avatar ?? 'errorUser.png'}
+		on:clickOnImage={() => (showProfile = true)}
+	/>
 	<Modal bind:show={showProfile}>
 		<Profile {user} />
 	</Modal>

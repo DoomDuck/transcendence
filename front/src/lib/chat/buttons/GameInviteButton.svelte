@@ -1,9 +1,9 @@
 <script lang="ts">
 	import GameInviteModal from '../modals/GameInviteModal.svelte';
-	import type { ChatUserDto } from 'backFrontCommon';
+	import type { UserInfo } from 'backFrontCommon';
 
 	let show = false;
-	export let user: ChatUserDto;
+	export let user: UserInfo;
 </script>
 
 <img
