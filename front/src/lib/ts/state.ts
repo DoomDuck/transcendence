@@ -51,13 +51,7 @@ class State {
 		this.socket.once('disconnect', this.onDisconnect.bind(this));
 		this.socket.once(LoginEvent.TOTP_REQUIREMENTS, this.onTotpRequirements.bind(this));
 		this.socket.once(LoginEvent.TOTP_RESULT, this.onTotpResult.bind(this));
-		this.socket.on(ChatEvent.GOTO_GAME_SCREEN, (classic: boolean, ready) => {
-			this.gameParams = {
-				classic,
-				online: true
-			};
-			if (window.location.href != '/Play') goto('/Play').then(ready);
-		});
+		this.socket.on(ChatEvent.GOTO_GAME_SCREEN, this.onGotoGameScreen.bind(this));
 		state.socket.on(ChatEvent.MSG_TO_USER, handleMsgToUser);
 		state.socket.on(ChatEvent.MSG_TO_CHANNEL, handleMsgToChannel);
 		state.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, handleInviteToPrivateChannel);
@@ -104,6 +98,11 @@ class State {
 	onTotpResult(success: boolean) {
 		this.requireTotp = false;
 		goto(success ? LOGGIN_SUCCESS_ROUTE : LOGGIN_ROUTE);
+	}
+
+	onGotoGameScreen(classic: boolean, ready: () => void) {
+		this.gameParams = { classic, online: true };
+		if (window.location.href != '/Play') goto('/Play').then(ready);
 	}
 
 	// Used in +layout.svelte
