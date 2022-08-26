@@ -1,7 +1,9 @@
-import { ChatEvent, type GameInviteToServer, type Id } from 'backFrontCommon';
+import { ChatEvent } from 'backFrontCommon';
+import type { GameInviteToServer, Id } from 'backFrontCommon';
 import { state } from '$lib/ts/state';
-import { PopupCategory, popups, type CanBePopup, popupMethods } from './popups';
-import { usersObject } from './users';
+import { PopupCategory, popups, popupMethods } from './popups';
+import type { CanBePopup } from './popups';
+import  { usersObject } from './users';
 import type { GameInviteFromServer } from 'backFrontCommon/chatEvents';
 
 function _modeString(classic: boolean) {
@@ -74,7 +76,7 @@ export class SentGameInvite implements CanBePopup {
 	}
 }
 
-function revokeReceivedGameInvite(sender: Id) {
+export function revokeReceived(sender: Id) {
 	popups.update((_) => {
 		const invite = _.find(
 			(popup) => popup instanceof ReceivedGameInvite && popup.dto.source == sender
@@ -84,7 +86,7 @@ function revokeReceivedGameInvite(sender: Id) {
 	});
 }
 
-function removeSentGameInvite(target: Id) {
+export function removeSent(target: Id) {
 	popups.update((_) => {
 		const i = _.findIndex((popup) => popup instanceof SentGameInvite && popup.dto.target == target);
 		if (i != -1) _.splice(i, 1);
@@ -92,20 +94,13 @@ function removeSentGameInvite(target: Id) {
 	});
 }
 
-function sendGameInvite(dto: GameInviteToServer) {
+export function send(dto: GameInviteToServer) {
 	state.socket.emit(ChatEvent.GAME_INVITE, dto, ({ success, errorMessage }) => {
 		if (success) popupMethods.addPopup(new SentGameInvite(dto));
 		else alert(errorMessage);
 	});
 }
 
-function receiveGameInvite(dto: GameInviteFromServer) {
+export function receive(dto: GameInviteFromServer) {
 	popupMethods.addPopup(new ReceivedGameInvite(dto));
 }
-
-export const gameInviteMethods = {
-	send: sendGameInvite,
-	receive: receiveGameInvite,
-	revokeReceived: revokeReceivedGameInvite,
-	removeSent: removeSentGameInvite
-};

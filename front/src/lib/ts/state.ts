@@ -1,9 +1,11 @@
 import { io } from 'socket.io-client';
-import { ChatEvent, type ClientSocket as Socket, type CMFromServer } from 'backFrontCommon';
-import { LoginEvent } from 'backFrontCommon';
+import { LoginEvent, ChatEvent } from 'backFrontCommon';
+import type { ClientSocket as Socket, CMFromServer } from 'backFrontCommon';
 import { goto } from '$app/navigation';
 import type { GameParams } from './gameParams';
-import { gameInviteMethods } from './gameInvite';
+import * as gameInvite from './gameInvite';
+
+
 import type {
 	DMFromServer,
 	GameAcceptFromServer,
@@ -132,17 +134,18 @@ function handleInviteToPrivateChannel(message: InviteChannelFromServer) {
 }
 
 function handleGameInvite(message: GameInviteFromServer) {
-	gameInviteMethods.receive(message);
+	gameInvite.receive(message);
 }
 
 function handleGameAccept(message: GameAcceptFromServer) {
-	gameInviteMethods.removeSent(message.source);
+	gameInvite.removeSent(message.source);
 }
 
 function handleGameRefuse(message: GameRefuseFromServer) {
-	gameInviteMethods.removeSent(message.source);
+	gameInvite.removeSent(message.source);
 }
 
 function handleGameCancel(message: GameCancelFromServer) {
-	gameInviteMethods.revokeReceived(message.source);
+	gameInvite.revokeReceived(message.source);
 }
+
