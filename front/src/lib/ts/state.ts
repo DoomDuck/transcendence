@@ -64,10 +64,10 @@ class State {
 
 		// DEBUG
 		this.socket.onAny((event: string, ...args: any[]) => {
-			console.log(`[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)} from server`);
+			console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
 		});
 		this.socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-			console.log(`[SENDED] event '${event}' with args: ${JSON.stringify(args)} to server`);
+			console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
 		});
 	}
 
