@@ -4,8 +4,6 @@ import type { ClientSocket as Socket, CMFromServer } from 'backFrontCommon';
 import { goto } from '$app/navigation';
 import type { GameParams } from './gameParams';
 import * as gameInvite from './gameInvite';
-
-
 import type {
 	DMFromServer,
 	GameAcceptFromServer,
@@ -54,13 +52,13 @@ class State {
 		this.socket.once(LoginEvent.TOTP_REQUIREMENTS, this.onTotpRequirements.bind(this));
 		this.socket.once(LoginEvent.TOTP_RESULT, this.onTotpResult.bind(this));
 		this.socket.on(ChatEvent.GOTO_GAME_SCREEN, this.onGotoGameScreen.bind(this));
-		this.socket.on(ChatEvent.MSG_TO_USER, handleMsgToUser);
-		this.socket.on(ChatEvent.MSG_TO_CHANNEL, handleMsgToChannel);
-		this.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, handleInviteToPrivateChannel);
-		this.socket.on(ChatEvent.GAME_INVITE, handleGameInvite);
-		this.socket.on(ChatEvent.GAME_ACCEPT, handleGameAccept);
-		this.socket.on(ChatEvent.GAME_REFUSE, handleGameRefuse);
-		this.socket.on(ChatEvent.GAME_CANCEL, handleGameCancel);
+		this.socket.on(ChatEvent.MSG_TO_USER, onMsgToUser);
+		this.socket.on(ChatEvent.MSG_TO_CHANNEL, onMsgToChannel);
+		this.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, onInviteToPrivateChannel);
+		this.socket.on(ChatEvent.GAME_INVITE, onGameInvite);
+		this.socket.on(ChatEvent.GAME_ACCEPT, onGameAccept);
+		this.socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
+		this.socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
 
 		// DEBUG
 		this.socket.onAny((event: string, ...args: any[]) => {
@@ -121,31 +119,31 @@ class State {
 
 export const state = new State();
 
-function handleMsgToUser(message: DMFromServer) {
+function onMsgToUser(message: DMFromServer) {
 	userConvs.update((_) => _.receiveMessageFromServer(message));
 }
 
-function handleMsgToChannel(message: CMFromServer) {
+function onMsgToChannel(message: CMFromServer) {
 	channelConvs.update((_) => _.receiveMessageFromServer(message));
 }
 
-function handleInviteToPrivateChannel(message: InviteChannelFromServer) {
+function onInviteToPrivateChannel(message: InviteChannelFromServer) {
 	channelConvs.update((_) => _.create(message.channel));
 }
 
-function handleGameInvite(message: GameInviteFromServer) {
+function onGameInvite(message: GameInviteFromServer) {
 	gameInvite.receive(message);
 }
 
-function handleGameAccept(message: GameAcceptFromServer) {
+function onGameAccept(message: GameAcceptFromServer) {
 	gameInvite.removeSent(message.source);
 }
 
-function handleGameRefuse(message: GameRefuseFromServer) {
+function onGameRefuse(message: GameRefuseFromServer) {
 	gameInvite.removeSent(message.source);
 }
 
-function handleGameCancel(message: GameCancelFromServer) {
+function onGameCancel(message: GameCancelFromServer) {
 	gameInvite.revokeReceived(message.source);
 }
 

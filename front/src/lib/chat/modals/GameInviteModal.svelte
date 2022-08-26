@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Switch from '$lib/Switch.svelte';
 	import type { UserInfo } from 'backFrontCommon';
-	import { gameInviteMethods } from '$lib/ts/gameInvite';
+	import * as gameInvite from '$lib/ts/gameInvite';
 	import Modal from '$lib/Modal.svelte';
 
 	export let show = false;
@@ -10,7 +10,7 @@
 	let mode: number;
 
 	function sendInvite() {
-		gameInviteMethods.send({ target: user.id, classic: mode == 0 });
+		gameInvite.send({ target: user.id, classic: mode == 0 });
 		show = false;
 	}
 </script>
