@@ -4,7 +4,6 @@
 	export let avatar: string;
 	export let name = 'Ted';
 	export let blocked = [{ profilePic: 'cars.jpeg', name: 'Flash McQueen' }];
-	let twoFactorsAuth = false;
 </script>
 
 <div id="app">
@@ -21,7 +20,7 @@
 		</div>
 	</div>
 	<div id="lastParams">
-		<div><input type="checkbox" checked={twoFactorsAuth} /> Two factors authentication</div>
+		<div><input type="checkbox" checked={false} /> Two factors authentication</div>
 		<button id="disco" on:click={state.disconnect}> Disconnect </button>
 	</div>
 </div>
