@@ -23,13 +23,14 @@ const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
 class State {
 	private safeSocket: Socket | null = null;
-	public myInfo: MyInfo | null = null;
+	private safeMyInfo: MyInfo | null = null;
 	private requireTotp: boolean = false;
+	private resolveTotpRequired: ((token: string) => void) | null = null;
 	public gameParams?: GameParams;
 
 	get socket(): Socket {
-		if (!this.safeSocket) throw new Error('Socket not initialized');
-		return this.safeSocket;
+		if (this.safeSocket) return this.safeSocket;
+		throw new Error('Socket not initialized');
 	}
 
 	get connected(): boolean {
@@ -39,25 +40,37 @@ class State {
 	get loggedIn(): boolean {
 		return this.connected && !this.requireTotp;
 	}
+	
+	get myInfo(): MyInfo {
+		if (this.safeMyInfo) return this.safeMyInfo;
+		throw new Error('MyInfo is not initialized');
+	}
 
 	connect(code?: string) {
-		console.log();
+		// TODO: Maybe just return instead of throwing an error
 		if (this.connected) throw new Error('Allready connected');
 		this.safeSocket = io('http://localhost:5000/', { auth: { code } });
 		this.setupHooks();
-		if (!code) this.finishLogin();
 	}
 	
-	finishLogin() {
+	onLoginSuccess() {
 		this.socket.emit(GetInfoEvent.MY_INFO, this.onMyInfoResult.bind(this));
 		goto(LOGGIN_SUCCESS_ROUTE);
+	}
+	
+	onLoginFailure() {
+		this.disconnect();
+		goto(LOGGIN_ROUTE);
 	}
 		
 	setupHooks() {
 		this.socket.on('connect_error', this.onConnectError.bind(this));
 		this.socket.on('disconnect', this.onDisconnect.bind(this));
-		this.socket.on(LoginEvent.TOTP_REQUIREMENTS, this.onTotpRequirements.bind(this));
-		this.socket.on(LoginEvent.TOTP_RESULT, this.onTotpResult.bind(this));
+
+		this.socket.on(LoginEvent.SUCCESS, this.onLoginSuccess.bind(this));
+		this.socket.on(LoginEvent.FAILURE, this.onLoginFailure.bind(this));
+		this.socket.on(LoginEvent.TOTP_REQUIRED, this.onTotpRequired.bind(this));
+
 		this.socket.on(ChatEvent.GOTO_GAME_SCREEN, this.onGotoGameScreen.bind(this));
 		this.socket.on(ChatEvent.MSG_TO_USER, onMsgToUser);
 		this.socket.on(ChatEvent.MSG_TO_CHANNEL, onMsgToChannel);
@@ -81,9 +94,11 @@ class State {
 		this.socket.disconnect();
 		this.safeSocket = null;
 	}
-
+	
 	sendTotpToken(token: string) {
-		this.socket.emit(LoginEvent.TOTP_CHECK, token);
+		if (!this.resolveTotpRequired) throw new Error('No pending totp requirements');
+		this.resolveTotpRequired(token);
+		this.resolveTotpRequired = null;
 	}
 
 	// Hooks
@@ -97,20 +112,15 @@ class State {
 		goto(LOGGIN_ROUTE);
 	}
 
-	onTotpRequirements(isRequired: boolean) {
-		this.requireTotp = isRequired;
-		goto(isRequired ? LOGGIN_TOTP_ROUTE : LOGGIN_SUCCESS_ROUTE);
-	}
-
-	onTotpResult(success: boolean) {
-		this.requireTotp = false;
-		if (success) this.finishLogin();
-		else goto(LOGGIN_ROUTE);
+	onTotpRequired(callback: (token: string) => void) {
+		this.resolveTotpRequired = callback;
+		goto(LOGGIN_TOTP_ROUTE);
 	}
 	
 	onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
+		console.log(feedback);
 		if (feedback.success && feedback.result)
-			this.myInfo = feedback.result!
+			this.safeMyInfo = feedback.result;
 		else console.error("Could not get user info");
 	}
 

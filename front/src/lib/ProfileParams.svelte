@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resize, uploadAvatar } from '$lib/ts/avatar';
 
-	export let avatar: string;
-	export let name: string;
+	export let name: string ;
+	export let avatar: string | null = null;
 
 	let fileinput: HTMLInputElement;
 	let changeName = false;
@@ -14,8 +14,10 @@
 		reader.readAsDataURL(image);
 		new Promise((resolve) => (reader.onload = resolve))
 			.then((event: any) => resize(event.target.result, 128, 128))
-			.then((imageDataURL) => (avatar = imageDataURL))
-			.then(() => uploadAvatar(avatar));
+			.then((imageDataURL) => {
+				avatar = imageDataURL;
+				uploadAvatar(avatar);
+			});
 	};
 </script>
 

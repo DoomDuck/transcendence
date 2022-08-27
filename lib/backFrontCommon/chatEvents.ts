@@ -6,11 +6,11 @@ import type { Id } from "./general"
  * Events required to Login
  */
 export class LoginEvent {
-  static readonly TOTP_REQUIREMENTS = "totp requirements";
+  static readonly SUCCESS = "login success";
+  static readonly FAILURE = "login failure";
+  static readonly TOTP_REQUIRED = "totp required";
   static readonly TOTP_DEMAND_SETUP = "totp demand setup";
   static readonly TOTP_SETUP = "totp setup";
-  static readonly TOTP_CHECK = "totp check";
-  static readonly TOTP_RESULT = "totp result";
 }
 
 export class GetInfoEvent{
@@ -289,6 +289,7 @@ export class ChanInviteRefuse   {
     public channel: string,
   ) { } 
 }
+
 export class MyInfo {
   constructor (
     public id: Id,
@@ -304,6 +305,7 @@ export class MyInfo {
     public inGame: boolean
   ) { }
 };
+
 export class UserInfo  {
   constructor(
     public id: Id,
@@ -368,9 +370,10 @@ export type FeedbackCallbackWithResult<Result> = (feedback: RequestFeedbackDto<R
 
 export interface ServerToClientEvents {
   // Login
-  [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
+  [LoginEvent.SUCCESS]: () => void;
+  [LoginEvent.FAILURE]: () => void;
+  [LoginEvent.TOTP_REQUIRED]: (callback: (token: string) => void) => void;
   [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
-  [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
   
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
@@ -385,12 +388,6 @@ export interface ServerToClientEvents {
   [ChatEvent.PLAYER_ID_CONFIRMED]: (playerId: Id, callback: () => void) => void;
   [ChatEvent.DELETE_GAME_INVITE]: (dto: DeleteGameInviteFromServer) => void;
 
-  // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
-
-  // Login
-  [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
-  [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
-  [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer ) => void;
 
@@ -399,7 +396,6 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   // Login
-  [LoginEvent.TOTP_CHECK]: (token: string) => void,
   [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
   
   // UserInfo

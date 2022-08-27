@@ -76,7 +76,7 @@ export class AppGateway
     });
     socket.prependAnyOutgoing((event: string, ...args: any[]) => {
       console.log(
-        `[SENDED] event '${event}' with args: ${JSON.stringify(args)}`,
+        `[SENT] event '${event}' with args: ${JSON.stringify(args)}`,
       );
     });
   }

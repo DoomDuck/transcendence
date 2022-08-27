@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { state } from '$lib/ts/state';
+	// import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
-	export let avatar: string;
-	export let name = 'Ted';
 	export let blocked = [{ profilePic: 'cars.jpeg', name: 'Flash McQueen' }];
 </script>
 
 <div id="app">
-	<ProfileParams {avatar} {name} />
+	<ProfileParams avatar={state.myInfo.avatar} name={state.myInfo.name} />
 	<div id="blockedProfiles">
 		<div class="blocked">
 			<div class="blockedInfos">
@@ -20,7 +19,7 @@
 		</div>
 	</div>
 	<div id="lastParams">
-		<div><input type="checkbox" checked={false} /> Two factors authentication</div>
+		<!-- <TotpSetupButton/> -->
 		<button id="disco" on:click={state.disconnect}> Disconnect </button>
 	</div>
 </div>

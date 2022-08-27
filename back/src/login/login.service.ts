@@ -86,10 +86,11 @@ export class LoginService {
 
   async handleGuest(socket: Socket) {
     await this.userService.addOneGuest(socket);
+    socket.emit(LoginEvent.SUCCESS);
   }
 
   // @SubscribeMessage(LoginEvent.TOTP_DEMAND_SETUP)
-  async onTotpDemandSetup(socket: Socket) {
+  async onTotpEnable(socket: Socket) {
     const totp = new TOTP(TOTP_DESCRIPTION);
     socket.emit(LoginEvent.TOTP_SETUP, totp.toString());
 
@@ -99,6 +100,10 @@ export class LoginService {
     //     await this.userService.updateTotp(userInDb, totp.secret.hex);
     // }
   }
+  
+  onTotpDisable(socket: Socket) {
+    // this.userService.updateTotp()
+  }
 
   async onTotpCheck(socket: Socket, token: string) {
     const client = this.clientsRequiringTotp.get(socket)!;
@@ -106,11 +111,13 @@ export class LoginService {
     const delta = client.totp.validate({ token });
     const success = delta === 0;
 
-    socket.emit(LoginEvent.TOTP_RESULT, success);
-    if (!success) return;
-
-    await this.userService.addOne(client.user);
-    this.clientsRequiringTotp.delete(socket);
+    if (success) {
+      await this.userService.addOne(client.user);
+      this.clientsRequiringTotp.delete(socket);
+      socket.emit(LoginEvent.SUCCESS);
+    } else {
+      socket.emit(LoginEvent.FAILURE);
+    }
   }
 
   async handleUser(socket: Socket, code: string) {
@@ -128,18 +135,17 @@ export class LoginService {
     const userInDb = await this.userService.findOneDb(id);
     const totpSecret = userInDb?.totpSecret;
 
-    socket.emit(LoginEvent.TOTP_REQUIREMENTS, !!totpSecret);
-
     if (!totpSecret) {
       await this.userService.addOne(user);
-      return;
+      socket.emit(LoginEvent.SUCCESS);
+    } else {
+      const totp = new TOTP({
+        secret: Secret.fromHex(totpSecret),
+        ...TOTP_DESCRIPTION,
+      });
+      this.clientsRequiringTotp.set(socket, { totp, user });
+      socket.emit(LoginEvent.TOTP_REQUIRED, (token) => this.onTotpCheck(socket, token));
     }
-
-    const totp = new TOTP({
-      secret: Secret.fromHex(totpSecret),
-      ...TOTP_DESCRIPTION,
-    });
-    this.clientsRequiringTotp.set(socket, { totp, user });
   }
 
   async handleConnection(socket: Socket) {
@@ -148,7 +154,7 @@ export class LoginService {
     if (isString(code)) {
       await this.handleUser(socket, code);
     } else {
-      this.handleGuest(socket);
+      await this.handleGuest(socket);
     }
   }
 
