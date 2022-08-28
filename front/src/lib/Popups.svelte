@@ -15,5 +15,6 @@
 		display: flex;
 		flex-direction: column;
 		right: 0;
+		top: 0;
 	}
 </style>

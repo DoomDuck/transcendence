@@ -10,8 +10,9 @@ import { readable, writable } from 'svelte/store';
 import { state } from './state';
 
 export class Users {
-	private map: Map<Id, UserInfo> = new Map();
-	private me?: MyInfo;
+	// TODO: private
+	public map: Map<Id, UserInfo> = new Map();
+	public me?: MyInfo;
 
 	constructor() {
 		//DEBUG
