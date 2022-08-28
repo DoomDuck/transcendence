@@ -30,9 +30,13 @@
 		justify-content: center;
 	}
 	#options {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+	h4{
+		font-size: 2em;
 	}
 	h4:hover {
 		background-color: blue;
