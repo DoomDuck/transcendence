@@ -318,10 +318,7 @@ export class ChannelManagerService {
     );
     return { success: true };
   }
-  // deleteChannel(user:User, channel:Channel)
-  // {
-  // if(!this.isCreator(user,channel))
-  // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
-  // channel.member.forEach((member)=> this.leaveChannel(channel,this.))
-  // }
+  deleteChannel(channel: Channel) {
+    this.channelRepository.delete(channel.name);
+  }
 }

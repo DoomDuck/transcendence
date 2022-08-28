@@ -52,6 +52,7 @@ export class ChatEvent {
   static readonly SET_PASSWORD = 'set password'
   static readonly SET_NEW_ADMIN = 'set new admin'
   static readonly QUIT_MATCHMAKING = 'quit matchmaking'
+ static readonly DELETE_CHANNEL = 'delete channel'
 }
 
 export class ChatError {
@@ -351,7 +352,12 @@ export class MuteUserFromServer {
     public duration:number,
   ) { }
 };
-
+export class DeleteChannelToServer
+{
+	constructor(
+	  public channel:string
+	){ }
+}
 export class IsInGameToServer {
   constructor(public target: Id) { }
 }
@@ -430,4 +436,6 @@ export interface ClientToServerEvents {
   [ChatEvent.BANNED_NOTIF]: (dto: BanUserToServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto: MuteUserToServer ) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
+  [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer) => void;
+ 
 }
