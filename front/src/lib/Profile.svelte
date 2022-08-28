@@ -7,33 +7,35 @@
 </script>
 
 <div id="profile">
-	<div>
+	<div id='informations'>
 		<AvatarIcon type={'user'} imageURL={user.avatar ?? 'errorUser.png'} />
 		<h3>{user.name}</h3>
-		<p>ID: {user.id}</p>
+		<div>ID: {user.id}</div>
 	</div>
 	<ProfileStats {user} />
 </div>
 
 <style>
 	h3 {
+		font-family: 'Lato', sans-serif;
 		color: #ff00b8;
 		text-align: center;
-		line-height: 0px;
 	}
-
-	p {
+	div {
 		color: #c9c7c7;
 		text-align: center;
-		font-size: smaller;
-		line-height: 0%;
+		text-align: center;
 	}
-
+	#informations{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
 	#profile {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		font-family: 'Lato', sans-serif;
-		width: 250px;
 	}
 </style>

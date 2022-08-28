@@ -13,22 +13,29 @@
 		else goto('/Play');
 	}
 </script>
-
-<h4><div on:click={() => play(true)}>Classic</div></h4>
-<h4><div on:click={() => play(false)}>Weird</div></h4>
+<div id='gameModes'>
+	<div id='options'>
+		<h4><div on:click={() => play(true)}>Classic</div></h4>
+		<h4><div on:click={() => play(false)}>Weird</div></h4>
+	</div>
+</div>
 
 <style>
-	h4 {
-		line-height: 300%;
+	#gameModes{
+		width:100%;
+		height:100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
-
+	#options{
+		display:flex;
+		flex-direction: column;
+		align-items: center;
+	}
 	h4:hover {
 		background-color: blue;
 		width: 100%;
 		text-align: center;
-	}
-
-	a {
-		all: unset;
 	}
 </style>

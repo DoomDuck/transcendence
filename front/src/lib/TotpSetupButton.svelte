@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { state } from '$lib/ts/state';
-	import { LoginEvent } from 'backFrontCommon';
+  import { LoginEvent } from 'backFrontCommon';
+  import TotpSetup from '$lib/TotpSetup.svelte';
+  
+  let showTotpSetup = false;
 
-	function enableTotp() {}
-
-	function disableTotp() {
-		state.socket.emit(LoginEvent.TOTP_DEMAND_SETUP);
-	}
+  function enableTotp() {
+    showTotpSetup = true;
+  }
+  
+  function disableTotp() {
+    state.socket.emit(LoginEvent.TOTP_UPDATE, null);
+  }
 </script>
 
 {#if !state.myInfo.totpSecret}
@@ -15,4 +20,4 @@
 	<button on:click={disableTotp}> disable 2fa </button>
 {/if}
 
-<!-- Modal -->
+<TotpSetup bind:show={showTotpSetup}/>

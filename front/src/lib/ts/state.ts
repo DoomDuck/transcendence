@@ -29,7 +29,6 @@ const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 class State {
 	private safeSocket: Socket | null = null;
 	private safeMyInfo: MyInfo | null = null;
-	private requireTotp: boolean = false;
 	private resolveTotpRequired: ((token: string) => void) | null = null;
 	public gameParams?: GameParams;
 
@@ -43,7 +42,7 @@ class State {
 	}
 
 	get loggedIn(): boolean {
-		return this.connected && !this.requireTotp;
+		return this.connected && !this.resolveTotpRequired;
 	}
 
 	get myInfo(): MyInfo {
@@ -98,12 +97,17 @@ class State {
 		if (!this.connected) throw new Error('Not connected');
 		this.socket.disconnect();
 		this.safeSocket = null;
+		goto(LOGGIN_ROUTE);
 	}
 
 	sendTotpToken(token: string) {
 		if (!this.resolveTotpRequired) throw new Error('No pending totp requirements');
 		this.resolveTotpRequired(token);
 		this.resolveTotpRequired = null;
+	}
+
+	updateMyInfo() {
+		// TODO
 	}
 
 	// Hooks
@@ -123,9 +127,9 @@ class State {
 	}
 
 	onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
-		console.log(feedback);
-		if (feedback.success && feedback.result) this.safeMyInfo = feedback.result;
-		else console.error('Could not get user info');
+		if (feedback.success && feedback.result)
+			this.safeMyInfo = feedback.result;
+		else console.error("Could not get user info");
 	}
 
 	onGotoGameScreen(classic: boolean, ready: () => void) {
@@ -136,7 +140,7 @@ class State {
 	// Used in +layout.svelte
 	forceRoute(): string | null {
 		if (!this.connected) return LOGGIN_ROUTE;
-		if (this.requireTotp) return LOGGIN_TOTP_ROUTE;
+		if (this.resolveTotpRequired) return LOGGIN_TOTP_ROUTE;
 		return null;
 	}
 
