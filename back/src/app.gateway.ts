@@ -85,9 +85,9 @@ export class AppGateway
     this.loginService.handleDisconnect(socket);
   }
 
-  @SubscribeMessage(LoginEvent.TOTP_CHECK)
-  async onTotpCheck(socket: Socket, token: string) {
-    await this.loginService.onTotpCheck(socket, token);
+  @SubscribeMessage(LoginEvent.TOTP_UPDATE)
+  async onTotpUpdate(socket: Socket, secret: string | null) {
+    await this.loginService.onTotpUpdate(socket, secret);
   }
 
   @SubscribeMessage(ChatEvent.BLOCK_USER)
@@ -234,10 +234,12 @@ export class AppGateway
       this.wss,
     );
   }
+
   @SubscribeMessage(ChatEvent.POST_AVATAR)
   async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
     return await this.userService.handlePostAvatar(socket, avatarInfo);
   }
+
   @SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
   async handleGetHistory(
     socket: Socket,

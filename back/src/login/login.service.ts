@@ -12,11 +12,6 @@ type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 const AUTH_URL = 'https://api.intra.42.fr/oauth/authorize';
 
-const TOTP_DESCRIPTION = {
-  issuer: 'Transcendance',
-  label: '2fa',
-};
-
 @Injectable()
 export class LoginService {
   readonly auth_url: string;
@@ -89,20 +84,11 @@ export class LoginService {
     socket.emit(LoginEvent.SUCCESS);
   }
 
-  // @SubscribeMessage(LoginEvent.TOTP_DEMAND_SETUP)
-  async onTotpEnable(socket: Socket) {
-    const totp = new TOTP(TOTP_DESCRIPTION);
-    socket.emit(LoginEvent.TOTP_SETUP, totp.toString());
-
-    // TODO
-
-    // if (!totpSecret) {
-    //     await this.userService.updateTotp(userInDb, totp.secret.hex);
-    // }
-  }
-  
-  onTotpDisable(socket: Socket) {
-    // this.userService.updateTotp()
+  // @SubscribeMessage(LoginEvent.TOTP_UPDATE)
+  async onTotpUpdate(socket: Socket, secret: string | null) {
+    const user = this.userService.findOneActiveBySocket(socket);
+    if (!user) throw new Error("Could not find connected user");
+    this.userService.updateTotp(user.id, secret);
   }
 
   async onTotpCheck(socket: Socket, token: string) {
@@ -141,7 +127,6 @@ export class LoginService {
     } else {
       const totp = new TOTP({
         secret: Secret.fromHex(totpSecret),
-        ...TOTP_DESCRIPTION,
       });
       this.clientsRequiringTotp.set(socket, { totp, user });
       socket.emit(LoginEvent.TOTP_REQUIRED, (token) => this.onTotpCheck(socket, token));
