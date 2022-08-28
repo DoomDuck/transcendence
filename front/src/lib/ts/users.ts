@@ -25,7 +25,20 @@ export class Users {
 			inGame: false,
 			isOnline: true,
 			ranking: 0,
-			matchHistory: []
+			matchHistory: [
+				{
+					opponent: 1,
+					opponentScore: 1,
+					winner: true,
+					score: 3
+				},
+				{
+					opponent: 2,
+					opponentScore: 3,
+					winner: false,
+					score: 0
+				}
+			]
 		});
 		this.map.set(1, {
 			id: 1,
@@ -36,7 +49,7 @@ export class Users {
 			score: 0,
 			inGame: false,
 			isOnline: true,
-			ranking: 0,
+			ranking: 1,
 			matchHistory: []
 		});
 		this.map.set(2, {
@@ -48,7 +61,7 @@ export class Users {
 			score: -10,
 			inGame: false,
 			isOnline: true,
-			ranking: 0,
+			ranking: 2,
 			matchHistory: []
 		});
 	}

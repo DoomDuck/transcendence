@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { users } from '$lib/ts/users';
+
 	let color: string = '#6028FF';
 </script>
 
@@ -13,6 +15,9 @@
 	<h4 class="typography" style="color: {color}">
 		<a href="/Parameters">Parameters</a>
 	</h4>
+	{#await $users.findOrFetchMyself() then user}
+		<p style="color: white">(DEBUG) My id is {user.id}</p>
+	{/await}
 </nav>
 
 <style>

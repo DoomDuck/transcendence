@@ -31,12 +31,4 @@ export async function uploadAvatar(imageDataUrl: string) {
 	state.socket.emit(ChatEvent.POST_AVATAR, { imageDataUrl }, (feedback) => {
 		alert(JSON.stringify(feedback));
 	});
-	// await fetch(`http://localhost:5000/user/avatar`, {
-	// 	method: 'POST',
-	// 	headers: {
-	// 		'Content-Type': 'application/json',
-	// 		Accept: 'application/json'
-	// 	},
-	// 	body: imageDataUrl
-	// });
 }
