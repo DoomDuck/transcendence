@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
-import type { FinishCallback } from "../common/utils";
+import type { ErrorCallback, FinishCallback } from "../common/utils";
 import { ClientGameContext } from "./ClientGameContext";
 
 /**
@@ -8,8 +8,8 @@ import { ClientGameContext } from "./ClientGameContext";
  * ClientGameContextOnlinePlayer and ClientGameContextOnlineObserver
  */
 export abstract class ClientGameContextOnline extends ClientGameContext {
-  constructor(public socket: Socket, onFinish: FinishCallback) {
-    super(onFinish);
+  constructor(public socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
+    super(onFinish, onError);
 
     this.transmitEventFromServerToGame(GameEvent.RESET);
     this.transmitEventFromServerToGame(GameEvent.GOAL);

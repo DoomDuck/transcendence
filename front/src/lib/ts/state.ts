@@ -18,7 +18,7 @@ import type {
 	MyInfo
 } from 'backFrontCommon/chatEvents';
 import type { InviteChannelFromServer } from 'backFrontCommon/chatEvents';
-import { channelConvs, userConvs } from './chatUtils';
+import { channelConvs, getChatHistory, userConvs } from './chatUtils';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';

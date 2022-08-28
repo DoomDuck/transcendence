@@ -55,9 +55,7 @@ export class GameManagerService {
     if (classic)
       this.addSocketToMatchQueue(this.matchQueueClassic, socket, true);
     else this.addSocketToMatchQueue(this.matchQueueCustom, socket, false);
-    socket.on('disconnect', () => {
-      removeIfPresent(this.matchQueueClassic, socket);
-    });
+    socket.on('disconnect', () => this.handleQuitMatchmaking(socket));
   }
 
   addObserver(socket: Socket, gameId: number) {
@@ -80,25 +78,38 @@ export class GameManagerService {
   async startGame(playerSockets: [Socket, Socket], classic: boolean) {
     if (Math.random() > 0.5)
       playerSockets = [playerSockets[1], playerSockets[0]];
+
     const onFinish = async (score1: number, score2: number) => {
-      removeIfPresent(this.games, gameInstance);
-      const playerPromises = playerSockets.map((playerSocket) =>
-        this.userService.findOneDbBySocket(playerSocket),
+      const players = await Promise.all(
+        playerSockets.map((playerSocket) =>
+          this.userService.findOneDbBySocket(playerSocket),
+        ),
       );
-      const players = await Promise.all(playerPromises);
       if (players[0] === null || players[1] === null) return;
       this.matchHistoryService.addOneMatch(
         [players[0]!, players[1]!],
         [score1, score2],
       );
     };
+    const onFinally = async () => {
+      removeIfPresent(this.games, gameInstance);
+      playerSockets.forEach((playerSocket) => {
+        const activeUser = this.userService.findOneActiveBySocket(playerSocket);
+        if (activeUser !== undefined) activeUser.numberOfCurrentGames--;
+      });
+    };
     const gameInstance: ServerGameContext = new ServerGameContext(
       playerSockets,
       classic,
       onFinish,
+      onFinally,
     );
     this.games.push(gameInstance);
     for (let i = 0; i < 2; i++) {
+      const activeUser = this.userService.findOneActiveBySocket(
+        playerSockets[i],
+      );
+      if (activeUser !== undefined) activeUser.numberOfCurrentGames++;
       playerSockets[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
         playerSockets[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
           this.logger.log(`player ${i} ready`);
@@ -194,6 +205,11 @@ export class GameManagerService {
         socket.emit(ChatEvent.DELETE_GAME_INVITE, { target: sourceId }),
       );
     return gameInvite;
+  }
+
+  handleQuitMatchmaking(socket: Socket) {
+    removeIfPresent(this.matchQueueClassic, socket);
+    removeIfPresent(this.matchQueueCustom, socket);
   }
 
   addPendingGameInvite(

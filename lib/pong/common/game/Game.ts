@@ -66,7 +66,7 @@ export class Game {
   }
 
   goal(playerId: number) {
-    this.score[playerId]++;
+    this.score[1 - playerId]++;
   }
 
   start(startTime: number) {
