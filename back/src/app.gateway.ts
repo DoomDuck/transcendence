@@ -148,8 +148,8 @@ export class AppGateway
   }
 
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)
-  handleObserve(socket: Socket, gameId: number) {
-    this.gameManagerService.addObserver(socket, gameId);
+  async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
+    return this.gameManagerService.handleObserve(socket, userId);
   }
 
   @SubscribeMessage(ChatEvent.GAME_INVITE)

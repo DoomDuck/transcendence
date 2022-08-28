@@ -11,19 +11,13 @@ export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
 
   constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
     super(socket, onFinish, onError);
-    this.socket.on("connect", () => {
-      console.log("connected to server");
 
-      // TOCHANGE (debug): need to work with the front part
-      this.socket.emit("observe", NaN);
-      this.socket.on(GameEvent.OBSERVER_UPDATE, (gameDataPlainObject: any) => {
-        assignRecursively(
-          this.gameManager.game.state.data.current,
-          gameDataPlainObject
-        );
-      });
+    this.socket.on(GameEvent.OBSERVER_UPDATE, (gameDataPlainObject: any) => {
+      assignRecursively(
+        this.gameManager.game.state.data.current,
+        gameDataPlainObject
+      );
     });
-
     this.socket.on(GameEvent.PLAYER_DISCONNECT, (playerId: number) => {
       this.gameManager.game.pause();
       this.finally();
@@ -40,20 +34,6 @@ export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
   }
 
   startGame() {}
-
-  // private handleGoal(playerId: number) {
-  //   const game = this.gameManager.game;
-  //   const renderer = this.gameManager.renderer;
-  //   game.pause();
-  //   renderer
-  //     .startVictoryAnimationAsync()
-  //     .then(() => renderer.scorePanels.goalAgainst(playerId))
-  //     .then(() => {
-  //       if (game.isOver()) {
-  //         this.handleEndOfGame();
-  //       }
-  //     });
-  // }
 }
 
 function assignRecursively<T>(instance: T, plainObject: any) {

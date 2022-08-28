@@ -58,8 +58,34 @@ export class GameManagerService {
     socket.on('disconnect', () => this.handleQuitMatchmaking(socket));
   }
 
-  addObserver(socket: Socket, gameId: number) {
-    this.games[0].addObserver(socket);
+  async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
+    const user = this.userService.findOneActive(userId);
+    if (user === undefined) {
+      return {
+        success: false,
+        errorMessage: ChatError.USER_OFFLINE,
+      };
+    }
+    const game = this.games.find(
+      (game) =>
+        user.socketUser.includes(game.players[0]) ||
+        user.socketUser.includes(game.players[1]),
+    );
+
+    user.socketUser.forEach((socket) => {
+      console.log(`USER: ${socket.id}`);
+    });
+    this.games.forEach((game) => {
+      console.log(`GAME: [${game.players[0].id}, ${game.players[1].id}]`);
+    });
+    if (game === undefined) {
+      return {
+        success: false,
+        errorMessage: ChatError.USER_NOT_IN_GAME,
+      };
+    }
+    game.addObserver(socket);
+    return { success: true };
   }
 
   addSocketToMatchQueue(

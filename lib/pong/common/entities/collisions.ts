@@ -38,41 +38,9 @@ function applyWallCollision(data: GameDataBuffer, dtCollision: number) {
   data.next.ball.vy = -data.current.ball.vy;
 }
 
-// function ballBar1Collision(data: GameDataBuffer) {
-//   if (
-//     data.current.ball.x - GSettings.BALL_RADIUS <
-//     -GSettings.BAR_COLLISION_EDGE
-//   )
-//     return;
-//   let ballEdge = data.next.ball.x - GSettings.BALL_RADIUS;
-//   if (ballEdge < -GSettings.BAR_COLLISION_EDGE) {
-//     let dtCollision = Math.abs(
-//       (-GSettings.BAR_COLLISION_EDGE - ballEdge) / data.next.ball.vx
-//     );
-//     applyBallBarCollision(data, dtCollision, 0);
-//   }
-// }
-
-// function ballBar2Collision(data: GameDataBuffer) {
-//   if (
-//     data.current.ball.x + GSettings.BALL_RADIUS >
-//     GSettings.BAR_COLLISION_EDGE
-//   )
-//     return;
-//   let ballEdge = data.next.ball.x + GSettings.BALL_RADIUS;
-//   if (ballEdge > GSettings.BAR_COLLISION_EDGE) {
-//     let dtCollision = Math.abs(
-//       (GSettings.BAR_COLLISION_EDGE - ballEdge) / data.next.ball.vx
-//     );
-//     applyBallBarCollision(data, dtCollision, 1);
-//   }
-// }
-
 // barDirection is -1 for the left one, 1 for the right one
 // barEdge is barDirection * GSettings.BAR_COLLISION_EDGE
 function ballBarCollision(data: GameDataBuffer, barId: number, barDirection: number, barEdge: number) {
-  // const barDirection = (barId == 0 ? -1:1)
-  // const barEdge = barDirection * GSettings.BAR_COLLISION_EDGE;
   const ballEdgeCurrent = data.current.ball.x + barDirection * GSettings.BALL_RADIUS;
   if (Math.sign(ballEdgeCurrent - barEdge) == barDirection)
     return;
