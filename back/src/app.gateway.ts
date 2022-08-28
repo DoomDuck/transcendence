@@ -85,11 +85,6 @@ export class AppGateway
     this.loginService.handleDisconnect(socket);
   }
 
-  @SubscribeMessage(LoginEvent.TOTP_CHECK)
-  async onTotpCheck(socket: Socket, token: string) {
-    await this.loginService.onTotpCheck(socket, token);
-  }
-
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);
