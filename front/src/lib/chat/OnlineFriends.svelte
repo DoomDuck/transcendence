@@ -18,7 +18,6 @@
 	.onlineFriends {
 		width: 80vw;
 		height: 80px;
-		/* background: #140128; */
 		display: flex;
 		flex-wrap: nowrap;
 		overflow-x: auto;

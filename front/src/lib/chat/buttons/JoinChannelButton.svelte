@@ -4,8 +4,8 @@
 	let show = false;
 </script>
 
-<button alt="Create a channel" width="50px" height="50px" on:click={() => (show = true)}
-	>Join a channel</button
+<img src='joinChannel.png' alt="Create a channel" width="40px" height="40px" on:click={() => (show = true)}
+	/>
 >
 
 <JoinChannelModal bind:show on:joinChannel />

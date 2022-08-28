@@ -5,11 +5,20 @@
 	onMount(preLogin);
 </script>
 
-<h1>Login</h1>
-<h4 on:click={login}>User</h4>
-<h4 on:click={guestLogin}>Guest</h4>
+
+<div id='login'>
+	<h1>Login</h1>
+	<h4 on:click={login}>User</h4>
+	<h4 on:click={guestLogin}>Guest</h4>
+</div>
 
 <style>
+	#login{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
 	h4:hover {
 		background-color: blue;
 		width: 100%;
