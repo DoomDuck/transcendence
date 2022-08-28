@@ -434,6 +434,13 @@ export class UserService {
         content: content,
       }),
     );
+	sender.socketUser.forEach((socket) =>
+      wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
+        source: sender.id,
+        content: content,
+		isMe:true
+      }),
+    );
     this.updateUserConversation(sender, target, content);
     return this.channelManagerService.newChatFeedbackDto(true);
   }

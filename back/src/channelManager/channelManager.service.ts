@@ -32,7 +32,7 @@ export class ChannelManagerService {
   ) {}
   private logger: Logger = new Logger('channelManagerService');
 
-  isCreator(user: ActiveUser, channel: Channel): boolean {
+  isCreator(user: ActiveUser | User, channel: Channel): boolean {
     if (channel.creator === user.id) return true;
     else return false;
   }
@@ -138,7 +138,7 @@ export class ChannelManagerService {
   ): UserHistoryDto {
     return { userHistory: _userHistory, channelHistory: _channelHistory };
   }
-  leaveChannel(channel: Channel, user: ActiveUser) {
+  leaveChannel(channel: Channel, user: ActiveUser | User) {
     if (user.id === channel.creator) channel.creator = -1;
     channel.member = channel.member.slice(channel.member.indexOf(user.id), 1);
     channel.admin = channel.admin.slice(channel.admin.indexOf(user.id), 1);
@@ -324,4 +324,10 @@ export class ChannelManagerService {
     );
     return { success: true };
   }
+  // deleteChannel(user:User, channel:Channel)
+  // {
+	// if(!this.isCreator(user,channel))
+	   // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
+	// channel.member.forEach((member)=> this.leaveChannel(channel,this.))
+  // }
 }

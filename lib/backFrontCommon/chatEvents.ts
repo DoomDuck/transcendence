@@ -84,6 +84,7 @@ export class DMFromServer  {
   constructor(
     public source: Id,
     public content: string,
+	public isMe?:boolean
   ) { }
 }
 
