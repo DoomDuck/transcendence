@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import { LoginEvent, ChatEvent, GetInfoEvent } from 'backFrontCommon';
+import { LoginEvent, ChatEvent, GetInfoEvent, type UserHistoryDto } from 'backFrontCommon';
 import type {
 	ClientSocket as Socket,
 	CMFromServer,
@@ -18,7 +18,7 @@ import type {
 	MyInfo
 } from 'backFrontCommon/chatEvents';
 import type { InviteChannelFromServer } from 'backFrontCommon/chatEvents';
-import { channelConvs, getChatHistory, userConvs } from './chatUtils';
+import { channelConvs, updateChatHistory, userConvs } from './chatUtils';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -60,6 +60,7 @@ class State {
 
 	onLoginSuccess() {
 		this.socket.emit(GetInfoEvent.MY_INFO, this.onMyInfoResult.bind(this));
+		this.socket.emit(ChatEvent.GET_CHAT_HISTORY, this.onGetChatHistory.bind(this));
 		goto(LOGGIN_SUCCESS_ROUTE);
 	}
 
@@ -131,6 +132,11 @@ class State {
 	onGotoGameScreen(classic: boolean, ready: () => void) {
 		this.gameParams = { classic, online: true };
 		if (window.location.href != '/Play') goto('/Play').then(ready);
+	}
+
+	onGetChatHistory(feedback: RequestFeedbackDto<UserHistoryDto>) {
+		if (feedback.success) updateChatHistory(feedback.result!);
+		else console.error(feedback.errorMessage);
 	}
 
 	// Used in +layout.svelte

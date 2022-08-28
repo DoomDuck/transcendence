@@ -9,6 +9,7 @@
 	import { state } from '$lib/ts/state';
 	import { ChatEvent, RequestFeedbackDto, type UserHistoryDto } from 'backFrontCommon';
 	import { onMount } from 'svelte';
+
 	// import { state } from '$lib/ts/state';
 
 	// let previousRoute: string = '/';
@@ -20,8 +21,6 @@
 	// 		previousRoute = window.location.href;
 	// 	}
 	// }
-
-	onMount(() => {});
 </script>
 
 <div id="background">

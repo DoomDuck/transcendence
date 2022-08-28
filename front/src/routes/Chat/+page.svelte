@@ -4,7 +4,7 @@
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { userConvs, channelConvs, getChatHistory } from '$lib/ts/chatUtils';
+	import { userConvs, channelConvs } from '$lib/ts/chatUtils';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
 
@@ -39,8 +39,6 @@
 		},
 		'Un groupe de gens'
 	);
-
-	getChatHistory();
 </script>
 
 <div id="chat">

@@ -13,7 +13,7 @@ import {
 	type RequestFeedbackDto
 } from 'backFrontCommon/chatEvents';
 import { usersObject } from './users';
-import type { Id, TypeMap } from 'backFrontCommon/general';
+import type { Id } from 'backFrontCommon/general';
 import { state } from './state';
 
 // type ChatMessageGameInvit = {
@@ -154,44 +154,24 @@ function messageFromMe(content: string): ChatMessageDto {
 export const userConvs = writable(new UserConversationList());
 export const channelConvs = writable(new ChannelConversationList());
 
-export function getChatHistory() {
-	state.socket.emit(ChatEvent.GET_CHAT_HISTORY, (feedback: RequestFeedbackDto<UserHistoryDto>) => {
-		if (!feedback.success) {
-			alert(feedback.errorMessage);
-			return;
+export function updateChatHistory(convsHistory: UserHistoryDto) {
+	userConvs.update((userConversationList) => {
+		userConversationList.convs = [];
+		for (const convDto of convsHistory.userHistory) {
+			for (const messageDto of convDto.history) {
+				userConversationList.addMessage(messageDto, convDto.interlocutor);
+			}
 		}
-		const history = feedback.result!;
-		userConvs.update((userConversationList) => {
-			userConversationList.convs = [];
-			history.userHistory.forEach((convDto) => {
-				const conv = new UserConversation(convDto.interlocutor);
-				for (const message of convDto.history) {
-					conv.addMessage(message);
-				}
-				userConversationList.convs.push(conv);
-			});
-			return userConversationList;
-		});
+		return userConversationList;
+	});
 
-		channelConvs.update((channelConversationList) => {
-			channelConversationList.convs = [];
-			history.channelHistory.forEach((convDto) => {
-				const conv = new ChannelConversation(convDto.channel);
-				for (const message of convDto.history) {
-					conv.addMessage(message);
-				}
-				channelConversationList.convs.push(conv);
-			});
-			return channelConversationList;
-		});
+	channelConvs.update((channelConversationList) => {
+		channelConversationList.convs = [];
+		for (const convDto of convsHistory.channelHistory) {
+			for (const messageDto of convDto.history) {
+				channelConversationList.addMessage(messageDto, convDto.channel);
+			}
+		}
+		return channelConversationList;
 	});
 }
-
-// export function feedbackCallback(action: () => void) {
-//   return (feedback: ChatFeedbackDto) => {
-//     if (feedback.success)
-//       action();
-//     else
-//       alert(feedback.errorMessage);
-//   }
-// }
