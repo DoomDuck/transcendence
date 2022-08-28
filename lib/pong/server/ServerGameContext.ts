@@ -15,6 +15,7 @@ import {
   randomGravitonCoords,
   randomPortalCoords,
   removeIfPresent,
+  type FinallyCallback,
   type FinishCallback,
 } from "../common/utils";
 
@@ -33,7 +34,7 @@ export class ServerGameContext {
   gameLoopHandle?: ReturnType<typeof setInterval>;
   // observerSendStateQueue: ((Game) => void)[] = [];
 
-  constructor(public players: [Socket, Socket], classic: boolean, public onFinish: FinishCallback) {
+  constructor(public players: [Socket, Socket], classic: boolean, public onFinish: FinishCallback, public onFinally: FinallyCallback) {
     this.game = new Game();
     for (let [emitter, receiver] of [
       [PLAYER1, PLAYER2],
@@ -50,6 +51,7 @@ export class ServerGameContext {
       this.players[emitter].on(GameEvent.BALL_OUT, (playerId: number) => {
         this.handleGoal(playerId);
       });
+      this.players[emitter].on("disconnect", () => this.handlePlayerDisconnect(emitter));
     }
 
     if (!classic) {
@@ -165,5 +167,14 @@ export class ServerGameContext {
     }
     clearInterval(this.gameLoopHandle);
     this.onFinish(score[0], score[1]);
+    this.onFinally();
+  }
+
+  handlePlayerDisconnect(playerId: number) {
+    this.players[1 - playerId].emit(GameEvent.PLAYER_DISCONNECT, playerId);
+    for (let observer of this.observers) {
+      observer.emit(GameEvent.PLAYER_DISCONNECT, playerId);
+    }
+    this.onFinally();
   }
 }

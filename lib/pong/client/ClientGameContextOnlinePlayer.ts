@@ -4,7 +4,8 @@ import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
 import { ChatEvent } from "backFrontCommon";
-import type { FinishCallback } from "../common/utils";
+import type { ErrorCallback, FinishCallback } from "../common/utils";
+import { Game } from "../common/game";
 
 /**
  * Online version of the game in the client as a player (see ClientGameContext)
@@ -12,8 +13,8 @@ import type { FinishCallback } from "../common/utils";
 export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
   ballOutAlreadyEmitted: boolean = false;
 
-  constructor(socket: Socket, onFinish: FinishCallback) {
-    super(socket, onFinish);
+  constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
+    super(socket, onFinish, onError);
 
     // incomming events
     this.transmitEventFromServerToGame(GameEvent.START);
@@ -33,6 +34,12 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
         ready();
       }
     );
+
+    this.socket.on(GameEvent.PLAYER_DISCONNECT, (_) => {
+      this.gameManager.game.pause();
+      this.finally();
+      this.onError!("The other player has disconnected");
+    });
   }
 
   animate() {

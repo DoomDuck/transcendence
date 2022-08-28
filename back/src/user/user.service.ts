@@ -50,6 +50,7 @@ export class ActiveUser {
       socket.emit(event, ...args);
     });
   }
+  numberOfCurrentGames = 0;
 }
 export class ChatMessage {
   constructor(

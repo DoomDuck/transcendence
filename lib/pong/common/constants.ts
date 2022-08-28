@@ -186,6 +186,8 @@ export class GameEvent {
   static readonly PLAYER_ID_CONFIRMED = "playerIdConfirmed";
   // score: [number, number]
   static readonly GAME_OVER = "gameOver";
+  // playerId: number
+  static readonly PLAYER_DISCONNECT = "playerDisconnect";
 }
 
 export enum KeyValue {

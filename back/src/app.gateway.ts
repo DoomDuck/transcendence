@@ -244,4 +244,9 @@ export class AppGateway
   ): Promise<RequestFeedbackDto<UserHistoryDto>> {
     return this.userService.getUserHistory(socket);
   }
+
+  @SubscribeMessage(ChatEvent.QUIT_MATCHMAKING)
+  async handleQuitMatchmaking(socket: Socket) {
+    this.gameManagerService.handleQuitMatchmaking(socket);
+  }
 }

@@ -50,6 +50,7 @@ export class ChatEvent {
   static readonly DELETE_GAME_INVITE = 'delete game invite'
   static readonly SET_PASSWORD = 'set password'
   static readonly SET_NEW_ADMIN = 'set new admin'
+  static readonly QUIT_MATCHMAKING = 'quit matchmaking'
 }
 
 export class ChatError {
@@ -244,9 +245,9 @@ export class MatchInfoFromServer {
 
 export class RelativeMatchInfoFromServer {
   constructor(
-    public opponent: Id, 
-    public winner: boolean, 
-    public score : number, 
+    public opponent: Id,
+    public winner: boolean,
+    public score : number,
     public opponentScore: number
   ) { }
 };
@@ -274,7 +275,7 @@ export class GameCancelToServer   {
 
 export class DeleteGameInviteFromServer   {
   constructor(
-    public target: Id 
+    public target: Id
   ) { }
 }
 
@@ -287,7 +288,7 @@ export class ChanInviteAccept   {
 export class ChanInviteRefuse   {
   constructor(
     public channel: string,
-  ) { } 
+  ) { }
 }
 export class MyInfo {
   constructor (
@@ -371,7 +372,7 @@ export interface ServerToClientEvents {
   [LoginEvent.TOTP_REQUIREMENTS]: (is_required: boolean) => void;
   [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
   [LoginEvent.TOTP_RESULT]: (success: boolean) => void;
-  
+
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
@@ -401,11 +402,11 @@ export interface ClientToServerEvents {
   // Login
   [LoginEvent.TOTP_CHECK]: (token: string) => void,
   [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
-  
+
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
-  
+
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMToServer, callback: FeedbackCallback) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMToServer, callback: FeedbackCallback) => void;
@@ -425,4 +426,5 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
+  [ChatEvent.QUIT_MATCHMAKING]: () => void;
 }

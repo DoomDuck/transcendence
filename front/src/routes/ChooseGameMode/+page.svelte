@@ -9,7 +9,8 @@
 		// if (!gameParamsAreValid(state.gameParams))
 		//   goto('/StartAGame');
 		state.gameParams!.classic = classic;
-		goto('/Play');
+		if (state.gameParams?.matchMaking) goto('/WaitingRoom');
+		else goto('/Play');
 	}
 </script>
 

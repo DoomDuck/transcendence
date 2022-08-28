@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
-import type { FinishCallback } from "../common/utils";
+import type { ErrorCallback, FinishCallback } from "../common/utils";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 
 /**
@@ -9,8 +9,8 @@ import { ClientGameContextOnline } from "./ClientGameContextOnline";
 export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
   ballOutAlreadyEmitted: boolean = false;
 
-  constructor(socket: Socket, onFinish: FinishCallback) {
-    super(socket, onFinish);
+  constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
+    super(socket, onFinish, onError);
     this.socket.on("connect", () => {
       console.log("connected to server");
 
@@ -23,8 +23,11 @@ export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
         );
       });
     });
-    this.socket.on("disconnect", () => {
-      console.log("disconnected from server");
+
+    this.socket.on(GameEvent.PLAYER_DISCONNECT, (playerId: number) => {
+      this.gameManager.game.pause();
+      this.finally();
+      this.onError!(`The player ${playerId + 1} has disconnected`);
     });
   }
 

@@ -1,5 +1,16 @@
 <script lang="ts">
 	import Popups from '$lib/Popups.svelte';
+	import { state } from '$lib/ts/state';
+
+	let previousRoute: string = '/';
+	$: {
+		if (window.location.href != previousRoute) {
+			if (previousRoute == '/Play' && state.gameParams?.matchMaking) {
+				console.log('QUITING PLAY ROUTE');
+			}
+			previousRoute = window.location.href;
+		}
+	}
 </script>
 
 <div id="background">
