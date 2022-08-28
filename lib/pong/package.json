@@ -6,8 +6,9 @@
   "author": "el-zins",
   "license": "ISC",
   "dependencies": {
+    "backFrontCommon": "file:../backFrontCommon",
+    "chat": "file:../backFrontCommon",
     "socket.io": "^4.5.1",
-    "socket.io-client": "^4.5.1",
-		"backFrontCommon": "file:../backFrontCommon"
+    "socket.io-client": "^4.5.1"
   }
 }

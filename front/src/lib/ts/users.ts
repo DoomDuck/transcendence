@@ -3,7 +3,8 @@ import {
 	type UserInfo,
 	type Id,
 	type RequestFeedbackDto,
-	type MyInfo
+	type MyInfo,
+	GetInfoEvent
 } from 'backFrontCommon';
 import { readable } from 'svelte/store';
 import { state } from './state';
@@ -112,7 +113,7 @@ export class Users {
 
 async function fetchUser(id: number): Promise<UserInfo> {
 	const feedback: RequestFeedbackDto<UserInfo> = await new Promise((resolve) => {
-		state.socket.emit(ChatEvent.GET_USER, { target: id }, resolve);
+		state.socket.emit(GetInfoEvent.USER_INFO, { target: id }, resolve);
 	});
 	console.log('FEEDBACK:' + JSON.stringify(feedback));
 	if (feedback.success) return feedback.result!;
@@ -121,7 +122,7 @@ async function fetchUser(id: number): Promise<UserInfo> {
 
 async function fetchMe(): Promise<MyInfo> {
 	const feedback: RequestFeedbackDto<MyInfo> = await new Promise((resolve) => {
-		state.socket.emit(ChatEvent.GET_ME, resolve);
+		state.socket.emit(GetInfoEvent.MY_INFO, resolve);
 	});
 	console.log('FEEDBACK:' + JSON.stringify(feedback));
 	if (feedback.success) return feedback.result!;

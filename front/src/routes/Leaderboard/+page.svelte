@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	let entries = [
 		{
 			user: 'Jessica',
@@ -19,14 +17,6 @@
 			score: -8000
 		}
 	];
-
-	// onMount(async () => {
-	// 	const reponse = await fetch('http://localhost:5000/leaderboard', {
-	// 		method: 'GET'
-	// 	});
-	// 	const result = await reponse.json();
-	// 	console.log(result);
-	// });
 </script>
 
 <div id="leaderboard">
@@ -72,9 +62,6 @@
 		grid-template-columns: max-content 80% auto;
 		gap: 0.5em;
 		font-size: 2.5em;
-	}
-
-	.leaderboard-entry {
 	}
 
 	.user-place {

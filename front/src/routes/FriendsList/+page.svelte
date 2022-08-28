@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import FriendsListItem from '$lib/FriendsListItem.svelte';
 	import { users } from '$lib/ts/users';
 	import type { UserInfo } from 'backFrontCommon';
@@ -14,16 +13,6 @@
 			friends = friends;
 		});
 	});
-
-	// onMount(async () => {
-	// 	const reponse = await fetch('http://localhost:5000/user', {
-	// 		method: 'GET'
-	// 	});
-
-	// 	users = await reponse.json();
-	// 	console.log(users);
-	// });
-	// (DEBUG)
 </script>
 
 <div class="friendsList">

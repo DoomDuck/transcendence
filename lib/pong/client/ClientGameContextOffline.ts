@@ -7,6 +7,7 @@ import {
   delay,
   randomGravitonCoords,
   randomPortalCoords,
+  type FinishCallback,
 } from "../common/utils";
 import { ClientGameContext } from "./ClientGameContext";
 import { setupKeyboardOffline } from "./game";
@@ -17,7 +18,7 @@ import { setupKeyboardOffline } from "./game";
 export class ClientGameContextOffline extends ClientGameContext {
   spawner?: Spawner;
 
-  constructor(onFinish: () => void, classic: boolean) {
+  constructor(onFinish: FinishCallback, classic: boolean) {
     super(onFinish);
     if (!classic) {
       this.spawner = new Spawner(

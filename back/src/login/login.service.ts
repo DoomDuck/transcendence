@@ -7,6 +7,7 @@ import { TOTP, Secret } from 'otpauth';
 import { Socket as IOSocketBaseType } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import fetch from 'node-fetch';
+import { isNumber, isString } from 'class-validator';
 type Socket = IOSocketBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 const AUTH_URL = 'https://api.intra.42.fr/oauth/authorize';
@@ -56,11 +57,11 @@ export class LoginService {
     if (!response.ok)
       throw new Error(`Could not fetch token: ${response.statusText}`);
     const data = await response.json();
-    if (!(typeof data == 'object')) {
+    if (typeof data !== 'object') {
       throw new Error('Invalid body type');
     }
     const { access_token } = data;
-    if (!(typeof access_token == 'string')) {
+    if (!isString(access_token)) {
       throw new Error('Could not extract token');
     }
     return access_token;
@@ -77,7 +78,7 @@ export class LoginService {
     if (!(typeof data == 'object')) throw new Error('Invalid body type');
 
     const { id, login } = data;
-    if (!(typeof id == 'number' && typeof login == 'string'))
+    if (!(isNumber(id) && isString(login)))
       throw new Error(`Could not fetch id or login properly`);
 
     return { id, login };
@@ -125,7 +126,7 @@ export class LoginService {
     const user = new UserDto(id, login, socket);
 
     const userInDb = await this.userService.findOneDb(id);
-    const totpSecret = userInDb ? userInDb.totpSecret : null;
+    const totpSecret = userInDb?.totpSecret;
 
     socket.emit(LoginEvent.TOTP_REQUIREMENTS, !!totpSecret);
 
@@ -144,7 +145,7 @@ export class LoginService {
   async handleConnection(socket: Socket) {
     const code = socket.handshake.auth.code;
 
-    if (typeof code == 'string') {
+    if (isString(code)) {
       await this.handleUser(socket, code);
     } else {
       this.handleGuest(socket);

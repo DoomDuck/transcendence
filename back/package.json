@@ -37,6 +37,8 @@
 		"@nestjs/websockets": "^9.0.7",
 		"@types/dat.gui": "^0.7.7",
 		"backFrontCommon": "file:../lib/backFrontCommon",
+		"class-transformer": "^0.5.1",
+		"class-validator": "^0.13.2",
 		"bcrypt": "^5.0.1",
 		"express": "^4.17.3",
 		"help": "^3.0.2",

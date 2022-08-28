@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Id } from 'backFrontCommon';
-import { ChannelDto } from './channel.dto';
+import { Id, MuteUserFromServer } from 'backFrontCommon';
 import { ChatEvent } from 'backFrontCommon';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
@@ -218,11 +217,12 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
     else {
       target.socketUser.forEach((socket) =>
-        wss.to(socket.id).emit(ChatEvent.BANNED_NOTIF, {
-          channel: channel.name,
-          sender: sender.id,
-          duration: duration,
-        }),
+        wss
+          .to(socket.id)
+          .emit(
+            ChatEvent.BANNED_NOTIF,
+            new BanUserFromServer(channel.name, sender.id, duration),
+          ),
       );
       channel.banned.push(target.id);
       this.channelRepository.update(channel.name, { banned: channel.banned });
@@ -253,11 +253,12 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(false, ChatError.ALREADY_MUTED);
     else {
       target.socketUser.forEach((socket) =>
-        wss.to(socket.id).emit(ChatEvent.MUTED_NOTIF, {
-          channel: channel.name,
-          sender: sender.id,
-          duration: duration,
-        }),
+        wss
+          .to(socket.id)
+          .emit(
+            ChatEvent.MUTED_NOTIF,
+            new MuteUserFromServer(channel.name, sender.id, duration),
+          ),
       );
       channel.muted.push(target.id);
       this.channelRepository.update(channel.name, { muted: channel.muted });

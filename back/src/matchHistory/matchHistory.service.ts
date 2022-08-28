@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Match } from './match.entity';
 import { User } from '../user/entities/user.entity';
+import { ServerSocket as Socket } from 'backFrontCommon';
 
 import { RequestFeedbackDto, MatchInfoFromServer } from 'backFrontCommon';
 

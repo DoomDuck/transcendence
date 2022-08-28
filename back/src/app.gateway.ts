@@ -10,7 +10,8 @@ import {
   GetInfoEvent,
   RequestFeedbackDto,
   PostAvatar,
-  UserInfo,
+  MatchInfoToServer,
+  UserInfoToServer,
 } from 'backFrontCommon';
 import type {
   UserHistoryDto,
@@ -19,17 +20,17 @@ import type {
   SetNewAdminToServer,
   BanUserToServer,
   MuteUserToServer,
-  DMToServer,
   CMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
-  UserInfoToServer,
-  MatchInfoToServer,
+  UserInfo,
+  MatchInfoFromServer,
   SetPasswordToServer,
   SetUsernameToServer,
 } from 'backFrontCommon';
+import { DMToServer } from 'backFrontCommon';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -111,10 +112,8 @@ export class AppGateway
   async handleJoinChannel(clientSocket: Socket, joinInfo: JoinChannelToServer) {
     return await this.chatService.handleJoinChannel(clientSocket, joinInfo);
   }
-
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
-    // this.logger.log('disconnection');
     this.userService.printAllActiveSocket();
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
   }
@@ -195,7 +194,7 @@ export class AppGateway
   }
 
   @SubscribeMessage(GetInfoEvent.ALL_MATCH)
-  async handleAllMatch(socket: Socket) {
+  async handleAllMatch(_socket: Socket) {
     return await this.matchHistoryService.getAllMatch();
   }
 
@@ -207,14 +206,6 @@ export class AppGateway
   @SubscribeMessage(GetInfoEvent.USER_MATCH)
   async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
     return await this.userService.getUserMatch(socket, matchInfo.target);
-  }
-
-  @SubscribeMessage(ChatEvent.GET_USER)
-  async handleGetUserChat(
-    socket: Socket,
-    userId: GetUser,
-  ): Promise<RequestFeedbackDto<UserInfo>> {
-    return await this.userService.getUserChat(socket, userId.target);
   }
 
   @SubscribeMessage(ChatEvent.SET_USERNAME)

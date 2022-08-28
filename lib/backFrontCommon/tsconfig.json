@@ -4,10 +4,13 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-    "preserveValueImports": true,
-    "isolatedModules": true,
-    "target": "es2017",
-    "importsNotUsedAsValues": "preserve",
-    "moduleResolution": "node"
+		"preserveValueImports": true,
+		"isolatedModules": true,
+		"target": "es2017",
+		"importsNotUsedAsValues": "preserve",
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
 	}
 }

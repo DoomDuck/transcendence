@@ -7,6 +7,7 @@ import {
   ActiveUserConversationDto,
   PostAvatar,
   ServerToClientEvents,
+  UserInfoToServer,
 } from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channel.entity';
@@ -18,7 +19,6 @@ import { ServerSocket as Socket, Server } from 'backFrontCommon';
 import {
   MyInfo,
   UserInfo,
-  UserInfoToServer,
   RequestFeedbackDto,
   ChatFeedbackDto,
   UserHistoryDto,
@@ -27,8 +27,7 @@ import {
   ChatError,
   MatchInfoFromServer,
   ChatMessageDto,
-  ChatUserDto,
-  ChatProfileDto,
+  RelativeMatchInfoFromServer,
 } from 'backFrontCommon';
 import EventEmitter from 'events';
 
@@ -106,6 +105,7 @@ export class UserService {
       },
     });
   }
+
   async getRanking(user: User): Promise<number> {
     return (await this.getLeaderboard()).indexOf(user);
   }
@@ -383,8 +383,6 @@ export class UserService {
 
   disconnection(clientSocket: Socket) {
     const logger = new Logger('disconnection');
-    // this.printAllActiveSocket();
-    logger.log(' start');
     const activeUser = this.findOneActiveBySocket(clientSocket);
     if (activeUser) {
       if (activeUser.socketUser.length === 1) {
@@ -404,7 +402,6 @@ export class UserService {
       }
     }
     logger.log(' second print');
-    // this.printAllActiveSocket();
     logger.log('end');
   }
 
@@ -457,7 +454,7 @@ export class UserService {
       return this.channelManagerService.newChatFeedbackDto(true);
     }
   }
-  MyInfoTransformator(user: User): MyInfo {
+  async MyInfoTransformator(user: User): Promise<MyInfo> {
     const activeUser = this.findOneActive(user.id);
     if (activeUser)
       return {
@@ -465,10 +462,10 @@ export class UserService {
         name: user.name,
         friendlist: user.friendlist,
         blocked: user.blocked,
-        channel: user.channel,
         win: user.win,
         loose: user.loose,
         score: user.score,
+        ranking: await this.getRanking(user),
         avatar: user.avatar,
         totpSecret: user.totpSecret,
         inGame: activeUser.inGame,
@@ -479,49 +476,85 @@ export class UserService {
         name: user.name,
         friendlist: user.friendlist,
         blocked: user.blocked,
-        channel: user.channel,
         win: user.win,
         loose: user.loose,
         score: user.score,
+        ranking: await this.getRanking(user),
         avatar: user.avatar,
         totpSecret: user.totpSecret,
         inGame: false,
       };
   }
-  UserInfoTransformator(user: User): UserInfo {
+  MatchDbToMatchRelative(
+    user: User,
+    match: Match,
+  ): RelativeMatchInfoFromServer {
+    let opponnent;
+    let opScore;
+    let myScore;
+    let winner = false;
+    if (match.player[0] === user) {
+      opponnent = match.player[1];
+      opScore = match.score[1];
+      myScore = match.score[0];
+      if (match.score[0] > match.score[1]) winner = true;
+    } else {
+      opponnent = match.player[0];
+      opScore = match.score[0];
+      myScore = match.score[1];
+      if (match.score[1] > match.score[0]) winner = true;
+    }
+    return {
+      opponent: opponnent.id,
+      winner: winner,
+      score: myScore,
+      opponentScore: opScore,
+    };
+  }
+  relativeMatchHistory(user: User): RelativeMatchInfoFromServer[] {
+    const result: RelativeMatchInfoFromServer[] = [];
+    if (!user.match) return [];
+    for (let i = 0; i < Math.min(3, user.match.length); i++) {
+      result.push(
+        this.MatchDbToMatchRelative(user, user.match[user.match.length - i]),
+      );
+    }
+    return result;
+  }
+  async UserInfoTransformator(user: User): Promise<UserInfo> {
     const activeUser = this.findOneActive(user.id);
     if (activeUser)
       return {
         id: user.id,
         name: user.name,
-        friendlist: user.friendlist,
-        channel: user.channel,
         win: user.win,
         loose: user.loose,
         score: user.score,
+        ranking: await this.getRanking(user),
         avatar: user.avatar,
         isOnline: true,
         inGame: activeUser.inGame,
+        matchHistory: this.relativeMatchHistory(user),
       };
     else
       return {
         id: user.id,
         name: user.name,
-        friendlist: user.friendlist,
-        channel: user.channel,
         win: user.win,
         loose: user.loose,
         score: user.score,
+        ranking: await this.getRanking(user),
         avatar: user.avatar,
         isOnline: false,
         inGame: false,
+        matchHistory: this.relativeMatchHistory(user),
       };
   }
   async MyInfo(socket: Socket): Promise<RequestFeedbackDto<MyInfo>> {
     const user = await this.findOneDbBySocket(socket);
     if (!user)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    else return { success: true, result: this.MyInfoTransformator(user) };
+    else return { success: true, result: await this.MyInfoTransformator(user) };
   }
   async UserInfo(
     socket: Socket,
@@ -533,7 +566,11 @@ export class UserService {
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
     else if (!target)
       return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
-    else return { success: true, result: this.UserInfoTransformator(target) };
+    else
+      return {
+        success: true,
+        result: await this.UserInfoTransformator(target),
+      };
   }
   async getMyMatch(
     socket: Socket,
@@ -563,19 +600,7 @@ export class UserService {
     );
     return { success: true, result: result };
   }
-  async getUserChat(
-    socket: Socket,
-    targetId: Id,
-  ): Promise<RequestFeedbackDto<ChatUserDto>> {
-    const sender = await this.findOneDbBySocket(socket);
-    const target = await this.findOneDb(targetId);
-    if (!sender)
-      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    else if (!target)
-      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
-    else
-      return { success: true, result: await this.userDbToChatUserDTO(target) };
-  }
+
   matchForChatUser(match: Match[]): MatchInfoFromServer[] {
     const result: MatchInfoFromServer[] = [];
     if (!match) return [];
@@ -584,19 +609,6 @@ export class UserService {
         this.matchHistoryService.MatchDbToMatchDTO(match[match.length - i]),
       );
     }
-    return result;
-  }
-  async userDbToChatUserDTO(user: User): Promise<ChatUserDto> {
-    const tempProfile = {
-      ranking: await this.getRanking(user),
-      matchHistory: this.matchForChatUser(user.match),
-    };
-    const result = {
-      id: user.id,
-      name: user.name,
-      image: user.avatar,
-      profile: tempProfile,
-    };
     return result;
   }
 }

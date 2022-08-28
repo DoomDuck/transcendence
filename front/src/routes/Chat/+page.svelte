@@ -39,10 +39,6 @@
 		},
 		'Un groupe de gens'
 	);
-
-	// SOCKET SETUP
-
-	// EVENTS TO SERVER
 </script>
 
 <div id="chat">

@@ -182,7 +182,6 @@ export class ChatService {
       dm.content,
       target,
     );
-    console.log(feedback);
     return feedback;
   }
 
