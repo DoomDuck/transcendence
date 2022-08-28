@@ -37,6 +37,5 @@
 		flex-direction: column;
 		justify-content: center;
 		font-family: 'Lato', sans-serif;
-
 	}
 </style>
