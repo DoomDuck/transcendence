@@ -6,13 +6,13 @@ import {
 	type DMToServer,
 	type JoinChannelToServer
 } from 'backFrontCommon';
-import { channelConvs, userConvs } from './chatUtils';
+import { channelConvs } from './chatUtils';
 import { state } from './state';
 
 function sendDirectMessage(message: DMToServer) {
 	state.socket.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
 		if (feedback.success) {
-			userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
+			// userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
 		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
