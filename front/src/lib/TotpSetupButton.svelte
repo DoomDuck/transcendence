@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { state } from '$lib/ts/state';
-  // import { LoginEvent } from 'backFrontCommon';
+  import { LoginEvent } from 'backFrontCommon';
   import TotpSetup from '$lib/TotpSetup.svelte';
   
   let showTotpSetup = false;
@@ -10,7 +10,7 @@
   }
   
   function disableTotp() {
-    // state.socket.emit(LoginEvent.TOTP_DEMAND_SETUP)
+    state.socket.emit(LoginEvent.TOTP_UPDATE, null);
   }
 </script>
 

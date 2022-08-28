@@ -20,7 +20,7 @@
 	</div>
 	<div id="lastParams">
 		<TotpSetupButton/>
-		<button id="disco" on:click={state.disconnect}> Disconnect </button>
+		<button id="disco" on:click={state.disconnect.bind(state)}> Disconnect </button>
 	</div>
 </div>
 
