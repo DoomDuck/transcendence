@@ -35,7 +35,7 @@
 		flex-direction: column;
 		align-items: center;
 	}
-	h4{
+	h4 {
 		font-size: 2em;
 	}
 	h4:hover {

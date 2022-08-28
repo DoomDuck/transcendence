@@ -11,6 +11,7 @@ export const config: TypeOrmModuleOptions = {
   port: 5432,
   host: '127.0.0.1',
   database: 'postgres',
+  // TODO: CHANGE IN PRODUCTION
   synchronize: true,
   entities: [User, DatabaseFile, Channel, Match],
   // entities: ["dist/**/*.entity{.ts,.js}"],

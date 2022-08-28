@@ -9,9 +9,9 @@
 
 <article class={message.isMe ? 'user' : 'interlocutor'}>
 	<span class="conv-entry">{message.content}</span>
-	<br/>
+	<br />
 	{#if type == 'channel' && !message.isMe}
-		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)}/>
+		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)} />
 	{/if}
 </article>
 

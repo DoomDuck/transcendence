@@ -13,8 +13,8 @@
 </svelte:element>
 
 <style>
-	*{
-		color:rgb(144, 144, 144);
+	* {
+		color: rgb(144, 144, 144);
 		font-size: smaller;
 	}
 </style>

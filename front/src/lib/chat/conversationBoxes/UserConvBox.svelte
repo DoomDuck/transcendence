@@ -88,7 +88,7 @@
 		align-items: center;
 		gap: 12px;
 	}
-	h2{
+	h2 {
 		font-family: 'Lato', sans-serif;
 		font-size: 1.5em;
 	}

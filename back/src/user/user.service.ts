@@ -73,7 +73,7 @@ export class ActiveConversation {
 @Injectable()
 export class UserService {
   arrayActiveUser: ActiveUser[] = [];
-
+  logger = new Logger('User Service');
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -203,6 +203,14 @@ export class UserService {
   findOneDb(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
+  findOneDbWithRelation(id: Id): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        match: true,
+      },
+    });
+  }
   async findOneDbBySocket(clientSocket: Socket): Promise<User | null> {
     const tempUser = this.findOneActiveBySocket(clientSocket);
     if (!tempUser) return null;
@@ -279,7 +287,7 @@ export class UserService {
     this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
 
     if (activeUser) {
-	  this.updateChannelConversation(activeUser,activeUser,channel)
+      this.updateChannelConversation(activeUser, activeUser, channel);
       logger.log(
         `la active name = ${activeUser.name} channel name = ${channel.name}`,
       );
@@ -371,22 +379,19 @@ export class UserService {
       tempUserConversation.history.push(
         new ChatMessage(sender.id, content!, sender === user),
       );
-    else
-		{
-			if(content)
-      user.activeChannelConversation.push(
-        new ActiveConversation(
-          channel.name,
-          new ChatMessage(sender.id, content, sender === user),
-        ),
-      );
-	  else
-		user.activeChannelConversation.push(
-        new ActiveConversation(
-          channel.name,
-        ),
-      );
-		}
+    else {
+      if (content)
+        user.activeChannelConversation.push(
+          new ActiveConversation(
+            channel.name,
+            new ChatMessage(sender.id, content, sender === user),
+          ),
+        );
+      else
+        user.activeChannelConversation.push(
+          new ActiveConversation(channel.name),
+        );
+    }
   }
 
   // Update user totpSecret (to enable or disable it)
@@ -513,7 +518,7 @@ export class UserService {
     let opScore;
     let myScore;
     let winner = false;
-    if (match.player[0] === user) {
+    if (match.player[0].id == user.id) {
       opponnent = match.player[1];
       opScore = match.score[1];
       myScore = match.score[0];
@@ -531,13 +536,20 @@ export class UserService {
       opponentScore: opScore,
     };
   }
-  relativeMatchHistory(user: User): RelativeMatchInfoFromServer[] {
+  async relativeMatchHistory(
+    user: User,
+  ): Promise<RelativeMatchInfoFromServer[]> {
     const result: RelativeMatchInfoFromServer[] = [];
+    this.logger.debug(
+      `dans relative match history ${JSON.stringify(user.match)}`,
+    );
     if (!user.match) return [];
     for (let i = 0; i < Math.min(3, user.match.length); i++) {
-      result.push(
-        this.MatchDbToMatchRelative(user, user.match[user.match.length - i]),
-      );
+      let match = user.match[user.match.length - 1 - i];
+      match = (await this.matchHistoryService.findOneDbWithRelation(
+        match.id!,
+      ))!;
+      result.push(this.MatchDbToMatchRelative(user, match));
     }
     return result;
   }
@@ -554,7 +566,7 @@ export class UserService {
         avatar: user.avatar,
         isOnline: true,
         inGame: activeUser.inGame,
-        matchHistory: this.relativeMatchHistory(user),
+        matchHistory: await this.relativeMatchHistory(user),
       };
     else
       return {
@@ -567,7 +579,7 @@ export class UserService {
         avatar: user.avatar,
         isOnline: false,
         inGame: false,
-        matchHistory: this.relativeMatchHistory(user),
+        matchHistory: await this.relativeMatchHistory(user),
       };
   }
   async MyInfo(socket: Socket): Promise<RequestFeedbackDto<MyInfo>> {
@@ -581,7 +593,7 @@ export class UserService {
     userInfo: UserInfoToServer,
   ): Promise<RequestFeedbackDto<UserInfo>> {
     const sender = await this.findOneDbBySocket(socket);
-    const target = await this.findOneDb(userInfo.target);
+    const target = await this.findOneDbWithRelation(userInfo.target);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
     else if (!target)

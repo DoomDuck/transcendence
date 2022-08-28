@@ -71,7 +71,7 @@ export class LoginService {
 
     const data = await response.json();
     if (!(typeof data == 'object')) throw new Error('Invalid body type');
-	
+
     const { id, login } = data;
     if (!(isNumber(id) && isString(login)))
       throw new Error(`Could not fetch id or login properly`);
