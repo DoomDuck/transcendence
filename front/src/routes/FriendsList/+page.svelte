@@ -1,27 +1,14 @@
 <script lang="ts">
+	import { myInfo, getUser } from '$lib/state';
 	import FriendsListItem from '$lib/FriendsListItem.svelte';
-	import { users } from '$lib/ts/users';
-	import type { UserInfo } from 'backFrontCommon';
-
-	let nameSearch = () => {};
-
-	// DEBUG : loading all users as friend
-	let friends: UserInfo[] = [];
-	[0, 1, 2].forEach((id) => {
-		$users.findOrFetch(id).then((_) => {
-			friends.push(_);
-			friends = friends;
-		});
-	});
 </script>
 
 <div class="friendsList">
 	<h1>Friends List</h1>
-	<form on:submit|preventDefault={nameSearch}>
-		<input type="search" placeholder="search..." />
-	</form>
-	{#each friends as friend}
-		<FriendsListItem {friend} />
+	{#each $myInfo.friendlist.map(getUser) as friendPromise}
+		{#await friendPromise then friend}
+			<FriendsListItem {friend} />
+		{/await}
 	{/each}
 </div>
 
@@ -42,13 +29,6 @@
 		h1 {
 			font-size: 2em;
 		}
-	}
-
-	input {
-		height: 40px;
-		width: 80vw;
-		color: rgb(105, 99, 99);
-		background-color: #bdbdbd;
 	}
 
 	.friendsList {

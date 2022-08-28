@@ -4,41 +4,7 @@
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { userConvs, channelConvs } from '$lib/ts/chatUtils';
-
-	// VALUES FOR THE DEBUG OF THE DISPLAY
-
-	let friends = [0, 1];
-
-	$userConvs.addMessage({
-		sender: 0,
-		isMe: false,
-		content: 'salut'
-	});
-	$channelConvs.addMessage(
-		{
-			sender: -1,
-			isMe: true,
-			content: 'Salut,\nJe crée un groupe'
-		},
-		'Un groupe de gens'
-	);
-	$channelConvs.addMessage(
-		{
-			sender: 1,
-			isMe: false,
-			content: 'Pas intéressé'
-		},
-		'Un groupe de gens'
-	);
-	$channelConvs.addMessage(
-		{
-			sender: 2,
-			isMe: false,
-			content: 'Moi non plus'
-		},
-		'Un groupe de gens'
-	);
+	import { myInfo } from '$lib/state';
 </script>
 
 <div id="chat">
@@ -54,7 +20,7 @@
 	<div id="mainContainer">
 		<input class="champ" type="search" placeholder="Search.." />
 
-		<OnlineFriends {friends} />
+		<OnlineFriends friends={$myInfo.friendlist} />
 		<br />
 		<ConversationLists />
 	</div>

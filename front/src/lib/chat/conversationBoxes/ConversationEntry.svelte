@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PendingText from '$lib/PendingText.svelte';
-	import { users } from '$lib/ts/users';
+	import { getUser } from '$lib/state';
 	import type { ChatMessageDto } from 'backFrontCommon';
 
 	export let message: ChatMessageDto;
@@ -9,7 +9,7 @@
 
 <article class={message.isMe ? 'user' : 'interlocutor'}>
 	{#if type == 'channel' && !message.isMe}
-		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)} />
+		<PendingText tag="span" text={getUser(message.sender).then((user) => user.name)} />
 	{/if}
 	<span class="conv-entry">{message.content}</span>
 </article>

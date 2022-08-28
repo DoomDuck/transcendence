@@ -1,9 +1,7 @@
-import { ChatEvent } from 'backFrontCommon';
 import type { GameInviteToServer, Id } from 'backFrontCommon';
-import { state } from '$lib/ts/state';
+import { refuseGame, acceptGame, cancelGame, getUser, sendGameInvite } from '$lib/state';
 import { PopupCategory, popups, popupMethods } from './popups';
 import type { CanBePopup } from './popups';
-import  { usersObject } from './users';
 import type { GameInviteFromServer } from 'backFrontCommon/chatEvents';
 
 function _modeString(classic: boolean) {
@@ -18,7 +16,7 @@ export class ReceivedGameInvite implements CanBePopup {
 
 	constructor(public dto: GameInviteFromServer) {
 		this.text = '';
-		usersObject.findOrFetch(dto.source).then(({ name }) => {
+		getUser(dto.source).then(({ name }) => {
 			if (this.valid) {
 				this.text = `You have been invited by ${name} to play (${_modeString(dto.classic)})`;
 				popups.update((_) => _);
@@ -33,17 +31,13 @@ export class ReceivedGameInvite implements CanBePopup {
 		return 'Accept';
 	}
 	onClose() {
-		state.socket.emit(ChatEvent.GAME_REFUSE, { target: this.dto.source });
+		refuseGame(this.dto.source);
 	}
 	onAccept() {
-		state.socket.emit(
-			ChatEvent.GAME_ACCEPT,
-			{ target: this.dto.source },
-			({ success, errorMessage }) => {
-				if (success) popupMethods.removePopup(this);
-				else alert(errorMessage);
-			}
-		);
+		acceptGame(this.dto.source, ({ success, errorMessage }) => {
+			if (success) popupMethods.removePopup(this);
+			else alert(errorMessage);
+		});
 	}
 	revoke() {
 		this.popupCategory = PopupCategory.ERROR;
@@ -62,7 +56,7 @@ export class SentGameInvite implements CanBePopup {
 
 	constructor(public dto: GameInviteToServer) {
 		this.text = '';
-		usersObject.findOrFetch(dto.target).then(({ name }) => {
+		getUser(dto.target).then(({ name }) => {
 			this.text = `You have invited ${name}... (${_modeString(dto.classic)})`;
 			popups.update((_) => _);
 		});
@@ -72,7 +66,7 @@ export class SentGameInvite implements CanBePopup {
 		return false;
 	}
 	onClose() {
-		state.socket.emit(ChatEvent.GAME_CANCEL, { target: this.dto.target });
+		cancelGame(this.dto.target);
 	}
 }
 
@@ -95,7 +89,7 @@ export function removeSent(target: Id) {
 }
 
 export function send(dto: GameInviteToServer) {
-	state.socket.emit(ChatEvent.GAME_INVITE, dto, ({ success, errorMessage }) => {
+	sendGameInvite(dto, ({success, errorMessage }) => {
 		if (success) popupMethods.addPopup(new SentGameInvite(dto));
 		else alert(errorMessage);
 	});

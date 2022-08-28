@@ -1,4 +1,4 @@
-import { state } from '$lib/ts/state';
+import { connect } from '$lib/state';
 
 // Check if being redirected 42 OAuth
 export function preLogin() {
@@ -6,7 +6,7 @@ export function preLogin() {
 	const code = new URLSearchParams(document.location.search).get('code');
 	if (!code) return;
 
-	state.connect(code);
+	connect(code);
 }
 
 // Login to 42
@@ -15,5 +15,5 @@ export function login() {
 }
 
 export function guestLogin() {
-	state.connect();
+	connect();
 }

@@ -6,13 +6,13 @@
 		ClientGameContextOnlinePlayer,
 		ClientGameContext
 	} from 'pong';
-	import { state } from '$lib/ts/state';
+	import { gameParams } from '$lib/state';
 	import { ChatEvent } from 'backFrontCommon';
 
-	const online = state.gameParams!.online;
-	const observe = state.gameParams!.observe ?? false;
-	const matchmaking = state.gameParams!.matchMaking ?? false;
-	const classic = state.gameParams!.classic ?? false;
+	const online = gameParams!.online;
+	const observe = gameParams!.observe ?? false;
+	const matchmaking = gameParams!.matchMaking ?? false;
+	const classic = gameParams!.classic ?? false;
 
 	console.log(`online: ${online}`);
 	console.log(`observe: ${observe}`);

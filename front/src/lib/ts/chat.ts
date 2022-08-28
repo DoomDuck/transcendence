@@ -7,7 +7,6 @@ import {
 	type JoinChannelToServer
 } from 'backFrontCommon';
 import { channelConvs, userConvs } from './chatUtils';
-import { state } from './state';
 
 function sendDirectMessage(message: DMToServer) {
 	state.socket.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {

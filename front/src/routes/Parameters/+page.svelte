@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { state } from '$lib/ts/state';
+	import { myInfo, disconnect } from '$lib/state';
 	import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
 	export let blocked = [{ profilePic: 'cars.jpeg', name: 'Flash McQueen' }];
 </script>
 
 <div id="app">
-	<ProfileParams avatar={state.myInfo.avatar} name={state.myInfo.name} />
+	<ProfileParams avatar={$myInfo.avatar} name={$myInfo.name} />
 	<div id="blockedProfiles">
 		<div class="blocked">
 			<div class="blockedInfos">
@@ -20,7 +20,7 @@
 	</div>
 	<div id="lastParams">
 		<TotpSetupButton/>
-		<button id="disco" on:click={state.disconnect.bind(state)}> Disconnect </button>
+		<button id="disco" on:click={disconnect}> Disconnect </button>
 	</div>
 </div>
 

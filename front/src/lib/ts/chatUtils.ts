@@ -5,9 +5,9 @@ import {
 	type UserInfo
 } from 'backFrontCommon';
 import { writable } from 'svelte/store';
-import type { ChatFeedbackDto, CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
-import { usersObject } from './users';
+import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import type { Id, TypeMap } from 'backFrontCommon/general';
+import { getUser } from '$lib/state';
 
 type ChatMessageGameInvit = {
 	source: Id;
@@ -51,7 +51,7 @@ export class UserConversation extends Conversation<ActiveUserConversationDto> {
 		return this.dto.interlocutor;
 	}
 	async getInterlocuterAsDto(): Promise<UserInfo> {
-		return usersObject.findOrFetch(this.interlocutor);
+		return getUser(this.interlocutor);
 	}
 }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { resize, uploadAvatar } from '$lib/ts/avatar';
+	import { resize } from '$lib/ts/avatar';
+	import { uploadAvatar } from '$lib/state';
 
 	export let name: string ;
 	export let avatar: string | null = null;
