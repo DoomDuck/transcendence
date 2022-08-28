@@ -439,7 +439,7 @@ export class UserService {
     );
     sender.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-        source: sender.id,
+        source: target.id,
         content: content,
         isMe: true,
       }),

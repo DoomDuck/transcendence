@@ -93,7 +93,7 @@ export class UserConversationList {
 		this.addMessage({
 			sender: message.source,
 			content: message.content,
-			isMe: false
+			isMe: message.isMe ?? false
 		});
 		return this;
 	}
