@@ -168,6 +168,7 @@ export function updateChatHistory(convsHistory: UserHistoryDto) {
 	channelConvs.update((channelConversationList) => {
 		channelConversationList.convs = [];
 		for (const convDto of convsHistory.channelHistory) {
+			if (convDto.history.length == 0) channelConversationList.create(convDto.channel);
 			for (const messageDto of convDto.history) {
 				channelConversationList.addMessage(messageDto, convDto.channel);
 			}
