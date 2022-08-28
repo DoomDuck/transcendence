@@ -9,6 +9,8 @@ import {
 import { Id } from 'backFrontCommon';
 import { ChannelCategory } from 'backFrontCommon';
 
+// export class BannedUser
+// {}
 @Entity('Channel')
 export class Channel {
   constructor(
