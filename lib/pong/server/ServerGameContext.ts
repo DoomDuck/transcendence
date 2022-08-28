@@ -26,7 +26,6 @@ import {
 export class ServerGameContext {
   game: Game;
   ready: [boolean, boolean] = [false, false];
-  score: [number, number] = [0, 0];
   ballDirection: number = LEFT;
   spawner?: Spawner;
   observers: Socket[] = [];
@@ -53,7 +52,7 @@ export class ServerGameContext {
       });
     }
 
-    if (classic) {
+    if (!classic) {
       this.spawner = new Spawner(
         this.spawnGraviton.bind(this),
         this.spawnPortal.bind(this)
@@ -158,12 +157,13 @@ export class ServerGameContext {
   }
 
   handleEndOfGame() {
-    this.players[0].disconnect();
-    this.players[1].disconnect();
+    const score = this.game.score;
+    this.players[0].emit(GameEvent.GAME_OVER, score);
+    this.players[1].emit(GameEvent.GAME_OVER, score);
     for (let observer of this.observers) {
-      observer.disconnect();
+      observer.emit(GameEvent.GAME_OVER, score);
     }
     clearInterval(this.gameLoopHandle);
-    this.onFinish(this.score[0], this.score[1]);
+    this.onFinish(score[0], score[1]);
   }
 }

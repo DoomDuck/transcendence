@@ -16,6 +16,9 @@ export abstract class ClientGameContextOnline extends ClientGameContext {
     this.socket.on(GameEvent.GOAL, (playerId: number) => {
       this.handleGoal(playerId);
     });
+    this.socket.on(GameEvent.GAME_OVER, (score: [number, number]) => {
+      this.handleEndOfGame(score);
+    })
   }
 
   protected transmitEventFromServerToGame(event: string) {

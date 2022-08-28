@@ -14,13 +14,6 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
 
   constructor(socket: Socket, onFinish: FinishCallback) {
     super(socket, onFinish);
-    // this.socket.on("connect", () => {
-    //   console.log("connected to server");
-    //   this.socket.emit("joinMatchMaking");
-    // });
-    // this.socket.on("disconnect", () => {
-    //   console.log("disconnected from server");
-    // });
 
     // incomming events
     this.transmitEventFromServerToGame(GameEvent.START);

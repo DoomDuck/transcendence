@@ -27,9 +27,10 @@ export abstract class ClientGameContext {
 
   abstract animate(): void;
   abstract startGame(): void;
-  handleEndOfGame() {
+  handleEndOfGame(score?: [number, number]) {
+    score = score ?? this.gameManager.game.score;
     if (this.animationHandle !== undefined)
       cancelAnimationFrame(this.animationHandle);
-    this.onFinish(...this.gameManager.game.score);
+    this.onFinish(...score);
   }
 }
