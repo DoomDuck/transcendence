@@ -1,9 +1,9 @@
 <script lang="ts">
+	export let code: string = '';
+
 	export const CODE_LENGTH = 6;
 
-	export const submit: (code: string) => void = console.log;
-
-	let code: string = '';
+	export let submit: (code: string) => void;
 
 	function updateCode(ev: KeyboardEvent) {
 		if (ev.key == 'Backspace') code = code.slice(0, code.length - 1);

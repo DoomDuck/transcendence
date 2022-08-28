@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { onMount } from 'svelte';
 
 	export let show = false;
 
@@ -16,12 +15,9 @@
 			close();
 		}
 	}
-
-	onMount(() => {
-		window.addEventListener('keydown', handleKeydown);
-		return () => window.removeEventListener('keydown', handleKeydown);
-	});
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 {#if show}
 	<div id="background" on:click={close} />

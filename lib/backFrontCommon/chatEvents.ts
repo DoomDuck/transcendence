@@ -9,8 +9,7 @@ export class LoginEvent {
   static readonly SUCCESS = "login success";
   static readonly FAILURE = "login failure";
   static readonly TOTP_REQUIRED = "totp required";
-  static readonly TOTP_DEMAND_SETUP = "totp demand setup";
-  static readonly TOTP_SETUP = "totp setup";
+  static readonly TOTP_UPDATE = "totp update";
 }
 
 export class GetInfoEvent{
@@ -381,7 +380,6 @@ export interface ServerToClientEvents {
   [LoginEvent.SUCCESS]: () => void;
   [LoginEvent.FAILURE]: () => void;
   [LoginEvent.TOTP_REQUIRED]: (callback: (token: string) => void) => void;
-  [LoginEvent.TOTP_SETUP]: (setup_url: string) => void;
 
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
@@ -404,7 +402,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   // Login
-  [LoginEvent.TOTP_DEMAND_SETUP]: () => void;
+  [LoginEvent.TOTP_UPDATE]: (secret: string | null) => void;
 
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;

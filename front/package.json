@@ -35,6 +35,7 @@
 	"dependencies": {
 		"backFrontCommon": "file:../lib/backFrontCommon",
 		"i": "^0.3.7",
+		"otpauth": "^8.0.2",
 		"pong": "file:../lib/pong",
 		"qrcode": "^1.5.1",
 		"socket.io-client": "^4.5.1"

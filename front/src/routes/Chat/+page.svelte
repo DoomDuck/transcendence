@@ -52,8 +52,6 @@
 	</div>
 
 	<div id="mainContainer">
-		<input class="champ" type="search" placeholder="Search.." />
-
 		<OnlineFriends {friends} />
 		<br />
 		<ConversationLists />
@@ -102,18 +100,8 @@
 		justify-content: left;
 		font-style: normal;
 		color: #fa1ec7;
-		line-height: 150%;
+		line-height: 300%;
 		-webkit-text-stroke: 2px #00bfff;
-		font-size: 2.5em;
-	}
-
-	.champ {
-		height: 40px;
-		width: 80vw;
-		font-size: 0.5%;
-		color: white;
-		background-color: #d9d9d9;
-		margin-right: 2%;
-		margin-left: 2%;
+		font-size: 3em;
 	}
 </style>

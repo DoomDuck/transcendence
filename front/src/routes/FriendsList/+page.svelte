@@ -17,9 +17,6 @@
 
 <div class="friendsList">
 	<h1>Friends List</h1>
-	<form on:submit|preventDefault={nameSearch}>
-		<input type="search" placeholder="search..." />
-	</form>
 	{#each friends as friend}
 		<FriendsListItem {friend} />
 	{/each}
@@ -29,8 +26,8 @@
 	* {
 		font-family: 'Press Start 2P';
 	}
-
 	h1 {
+		text-shadow: unset;
 		color: #0b0b41;
 		-webkit-text-stroke: 2px #a80a2f;
 		font-size: 3em;
@@ -44,23 +41,13 @@
 		}
 	}
 
-	input {
-		height: 40px;
-		width: 80vw;
-		color: rgb(105, 99, 99);
-		background-color: #bdbdbd;
-	}
-
 	.friendsList {
-		background-image: url('/starsSky.png');
-		background-size: cover;
 		width: 100vw;
 		height: 100vh;
-		overflow-y: scroll;
+		overflow-y: auto;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		overflow-y: scroll;
-		gap: 30px;
+		/* gap: 30px; */
 	}
 </style>
