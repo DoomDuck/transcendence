@@ -137,16 +137,21 @@ export class UserService {
     );
     return activeConversationDto;
   }
-   async getUserHistory(socket: Socket):Promise<RequestFeedbackDto<UserHistoryDto>>{
+  async getUserHistory(
+    socket: Socket,
+  ): Promise<RequestFeedbackDto<UserHistoryDto>> {
     const tempUser = this.findOneActiveBySocket(socket);
     if (tempUser) {
-      return {success:true, result:this.channelManagerService.newUserHistoryDto(
-        this.dtoTraductionUserConv(tempUser.activeUserConversation),
-        this.dtoTraductionChannelConv(tempUser.activeChannelConversation),
-      )}
+      return {
+        success: true,
+        result: this.channelManagerService.newUserHistoryDto(
+          this.dtoTraductionUserConv(tempUser.activeUserConversation),
+          this.dtoTraductionChannelConv(tempUser.activeChannelConversation),
+        ),
+      };
     } else {
-		return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-          }
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    }
   }
   async setUsername(socket: Socket, name: string): Promise<ChatFeedbackDto> {
     const userDb = await this.findOneDbBySocket(socket);

@@ -247,9 +247,10 @@ export class AppGateway
   async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
     return await this.userService.handlePostAvatar(socket, avatarInfo);
   }
-	@SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
-  async handleGetHistory(socket: Socket):Promise<RequestFeedbackDto<UserHistoryDto>>
-  {
-		return this.userService.getUserHistory(socket);
+  @SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
+  async handleGetHistory(
+    socket: Socket,
+  ): Promise<RequestFeedbackDto<UserHistoryDto>> {
+    return this.userService.getUserHistory(socket);
   }
 }

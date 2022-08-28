@@ -22,7 +22,22 @@ export class Users {
 			win: 10,
 			score: 10,
 			inGame: false,
-			isOnline: true
+			isOnline: true,
+			ranking: 0,
+			matchHistory: [
+				{
+					opponent: 1,
+					opponentScore: 1,
+					winner: true,
+					score: 3
+				},
+				{
+					opponent: 2,
+					opponentScore: 3,
+					winner: false,
+					score: 0
+				}
+			]
 		});
 		this.map.set(1, {
 			id: 1,
@@ -32,7 +47,9 @@ export class Users {
 			win: 5,
 			score: 0,
 			inGame: false,
-			isOnline: true
+			isOnline: true,
+			ranking: 1,
+			matchHistory: []
 		});
 		this.map.set(2, {
 			id: 2,
@@ -42,7 +59,9 @@ export class Users {
 			win: 0,
 			score: -10,
 			inGame: false,
-			isOnline: true
+			isOnline: true,
+			ranking: 2,
+			matchHistory: []
 		});
 	}
 
@@ -55,7 +74,9 @@ export class Users {
 			win: 0,
 			score: 0,
 			inGame: false,
-			isOnline: false
+			isOnline: false,
+			ranking: 0,
+			matchHistory: []
 		};
 	}
 
@@ -70,7 +91,8 @@ export class Users {
 			inGame: false,
 			blocked: [],
 			friendlist: [],
-			totpSecret: ''
+			totpSecret: '',
+			ranking: 0
 		};
 	}
 
