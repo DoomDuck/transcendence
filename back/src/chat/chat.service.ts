@@ -22,6 +22,7 @@ import {
   ChanInviteRefuse,
   InviteChannelToServer,
   InviteChannelFromServer,
+  DeleteChannelToServer,
   ServerSocket as Socket,
 } from 'backFrontCommon';
 
@@ -355,17 +356,22 @@ export class ChatService {
     );
   }
 
-  // async handleDeleteChannel(socket:Socket, deleteInfo : DeleteChannelToServer)
-  // {
-  // const sender = this.userService.findOneActiveBySocket(socket);
-  // if (!sender)
-  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-  // const channel = await this.channelManagerService.findChanByName(
-  // deleteInfo.channel);
-  // if (!channel)
-  // return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-  // if(!this.channelManagerService.isCreator(sender,channel))
-  // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
-  //
-  // }
+  async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
+    const sender = this.userService.findOneActiveBySocket(socket);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      deleteInfo.channel,
+    );
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+    if (!this.channelManagerService.isCreator(sender, channel))
+      return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
+    channel.member.forEach((member) => {
+      const tempUser = this.userService.findOneActive(member);
+      if (tempUser) this.channelManagerService.leaveChannel(channel, tempUser);
+    });
+    this.channelManagerService.deleteChannel(channel);
+    return { success: true };
+  }
 }

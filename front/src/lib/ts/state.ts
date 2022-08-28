@@ -9,8 +9,8 @@ import type {
 import { goto } from '$app/navigation';
 import type { GameParams } from './gameParams';
 import * as gameInvite from './gameInvite';
+import { DMFromServer } from 'backFrontCommon';
 import type {
-	DMFromServer,
 	GameAcceptFromServer,
 	GameCancelFromServer,
 	GameInviteFromServer,
@@ -58,6 +58,7 @@ class State {
 	}
 
 	onLoginSuccess() {
+		// onMsgToUser(new DMFromServer(77106, 'salut'));
 		this.socket.emit(GetInfoEvent.MY_INFO, this.onMyInfoResult.bind(this));
 		this.socket.emit(ChatEvent.GET_CHAT_HISTORY, this.onGetChatHistory.bind(this));
 		goto(LOGGIN_SUCCESS_ROUTE);

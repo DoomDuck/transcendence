@@ -30,6 +30,7 @@ import type {
   UserInfo,
   MatchInfoFromServer,
   SetPasswordToServer,
+  DeleteChannelToServer,
   SetUsernameToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
@@ -264,5 +265,10 @@ export class AppGateway
     const user = await this.userService.findOneActive(target);
     const inGame = user?.inGame ?? false;
     return { success: true, result: inGame };
+  }
+
+  @SubscribeMessage(ChatEvent.DELETE_CHANNEL)
+  async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
+    return this.chatService.handleDeleteChannel(socket, deleteInfo);
   }
 }

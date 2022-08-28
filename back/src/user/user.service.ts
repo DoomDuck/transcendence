@@ -279,6 +279,7 @@ export class UserService {
     this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
 
     if (activeUser) {
+	  this.updateChannelConversation(activeUser,activeUser,channel)
       logger.log(
         `la active name = ${activeUser.name} channel name = ${channel.name}`,
       );
@@ -359,7 +360,7 @@ export class UserService {
     sender: ActiveUser,
     user: ActiveUser,
     channel: Channel,
-    content: string,
+    content?: string,
   ) {
     // This shouldn't be tested as undefined should not be a possible value
     if (sender === undefined || user === undefined) return;
@@ -368,15 +369,24 @@ export class UserService {
     );
     if (tempUserConversation)
       tempUserConversation.history.push(
-        new ChatMessage(sender.id, content, sender === user),
+        new ChatMessage(sender.id, content!, sender === user),
       );
     else
+		{
+			if(content)
       user.activeChannelConversation.push(
         new ActiveConversation(
           channel.name,
           new ChatMessage(sender.id, content, sender === user),
         ),
       );
+	  else
+		user.activeChannelConversation.push(
+        new ActiveConversation(
+          channel.name,
+        ),
+      );
+		}
   }
 
   // Update user totpSecret (to enable or disable it)

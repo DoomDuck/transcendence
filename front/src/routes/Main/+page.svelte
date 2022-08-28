@@ -6,7 +6,11 @@
 </script>
 
 <nav id="menu">
+<<<<<<< HEAD
+	<div id='options'>
+=======
 	<div id="options">
+>>>>>>> origin/front
 		<h1 class="typography" style="color: {color}">Transcendence</h1>
 		<h4 class="typography" style="color: {color}">
 			<a href="/StartAGame">Game</a>

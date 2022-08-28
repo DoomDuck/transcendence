@@ -2,11 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Id, MuteUserFromServer } from 'backFrontCommon';
 import { ChatEvent } from 'backFrontCommon';
 import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
 import { ActiveUser } from '../user/user.service';
 import { ChatError } from 'backFrontCommon';
-import { ChatFeedbackDto } from '../chat/chatFeedback.dto';
-import { ChannelCategory } from 'backFrontCommon';
+import { ChannelCategory,ChatFeedbackDto  } from 'backFrontCommon';
 import * as bcrypt from 'bcrypt';
 import { Server as IOServerBaseType } from 'socket.io';
 import type { CreateChannelToServer } from 'backFrontCommon';
@@ -318,10 +316,7 @@ export class ChannelManagerService {
     );
     return { success: true };
   }
-  // deleteChannel(user:User, channel:Channel)
-  // {
-  // if(!this.isCreator(user,channel))
-  // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
-  // channel.member.forEach((member)=> this.leaveChannel(channel,this.))
-  // }
+  deleteChannel(channel: Channel) {
+    this.channelRepository.delete(channel.name);
+  }
 }
