@@ -184,6 +184,8 @@ export class GameEvent {
   static readonly OBSERVER_UPDATE = "observerUpdate";
   // playerId: number
   static readonly PLAYER_ID_CONFIRMED = "playerIdConfirmed";
+  // score: [number, number]
+  static readonly GAME_OVER = "gameOver";
 }
 
 export enum KeyValue {

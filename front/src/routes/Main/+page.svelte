@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { users } from '$lib/ts/users';
+	import { delay } from 'pong/common/utils';
 
 	let color: string = '#6028FF';
 </script>
@@ -15,7 +16,7 @@
 	<h4 class="typography" style="color: {color}">
 		<a href="/Parameters">Parameters</a>
 	</h4>
-	{#await $users.findOrFetchMyself() then user}
+	{#await delay(1000).then(() => $users.findOrFetchMyself()) then user}
 		<p style="color: white">(DEBUG) My id is {user.id}</p>
 	{/await}
 </nav>
