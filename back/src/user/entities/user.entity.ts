@@ -53,7 +53,6 @@ export class User {
   // public avatar?: DatabaseFile;
   // @Column({ nullable: true })
   // public avatarId?: Id;
-  @JoinTable()
   @ManyToMany(() => Match, (match) => match.player)
   @JoinTable()
   match!: Match[];

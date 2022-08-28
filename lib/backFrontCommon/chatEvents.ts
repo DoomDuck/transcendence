@@ -420,5 +420,5 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_OBSERVE]: (gameId: Id) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
-  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer,  ) => void;
 }
