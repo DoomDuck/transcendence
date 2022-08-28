@@ -16,7 +16,7 @@
 		<a href="/Parameters">Parameters</a>
 	</h4>
 	{#await $users.findOrFetchMyself() then user}
-		<p>(DEBUG) My id is {user.id}</p>
+		<p style="color: white">(DEBUG) My id is {user.id}</p>
 	{/await}
 </nav>
 
