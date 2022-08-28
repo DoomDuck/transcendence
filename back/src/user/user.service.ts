@@ -36,7 +36,10 @@ export class ActiveUser {
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite = false;
-  inGame = false;
+  get inGame(): boolean {
+    return this.numberOfCurrentGames > 0;
+  }
+  numberOfCurrentGames = 0;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
@@ -50,7 +53,6 @@ export class ActiveUser {
       socket.emit(event, ...args);
     });
   }
-  numberOfCurrentGames = 0;
 }
 export class ChatMessage {
   constructor(

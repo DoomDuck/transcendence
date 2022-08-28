@@ -19,6 +19,7 @@ export class GetInfoEvent{
   static readonly MY_MATCH = "my match info";
   static readonly USER_MATCH = "user match info";
   static readonly ALL_MATCH = "all match info";
+  static readonly IS_IN_GAME = "is in game";
 }
 
 export class ChatEvent {
@@ -315,7 +316,7 @@ export class UserInfo  {
     public ranking: number,
     public avatar: string | null,
     public isOnline: boolean,
-    public inGame:boolean,
+    public inGame: boolean,
     public matchHistory: RelativeMatchInfoFromServer[]
   ) { }
 };
@@ -347,6 +348,10 @@ export class MuteUserFromServer {
     public duration:number,
   ) { }
 };
+
+export class IsInGameToServer {
+  constructor(public target: Id) { }
+}
 
 export class ChatFeedbackDto {
   constructor(
@@ -406,6 +411,7 @@ export interface ClientToServerEvents {
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
+  [GetInfoEvent.IS_IN_GAME]: (dto: IsInGameToServer, callback: FeedbackCallbackWithResult<boolean>) => void;
 
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMToServer, callback: FeedbackCallback) => void;
@@ -424,7 +430,7 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
   [ChatEvent.GAME_OBSERVE]: (gameId: Id) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
-  [ChatEvent.BANNED_NOTIF]: (dto:BanUserToServer) => void;
-  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserToServer ) => void;
+  [ChatEvent.BANNED_NOTIF]: (dto: BanUserToServer) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto: MuteUserToServer ) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
 }

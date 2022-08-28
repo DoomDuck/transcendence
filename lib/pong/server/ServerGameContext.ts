@@ -166,8 +166,8 @@ export class ServerGameContext {
       observer.emit(GameEvent.GAME_OVER, score);
     }
     clearInterval(this.gameLoopHandle);
-    this.onFinish(score[0], score[1]);
     this.onFinally();
+    this.onFinish(score[0], score[1]);
   }
 
   handlePlayerDisconnect(playerId: number) {
@@ -175,6 +175,7 @@ export class ServerGameContext {
     for (let observer of this.observers) {
       observer.emit(GameEvent.PLAYER_DISCONNECT, playerId);
     }
+    clearInterval(this.gameLoopHandle);
     this.onFinally();
   }
 }

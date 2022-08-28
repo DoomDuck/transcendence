@@ -80,18 +80,23 @@ export class GameManagerService {
       playerSockets = [playerSockets[1], playerSockets[0]];
 
     const onFinish = async (score1: number, score2: number) => {
-      const playerPromises = playerSockets.map((playerSocket) =>
-        this.userService.findOneDbBySocket(playerSocket),
+      const players = await Promise.all(
+        playerSockets.map((playerSocket) =>
+          this.userService.findOneDbBySocket(playerSocket),
+        ),
       );
-      const players = await Promise.all(playerPromises);
       if (players[0] === null || players[1] === null) return;
       this.matchHistoryService.addOneMatch(
         [players[0]!, players[1]!],
         [score1, score2],
       );
     };
-    const onFinally = () => {
+    const onFinally = async () => {
       removeIfPresent(this.games, gameInstance);
+      playerSockets.forEach((playerSocket) => {
+        const activeUser = this.userService.findOneActiveBySocket(playerSocket);
+        if (activeUser !== undefined) activeUser.numberOfCurrentGames--;
+      });
     };
     const gameInstance: ServerGameContext = new ServerGameContext(
       playerSockets,
@@ -101,6 +106,10 @@ export class GameManagerService {
     );
     this.games.push(gameInstance);
     for (let i = 0; i < 2; i++) {
+      const activeUser = this.userService.findOneActiveBySocket(
+        playerSockets[i],
+      );
+      if (activeUser !== undefined) activeUser.numberOfCurrentGames++;
       playerSockets[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
         playerSockets[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
           this.logger.log(`player ${i} ready`);

@@ -6,7 +6,7 @@ import {
 	type MyInfo,
 	GetInfoEvent
 } from 'backFrontCommon';
-import { readable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import { state } from './state';
 
 export class Users {
@@ -22,8 +22,8 @@ export class Users {
 			loose: 0,
 			win: 10,
 			score: 10,
-			inGame: false,
 			isOnline: true,
+			inGame: true,
 			ranking: 0,
 			matchHistory: [
 				{
@@ -47,8 +47,8 @@ export class Users {
 			loose: 5,
 			win: 5,
 			score: 0,
-			inGame: false,
 			isOnline: true,
+			inGame: true,
 			ranking: 1,
 			matchHistory: []
 		});
@@ -59,8 +59,8 @@ export class Users {
 			loose: 10,
 			win: 0,
 			score: -10,
-			inGame: false,
 			isOnline: true,
+			inGame: true,
 			ranking: 2,
 			matchHistory: []
 		});
@@ -74,8 +74,8 @@ export class Users {
 			loose: 0,
 			win: 0,
 			score: 0,
-			inGame: false,
 			isOnline: false,
+			inGame: true,
 			ranking: 0,
 			matchHistory: []
 		};
@@ -129,5 +129,21 @@ async function fetchMe(): Promise<MyInfo> {
 	else return Users.errorMe();
 }
 
-export const usersObject = new Users();
-export const users = readable(usersObject);
+export let usersObject = new Users();
+export const users = writable(usersObject);
+users.subscribe((_) => (usersObject = _));
+
+export async function isInGame(userId: Id): Promise<boolean> {
+	const feedback: RequestFeedbackDto<boolean> = await new Promise((resolve) => {
+		state.socket.emit(GetInfoEvent.IS_IN_GAME, { target: userId }, resolve);
+	});
+	if (feedback.success) return feedback.result!;
+	else return false;
+}
+
+export async function refreshIngameStatus(userId: number) {
+	const user = await usersObject.findOrFetch(userId);
+	user.inGame = await isInGame(userId);
+	console.log(`user.inGame = ${user.inGame}`);
+	users.update((_) => _);
+}

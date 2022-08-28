@@ -1,6 +1,13 @@
 <script lang="ts">
 	import type { UserInfo } from 'backFrontCommon';
+	import { onMount } from 'svelte';
+	import { isInGame, refreshIngameStatus } from './ts/users';
 	export let user: UserInfo;
+
+	$: userInGame = user.inGame;
+	onMount(() => {
+		isInGame(user.id).then((inGame) => (userInGame = inGame));
+	});
 </script>
 
 <div>
@@ -17,6 +24,7 @@
 	{#each user.matchHistory as { opponent, winner, score, opponentScore }}
 		<p class="gameHistory">{opponent}: {winner ? 'Won' : 'Lost'} ({score} - {opponentScore})</p>
 	{/each}
+	<p>Status: {userInGame ? 'In game' : 'Not in game'}</p>
 </div>
 
 <style>

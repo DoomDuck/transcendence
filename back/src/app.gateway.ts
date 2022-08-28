@@ -12,6 +12,8 @@ import {
   PostAvatar,
   MatchInfoToServer,
   UserInfoToServer,
+  Id,
+  IsInGameToServer,
 } from 'backFrontCommon';
 import type {
   UserHistoryDto,
@@ -248,5 +250,15 @@ export class AppGateway
   @SubscribeMessage(ChatEvent.QUIT_MATCHMAKING)
   async handleQuitMatchmaking(socket: Socket) {
     this.gameManagerService.handleQuitMatchmaking(socket);
+  }
+
+  @SubscribeMessage(GetInfoEvent.IS_IN_GAME)
+  async handleIsInGame(
+    socket: Socket,
+    { target }: IsInGameToServer,
+  ): Promise<RequestFeedbackDto<boolean>> {
+    const user = await this.userService.findOneActive(target);
+    const inGame = user?.inGame ?? false;
+    return { success: true, result: inGame };
   }
 }
