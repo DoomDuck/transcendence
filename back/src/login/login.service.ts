@@ -100,7 +100,7 @@ export class LoginService {
     //     await this.userService.updateTotp(userInDb, totp.secret.hex);
     // }
   }
-  
+
   onTotpDisable(socket: Socket) {
     // this.userService.updateTotp()
   }
@@ -144,7 +144,9 @@ export class LoginService {
         ...TOTP_DESCRIPTION,
       });
       this.clientsRequiringTotp.set(socket, { totp, user });
-      socket.emit(LoginEvent.TOTP_REQUIRED, (token) => this.onTotpCheck(socket, token));
+      socket.emit(LoginEvent.TOTP_REQUIRED, (token) =>
+        this.onTotpCheck(socket, token),
+      );
     }
   }
 

@@ -3,7 +3,7 @@ import type { GameInviteToServer, Id } from 'backFrontCommon';
 import { state } from '$lib/ts/state';
 import { PopupCategory, popups, popupMethods } from './popups';
 import type { CanBePopup } from './popups';
-import  { usersObject } from './users';
+import { usersObject } from './users';
 import type { GameInviteFromServer } from 'backFrontCommon/chatEvents';
 
 function _modeString(classic: boolean) {

@@ -9,15 +9,11 @@ import {
 import { Id } from 'backFrontCommon';
 import { ChannelCategory } from 'backFrontCommon';
 
-export class BannedUser
-{
-	constructor(public unbanDate: Date, public userId:Id)
-	{}
+export class BannedUser {
+  constructor(public unbanDate: Date, public userId: Id) {}
 }
-export class MutedUser
-{
-	constructor(public unmuteDate: Date, public userId:Id)
-	{}
+export class MutedUser {
+  constructor(public unmuteDate: Date, public userId: Id) {}
 }
 
 @Entity('Channel')

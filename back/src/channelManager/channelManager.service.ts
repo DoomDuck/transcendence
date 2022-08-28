@@ -21,7 +21,7 @@ import {
   UserHistoryDto,
 } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
-import { Channel,BannedUser,MutedUser} from './channel.entity';
+import { Channel, BannedUser, MutedUser } from './channel.entity';
 type Server = IOServerBaseType<ClientToServerEvents, ServerToClientEvents>;
 
 @Injectable()
@@ -43,36 +43,32 @@ export class ChannelManagerService {
     else return false;
   }
   isBanned(user: ActiveUser, channel: Channel): boolean {
-	  const banInfo =channel.banned.find((bannedList) => bannedList.userId === user.id);
-	  const newDate = new Date();
-    if (banInfo === undefined)
-      return false;
-    else 
-		{
-			if (banInfo.unbanDate.getTime()>  newDate.getTime())
-				return true
-			else
-				{
-					this.unBanUser(user,channel);
-					return false;
-				}
-		}
+    const banInfo = channel.banned.find(
+      (bannedList) => bannedList.userId === user.id,
+    );
+    const newDate = new Date();
+    if (banInfo === undefined) return false;
+    else {
+      if (banInfo.unbanDate.getTime() > newDate.getTime()) return true;
+      else {
+        this.unBanUser(user, channel);
+        return false;
+      }
+    }
   }
   isMuted(user: ActiveUser, channel: Channel): boolean {
-	  const muteInfo =channel.muted.find((mutedList) => mutedList.userId === user.id);
-	  const newDate = new Date();
-    if (muteInfo === undefined)
-      return false;
-    else 
-		{
-			if (muteInfo.unmuteDate.getTime()>  newDate.getTime())
-				return true
-			else
-				{
-					this.unMuteUser(user,channel);
-					return false;
-				}
-		}
+    const muteInfo = channel.muted.find(
+      (mutedList) => mutedList.userId === user.id,
+    );
+    const newDate = new Date();
+    if (muteInfo === undefined) return false;
+    else {
+      if (muteInfo.unmuteDate.getTime() > newDate.getTime()) return true;
+      else {
+        this.unMuteUser(user, channel);
+        return false;
+      }
+    }
   }
   isMember(user: ActiveUser, channel: Channel): boolean {
     if (channel.member.find((users) => user.id === users) != undefined)
@@ -86,20 +82,13 @@ export class ChannelManagerService {
     this.logger.log('createChan');
     this.logger.log(chanInfo.channel);
     this.logger.log(chanInfo.password);
-    if (chanInfo.category === ChannelCategory.PROTECTED)
-		{
-		const hash = await bcrypt.hash(chanInfo.password!, 10);
-    	this.logger.log(`hash = ${hash}`);
+    if (chanInfo.category === ChannelCategory.PROTECTED) {
+      const hash = await bcrypt.hash(chanInfo.password!, 10);
+      this.logger.log(`hash = ${hash}`);
       return this.channelRepository.save(
-        new Channel(
-          chanInfo.channel,
-          activeUser.id,
-          chanInfo.category,
-		  hash,
-        ),
+        new Channel(chanInfo.channel, activeUser.id, chanInfo.category, hash),
       );
-		}
-    else
+    } else
       return this.channelRepository.save(
         new Channel(chanInfo.channel, activeUser.id, chanInfo.category),
       );
@@ -160,10 +149,12 @@ export class ChannelManagerService {
     if (channel.category === ChannelCategory.PRIVATE)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
     if (channel.category === ChannelCategory.PROTECTED) {
-		this.logger.debug(`password = ${password}`)
-		this.logger.debug(`hash password = ${ await bcrypt.hash(password!,10)}`)
-		this.logger.debug(`result ${ await bcrypt.compare(password!, channel.passHash!)}`)
-      if (!password || (!await bcrypt.compare(password, channel.passHash!)))
+      this.logger.debug(`password = ${password}`);
+      this.logger.debug(`hash password = ${await bcrypt.hash(password!, 10)}`);
+      this.logger.debug(
+        `result ${await bcrypt.compare(password!, channel.passHash!)}`,
+      );
+      if (!password || !(await bcrypt.compare(password, channel.passHash!)))
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
     this.logger.log(`user == ${user.id}added`);
@@ -185,7 +176,7 @@ export class ChannelManagerService {
     this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
   }
-  
+
   async setPassword(
     user: ActiveUser,
     channel: Channel,
@@ -225,7 +216,7 @@ export class ChannelManagerService {
     if (!sender) return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
     if (!channel.member.find((id) => id === sender.id))
       return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
-	if(this.isMuted(sender, channel))
+    if (this.isMuted(sender, channel))
       return new ChatFeedbackDto(false, ChatError.YOU_ARE_MUTED);
     return true;
   }
@@ -237,10 +228,10 @@ export class ChannelManagerService {
     duration: number,
     wss: Server,
   ): ChatFeedbackDto {
-	  const d = new Date();
+    const d = new Date();
     if (channel.admin.find((admin) => admin === sender.id) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
-    if (this.isBanned(target,channel) != undefined)
+    if (this.isBanned(target, channel) != undefined)
       return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
     else {
       target.socketUser.forEach((socket) =>
@@ -251,14 +242,16 @@ export class ChannelManagerService {
             new BanUserFromServer(channel.name, sender.id, duration),
           ),
       );
-      channel.banned.push(new BannedUser(new Date(d.getTime() + duration),target.id),);
+      channel.banned.push(
+        new BannedUser(new Date(d.getTime() + duration), target.id),
+      );
       this.channelRepository.update(channel.name, { banned: channel.banned });
       return new ChatFeedbackDto(true);
     }
   }
 
   unBanUser(user: ActiveUser, channel: Channel): ChatFeedbackDto {
-	  const banInfo = channel.banned.find((banned) => user.id === banned.userId);
+    const banInfo = channel.banned.find((banned) => user.id === banned.userId);
     if (banInfo === undefined)
       return new ChatFeedbackDto(false, ChatError.NOT_BANNED);
     else {
@@ -268,7 +261,7 @@ export class ChannelManagerService {
     }
   }
   unMuteUser(user: ActiveUser, channel: Channel): ChatFeedbackDto {
-	  const muteInfo = channel.muted.find((muted) => user.id === muted.userId);
+    const muteInfo = channel.muted.find((muted) => user.id === muted.userId);
     if (muteInfo === undefined)
       return new ChatFeedbackDto(false, ChatError.NOT_MUTED);
     else {
@@ -284,11 +277,10 @@ export class ChannelManagerService {
     duration: number,
     wss: Server,
   ): ChatFeedbackDto {
-
-	  const d = new Date();
+    const d = new Date();
     if (channel.admin.find((admin) => admin === sender.id) === undefined)
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
-    if (this.isMuted(target,channel))
+    if (this.isMuted(target, channel))
       return new ChatFeedbackDto(false, ChatError.ALREADY_MUTED);
     else {
       target.socketUser.forEach((socket) =>
@@ -299,7 +291,9 @@ export class ChannelManagerService {
             new MuteUserFromServer(channel.name, sender.id, duration),
           ),
       );
-      channel.muted.push(new MutedUser(new Date(d.getTime() + duration),target.id),);
+      channel.muted.push(
+        new MutedUser(new Date(d.getTime() + duration), target.id),
+      );
       this.channelRepository.update(channel.name, { muted: channel.muted });
       return new ChatFeedbackDto(true);
     }
@@ -326,8 +320,8 @@ export class ChannelManagerService {
   }
   // deleteChannel(user:User, channel:Channel)
   // {
-	// if(!this.isCreator(user,channel))
-	   // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
-	// channel.member.forEach((member)=> this.leaveChannel(channel,this.))
+  // if(!this.isCreator(user,channel))
+  // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
+  // channel.member.forEach((member)=> this.leaveChannel(channel,this.))
   // }
 }

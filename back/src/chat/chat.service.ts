@@ -72,8 +72,8 @@ export class ChatService {
     const tempChan = await this.channelManagerService.findChanByName(
       chanInfo.channel,
     );
-	if(tempChan != undefined)
-	return this.channelManagerService.newChatFeedbackDto(
+    if (tempChan != undefined)
+      return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.CHANNEL_ALREADY_EXISTS,
       );
@@ -100,7 +100,7 @@ export class ChatService {
     const tempChannel = await this.channelManagerService.findChanByName(
       dto.channel,
     );
-    
+
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
@@ -137,7 +137,9 @@ export class ChatService {
     );
     const tempUser = this.userService.findOneActiveBySocket(clientSocket);
 
-    this.logger.log(`any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`);
+    this.logger.log(
+      `any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`,
+    );
     if (!tempChan) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -153,7 +155,7 @@ export class ChatService {
     const feedback = await this.channelManagerService.joinChan(
       tempUser,
       tempChan,
-	  joinInfo.password,
+      joinInfo.password,
     );
     if (feedback.success === true) {
       this.logger.log(`joining chanUSer `);
@@ -184,7 +186,11 @@ export class ChatService {
       dm.content,
       target,
     );
-	this.logger.debug(`active history = ${JSON.stringify(await this.userService.getUserHistory(clientSocket))}`)
+    this.logger.debug(
+      `active history = ${JSON.stringify(
+        await this.userService.getUserHistory(clientSocket),
+      )}`,
+    );
     return feedback;
   }
 
@@ -351,15 +357,15 @@ export class ChatService {
 
   // async handleDeleteChannel(socket:Socket, deleteInfo : DeleteChannelToServer)
   // {
-	// const sender = this.userService.findOneActiveBySocket(socket);
-    // if (!sender)
-      // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    // const channel = await this.channelManagerService.findChanByName(
-      // deleteInfo.channel);
-    // if (!channel)
-      // return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-	// if(!this.channelManagerService.isCreator(sender,channel))
-	   // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
-//
+  // const sender = this.userService.findOneActiveBySocket(socket);
+  // if (!sender)
+  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  // const channel = await this.channelManagerService.findChanByName(
+  // deleteInfo.channel);
+  // if (!channel)
+  // return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+  // if(!this.channelManagerService.isCreator(sender,channel))
+  // return {success:false, errorMessage:ChatError.INSUFICIENT_PERMISSION}
+  //
   // }
 }

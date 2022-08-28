@@ -1,6 +1,11 @@
 import { io } from 'socket.io-client';
 import { LoginEvent, ChatEvent, GetInfoEvent } from 'backFrontCommon';
-import type { ClientSocket as Socket, CMFromServer, UserInfo, RequestFeedbackDto } from 'backFrontCommon';
+import type {
+	ClientSocket as Socket,
+	CMFromServer,
+	UserInfo,
+	RequestFeedbackDto
+} from 'backFrontCommon';
 import { goto } from '$app/navigation';
 import type { GameParams } from './gameParams';
 import * as gameInvite from './gameInvite';
@@ -10,7 +15,7 @@ import type {
 	GameCancelFromServer,
 	GameInviteFromServer,
 	GameRefuseFromServer,
-    MyInfo
+	MyInfo
 } from 'backFrontCommon/chatEvents';
 import type { InviteChannelFromServer } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from './chatUtils';
@@ -40,7 +45,7 @@ class State {
 	get loggedIn(): boolean {
 		return this.connected && !this.requireTotp;
 	}
-	
+
 	get myInfo(): MyInfo {
 		if (this.safeMyInfo) return this.safeMyInfo;
 		throw new Error('MyInfo is not initialized');
@@ -52,17 +57,17 @@ class State {
 		this.safeSocket = io('http://localhost:5000/', { auth: { code } });
 		this.setupHooks();
 	}
-	
+
 	onLoginSuccess() {
 		this.socket.emit(GetInfoEvent.MY_INFO, this.onMyInfoResult.bind(this));
 		goto(LOGGIN_SUCCESS_ROUTE);
 	}
-	
+
 	onLoginFailure() {
 		this.disconnect();
 		goto(LOGGIN_ROUTE);
 	}
-		
+
 	setupHooks() {
 		this.socket.on('connect_error', this.onConnectError.bind(this));
 		this.socket.on('disconnect', this.onDisconnect.bind(this));
@@ -94,7 +99,7 @@ class State {
 		this.socket.disconnect();
 		this.safeSocket = null;
 	}
-	
+
 	sendTotpToken(token: string) {
 		if (!this.resolveTotpRequired) throw new Error('No pending totp requirements');
 		this.resolveTotpRequired(token);
@@ -116,12 +121,11 @@ class State {
 		this.resolveTotpRequired = callback;
 		goto(LOGGIN_TOTP_ROUTE);
 	}
-	
+
 	onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
 		console.log(feedback);
-		if (feedback.success && feedback.result)
-			this.safeMyInfo = feedback.result;
-		else console.error("Could not get user info");
+		if (feedback.success && feedback.result) this.safeMyInfo = feedback.result;
+		else console.error('Could not get user info');
 	}
 
 	onGotoGameScreen(classic: boolean, ready: () => void) {
@@ -170,4 +174,3 @@ function onGameRefuse(message: GameRefuseFromServer) {
 function onGameCancel(message: GameCancelFromServer) {
 	gameInvite.revokeReceived(message.source);
 }
-

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resize, uploadAvatar } from '$lib/ts/avatar';
 
-	export let name: string ;
+	export let name: string;
 	export let avatar: string | null = null;
 
 	let fileinput: HTMLInputElement;
