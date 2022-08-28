@@ -70,4 +70,8 @@
 		align-items: center;
 		padding: 0.5vw;
 	}
+	h2{
+		font-family: 'Lato', sans-serif;
+		font-size: 1.5em;
+	}
 </style>
