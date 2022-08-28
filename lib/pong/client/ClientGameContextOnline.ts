@@ -8,10 +8,16 @@ import { ClientGameContext } from "./ClientGameContext";
  * ClientGameContextOnlinePlayer and ClientGameContextOnlineObserver
  */
 export abstract class ClientGameContextOnline extends ClientGameContext {
+  lastGoalPlayerId: number = -1;
   constructor(public socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
     super(onFinish, onError);
 
     this.transmitEventFromServerToGame(GameEvent.RESET);
+    socket.on(GameEvent.RESET, () => {
+      if (this.lastGoalPlayerId >= 0)
+        this.gameManager.renderer.scorePanels.goalAgainst(this.lastGoalPlayerId);
+      this.gameManager.renderer.victoryAnimation = undefined;
+    })
     this.transmitEventFromServerToGame(GameEvent.GOAL);
     this.socket.on(GameEvent.GOAL, (playerId: number) => {
       this.handleGoal(playerId);
@@ -32,15 +38,7 @@ export abstract class ClientGameContextOnline extends ClientGameContext {
     const game = this.gameManager.game;
     const renderer = this.gameManager.renderer;
     game.pause();
-    renderer
-      .startVictoryAnimationAsync()
-      .then(() => renderer.scorePanels.goalAgainst(playerId))
-      .then(() => {
-        if (game.isOver()) {
-          this.handleEndOfGame();
-        } else {
-          this.socket.emit(GameEvent.READY);
-        }
-      });
+    renderer.startVictoryAnimationAsync();
+    this.lastGoalPlayerId = playerId;
   }
 }

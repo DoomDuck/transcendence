@@ -7,7 +7,7 @@
 </script>
 
 <div id="profile">
-	<div id='informations'>
+	<div id="informations">
 		<AvatarIcon type={'user'} imageURL={user.avatar ?? 'errorUser.png'} />
 		<h3>{user.name}</h3>
 		<div>ID: {user.id}</div>
@@ -26,7 +26,7 @@
 		text-align: center;
 		text-align: center;
 	}
-	#informations{
+	#informations {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

@@ -391,7 +391,7 @@ export class UserService {
 
   // Update user totpSecret (to enable or disable it)
   async updateTotp(userId: Id, totpSecret: string | null) {
-    await this.usersRepository.update({ id: userId}, { totpSecret });
+    await this.usersRepository.update({ id: userId }, { totpSecret });
   }
 
   disconnection(clientSocket: Socket) {

@@ -16,6 +16,7 @@
 		goto('/ChooseGameMode');
 	}
 </script>
+
 <div id="main">
 	<div id="startGame">
 		<h4><div on:click={() => play(true, false, true)}>Play Online</div></h4>
@@ -27,20 +28,20 @@
 </div>
 
 <style>
-	#main{
+	#main {
 		width: 100%;
 		height: 100%;
-		display:  flex;
+		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
-	#startGame{
+	#startGame {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
 	}
-	h4{
+	h4 {
 		font-size: 1.7em;
 	}
 	h4:hover {
@@ -49,8 +50,7 @@
 		text-align: center;
 	}
 
-	a{
+	a {
 		all: unset;
 	}
-
 </style>

@@ -17,20 +17,26 @@
 	});
 </script>
 
-<div class="popup">
-	<div
-		class="alert {popup.popupCategory} alert-dismissible fade show"
-		role="alert"
-		style="margin: 0"
-	>
-		{popup.text}
-		{#if popup.hasButton}
-			<button type="button" class="btn btn-primary text-right" bind:this={acceptButton}
-				>{popup.buttonLabel}</button
-			>
-		{/if}
-		<button type="button" aria-label="Close" bind:this={closeButton}>
-			<span aria-hidden="true">&times;</span>
-		</button>
-	</div>
+<div class="alert {popup.popupCategory}">
+	{popup.text}
+	{#if popup.hasButton}
+		<button type="button" bind:this={acceptButton}>{popup.buttonLabel}</button>
+	{/if}
+	<button type="button" aria-label="Close" bind:this={closeButton}>
+		<span aria-hidden="true">&times;</span>
+	</button>
 </div>
+
+<style>
+	.alert {
+		margin-bottom: 5px;
+	}
+
+	.alert-warning {
+		background-color: #fff3cd;
+	}
+
+	.alert-error {
+		background-color: #f8d7da;
+	}
+</style>

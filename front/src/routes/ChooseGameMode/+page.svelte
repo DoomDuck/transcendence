@@ -13,23 +13,24 @@
 		else goto('/Play');
 	}
 </script>
-<div id='gameModes'>
-	<div id='options'>
+
+<div id="gameModes">
+	<div id="options">
 		<h4><div on:click={() => play(true)}>Classic</div></h4>
 		<h4><div on:click={() => play(false)}>Weird</div></h4>
 	</div>
 </div>
 
 <style>
-	#gameModes{
-		width:100%;
-		height:100%;
+	#gameModes {
+		width: 100%;
+		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
-	#options{
-		display:flex;
+	#options {
+		display: flex;
 		flex-direction: column;
 		align-items: center;
 	}

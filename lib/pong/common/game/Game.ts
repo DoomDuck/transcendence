@@ -21,7 +21,7 @@ export class Game {
   score: [number, number] = [0, 0];
   elapsedTimeMeasurer: ElapsedTimeMeasurer = new ElapsedTimeMeasurer();
   timeAccumulated: number = 0;
-  incommingEventsCallback: Map<string, any>;
+  eventsCallback: Map<string, any>;
 
   constructor() {
     const eventsCallbackPairs: [string, any][] = [
@@ -48,15 +48,15 @@ export class Game {
         },
       ],
     ];
-    this.incommingEventsCallback = new Map(eventsCallbackPairs);
+    this.eventsCallback = new Map(eventsCallbackPairs);
   }
 
   on(event: string, callback: any) {
-    this.incommingEventsCallback.set(event, callback);
+    this.eventsCallback.set(event, callback);
   }
 
   emit(event: string, ...args: any[]) {
-    this.incommingEventsCallback.get(event)?.call(this, ...args);
+    this.eventsCallback.get(event)?.call(this, ...args);
   }
 
   reset(ballX: number, ballY: number, ballSpeedX: number, ballSpeedY: number) {

@@ -28,9 +28,7 @@
 			on:blur={handleBlur}
 			required
 		/>
-		<input bind:value={password} 
-			placeholder="Optionnal password"
-		/>
+		<input bind:value={password} placeholder="Optionnal password" />
 		<input type="submit" value="Join channel" />
 	</form>
 </Modal>

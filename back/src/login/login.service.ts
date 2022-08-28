@@ -87,7 +87,7 @@ export class LoginService {
   // @SubscribeMessage(LoginEvent.TOTP_UPDATE)
   async onTotpUpdate(socket: Socket, secret: string | null) {
     const user = this.userService.findOneActiveBySocket(socket);
-    if (!user) throw new Error("Could not find connected user");
+    if (!user) throw new Error('Could not find connected user');
     this.userService.updateTotp(user.id, secret);
   }
 

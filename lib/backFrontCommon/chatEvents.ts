@@ -80,6 +80,7 @@ export class ChatError {
   static readonly NOT_MUTED ="user not muted";
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
   static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
+  static readonly USER_NOT_IN_GAME = "user not in game";
 }
 
 export class DMFromServer  {
@@ -385,7 +386,7 @@ export interface ServerToClientEvents {
   [LoginEvent.SUCCESS]: () => void;
   [LoginEvent.FAILURE]: () => void;
   [LoginEvent.TOTP_REQUIRED]: (callback: (token: string) => void) => void;
-  
+
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMFromServer) => void;
   [ChatEvent.MSG_TO_CHANNEL]: (dto: CMFromServer) => void;
@@ -408,7 +409,6 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   // Login
   [LoginEvent.TOTP_UPDATE]: (secret: string | null) => void;
-  
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
@@ -429,7 +429,7 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
-  [ChatEvent.GAME_OBSERVE]: (gameId: Id) => void;
+  [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
   [ChatEvent.BANNED_NOTIF]: (dto: BanUserToServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto: MuteUserToServer ) => void;

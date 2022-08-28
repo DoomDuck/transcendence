@@ -33,8 +33,7 @@
 </div>
 
 <style>
-
-	#leaderboard{
+	#leaderboard {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -45,7 +44,7 @@
 		flex-direction: column;
 	}
 
-	.user{
+	.user {
 		font-family: 'Press start 2P';
 		display: flex;
 		flex-direction: row;

@@ -22,14 +22,12 @@
 
 	onMount(() => {
 		const onFinish = () => {
-			// SHOW THE FINISH SCREEN
-			// DO THINGS
-			// E.G.
 			visibilities = ['hidden', 'visible'];
+			delay(1000).then(() => goto('/Main'));
 		};
 		const onError = (message: string) => {
-			delay(1000).then(() => goto('/Main'));
 			alert(message);
+			delay(1000).then(() => goto('/Main'));
 		};
 
 		let ctx: ClientGameContext;

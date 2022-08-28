@@ -17,10 +17,10 @@
 	}
 </script>
 
-<svelte:window on:keydown={handleKeydown}/>
+<svelte:window on:keydown={handleKeydown} />
 
 {#if show}
-	<div id="background" on:click={close}/>
+	<div id="background" on:click={close} />
 	<div id="modal">
 		<slot />
 	</div>

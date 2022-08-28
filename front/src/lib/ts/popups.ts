@@ -2,7 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 
 export enum PopupCategory {
 	WARNING = 'alert-warning',
-	ERROR = 'alert-danger'
+	ERROR = 'alert-error'
 }
 
 export interface CanBePopup {
