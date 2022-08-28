@@ -8,17 +8,17 @@
 </script>
 
 <article class={message.isMe ? 'user' : 'interlocutor'}>
-	{#if type == 'channel' && !message.isMe}
-		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)} />
-	{/if}
 	<span class="conv-entry">{message.content}</span>
+	<br/>
+	{#if type == 'channel' && !message.isMe}
+		<PendingText tag="span" text={$users.findOrFetch(message.sender).then((user) => user.name)}/>
+	{/if}
 </article>
 
 <style>
 	article {
 		margin: 0.5em 0;
 	}
-
 	span {
 		padding: 0.5em 1em;
 		display: inline-block;
