@@ -55,7 +55,7 @@ export class User {
   // public avatarId?: Id;
   @ManyToMany(() => Match, (match) => match.player)
   @JoinTable()
-  match!: Match[];
+  match!: Promise<Match[]>;
   /**
    * 2-Factor Auth TOTP secret in hex
    */

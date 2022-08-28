@@ -4,7 +4,7 @@ import { ChatEvent } from 'backFrontCommon';
 import { User } from '../user/entities/user.entity';
 import { ActiveUser } from '../user/user.service';
 import { ChatError } from 'backFrontCommon';
-import { ChannelCategory,ChatFeedbackDto  } from 'backFrontCommon';
+import { ChannelCategory, ChatFeedbackDto } from 'backFrontCommon';
 import * as bcrypt from 'bcrypt';
 import { Server as IOServerBaseType } from 'socket.io';
 import type { CreateChannelToServer } from 'backFrontCommon';

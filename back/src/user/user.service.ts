@@ -73,7 +73,7 @@ export class ActiveConversation {
 @Injectable()
 export class UserService {
   arrayActiveUser: ActiveUser[] = [];
-
+  logger = new Logger('UserService');
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -279,7 +279,7 @@ export class UserService {
     this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
 
     if (activeUser) {
-	  this.updateChannelConversation(activeUser,activeUser,channel)
+      this.updateChannelConversation(activeUser, activeUser, channel);
       logger.log(
         `la active name = ${activeUser.name} channel name = ${channel.name}`,
       );
@@ -371,22 +371,19 @@ export class UserService {
       tempUserConversation.history.push(
         new ChatMessage(sender.id, content!, sender === user),
       );
-    else
-		{
-			if(content)
-      user.activeChannelConversation.push(
-        new ActiveConversation(
-          channel.name,
-          new ChatMessage(sender.id, content, sender === user),
-        ),
-      );
-	  else
-		user.activeChannelConversation.push(
-        new ActiveConversation(
-          channel.name,
-        ),
-      );
-		}
+    else {
+      if (content)
+        user.activeChannelConversation.push(
+          new ActiveConversation(
+            channel.name,
+            new ChatMessage(sender.id, content, sender === user),
+          ),
+        );
+      else
+        user.activeChannelConversation.push(
+          new ActiveConversation(channel.name),
+        );
+    }
   }
 
   // Update user totpSecret (to enable or disable it)
@@ -505,21 +502,26 @@ export class UserService {
         inGame: false,
       };
   }
-  MatchDbToMatchRelative(
+  async MatchDbToMatchRelative(
     user: User,
     match: Match,
-  ): RelativeMatchInfoFromServer {
+  ): Promise<RelativeMatchInfoFromServer> {
     let opponnent;
     let opScore;
     let myScore;
     let winner = false;
-    if (match.player[0] === user) {
-      opponnent = match.player[1];
+    const players = await match.player;
+
+    this.logger.debug(`dans toto ${JSON.stringify(await match.player)}`);
+    const player0 = players[0];
+    const player1 = players[1];
+    if (player0 === user) {
+      opponnent = player1;
       opScore = match.score[1];
       myScore = match.score[0];
       if (match.score[0] > match.score[1]) winner = true;
     } else {
-      opponnent = match.player[0];
+      opponnent = player0;
       opScore = match.score[0];
       myScore = match.score[1];
       if (match.score[1] > match.score[0]) winner = true;
@@ -531,13 +533,17 @@ export class UserService {
       opponentScore: opScore,
     };
   }
-  relativeMatchHistory(user: User): RelativeMatchInfoFromServer[] {
+  async relativeMatchHistory(
+    user: User,
+  ): Promise<RelativeMatchInfoFromServer[]> {
     const result: RelativeMatchInfoFromServer[] = [];
-    if (!user.match) return [];
-    for (let i = 0; i < Math.min(3, user.match.length); i++) {
-      result.push(
-        this.MatchDbToMatchRelative(user, user.match[user.match.length - i]),
-      );
+    this.logger.debug(`dans relative ${JSON.stringify(user)}`);
+    if (!user || !user.match) return [];
+    const matchs = await user.match;
+    this.logger.debug(`dans relative3 ${matchs.length}`);
+    for (let i = 0; i < Math.min(3, matchs.length); i++) {
+      this.logger.debug(`dans relative4 ${JSON.stringify(matchs[i])}`);
+      result.push(await this.MatchDbToMatchRelative(user, matchs[i]));
     }
     return result;
   }
@@ -554,7 +560,7 @@ export class UserService {
         avatar: user.avatar,
         isOnline: true,
         inGame: activeUser.inGame,
-        matchHistory: this.relativeMatchHistory(user),
+        matchHistory: await this.relativeMatchHistory(user),
       };
     else
       return {
@@ -567,7 +573,7 @@ export class UserService {
         avatar: user.avatar,
         isOnline: false,
         inGame: false,
-        matchHistory: this.relativeMatchHistory(user),
+        matchHistory: await this.relativeMatchHistory(user),
       };
   }
   async MyInfo(socket: Socket): Promise<RequestFeedbackDto<MyInfo>> {
@@ -592,41 +598,43 @@ export class UserService {
         result: await this.UserInfoTransformator(target),
       };
   }
-  async getMyMatch(
-    socket: Socket,
-  ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
-    const userDb = await this.findOneDbBySocket(socket);
-    let result: MatchInfoFromServer[] = [];
-    if (!userDb)
-      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    userDb.match.forEach((match) =>
-      result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
-    );
-    return { success: true, result: result };
-  }
-  async getUserMatch(
-    socket: Socket,
-    targetId: Id,
-  ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
-    const userDb = await this.findOneDbBySocket(socket);
-    const targetDb = await this.findOneDb(targetId);
-    let result: MatchInfoFromServer[] = [];
-    if (!userDb)
-      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    if (!targetDb)
-      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
-    targetDb.match.forEach((match) =>
-      result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
-    );
-    return { success: true, result: result };
-  }
+  // async getMyMatch(
+  // socket: Socket,
+  // ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
+  // const userDb = await this.findOneDbBySocket(socket);
+  // let result: MatchInfoFromServer[] = [];
+  // if (!userDb)
+  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  // userDb.match.forEach(async (match) =>
+  // result.push(await this.matchHistoryService.MatchDbToMatchDTO(match)),
+  // );
+  // return { success: true, result: result };
+  // }
+  // async getUserMatch(
+  // socket: Socket,
+  // targetId: Id,
+  // ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
+  // const userDb = await this.findOneDbBySocket(socket);
+  // const targetDb = await this.findOneDb(targetId);
+  // let result: MatchInfoFromServer[] = [];
+  // if (!userDb)
+  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  // if (!targetDb)
+  // return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+  // targetDb.match.forEach((match) =>
+  // result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
+  // );
+  // return { success: true, result: result };
+  // }
 
-  matchForChatUser(match: Match[]): MatchInfoFromServer[] {
+  async matchForChatUser(match: Match[]): Promise<MatchInfoFromServer[]> {
     const result: MatchInfoFromServer[] = [];
     if (!match) return [];
     for (let i = 0; i < Math.min(3, match.length); i++) {
       result.push(
-        this.matchHistoryService.MatchDbToMatchDTO(match[match.length - i]),
+        await this.matchHistoryService.MatchDbToMatchDTO(
+          match[match.length - i],
+        ),
       );
     }
     return result;
