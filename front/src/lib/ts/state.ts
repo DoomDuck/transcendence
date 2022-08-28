@@ -12,7 +12,7 @@ import type {
 	GameRefuseFromServer
 } from 'backFrontCommon/chatEvents';
 import type { InviteChannelFromServer } from 'backFrontCommon/chatEvents';
-import { channelConvs, userConvs } from './chatUtils';
+import { channelConvs, getChatHistory, userConvs } from './chatUtils';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -58,13 +58,13 @@ class State {
 			};
 			if (window.location.href != '/Play') goto('/Play').then(ready);
 		});
-		state.socket.on(ChatEvent.MSG_TO_USER, handleMsgToUser);
-		state.socket.on(ChatEvent.MSG_TO_CHANNEL, handleMsgToChannel);
-		state.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, handleInviteToPrivateChannel);
-		state.socket.on(ChatEvent.GAME_INVITE, handleGameInvite);
-		state.socket.on(ChatEvent.GAME_ACCEPT, handleGameAccept);
-		state.socket.on(ChatEvent.GAME_REFUSE, handleGameRefuse);
-		state.socket.on(ChatEvent.GAME_CANCEL, handleGameCancel);
+		this.socket.on(ChatEvent.MSG_TO_USER, handleMsgToUser);
+		this.socket.on(ChatEvent.MSG_TO_CHANNEL, handleMsgToChannel);
+		this.socket.on(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, handleInviteToPrivateChannel);
+		this.socket.on(ChatEvent.GAME_INVITE, handleGameInvite);
+		this.socket.on(ChatEvent.GAME_ACCEPT, handleGameAccept);
+		this.socket.on(ChatEvent.GAME_REFUSE, handleGameRefuse);
+		this.socket.on(ChatEvent.GAME_CANCEL, handleGameCancel);
 
 		// DEBUG
 		this.socket.onAny((event: string, ...args: any[]) => {

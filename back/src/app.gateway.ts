@@ -244,6 +244,11 @@ export class AppGateway
   async handleGetHistory(
     socket: Socket,
   ): Promise<RequestFeedbackDto<UserHistoryDto>> {
+    console.log(
+      `VOICI : ${JSON.stringify(
+        await this.userService.getUserHistory(socket),
+      )}`,
+    );
     return this.userService.getUserHistory(socket);
   }
 
