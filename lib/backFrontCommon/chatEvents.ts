@@ -51,7 +51,8 @@ export class ChatEvent {
   static readonly SET_PASSWORD = 'set password'
   static readonly SET_NEW_ADMIN = 'set new admin'
   static readonly QUIT_MATCHMAKING = 'quit matchmaking'
- static readonly DELETE_CHANNEL = 'delete channel'
+  static readonly DELETE_CHANNEL = 'delete channel'
+  static readonly GET_CHANNEL_INFO = 'get channel info'
 }
 
 export class ChatError {
@@ -359,8 +360,29 @@ export class DeleteChannelToServer
 	){ }
 }
 export class IsInGameToServer {
-  constructor(public target: Id) { }
+  constructor (public target: Id) { }
 }
+export class GetChannelInfoToServer {
+  constructor (public channel: string) { }
+}
+export enum ChannelRights {
+  OWNER,
+  ADMIN,
+  USER
+}
+export class ChannelUser {
+  constructor(
+    public id: Id,
+    public rights: ChannelRights,
+    public muted: boolean
+  ) { }
+}
+export class ChannelInfo {
+  constructor (
+    public users: ChannelUser[],
+  ) { }
+}
+
 
 export class ChatFeedbackDto {
   constructor(
@@ -435,5 +457,5 @@ export interface ClientToServerEvents {
   [ChatEvent.MUTED_NOTIF]: (dto: MuteUserToServer ) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
   [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer) => void;
- 
+  [ChatEvent.GET_CHANNEL_INFO]: (dto: GetChannelInfoToServer, callback: FeedbackCallbackWithResult<ChannelInfo>) => void;
 }

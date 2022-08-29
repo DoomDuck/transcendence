@@ -105,6 +105,13 @@ export class Users {
 		return user;
 	}
 
+	async findOrFetchProp<Key extends keyof UserInfo>(id: number, key: Key): Promise<UserInfo[Key]> {
+		if (this.map.has(id)) return (this.map.get(id) as UserInfo)[key];
+		const user = await fetchUser(id);
+		this.map.set(id, user);
+		return user[key];
+	}
+
 	async findOrFetchMyself(): Promise<MyInfo> {
 		if (this.me !== undefined) return this.me;
 		this.me = await fetchMe();
