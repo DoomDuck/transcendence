@@ -37,7 +37,6 @@
 		height: 100%;
 		background-image: url('/starsSky.png');
 		background-size: cover;
-		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 		overflow-y: scroll;
