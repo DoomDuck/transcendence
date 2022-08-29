@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
-	import { chatMethods } from '$lib/ts/chat';
+	import { sendJoinChannel } from '$lib/state';
 	export let show = false;
 
 	let channelName: string;
@@ -8,7 +8,7 @@
 
 	function handleSubmit() {
 		show = false;
-		chatMethods.sendJoinChannel({
+		sendJoinChannel({
 			channel: channelName,
 			password
 		});

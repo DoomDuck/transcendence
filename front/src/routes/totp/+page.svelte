@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sendTotpToken } from '$lib/ts/state';
+	import { sendTotpToken } from '$lib/state';
 	import CodeDial from '$lib/CodeDial.svelte';
 </script>
 

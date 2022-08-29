@@ -7,17 +7,23 @@ import type { GameParams } from '../ts/gameParams';
 import * as gameInvite from '../ts/gameInvite';
 import {
 	DMFromServer,
+	DMToServer,
 	GameAcceptFromServer,
 	GameCancelFromServer,
 	GameInviteFromServer,
 	GameRefuseFromServer,
 	InviteChannelFromServer,
 	GameInviteToServer,
+    JoinChannelToServer,
+    ChatFeedbackDto,
+    CMToServer,
+    CreateChannelToServer,
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
-import { type Readable, readable, type Subscriber } from 'svelte/store';
+import { readable } from 'svelte/store';
+import type { Readable, Subscriber } from 'svelte/store';
 
 
 const LOGGIN_ROUTE: string = '/';
@@ -26,18 +32,18 @@ export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 
 const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
-const USER_INFO_MOCKUP = new UserInfo(
-    /* id */ 0, 
-    /* name */ 'loading...', 
-    /* win */ 0, 
-    /* loose */ 0, 
-    /* score */ 0, 
-    /* ranking */ 0, 
-    /* avatar */ null, 
-    /* isOnline */ true, 
-    /* inGame */ false, 
-    /* matchHistory */ [], 
-);
+// const USER_INFO_MOCKUP = new UserInfo(
+//     /* id */ 0, 
+//     /* name */ 'loading...', 
+//     /* win */ 0, 
+//     /* loose */ 0, 
+//     /* score */ 0, 
+//     /* ranking */ 0, 
+//     /* avatar */ null, 
+//     /* isOnline */ true, 
+//     /* inGame */ false, 
+//     /* matchHistory */ [], 
+// );
 
 const MY_INFO_MOKUP = new MyInfo(
     /* id */ 0, 
@@ -61,23 +67,24 @@ let knownUsers = new Map<Id, UserInfo>();
 export let gameParams: GameParams | null = null;
 	
 export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, u => {
-	updateMyInfo();
-	setMyInfo = u;
+	if (!setMyInfo) {
+		updateMyInfo();
+		setMyInfo = u;
+	}
 	return () => { };
 });
 	
-let socket: Socket | null = null;
+export let socket: Socket | null = null;
 
 function connected(): boolean {
 	return !!socket;
 }
 
 function loggedIn(): boolean {
-	return connected() && !!resolveTotpRequired;
+	return connected() && !resolveTotpRequired;
 }
 
 export function connect(code?: string) {
-	console.log("Hello");
 	if (connected()) return;
 	// TODO: Decide on method
 	// throw new Error('Allready connected');
@@ -168,13 +175,11 @@ export function sendTotpToken(token: string) {
 }
 
 export function disableTotp() {
-	socket!.emit(LoginEvent.TOTP_UPDATE, null);
-	// TODO update profile
+	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMyInfo);
 }
 
 export function enableTotp(token: string) {
-	socket!.emit(LoginEvent.TOTP_UPDATE, token);
-	// TODO update profile
+	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyInfo);
 }
 
 // MyInfo
@@ -203,6 +208,10 @@ export function clearGameParams() {
 	gameParams = null;
 }
 
+export function joinGame(classic: boolean) {
+	socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic)
+}
+
 export function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
 	gameParams = {
 		online,
@@ -224,11 +233,52 @@ export async function getUser(id: Id): Promise<UserInfo>  {
 	}));
 }
 
-// 
+// Avatar
 export async function uploadAvatar(imageDataUrl: string) {
 	socket!.emit(ChatEvent.POST_AVATAR, { imageDataUrl }, (feedback) => {
 		// TODO: change
 		alert(JSON.stringify(feedback));
+	});
+}
+
+// Chat
+export function sendDirectMessage(message: DMToServer) {
+	socket!.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendCreateChannel(message: CreateChannelToServer) {
+	socket!.emit(ChatEvent.CREATE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			channelConvs.update((_) => _.create(message.channel));
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendChannelMessage(message: CMToServer) {
+	socket!.emit(ChatEvent.MSG_TO_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			channelConvs.update((_) => _.addMessageFromMe(message.content, message.channel));
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendJoinChannel(message: JoinChannelToServer) {
+	socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			channelConvs.update((_) => _.create(message.channel));
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
 	});
 }
 
@@ -249,6 +299,7 @@ function onTotpRequired(callback: (token: string) => void) {
 }
 
 function onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
+	console.log("ON my info");
 	if (feedback.success)
 		setMyInfo(feedback.result!);
 	else console.error("Could not get user info");

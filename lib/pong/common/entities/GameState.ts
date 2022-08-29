@@ -1,5 +1,6 @@
 import { GSettings } from "../constants";
-import { GameProducedEvent, type DataChangerEvent } from "../game/events";
+import { GameProducedEvent } from "../game/events";
+import type { DataChangerEvent } from "../game/events";
 import { collisions } from "./collisions";
 import { GameDataBuffer } from "./data";
 import {

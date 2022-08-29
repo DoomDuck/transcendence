@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
 	import { isPositiveInteger } from '$lib/ts/utils';
-	import { chatMethods } from '$lib/ts/chat';
+	import { sendDirectMessage } from '$lib/state';
 
 	export let content = '';
 	export let show = false;
@@ -13,7 +13,7 @@
 	function handleSubmit(_event: SubmitEvent) {
 		// DEBUG
 		if (!isPositiveInteger(targetStr)) return false;
-		chatMethods.sendDirectMessage({ target: +targetStr, content });
+		sendDirectMessage({ target: +targetStr, content });
 		close();
 		return true;
 	}

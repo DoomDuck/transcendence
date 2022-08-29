@@ -31,7 +31,7 @@
 	}
 
 	#app {
-		background-image: url('starsSky.jpeg');
+		background-image: url('/starsSky.png');
 		width: 100%;
 		height: 100%;
 		overflow-y: scroll;
@@ -81,9 +81,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-	}
-	input {
-		margin: 20px;
 	}
 	#disco {
 		float: right;

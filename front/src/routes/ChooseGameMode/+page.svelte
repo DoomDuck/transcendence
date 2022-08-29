@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { gameParamsAreValid } from '$lib/ts/gameParams';
-	import { state } from '$lib/ts/state';
-	import { onMount } from 'svelte';
+	import { gameParams } from '$lib/state';
+	// import { onMount } from 'svelte';
+	// import { gameParamsAreValid } from '$lib/ts/gameParams';
 
 	function play(classic: boolean) {
 		// TODO: ERROR PAGE
 		// if (!gameParamsAreValid(state.gameParams))
 		//   goto('/StartAGame');
-		state.gameParams!.classic = classic;
+		gameParams!.classic = classic;
 		goto('/Play');
 	}
 </script>
@@ -25,9 +25,5 @@
 		background-color: blue;
 		width: 100%;
 		text-align: center;
-	}
-
-	a {
-		all: unset;
 	}
 </style>

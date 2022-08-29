@@ -6,8 +6,7 @@
 		ClientGameContextOnlinePlayer,
 		ClientGameContext
 	} from 'pong';
-	import { gameParams } from '$lib/state';
-	import { ChatEvent } from 'backFrontCommon';
+	import { joinGame, socket, gameParams } from '$lib/state';
 
 	const online = gameParams!.online;
 	const observe = gameParams!.observe ?? false;
@@ -20,7 +19,7 @@
 	let visibilities = ['visible', 'hidden'];
 
 	onMount(() => {
-		if (matchmaking) state.socket.emit(ChatEvent.JOIN_MATCHMAKING, classic);
+		if (matchmaking) joinGame(classic);
 
 		const onFinish = () => {
 			// SHOW THE FINISH SCREEN
@@ -31,8 +30,8 @@
 
 		let ctx: ClientGameContext;
 		if (online) {
-			if (observe) ctx = new ClientGameContextOnlineObserver(state.socket, onFinish);
-			else ctx = new ClientGameContextOnlinePlayer(state.socket, onFinish);
+			if (observe) ctx = new ClientGameContextOnlineObserver(socket!, onFinish);
+			else ctx = new ClientGameContextOnlinePlayer(socket!, onFinish);
 		} else ctx = new ClientGameContextOffline(onFinish, classic);
 		ctx.animate();
 		ctx.startGame();

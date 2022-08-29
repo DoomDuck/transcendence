@@ -394,7 +394,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   // Login
-  [LoginEvent.TOTP_UPDATE]: (secret: string | null) => void;
+  [LoginEvent.TOTP_UPDATE]: (secret: string | null, callback: (arg: number) => void) => void;
   
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
