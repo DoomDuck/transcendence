@@ -38,7 +38,6 @@ export class ChatEvent {
   static readonly GET_LEADERBOARD = 'get_leaderboard'
   static readonly GET_CHAT_HISTORY = 'get_chat_history'
   static readonly BLOCK_USER = 'block user'
-  static readonly BAN_USER = 'ban user'
   static readonly MUTE_USER = 'mute user'
   static readonly BANNED_NOTIF = 'you are banned from a chan'
   static readonly CHAN_INVIT_NOTIF = 'you are banned from a chan'
@@ -53,6 +52,8 @@ export class ChatEvent {
   static readonly QUIT_MATCHMAKING = 'quit matchmaking'
   static readonly DELETE_CHANNEL = 'delete channel'
   static readonly GET_CHANNEL_INFO = 'get channel info'
+  static readonly BAN_USER = 'ban user'
+
 }
 
 export class ChatError {
@@ -453,9 +454,10 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
   [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
-  [ChatEvent.BANNED_NOTIF]: (dto: BanUserToServer) => void;
-  [ChatEvent.MUTED_NOTIF]: (dto: MuteUserToServer ) => void;
+  [ChatEvent.BAN_USER]: (dto: BanUserToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.MUTE_USER]: (dto: MuteUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
   [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer) => void;
   [ChatEvent.GET_CHANNEL_INFO]: (dto: GetChannelInfoToServer, callback: FeedbackCallbackWithResult<ChannelInfo>) => void;
+  [ChatEvent.BLOCK_USER]: (dto: BlockUserToServer, callback: FeedbackCallback) => void;
 }

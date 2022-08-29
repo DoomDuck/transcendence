@@ -7,6 +7,7 @@
 	import { userConvs, channelConvs } from '$lib/ts/chatUtils';
 
 	// VALUES FOR THE DEBUG OF THE DISPLAY
+	$channelConvs.addMessage({ content: '', isMe: false, sender: 1 }, 'a');
 	let friends = [0, 1];
 </script>
 

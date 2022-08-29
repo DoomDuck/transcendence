@@ -19,6 +19,7 @@ import type {
 } from 'backFrontCommon/chatEvents';
 import type { InviteChannelFromServer } from 'backFrontCommon/chatEvents';
 import { channelConvs, updateChatHistory, userConvs } from './chatUtils';
+import { closeLastModalListener } from './modals';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -85,6 +86,8 @@ class State {
 		this.socket.on(ChatEvent.GAME_ACCEPT, onGameAccept);
 		this.socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 		this.socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
+
+		window.addEventListener('keydown', closeLastModalListener);
 
 		// DEBUG
 		this.socket.onAny((event: string, ...args: any[]) => {

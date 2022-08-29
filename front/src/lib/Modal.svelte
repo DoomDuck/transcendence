@@ -1,41 +1,37 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { newModal, removeModal } from './ts/modals';
 
 	export let show = false;
-
-	let dispatch = createEventDispatcher();
-	function close(event?: MouseEvent) {
-		show = false;
-		dispatch('close');
-		event?.stopPropagation();
+	$: {
+		if (show) newModal(close);
+		else removeModal(close);
 	}
 
-	function handleKeydown(event: KeyboardEvent) {
-		if (event.key == 'Escape') {
-			close();
-		}
+	let dispatch = createEventDispatcher();
+	function close() {
+		show = false;
+		dispatch('close');
 	}
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
-
 {#if show}
-	<div id="background" on:click={close} />
+	<!-- <div id="background" on:click={close} /> -->
 	<div id="modal">
 		<slot />
 	</div>
 {/if}
 
 <style>
-	#background {
+	/* #background {
 		position: fixed;
 		z-index: 1;
 		top: 0;
 		left: 0;
-		width: 100vw;
-		height: 100vh;
+		width: 100%;
+		height: 100%;
 		background-color: rgba(0, 0, 0, 0.7);
-	}
+	} */
 
 	#modal {
 		position: fixed;

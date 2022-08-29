@@ -3,7 +3,6 @@
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelDetails from './ChannelDetails.svelte';
 	import { getChannelInfo, treatChannelInfo, type ChannelDetailsData } from './ts/channels';
-	import { ChannelInfo } from 'backFrontCommon';
 
 	export let channel: string;
 
@@ -21,5 +20,5 @@
 
 <AvatarIcon type={'channel'} imageURL="group_conv_icon.png" on:clickOnImage={click} />
 <Modal bind:show={showDetails}>
-	<ChannelDetails {channelDetailsData} />
+	<ChannelDetails {channel} {channelDetailsData} />
 </Modal>

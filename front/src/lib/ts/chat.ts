@@ -1,4 +1,5 @@
 import {
+	BlockUserToServer,
 	ChatEvent,
 	type ChatFeedbackDto,
 	type CMToServer,
@@ -45,6 +46,14 @@ function sendJoinChannel(message: JoinChannelToServer) {
 			channelConvs.update((_) => _.create(message.channel));
 		} else {
 			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function blockUser(dto: BlockUserToServer) {
+	state.socket.emit(ChatEvent.BLOCK_USER, dto, (feedback) => {
+		if (!feedback.success) {
+			alert(feedback.errorMessage);
 		}
 	});
 }

@@ -1,31 +1,14 @@
 <script lang="ts">
 	import Popups from '$lib/Popups.svelte';
-	import {
-		ChannelConversation,
-		channelConvs,
-		UserConversation,
-		userConvs
-	} from '$lib/ts/chatUtils';
-	import { state } from '$lib/ts/state';
-	import { ChatEvent, RequestFeedbackDto, type UserHistoryDto } from 'backFrontCommon';
-	import { onMount } from 'svelte';
-
-	// import { state } from '$lib/ts/state';
-
-	// let previousRoute: string = '/';
-	// $: {
-	// 	if (window.location.href != previousRoute) {
-	// 		if (previousRoute == '/Play' && state.gameParams?.matchMaking) {
-	// 			console.log('QUITING PLAY ROUTE');
-	// 		}
-	// 		previousRoute = window.location.href;
-	// 	}
-	// }
+	import { closeLastModal, modalCallbackStack } from '$lib/ts/modals';
 </script>
 
 <div id="background">
 	<slot />
 	<Popups />
+	{#if $modalCallbackStack.length > 0}
+		<div id="modal-background" on:click={closeLastModal} />
+	{/if}
 </div>
 
 <style>
@@ -35,6 +18,16 @@
 		width: 100%;
 		height: 100%;
 		overflow-y: scroll;
+	}
+
+	#modal-background {
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.7);
 	}
 
 	:global(h1, h2, h3, h4) {

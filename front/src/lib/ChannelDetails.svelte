@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { ChannelRights } from 'backFrontCommon';
+	import { ChannelRights, type Id } from 'backFrontCommon';
+	import SelectDurationButton from './chat/buttons/SelectDurationButton.svelte';
 	import PendingText from './PendingText.svelte';
-	import type { ChannelDetailsData } from './ts/channels';
+	import { banUser, muteUser, type ChannelDetailsData } from './ts/channels';
 	import { users } from './ts/users';
 	import UserMiniature from './UserMiniature.svelte';
 
+	export let channel: string;
 	export let channelDetailsData: ChannelDetailsData;
 	const me = channelDetailsData.me;
 	const others = channelDetailsData.others;
@@ -19,6 +21,21 @@
 				return 'a simple user';
 		}
 	}
+
+	function onMuteUser(userId: Id, duration: number) {
+		muteUser({
+			channel,
+			target: userId,
+			duration
+		});
+	}
+	function onBanUser(userId: Id, duration: number) {
+		banUser({
+			channel,
+			target: userId,
+			duration
+		});
+	}
 </script>
 
 <div id="channel-details">
@@ -29,7 +46,7 @@
 			<p>You are currently muted</p>
 		{/if}
 	{:else}
-		<h1>You are not in this channel</h1>
+		<p>You are not in this channel</p>
 	{/if}
 	<br />
 	<div class="channel-details-users">
@@ -41,8 +58,15 @@
 				{#if user.muted}
 					<p>(muted)</p>
 				{/if}
-				<!-- TODO: -->
-				<!-- MUTE, BAN, SET AS ADMIN -->
+				<!-- TODO: do not show if user is not admin -->
+				<!-- {#if me?.rights != ChannelRights.USER} -->
+				<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
+					>Mute</SelectDurationButton
+				>
+				<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+					>Ban</SelectDurationButton
+				>
+				<!-- {/if} -->
 			</div>
 		{/each}
 	</div>
