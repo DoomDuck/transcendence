@@ -12,7 +12,6 @@
 {#if !$myInfo.totpSecret}
   <button on:click={enableTotp}> enable 2fa </button>
 {:else}
-  <button on:click={disableTotp}> disable 2fa </button>
+	<button on:click={disableTotp}> disable 2fa </button>
 {/if}
-
-<TotpSetup bind:show={showTotpSetup}/>
+ <TotpSetup bind:show={showTotpSetup} />

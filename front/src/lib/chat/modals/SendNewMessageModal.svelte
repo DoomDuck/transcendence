@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
-	import { isPositiveInteger } from '$lib/ts/utils';
 	import { sendDirectMessage } from '$lib/state';
 
 	export let content = '';
@@ -10,7 +9,12 @@
 	function handleBlur(_event: FocusEvent) {
 		targetStr = targetStr.trim();
 	}
-	function handleSubmit(_event: SubmitEvent) {
+
+	function isPositiveInteger(s: string) {
+		return s.length > 0 && Number.isInteger(+s) && +s >= 0;
+	}
+
+	function handleSubmit() {
 		// DEBUG
 		if (!isPositiveInteger(targetStr)) return false;
 		sendDirectMessage({ target: +targetStr, content });

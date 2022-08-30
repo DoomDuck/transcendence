@@ -3,6 +3,7 @@ import {
   Entity,
   Column,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,8 +16,9 @@ export class Match {
   }
 
   @PrimaryGeneratedColumn()
-  id?: Id;
-  @ManyToMany(() => User, (user) => user.match)
+  id!: Id;
+  @ManyToMany(() => User, (user) => user.match, { cascade: true })
+  @JoinTable()
   player: User[];
   @Column('int', { array: true })
   score: number[];

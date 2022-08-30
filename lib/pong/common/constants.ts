@@ -18,7 +18,7 @@ export class GSettings {
   static readonly GAME_BOTTOM = GSettings.GAME_HEIGHT / 2;
   static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
   static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
-  static readonly GAME_SCORE_VICTORY = 3;
+  static readonly GAME_SCORE_VICTORY = 1;
 
   // UID ----->
   static readonly SCORE_SIZE = GSettings.SCREEN_WIDTH / 30;
@@ -184,6 +184,10 @@ export class GameEvent {
   static readonly OBSERVER_UPDATE = "observerUpdate";
   // playerId: number
   static readonly PLAYER_ID_CONFIRMED = "playerIdConfirmed";
+  // score: [number, number]
+  static readonly GAME_OVER = "gameOver";
+  // playerId: number
+  static readonly PLAYER_DISCONNECT = "playerDisconnect";
 }
 
 export enum KeyValue {

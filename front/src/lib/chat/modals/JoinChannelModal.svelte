@@ -28,10 +28,7 @@
 			on:blur={handleBlur}
 			required
 		/>
-		<div id="password">
-			<span>Password (optional): </span>
-			<input bind:value={password} />
-		</div>
+		<input bind:value={password} placeholder="Optionnal password" />
 		<input type="submit" value="Join channel" />
 	</form>
 </Modal>
@@ -43,12 +40,5 @@
 		width: 250px;
 		gap: 20px;
 		padding: 10px;
-	}
-	#password {
-		display: flex;
-		flex-direction: row;
-	}
-	#password input {
-		flex-grow: 1;
 	}
 </style>

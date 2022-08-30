@@ -1,33 +1,25 @@
 import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
-import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
 import { ChatEvent } from "backFrontCommon";
-import type { FinishCallback } from "../common/utils";
+import type { ErrorCallback, FinishCallback } from "../common/utils";
 
 /**
  * Online version of the game in the client as a player (see ClientGameContext)
  */
 export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
-  ballOutAlreadyEmitted: boolean = false;
+  // ballOutAlreadyEmitted: boolean = false;
 
-  constructor(socket: Socket, onFinish: FinishCallback) {
-    super(socket, onFinish);
-    // this.socket.on("connect", () => {
-    //   console.log("connected to server");
-    //   this.socket.emit("joinMatchMaking");
-    // });
-    // this.socket.on("disconnect", () => {
-    //   console.log("disconnected from server");
-    // });
+  constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
+    super(socket, onFinish, onError);
 
     // incomming events
     this.transmitEventFromServerToGame(GameEvent.START);
     this.transmitEventFromServerToGame(GameEvent.PAUSE);
-    this.socket.on(GameEvent.RESET, () => {
-      this.ballOutAlreadyEmitted = false;
-    });
+    // this.socket.on(GameEvent.RESET, () => {
+    //   this.ballOutAlreadyEmitted = false;
+    // });
     this.transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.transmitEventFromServerToGame(GameEvent.SPAWN_PORTAL);
     this.transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_EVENT);
@@ -36,10 +28,16 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
       ChatEvent.PLAYER_ID_CONFIRMED,
       (playerId: number, ready: () => void) => {
         setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
-        this.setupBallOutOutgoingEvent(playerId);
+        // this.setupBallOutOutgoingEvent(playerId);
         ready();
       }
     );
+
+    this.socket.on(GameEvent.PLAYER_DISCONNECT, (_) => {
+      this.gameManager.game.pause();
+      this.finally();
+      this.onError!("The other player has disconnected");
+    });
   }
 
   animate() {
@@ -54,15 +52,15 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
 
   startGame() {}
 
-  private setupBallOutOutgoingEvent(playerId: number) {
-    GameProducedEvent.registerEvent(
-      GameEvent.BALL_OUT,
-      (playerIdBallOut: number) => {
-        if (playerIdBallOut == playerId && !this.ballOutAlreadyEmitted) {
-          this.socket.emit(GameEvent.BALL_OUT, playerIdBallOut);
-          this.ballOutAlreadyEmitted = true;
-        }
-      }
-    );
-  }
+  // private setupBallOutOutgoingEvent(playerId: number) {
+  //   GameProducedEvent.registerEvent(
+  //     GameEvent.BALL_OUT,
+  //     (playerIdBallOut: number) => {
+  //       if (playerIdBallOut == playerId && !this.ballOutAlreadyEmitted) {
+  //         this.socket.emit(GameEvent.BALL_OUT, playerIdBallOut);
+  //         this.ballOutAlreadyEmitted = true;
+  //       }
+  //     }
+  //   );
+  // }
 }

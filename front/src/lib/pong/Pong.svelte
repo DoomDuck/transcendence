@@ -6,32 +6,34 @@
 		ClientGameContextOnlinePlayer,
 		ClientGameContext
 	} from 'pong';
+	import { goto } from '$app/navigation';
 	import { joinGame, socket, gameParams } from '$lib/state';
+	import { delay } from 'pong/common/utils';
 
 	const online = gameParams!.online;
 	const observe = gameParams!.observe ?? false;
 	const matchmaking = gameParams!.matchMaking ?? false;
 	const classic = gameParams!.classic ?? false;
 
-	console.log(`online: ${online}`);
-	console.log(`observe: ${observe}`);
-
 	let visibilities = ['visible', 'hidden'];
 
 	onMount(() => {
+		// TODO: check if needed
 		if (matchmaking) joinGame(classic);
 
 		const onFinish = () => {
-			// SHOW THE FINISH SCREEN
-			// DO THINGS
-			// E.G.
 			visibilities = ['hidden', 'visible'];
+			delay(1000).then(() => goto('/Main'));
+		};
+		const onError = (message: string) => {
+			alert(message);
+			delay(1000).then(() => goto('/Main'));
 		};
 
 		let ctx: ClientGameContext;
 		if (online) {
-			if (observe) ctx = new ClientGameContextOnlineObserver(socket!, onFinish);
-			else ctx = new ClientGameContextOnlinePlayer(socket!, onFinish);
+			if (observe) ctx = new ClientGameContextOnlineObserver(socket!, onFinish, onError);
+			else ctx = new ClientGameContextOnlinePlayer(socket!, onFinish, onError);
 		} else ctx = new ClientGameContextOffline(onFinish, classic);
 		ctx.animate();
 		ctx.startGame();

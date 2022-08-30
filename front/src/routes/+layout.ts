@@ -3,6 +3,7 @@ import { browser } from '$app/env';
 import { forceRoute, isBlocked, LOGGIN_SUCCESS_ROUTE } from '$lib/state';
 import { redirect } from '@sveltejs/kit';
 import type { LoadEvent } from '@sveltejs/kit';
+// import { connected, updateMyInfo, updateUserInfo } from '$lib/state';
 
 function safe_redirect(route: string) {
 	if (!browser) throw redirect(307, route);
@@ -10,6 +11,11 @@ function safe_redirect(route: string) {
 }
 
 export function load({ url }: LoadEvent) {
+	// TODO: find a better way
+	// if (connected()) {
+	// 	updateUserInfo();
+	// 	updateMyInfo();
+	// }
 	const route = forceRoute();
 	if (route && route !== url.pathname) {
 		safe_redirect(route);

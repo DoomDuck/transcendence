@@ -24,6 +24,7 @@ import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable } from 'svelte/store';
 import type { Readable, Subscriber } from 'svelte/store';
+import { closeLastModalListener } from '$lib/ts/modals';
 
 
 const LOGGIN_ROUTE: string = '/';
@@ -76,7 +77,7 @@ export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, u => {
 	
 export let socket: Socket | null = null;
 
-function connected(): boolean {
+export function connected(): boolean {
 	return !!socket;
 }
 
@@ -158,6 +159,8 @@ function setupHooks(socket: Socket) {
 	socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 	socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
 
+	window.addEventListener('keydown', closeLastModalListener);
+
 	// DEBUG
 	socket.onAny((event: string, ...args: any[]) => {
 		console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
@@ -182,10 +185,16 @@ export function enableTotp(token: string) {
 	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyInfo);
 }
 
-// MyInfo
+// Update
 export function updateMyInfo() {
 	socket!.emit(GetInfoEvent.MY_INFO, onMyInfoResult);
 }
+
+export function updateUserInfo() {
+	// TODO
+	// socket!.emit(GetInfoEvent.USER_INFO, onMyInfoResult);
+}
+
 
 // Game
 export function refuseGame(target: Id) {
@@ -219,6 +228,20 @@ export function playGame(online: boolean, observe?: boolean, matchMaking?: boole
 		matchMaking
 	};
 	goto('/ChooseGameMode');
+}
+
+export function observeGame(id: Id) {
+	socket!.emit(ChatEvent.GAME_OBSERVE, id, (feedback) => {
+		if (feedback.success) {
+			gameParams = {
+				online: true,
+				observe: true
+			};
+			goto('/Play');
+		} else {
+			console.error(feedback.errorMessage);
+		}
+	});
 }
 
 // Users
@@ -299,7 +322,6 @@ function onTotpRequired(callback: (token: string) => void) {
 }
 
 function onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
-	console.log("ON my info");
 	if (feedback.success)
 		setMyInfo(feedback.result!);
 	else console.error("Could not get user info");

@@ -1,31 +1,41 @@
-import {
-	type ActiveChannelConversationDto,
-	type ActiveUserConversationDto,
-	type ChatMessageDto,
-	type UserInfo
+import type {
+	ActiveChannelConversationDto,
+	ActiveUserConversationDto,
+	ChatMessageDto,
+	UserHistoryDto,
+	UserInfo
 } from 'backFrontCommon';
 import { writable } from 'svelte/store';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
-import type { Id, TypeMap } from 'backFrontCommon/general';
+import type { Id } from 'backFrontCommon/general';
 import { getUser } from '$lib/state';
+// import {
+// 	ChatEvent,
+// 	type CMFromServer,
+// 	type DMFromServer,
+// 	type RequestFeedbackDto
+// } from 'backFrontCommon/chatEvents';
+// import { usersObject } from './users';
+// import type { Id } from 'backFrontCommon/general';
+// import { state } from './state';
 
-type ChatMessageGameInvit = {
-	source: Id;
-	valid: boolean;
-};
+// type ChatMessageGameInvit = {
+// 	source: Id;
+// 	valid: boolean;
+// };
 
-type ChatMessageEntry = TypeMap<{ message: ChatMessageDto; gameInvite: ChatMessageGameInvit }>;
+// type ChatMessageEntry = TypeMap<{ message: ChatMessageDto; gameInvite: ChatMessageGameInvit }>;
 
-export class ConversationHistory {
-	private history: ChatMessageEntry[] = [];
+// export class ConversationHistory {
+// 	private history: ChatMessageEntry[] = [];
 
-	addMessage(message: ChatMessageDto) {
-		this.history.push({ key: 'message', payload: message });
-	}
-	addGameInvite(gameInvite: ChatMessageGameInvit) {
-		this.history.push({ key: 'gameInvite', payload: gameInvite });
-	}
-}
+// 	addMessage(message: ChatMessageDto) {
+// 		this.history.push({ key: 'message', payload: message });
+// 	}
+// 	addGameInvite(gameInvite: ChatMessageGameInvit) {
+// 		this.history.push({ key: 'gameInvite', payload: gameInvite });
+// 	}
+// }
 
 export abstract class Conversation<DTOType extends { history: ChatMessageDto[] }> {
 	hasNewMessage: boolean = false;
@@ -86,7 +96,7 @@ export class UserConversationList {
 		this.addMessage({
 			sender: message.source,
 			content: message.content,
-			isMe: false
+			isMe: message.isMe ?? false
 		});
 		return this;
 	}
@@ -147,11 +157,25 @@ function messageFromMe(content: string): ChatMessageDto {
 export const userConvs = writable(new UserConversationList());
 export const channelConvs = writable(new ChannelConversationList());
 
-// export function feedbackCallback(action: () => void) {
-//   return (feedback: ChatFeedbackDto) => {
-//     if (feedback.success)
-//       action();
-//     else
-//       alert(feedback.errorMessage);
-//   }
-// }
+export function updateChatHistory(convsHistory: UserHistoryDto) {
+	userConvs.update((userConversationList) => {
+		userConversationList.convs = [];
+		for (const convDto of convsHistory.userHistory) {
+			for (const messageDto of convDto.history) {
+				userConversationList.addMessage(messageDto, convDto.interlocutor);
+			}
+		}
+		return userConversationList;
+	});
+
+	channelConvs.update((channelConversationList) => {
+		channelConversationList.convs = [];
+		for (const convDto of convsHistory.channelHistory) {
+			if (convDto.history.length == 0) channelConversationList.create(convDto.channel);
+			for (const messageDto of convDto.history) {
+				channelConversationList.addMessage(messageDto, convDto.channel);
+			}
+		}
+		return channelConversationList;
+	});
+}

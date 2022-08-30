@@ -23,8 +23,8 @@
 <style>
 	.icon {
 		overflow: hidden;
-		width: 64px;
-		height: 64px;
+		width: 60px;
+		height: 60px;
 		margin-left: 1%;
 		margin-right: 2%;
 		margin-top: auto;

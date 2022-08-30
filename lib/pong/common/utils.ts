@@ -46,3 +46,5 @@ export function removeIfPresent<T>(array: Array<T>, element: T) {
 }
 
 export type FinishCallback = (score1: number, score2: number) => void;
+export type FinallyCallback = () => void;
+export type ErrorCallback = (message: string) => void;

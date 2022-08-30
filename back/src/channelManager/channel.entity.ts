@@ -9,6 +9,13 @@ import {
 import { Id } from 'backFrontCommon';
 import { ChannelCategory } from 'backFrontCommon';
 
+export class BannedUser {
+  constructor(public unbanDate: Date, public userId: Id) {}
+}
+export class MutedUser {
+  constructor(public unmuteDate: Date, public userId: Id) {}
+}
+
 @Entity('Channel')
 export class Channel {
   constructor(
@@ -45,11 +52,11 @@ export class Channel {
   @Column('int', { array: true, nullable: true })
   member: Id[];
 
-  @Column('int', { array: true, nullable: true })
-  muted: Id[];
+  @Column('jsonb')
+  muted: MutedUser[];
 
-  @Column('int', { array: true, nullable: true })
-  banned: Id[];
+  @Column('jsonb')
+  banned: BannedUser[];
 
   @Column({ type: 'enum', enum: ChannelCategory, nullable: false })
   category: ChannelCategory;

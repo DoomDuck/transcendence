@@ -3,7 +3,6 @@
 <style>
 	.notif {
 		margin-left: auto;
-		padding: 5%;
 		width: 35px;
 		height: 35px;
 	}

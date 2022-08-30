@@ -1,4 +1,4 @@
-import type { FinishCallback } from "../common/utils";
+import type { FinishCallback, ErrorCallback} from "../common/utils";
 import { ClientGameManager } from "./game";
 
 /**
@@ -23,13 +23,19 @@ import { ClientGameManager } from "./game";
 export abstract class ClientGameContext {
   gameManager: ClientGameManager = new ClientGameManager();
   animationHandle?: number;
-  constructor(public onFinish: FinishCallback) {}
+  constructor(public onFinish: FinishCallback, public onError?: ErrorCallback) {}
 
   abstract animate(): void;
   abstract startGame(): void;
-  handleEndOfGame() {
+
+  handleEndOfGame(score?: [number, number]) {
+    score = score ?? this.gameManager.game.score;
+    this.finally();
+    this.onFinish(...score);
+  }
+
+  finally() {
     if (this.animationHandle !== undefined)
       cancelAnimationFrame(this.animationHandle);
-    this.onFinish(...this.gameManager.game.score);
   }
 }

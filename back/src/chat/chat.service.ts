@@ -22,10 +22,10 @@ import {
   ChanInviteRefuse,
   InviteChannelToServer,
   InviteChannelFromServer,
+  DeleteChannelToServer,
   ServerSocket as Socket,
 } from 'backFrontCommon';
 
-import { WebSocketServer } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
@@ -70,10 +70,21 @@ export class ChatService {
         false,
         ChatError.U_DO_NOT_EXIST,
       );
+    const tempChan = await this.channelManagerService.findChanByName(
+      chanInfo.channel,
+    );
+    if (tempChan != undefined)
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.CHANNEL_ALREADY_EXISTS,
+      );
+
     const newChan = await this.channelManagerService.createChan(
       tempUser,
       chanInfo,
     );
+
+    this.logger.debug('after create channel');
     if (!newChan)
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -81,6 +92,8 @@ export class ChatService {
       );
     this.channelManagerService.joinChan(tempUser, newChan);
     this.userService.joinChanUser(tempUser, newChan);
+
+    this.logger.debug('end create channel');
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
@@ -89,18 +102,7 @@ export class ChatService {
       dto.channel,
     );
 
-    if (!tempChannel)
-      return this.channelManagerService.newChatFeedbackDto(
-        false,
-        ChatError.U_DO_NOT_EXIST,
-      );
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
-    if (!tempSender) {
-      return this.channelManagerService.newChatFeedbackDto(
-        false,
-        ChatError.U_DO_NOT_EXIST,
-      );
-    }
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
@@ -112,7 +114,7 @@ export class ChatService {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
         this.userService.updateChannelConversation(
-          tempSender,
+          tempSender!,
           tempUser,
           tempChannel!,
           dto.content,
@@ -120,7 +122,7 @@ export class ChatService {
     });
     clientSocket
       .to(tempChannel!.name)
-      .except(await this.userService.getArrayBlockedFrom(tempSender))
+      .except(await this.userService.getArrayBlockedFrom(tempSender!))
       .emit(ChatEvent.MSG_TO_CHANNEL, {
         source: tempSender!.id,
         channel: tempChannel!.name,
@@ -136,7 +138,9 @@ export class ChatService {
     );
     const tempUser = this.userService.findOneActiveBySocket(clientSocket);
 
-    this.logger.log(`any joiner in the  chat ?${tempUser} `);
+    this.logger.log(
+      `any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`,
+    );
     if (!tempChan) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -152,6 +156,7 @@ export class ChatService {
     const feedback = await this.channelManagerService.joinChan(
       tempUser,
       tempChan,
+      joinInfo.password,
     );
     if (feedback.success === true) {
       this.logger.log(`joining chanUSer `);
@@ -181,6 +186,11 @@ export class ChatService {
       wss,
       dm.content,
       target,
+    );
+    this.logger.debug(
+      `active history = ${JSON.stringify(
+        await this.userService.getUserHistory(clientSocket),
+      )}`,
     );
     return feedback;
   }
@@ -344,5 +354,24 @@ export class ChatService {
       channel,
       wss,
     );
+  }
+
+  async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
+    const sender = this.userService.findOneActiveBySocket(socket);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      deleteInfo.channel,
+    );
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+    if (!this.channelManagerService.isCreator(sender, channel))
+      return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
+    channel.member.forEach((member) => {
+      const tempUser = this.userService.findOneActive(member);
+      if (tempUser) this.channelManagerService.leaveChannel(channel, tempUser);
+    });
+    this.channelManagerService.deleteChannel(channel);
+    return { success: true };
   }
 }

@@ -87,7 +87,6 @@ export class LoginService {
   async onTotpUpdate(socket: Socket, secret: string | null) {
     const user = this.userService.findOneActiveBySocket(socket);
     await this.userService.updateTotp(user!.id, secret);
-    new Logger("onTotpUpdate").debug("finished");
   }
 
   async onTotpCheck(socket: Socket, token: string) {
@@ -128,7 +127,9 @@ export class LoginService {
         secret: Secret.fromHex(totpSecret),
       });
       this.clientsRequiringTotp.set(socket, { totp, user });
-      socket.emit(LoginEvent.TOTP_REQUIRED, (token) => this.onTotpCheck(socket, token));
+      socket.emit(LoginEvent.TOTP_REQUIRED, (token) =>
+        this.onTotpCheck(socket, token),
+      );
     }
   }
 

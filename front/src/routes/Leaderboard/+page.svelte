@@ -14,65 +14,58 @@
 		},
 		{
 			user: 'MaVieCestDla****',
-			score: -8000
+			score: -8
 		}
 	];
 </script>
 
 <div id="leaderboard">
-	<h4 id="title">Leaderboard</h4>
+	<h1>Leaderboard</h1>
 	<div id="leaderboard-entries">
 		{#each entries as entry, i}
-			<!-- <div class="leaderboard-entry"> -->
-			<span class="user-place">{i + 1} - </span>
-			<span class="user-name">{entry.user}</span>
-			<span class="user-score">{entry.score}</span>
-			<!-- </div> -->
+			<div class="user">
+				<span class="user-place">{i + 1} </span>
+				<span class="user-name">{entry.user}</span>
+				<span class="user-score">{entry.score}</span>
+			</div>
 		{/each}
 	</div>
 </div>
 
 <style>
-	:root {
-		background-image: url('/starsSky.png');
-		background-size: cover;
-	}
-
-	#title {
-		display: block;
-		text-align: center;
-		font-family: 'Press start 2P';
-		font-style: normal;
-		color: #6028ff;
-		-webkit-text-stroke: 1px #ff29ea;
-		text-shadow: 5px 5px 5px purple, 5px 5px 5px purple;
-		font-size: 3.5em;
+	#leaderboard {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	#leaderboard-entries {
-		width: 50%;
-		height: auto;
-		margin: auto;
-		/* display: flex;
-    flex-direction: column;
-    justify-self: center;
-    justify-content: flex-start;
-    gap: 1em;*/
-		display: grid;
-		grid-template-columns: max-content 80% auto;
-		gap: 0.5em;
-		font-size: 2.5em;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.user {
+		font-family: 'Press start 2P';
+		display: flex;
+		flex-direction: row;
+		gap: 2vh;
+		text-align: center;
+		font-size: 1.5em;
 	}
 
 	.user-place {
-		font-family: Avenir Medium;
-		color: #fce7ff;
+		font-family: 'Press start 2P';
+		color: #ff29ea;
+		margin-left: 2px;
 	}
 	.user-name {
-		background-color: #c8974d;
-		justify-content: center;
+		color: #4d4dff;
+		-webkit-text-stroke: 1px #ff29ea;
+		width: 45vw;
+		overflow-x: hidden;
 	}
 	.user-score {
-		background-color: #7eb227;
+		font-family: 'Press start 2P';
+		color: #fff047;
 	}
 </style>

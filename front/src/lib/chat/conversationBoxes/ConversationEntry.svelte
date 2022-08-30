@@ -8,17 +8,17 @@
 </script>
 
 <article class={message.isMe ? 'user' : 'interlocutor'}>
+	<span class="conv-entry">{message.content}</span>
+	<br />
 	{#if type == 'channel' && !message.isMe}
 		<PendingText tag="span" text={getUser(message.sender).then((user) => user.name)} />
 	{/if}
-	<span class="conv-entry">{message.content}</span>
 </article>
 
 <style>
 	article {
 		margin: 0.5em 0;
 	}
-
 	span {
 		padding: 0.5em 1em;
 		display: inline-block;

@@ -1,26 +1,41 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { gameParams } from '$lib/state';
-	// import { onMount } from 'svelte';
-	// import { gameParamsAreValid } from '$lib/ts/gameParams';
 
 	function play(classic: boolean) {
 		// TODO: ERROR PAGE
 		// if (!gameParamsAreValid(state.gameParams))
 		//   goto('/StartAGame');
 		gameParams!.classic = classic;
-		goto('/Play');
+		if (gameParams?.matchMaking) goto('/WaitingRoom');
+		else goto('/Play');
 	}
 </script>
 
-<h4><div on:click={() => play(true)}>Classic</div></h4>
-<h4><div on:click={() => play(false)}>Weird</div></h4>
+<div id="gameModes">
+	<div id="options">
+		<h4><div on:click={() => play(true)}>Classic</div></h4>
+		<h4><div on:click={() => play(false)}>Weird</div></h4>
+	</div>
+</div>
 
 <style>
-	h4 {
-		line-height: 300%;
+	#gameModes {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
-
+	#options {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	h4 {
+		font-size: 2em;
+	}
 	h4:hover {
 		background-color: blue;
 		width: 100%;

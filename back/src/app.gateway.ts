@@ -12,6 +12,8 @@ import {
   PostAvatar,
   MatchInfoToServer,
   UserInfoToServer,
+  Id,
+  IsInGameToServer,
 } from 'backFrontCommon';
 import type {
   UserHistoryDto,
@@ -28,6 +30,7 @@ import type {
   UserInfo,
   MatchInfoFromServer,
   SetPasswordToServer,
+  DeleteChannelToServer,
   SetUsernameToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
@@ -75,9 +78,7 @@ export class AppGateway
       );
     });
     socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-      console.log(
-        `[SENT] event '${event}' with args: ${JSON.stringify(args)}`,
-      );
+      console.log(`[SENT] event '${event}' with args: ${JSON.stringify(args)}`);
     });
   }
 
@@ -154,8 +155,8 @@ export class AppGateway
   }
 
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)
-  handleObserve(socket: Socket, gameId: number) {
-    this.gameManagerService.addObserver(socket, gameId);
+  async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
+    return this.gameManagerService.handleObserve(socket, userId);
   }
 
   @SubscribeMessage(ChatEvent.GAME_INVITE)
@@ -245,6 +246,31 @@ export class AppGateway
   async handleGetHistory(
     socket: Socket,
   ): Promise<RequestFeedbackDto<UserHistoryDto>> {
+    console.log(
+      `VOICI : ${JSON.stringify(
+        await this.userService.getUserHistory(socket),
+      )}`,
+    );
     return this.userService.getUserHistory(socket);
+  }
+
+  @SubscribeMessage(ChatEvent.QUIT_MATCHMAKING)
+  async handleQuitMatchmaking(socket: Socket) {
+    this.gameManagerService.handleQuitMatchmaking(socket);
+  }
+
+  @SubscribeMessage(GetInfoEvent.IS_IN_GAME)
+  async handleIsInGame(
+    socket: Socket,
+    { target }: IsInGameToServer,
+  ): Promise<RequestFeedbackDto<boolean>> {
+    const user = await this.userService.findOneActive(target);
+    const inGame = user?.inGame ?? false;
+    return { success: true, result: inGame };
+  }
+
+  @SubscribeMessage(ChatEvent.DELETE_CHANNEL)
+  async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
+    return this.chatService.handleDeleteChannel(socket, deleteInfo);
   }
 }
