@@ -1,20 +1,23 @@
-import {
-	type ActiveChannelConversationDto,
-	type ActiveUserConversationDto,
-	type ChatMessageDto,
-	type UserHistoryDto,
-	type UserInfo
+import type {
+	ActiveChannelConversationDto,
+	ActiveUserConversationDto,
+	ChatMessageDto,
+	UserHistoryDto,
+	UserInfo
 } from 'backFrontCommon';
 import { writable } from 'svelte/store';
-import {
-	ChatEvent,
-	type CMFromServer,
-	type DMFromServer,
-	type RequestFeedbackDto
-} from 'backFrontCommon/chatEvents';
-import { usersObject } from './users';
+import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import type { Id } from 'backFrontCommon/general';
-import { state } from './state';
+import { getUser } from '$lib/state';
+// import {
+// 	ChatEvent,
+// 	type CMFromServer,
+// 	type DMFromServer,
+// 	type RequestFeedbackDto
+// } from 'backFrontCommon/chatEvents';
+// import { usersObject } from './users';
+// import type { Id } from 'backFrontCommon/general';
+// import { state } from './state';
 
 // type ChatMessageGameInvit = {
 // 	source: Id;
@@ -58,7 +61,7 @@ export class UserConversation extends Conversation<ActiveUserConversationDto> {
 		return this.dto.interlocutor;
 	}
 	async getInterlocuterAsDto(): Promise<UserInfo> {
-		return usersObject.findOrFetch(this.interlocutor);
+		return getUser(this.interlocutor);
 	}
 }
 

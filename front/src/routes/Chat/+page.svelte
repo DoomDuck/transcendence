@@ -4,10 +4,7 @@
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { userConvs, channelConvs } from '$lib/ts/chatUtils';
-
-	// VALUES FOR THE DEBUG OF THE DISPLAY
-	let friends = [0, 1];
+	import { myInfo } from '$lib/state';
 </script>
 
 <div id="chat">
@@ -21,7 +18,7 @@
 	</div>
 
 	<div id="mainContainer">
-		<OnlineFriends {friends} />
+		<OnlineFriends friends={$myInfo.friendlist} />
 		<br />
 		<ConversationLists />
 	</div>
@@ -37,7 +34,6 @@
 		height: 100%;
 		background-image: url('/starsSky.png');
 		background-size: cover;
-		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 		overflow-y: scroll;

@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { gameParamsAreValid } from '$lib/ts/gameParams';
-	import { state } from '$lib/ts/state';
-	import { onMount } from 'svelte';
+	import { gameParams } from '$lib/state';
 
 	function play(classic: boolean) {
 		// TODO: ERROR PAGE
 		// if (!gameParamsAreValid(state.gameParams))
 		//   goto('/StartAGame');
-		state.gameParams!.classic = classic;
-		if (state.gameParams?.matchMaking) goto('/WaitingRoom');
+		gameParams!.classic = classic;
+		if (gameParams?.matchMaking) goto('/WaitingRoom');
 		else goto('/Play');
 	}
 </script>
@@ -30,9 +28,13 @@
 		justify-content: center;
 	}
 	#options {
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+	h4 {
+		font-size: 2em;
 	}
 	h4:hover {
 		background-color: blue;

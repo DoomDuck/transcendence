@@ -1,26 +1,26 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		ClientGameContextOnlineObserver,
 		ClientGameContextOffline,
 		ClientGameContextOnlinePlayer,
 		ClientGameContext
 	} from 'pong';
-	import { state } from '$lib/ts/state';
-	import { ChatEvent } from 'backFrontCommon';
-	import { delay } from 'pong/common/utils';
 	import { goto } from '$app/navigation';
+	import { joinGame, socket, gameParams } from '$lib/state';
+	import { delay } from 'pong/common/utils';
 
-	const online = state.gameParams!.online;
-	const observe = state.gameParams!.observe ?? false;
-	const classic = state.gameParams!.classic ?? false;
-
-	console.log(`online: ${online}`);
-	console.log(`observe: ${observe}`);
+	const online = gameParams!.online;
+	const observe = gameParams!.observe ?? false;
+	const matchmaking = gameParams!.matchMaking ?? false;
+	const classic = gameParams!.classic ?? false;
 
 	let visibilities = ['visible', 'hidden'];
 
 	onMount(() => {
+		// TODO: check if needed
+		if (matchmaking) joinGame(classic);
+
 		const onFinish = () => {
 			visibilities = ['hidden', 'visible'];
 			delay(1000).then(() => goto('/Main'));
@@ -32,8 +32,8 @@
 
 		let ctx: ClientGameContext;
 		if (online) {
-			if (observe) ctx = new ClientGameContextOnlineObserver(state.socket, onFinish, onError);
-			else ctx = new ClientGameContextOnlinePlayer(state.socket, onFinish, onError);
+			if (observe) ctx = new ClientGameContextOnlineObserver(socket!, onFinish, onError);
+			else ctx = new ClientGameContextOnlinePlayer(socket!, onFinish, onError);
 		} else ctx = new ClientGameContextOffline(onFinish, classic);
 		ctx.animate();
 		ctx.startGame();

@@ -38,7 +38,6 @@ export class ChatEvent {
   static readonly GET_LEADERBOARD = 'get_leaderboard'
   static readonly GET_CHAT_HISTORY = 'get_chat_history'
   static readonly BLOCK_USER = 'block user'
-  static readonly BAN_USER = 'ban user'
   static readonly MUTE_USER = 'mute user'
   static readonly BANNED_NOTIF = 'you are banned from a chan'
   static readonly CHAN_INVIT_NOTIF = 'you are banned from a chan'
@@ -51,7 +50,10 @@ export class ChatEvent {
   static readonly SET_PASSWORD = 'set password'
   static readonly SET_NEW_ADMIN = 'set new admin'
   static readonly QUIT_MATCHMAKING = 'quit matchmaking'
- static readonly DELETE_CHANNEL = 'delete channel'
+  static readonly DELETE_CHANNEL = 'delete channel'
+  static readonly GET_CHANNEL_INFO = 'get channel info'
+  static readonly BAN_USER = 'ban user'
+
 }
 
 export class ChatError {
@@ -359,8 +361,29 @@ export class DeleteChannelToServer
 	){ }
 }
 export class IsInGameToServer {
-  constructor(public target: Id) { }
+  constructor (public target: Id) { }
 }
+export class GetChannelInfoToServer {
+  constructor (public channel: string) { }
+}
+export enum ChannelRights {
+  OWNER,
+  ADMIN,
+  USER
+}
+export class ChannelUser {
+  constructor(
+    public id: Id,
+    public rights: ChannelRights,
+    public muted: boolean
+  ) { }
+}
+export class ChannelInfo {
+  constructor (
+    public users: ChannelUser[],
+  ) { }
+}
+
 
 export class ChatFeedbackDto {
   constructor(
@@ -408,7 +431,8 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   // Login
-  [LoginEvent.TOTP_UPDATE]: (secret: string | null) => void;
+  [LoginEvent.TOTP_UPDATE]: (secret: string | null, callback: (arg: number) => void) => void;
+  
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
@@ -431,9 +455,10 @@ export interface ClientToServerEvents {
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
   [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
-  [ChatEvent.BANNED_NOTIF]: (dto: BanUserToServer) => void;
-  [ChatEvent.MUTED_NOTIF]: (dto: MuteUserToServer ) => void;
+  [ChatEvent.BAN_USER]: (dto: BanUserToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.MUTE_USER]: (dto: MuteUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
   [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer) => void;
- 
+  [ChatEvent.GET_CHANNEL_INFO]: (dto: GetChannelInfoToServer, callback: FeedbackCallbackWithResult<ChannelInfo>) => void;
+  [ChatEvent.BLOCK_USER]: (dto: BlockUserToServer, callback: FeedbackCallback) => void;
 }

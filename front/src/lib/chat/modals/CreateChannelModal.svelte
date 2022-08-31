@@ -1,12 +1,10 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
-	import { createEventDispatcher } from 'svelte';
 	import { ChannelCategory } from 'backFrontCommon';
-	import { chatMethods } from '$lib/ts/chat';
+	import { sendCreateChannel } from '$lib/state';
 
 	export let show = false;
 
-	const dispatch = createEventDispatcher();
 	let channelCategories = [
 		{ id: 'public', label: 'Public', value: ChannelCategory.PUBLIC },
 		{ id: 'protected', label: 'Password-protected', value: ChannelCategory.PROTECTED },
@@ -19,7 +17,7 @@
 
 	function handleSubmit() {
 		show = false;
-		chatMethods.sendCreateChannel({
+		sendCreateChannel({
 			channel: channelName,
 			category: chosenCategory,
 			password

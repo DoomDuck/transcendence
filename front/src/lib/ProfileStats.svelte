@@ -1,31 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { UserInfo } from 'backFrontCommon';
+	import { observeGame } from '$lib/state';
 
-	import { ChatEvent, type UserInfo } from 'backFrontCommon';
-	import { GameProducedEvent } from 'pong/common/game/events';
-	import { onMount } from 'svelte';
-	import { state } from './ts/state';
-	import { isInGame, refreshIngameStatus } from './ts/users';
 	export let user: UserInfo;
-
-	$: userInGame = user.inGame;
-	onMount(() => {
-		isInGame(user.id).then((inGame) => (userInGame = inGame));
-	});
-
-	function observeGame() {
-		state.socket.emit(ChatEvent.GAME_OBSERVE, user.id, (feedback) => {
-			if (feedback.success) {
-				state.gameParams = {
-					online: true,
-					observe: true
-				};
-				goto('/Play');
-			} else {
-				console.error(feedback.errorMessage);
-			}
-		});
-	}
 </script>
 
 <div>
@@ -42,10 +19,10 @@
 	{#each user.matchHistory as { opponent, winner, score, opponentScore }}
 		<div class="gameHistory">{opponent}: {winner ? 'Won' : 'Lost'} ({score} - {opponentScore})</div>
 	{/each}
-	{#if userInGame}
+	{#if user.inGame }
 		<div id="statusLine">
 			<p>Status: In Game</p>
-			<button on:click={observeGame}> Watch </button>
+			<button on:click={() => observeGame(user.id)}> Watch </button>
 		</div>
 	{:else}
 		<p>Status: Not in game</p>

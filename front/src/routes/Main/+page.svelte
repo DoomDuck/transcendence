@@ -1,25 +1,20 @@
 <script lang="ts">
-	import { users } from '$lib/ts/users';
-	import { delay } from 'pong/common/utils';
-
-	let color: string = '#6028FF';
+	import { myInfo } from '$lib/state';
 </script>
 
 <nav id="menu">
 	<div id="options">
-		<h1 class="typography" style="color: {color}">Transcendence</h1>
-		<h4 class="typography" style="color: {color}">
+		<h1 class="typography">Transcendence</h1>
+		<h4 class="typography">
 			<a href="/StartAGame">Game</a>
 		</h4>
-		<h4 class="typography" style="color: {color}">
+		<h4 class="typography">
 			<a href="/Chat">Chat</a>
 		</h4>
-		<h4 class="typography" style="color: {color}">
+		<h4 class="typography">
 			<a href="/Parameters">Parameters</a>
 		</h4>
-		{#await $users.findOrFetchMyself() then user}
-			<p style="color: white">(DEBUG) My id is {user.id}</p>
-		{/await}
+	<p style="color: white">(DEBUG) My id is {$myInfo.id}</p>
 	</div>
 </nav>
 
@@ -27,7 +22,6 @@
 	#menu {
 		width: 100%;
 		height: 100%;
-		overflow: hidden;
 	}
 	#options {
 		display: flex;

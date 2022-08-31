@@ -1,13 +1,12 @@
 <script lang="ts">
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { users } from '$lib/ts/users';
-	import type { Id } from 'backFrontCommon';
+	import { getUser } from '$lib/state';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 
-	export let userId: Id;
+	export let userId: number;
 
-	const userPromise = $users.findOrFetch(userId);
+	const userPromise = getUser(userId);
 	let showProfile = false;
 </script>
 

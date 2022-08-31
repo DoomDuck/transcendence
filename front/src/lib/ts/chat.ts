@@ -1,16 +1,19 @@
 import {
+	BlockUserToServer,
 	ChatEvent,
-	type ChatFeedbackDto,
-	type CMToServer,
-	type CreateChannelToServer,
-	type DMToServer,
-	type JoinChannelToServer
+} from 'backFrontCommon';
+import type {
+	ChatFeedbackDto,
+	CMToServer,
+	CreateChannelToServer,
+	DMToServer,
+	JoinChannelToServer
 } from 'backFrontCommon';
 import { channelConvs } from './chatUtils';
-import { state } from './state';
+import { socket } from '$lib/state';
 
-function sendDirectMessage(message: DMToServer) {
-	state.socket.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
+export function sendDirectMessage(message: DMToServer) {
+	socket!.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
 		if (feedback.success) {
 			// userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
 		} else {
@@ -19,8 +22,8 @@ function sendDirectMessage(message: DMToServer) {
 	});
 }
 
-function sendCreateChannel(message: CreateChannelToServer) {
-	state.socket.emit(ChatEvent.CREATE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+export function sendCreateChannel(message: CreateChannelToServer) {
+	socket!.emit(ChatEvent.CREATE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
 		if (feedback.success) {
 			channelConvs.update((_) => _.create(message.channel));
 		} else {
@@ -29,8 +32,8 @@ function sendCreateChannel(message: CreateChannelToServer) {
 	});
 }
 
-function sendChannelMessage(message: CMToServer) {
-	state.socket.emit(ChatEvent.MSG_TO_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+export function sendChannelMessage(message: CMToServer) {
+	socket!.emit(ChatEvent.MSG_TO_CHANNEL, message, (feedback: ChatFeedbackDto) => {
 		if (feedback.success) {
 			channelConvs.update((_) => _.addMessageFromMe(message.content, message.channel));
 		} else {
@@ -39,8 +42,8 @@ function sendChannelMessage(message: CMToServer) {
 	});
 }
 
-function sendJoinChannel(message: JoinChannelToServer) {
-	state.socket.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+export function sendJoinChannel(message: JoinChannelToServer) {
+	socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
 		if (feedback.success) {
 			channelConvs.update((_) => _.create(message.channel));
 		} else {
@@ -49,9 +52,10 @@ function sendJoinChannel(message: JoinChannelToServer) {
 	});
 }
 
-export const chatMethods = {
-	sendDirectMessage,
-	sendCreateChannel,
-	sendChannelMessage,
-	sendJoinChannel
-};
+export function blockUser(dto: BlockUserToServer) {
+	socket!.emit(ChatEvent.BLOCK_USER, dto, (feedback) => {
+		if (!feedback.success) {
+			alert(feedback.errorMessage);
+		}
+	});
+}

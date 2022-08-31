@@ -7,9 +7,8 @@ import {
   delay,
   randomGravitonCoords,
   randomPortalCoords,
-  type ErrorCallback,
-  type FinishCallback,
 } from "../common/utils";
+import type { FinishCallback } from '../common/utils';
 import { ClientGameContext } from "./ClientGameContext";
 import { setupKeyboardOffline } from "./game";
 

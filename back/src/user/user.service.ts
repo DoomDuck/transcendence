@@ -73,7 +73,7 @@ export class ActiveConversation {
 @Injectable()
 export class UserService {
   arrayActiveUser: ActiveUser[] = [];
-  logger = new Logger('UserService');
+  logger = new Logger('User Service');
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -202,6 +202,14 @@ export class UserService {
   }
   findOneDb(id: Id): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
+  }
+  findOneDbWithRelation(id: Id): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: {
+        match: true,
+      },
+    });
   }
   async findOneDbBySocket(clientSocket: Socket): Promise<User | null> {
     const tempUser = this.findOneActiveBySocket(clientSocket);
@@ -510,13 +518,9 @@ export class UserService {
     let opScore;
     let myScore;
     let winner = false;
-    const players = await match.player;
 
-    this.logger.debug(`dans toto ${JSON.stringify(await match.player)}`);
-    const player0 = players[0];
-    const player1 = players[1];
-    if (player0 === user) {
-      opponnent = player1;
+    if (match.player[0].id == user.id) {
+      opponnent = match.player[1];
       opScore = match.score[1];
       myScore = match.score[0];
       if (match.score[0] > match.score[1]) winner = true;
@@ -537,13 +541,16 @@ export class UserService {
     user: User,
   ): Promise<RelativeMatchInfoFromServer[]> {
     const result: RelativeMatchInfoFromServer[] = [];
-    this.logger.debug(`dans relative ${JSON.stringify(user)}`);
-    if (!user || !user.match) return [];
-    const matchs = await user.match;
-    this.logger.debug(`dans relative3 ${matchs.length}`);
-    for (let i = 0; i < Math.min(3, matchs.length); i++) {
-      this.logger.debug(`dans relative4 ${JSON.stringify(matchs[i])}`);
-      result.push(await this.MatchDbToMatchRelative(user, matchs[i]));
+    this.logger.debug(
+      `dans relative match history ${JSON.stringify(user.match)}`,
+    );
+    if (!user.match) return [];
+    for (let i = 0; i < Math.min(3, user.match.length); i++) {
+      let match = user.match[user.match.length - 1 - i];
+      match = (await this.matchHistoryService.findOneDbWithRelation(
+        match.id!,
+      ))!;
+      result.push(this.MatchDbToMatchRelative(user, match));
     }
     return result;
   }
@@ -587,7 +594,7 @@ export class UserService {
     userInfo: UserInfoToServer,
   ): Promise<RequestFeedbackDto<UserInfo>> {
     const sender = await this.findOneDbBySocket(socket);
-    const target = await this.findOneDb(userInfo.target);
+    const target = await this.findOneDbWithRelation(userInfo.target);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
     else if (!target)

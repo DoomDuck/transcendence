@@ -4,7 +4,7 @@
 	import ConversationEntry from './ConversationEntry.svelte';
 	import BlockUserButton from '../buttons/BlockUserButton.svelte';
 	import GameInviteButton from '../buttons/GameInviteButton.svelte';
-	import { chatMethods } from '$lib/ts/chat';
+	import { sendDirectMessage } from '$lib/state';
 	import { UserConversation } from '$lib/ts/chatUtils';
 
 	export let conversation: UserConversation;
@@ -27,7 +27,7 @@
 			inputElement.value = '';
 			if (!content) return;
 
-			chatMethods.sendDirectMessage({
+			sendDirectMessage({
 				target: conversation.dto.interlocutor,
 				content
 			});
@@ -87,5 +87,9 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 12px;
+	}
+	h2 {
+		font-family: 'Lato', sans-serif;
+		font-size: 1.5em;
 	}
 </style>

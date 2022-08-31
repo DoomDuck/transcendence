@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Match } from './match.entity';
 import { User } from '../user/entities/user.entity';
-import { ServerSocket as Socket } from 'backFrontCommon';
+import { Id, ServerSocket as Socket } from 'backFrontCommon';
 
 import { RequestFeedbackDto, MatchInfoFromServer } from 'backFrontCommon';
 
@@ -41,5 +41,13 @@ export class MatchHistoryService {
       result.push(await this.MatchDbToMatchDTO(match));
     });
     return { success: true, result: result };
+  }
+  findOneDbWithRelation(id: Id): Promise<Match | null> {
+    return this.matchRepository.findOne({
+      where: { id },
+      relations: {
+        player: true,
+      },
+    });
   }
 }

@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { state } from '$lib/ts/state';
+	import { socket, gameParams } from '$lib/state';
 	import { ChatEvent } from 'backFrontCommon';
 	import { onDestroy, onMount } from 'svelte';
 
-	const classic = state.gameParams?.classic ?? false;
+	const classic = gameParams?.classic ?? false;
 
 	onMount(() => {
-		state.socket.emit(ChatEvent.JOIN_MATCHMAKING, classic);
+		socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic);
 	});
 
 	onDestroy(() => {
-		state.socket.emit(ChatEvent.QUIT_MATCHMAKING);
+		socket!.emit(ChatEvent.QUIT_MATCHMAKING);
 	});
 </script>
 

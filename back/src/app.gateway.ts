@@ -89,7 +89,9 @@ export class AppGateway
   @SubscribeMessage(LoginEvent.TOTP_UPDATE)
   async onTotpUpdate(socket: Socket, secret: string | null) {
     await this.loginService.onTotpUpdate(socket, secret);
+    return {}; // Send feedback
   }
+
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);

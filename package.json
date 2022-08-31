@@ -6,7 +6,7 @@
 		"doc": "doc"
 	},
 	"scripts": {
-		"install": "(cd front && npm install) && (cd back && npm install)",
+		"install": "(cd front && npm install) && (cd back && npm install) && (cd lib/pong && npm install) && (cd lib/backFrontCommon && npm install)",
 		"format": "(cd front && npm run format) && (cd back && npm run format)",
 		"format:check": "(cd front && npm run format:check) && (cd back && npm run format:check)"
 	},

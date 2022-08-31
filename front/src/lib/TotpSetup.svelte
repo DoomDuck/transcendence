@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
 	import { toDataURL } from 'qrcode';
-	import { state } from '$lib/ts/state';
-	import { LoginEvent } from 'backFrontCommon';
+	import { enableTotp } from '$lib/state';
 	import { TOTP } from 'otpauth';
 	import CodeDial from './CodeDial.svelte';
+  import Modal from '$lib/Modal.svelte';
 
 	export let show: boolean;
 	const totp = new TOTP({
@@ -18,8 +17,7 @@
 	function submit(token: string) {
 		const success = totp.validate({ token }) == 0;
 		if (success) {
-			state.socket.emit(LoginEvent.TOTP_UPDATE, totp.secret.hex);
-			state.updateMyInfo();
+			enableTotp(totp.secret.hex);
 			show = false;
 		} else code = '';
 	}

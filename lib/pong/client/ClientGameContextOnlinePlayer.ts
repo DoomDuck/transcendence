@@ -1,11 +1,9 @@
 import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
-import { GameProducedEvent } from "../common/game/events";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
 import { ChatEvent } from "backFrontCommon";
 import type { ErrorCallback, FinishCallback } from "../common/utils";
-import { Game } from "../common/game";
 
 /**
  * Online version of the game in the client as a player (see ClientGameContext)

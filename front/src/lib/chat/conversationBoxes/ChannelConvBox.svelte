@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { beforeUpdate, afterUpdate, createEventDispatcher } from 'svelte';
+	import { beforeUpdate, afterUpdate } from 'svelte';
 	import ConversationEntry from './ConversationEntry.svelte';
-	import type { CMToServer } from 'backFrontCommon/chatEvents';
 	import { ChannelConversation } from '$lib/ts/chatUtils';
-	import { chatMethods } from '$lib/ts/chat';
+	import { sendChannelMessage } from '$lib/state';
 
 	export let conversation: ChannelConversation;
 
@@ -25,7 +24,7 @@
 			inputElement.value = '';
 			if (!text) return;
 
-			chatMethods.sendChannelMessage({
+			sendChannelMessage({
 				channel: conversation.dto.channel,
 				content: text
 			});
@@ -69,5 +68,9 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 0.5vw;
+	}
+	h2 {
+		font-family: 'Lato', sans-serif;
+		font-size: 1.5em;
 	}
 </style>
