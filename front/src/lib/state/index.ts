@@ -18,7 +18,9 @@ import {
 	ChatFeedbackDto,
 	CMToServer,
 	CreateChannelToServer,
-	BlockUserToServer
+	BlockUserToServer,
+	FriendInviteToServer,
+	BanUserFromServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -155,6 +157,7 @@ function setupHooks(socket: Socket) {
 	socket.on(ChatEvent.GAME_ACCEPT, onGameAccept);
 	socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 	socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
+	socket.on(ChatEvent.BANNED_NOTIF, onBannedNotif);
 
 	window.addEventListener('keydown', closeLastModalListener);
 
@@ -309,6 +312,14 @@ export function sendBlockUser(message: BlockUserToServer) {
 	});
 }
 
+export function sendFriendInvite(message: FriendInviteToServer) {
+	socket!.emit(ChatEvent.FRIEND_INVITE, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
 // Hooks
 function onConnectError() {
 	// Clean close
@@ -361,6 +372,13 @@ function onGameRefuse(message: GameRefuseFromServer) {
 
 function onGameCancel(message: GameCancelFromServer) {
 	gameInvite.revokeReceived(message.source);
+}
+
+function onBannedNotif(message: BanUserFromServer) {
+	channelConvs.update((_) => {
+		_.getBanned(message.channel);
+		return _;
+	});
 }
 
 // Used in +layout.svelte
