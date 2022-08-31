@@ -15,4 +15,4 @@
 	on:click={() => (show = true)}
 />
 
-<BlockUserModal bind:show {user} on:blockUser />
+<BlockUserModal bind:show {user} />

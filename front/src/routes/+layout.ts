@@ -21,6 +21,5 @@ export function load({ url }: LoadEvent) {
 		safe_redirect(route);
 		return;
 	}
-	if (isBlocked(url.pathname))
-		safe_redirect(LOGGIN_SUCCESS_ROUTE);
+	if (isBlocked(url.pathname)) safe_redirect(LOGGIN_SUCCESS_ROUTE);
 }

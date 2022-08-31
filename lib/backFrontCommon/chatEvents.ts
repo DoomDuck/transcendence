@@ -424,7 +424,7 @@ export interface ServerToClientEvents {
   [ChatEvent.DELETE_GAME_INVITE]: (dto: DeleteGameInviteFromServer) => void;
 
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
-  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer ) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer) => void;
 
   // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }
@@ -432,7 +432,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   // Login
   [LoginEvent.TOTP_UPDATE]: (secret: string | null, callback: (arg: number) => void) => void;
-  
+
   // UserInfo
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
@@ -446,8 +446,8 @@ export interface ClientToServerEvents {
   [ChatEvent.INVITE_TO_PRIVATE_CHANNEL]: (dto: InviteChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.POST_AVATAR]: (dto: PostAvatar, callback: FeedbackCallback) => void;
-  [ChatEvent.GET_FRIENDS]: (callback: RequestFeedbackDto<Id[]>) => void;
-  [ChatEvent.GET_LEADERBOARD]: (callback: RequestFeedbackDto<LeaderboardItemDto[]>) => void;
+  [ChatEvent.GET_FRIENDS]: (callback: FeedbackCallbackWithResult<Id[]>) => void;
+  [ChatEvent.GET_LEADERBOARD]: (callback: FeedbackCallbackWithResult<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: FeedbackCallbackWithResult<UserHistoryDto>) => void;
   [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;

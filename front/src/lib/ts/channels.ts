@@ -4,7 +4,7 @@ import {
 	ChannelRights,
 	ChannelUser,
 	ChatEvent,
-	MuteUserToServer,
+	MuteUserToServer
 } from 'backFrontCommon';
 import { socket } from '$lib/state';
 
@@ -48,7 +48,10 @@ export type ChannelDetailsData = {
 	others: ChannelUser[];
 };
 
-export async function treatChannelInfo(myId: number, channelInfo: ChannelInfo): Promise<ChannelDetailsData> {
+export async function treatChannelInfo(
+	myId: number,
+	channelInfo: ChannelInfo
+): Promise<ChannelDetailsData> {
 	// const myInfo = await usersObject.findOrFetchMyself();
 	const i = channelInfo.users.findIndex((user) => user.id == myId);
 	let others: ChannelUser[];
