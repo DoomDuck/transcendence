@@ -25,7 +25,7 @@ import {
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
-import { readable } from 'svelte/store';
+import { readable, type Writable } from 'svelte/store';
 import type { Readable, Subscriber } from 'svelte/store';
 import { closeLastModalListener } from '$lib/ts/modals';
 
@@ -376,7 +376,7 @@ function onGameCancel(message: GameCancelFromServer) {
 
 function onBannedNotif(message: BanUserFromServer) {
 	channelConvs.update((_) => {
-		_.getBanned(message.channel);
+		_.getBanned(message.channel).then(() => channelConvs.update((_) => _));
 		return _;
 	});
 }

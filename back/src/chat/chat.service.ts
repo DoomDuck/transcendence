@@ -157,7 +157,7 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    if (this.channelManagerService.isBanned(tempUser,tempChan)) {
+    if (this.channelManagerService.isBanned(tempUser, tempChan)) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.YOU_ARE_BANNED,
@@ -262,9 +262,10 @@ export class ChatService {
       wss,
     );
     if (feedback.success === true) {
-      this.logger.debug("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
-      this.userService.leaveChannel( tempTarget,tempChan);
-
+      this.logger.debug(
+        '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
+      );
+      this.userService.leaveChannel(tempTarget, tempChan);
     }
     return feedback;
   }
@@ -386,12 +387,15 @@ export class ChatService {
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
   }
-  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer):Promise<RequestFeedbackDto<ChannelInfo>> {
+  async handleGetChannelInfo(
+    socket: Socket,
+    chatInfo: GetChannelInfoToServer,
+  ): Promise<RequestFeedbackDto<ChannelInfo>> {
     const user = this.userService.findOneActiveBySocket(socket);
     if (!user) {
       return {
-        success:false,
-        errorMessage:ChatError.USER_NOT_FOUND,
+        success: false,
+        errorMessage: ChatError.USER_NOT_FOUND,
       };
     }
     const channel = await this.channelManagerService.findChanByName(
@@ -399,26 +403,39 @@ export class ChatService {
     );
     if (!channel) {
       return {
-        success:false,
-        errorMessage:  ChatError.CHANNEL_NOT_FOUND,
-    }
+        success: false,
+        errorMessage: ChatError.CHANNEL_NOT_FOUND,
+      };
     }
     //let users : ChannelUser[] = [];
     const usersPromise = channel.member.map(async (member) => {
       const tempUser = await this.userService.findOneDb(member);
       if (tempUser) {
-        this.logger.debug(`ta mere dans channel info ${JSON.stringify((this.channelManagerService.ChannelUserTransformator(tempUser,channel)))}`)
-      return this.channelManagerService.ChannelUserTransformator(tempUser,channel);
+        this.logger.debug(
+          `ta mere dans channel info ${JSON.stringify(
+            this.channelManagerService.ChannelUserTransformator(
+              tempUser,
+              channel,
+            ),
+          )}`,
+        );
+        return this.channelManagerService.ChannelUserTransformator(
+          tempUser,
+          channel,
+        );
       }
       return null;
-      })
-      usersPromise.filter
-      const users = Promise.all(usersPromise).then(usersP => usersP.filter(usersPro => usersPro != null))
-      this.logger.debug(`end channel info${JSON.stringify(await users)}`)
-      const result =await users;
-      if (result!= null)
-      return {success : true, result: new ChannelInfo( result)}
-      else {success : false
-      }
+    });
+    usersPromise.filter;
+    const users = Promise.all(usersPromise).then((usersP) =>
+      usersP.filter((usersPro) => usersPro != null),
+    );
+    this.logger.debug(`end channel info${JSON.stringify(await users)}`);
+    const result = await users;
+    if (result != null)
+      return { success: true, result: new ChannelInfo(result) };
+    else {
+      success: false;
+    }
   }
 }

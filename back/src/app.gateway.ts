@@ -281,8 +281,15 @@ export class AppGateway
     return this.chatService.handleDeleteChannel(socket, deleteInfo);
   }
   @SubscribeMessage(ChatEvent.GET_CHANNEL_INFO)
-  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer): Promise<RequestFeedbackDto<ChannelInfo>> {
-    this.logger.log(`dans get channel info ${  JSON.stringify((await this.chatService.handleGetChannelInfo(socket, chatInfo)).result)}`);
+  async handleGetChannelInfo(
+    socket: Socket,
+    chatInfo: GetChannelInfoToServer,
+  ): Promise<RequestFeedbackDto<ChannelInfo>> {
+    this.logger.log(
+      `dans get channel info ${JSON.stringify(
+        (await this.chatService.handleGetChannelInfo(socket, chatInfo)).result,
+      )}`,
+    );
     return await this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
 }
