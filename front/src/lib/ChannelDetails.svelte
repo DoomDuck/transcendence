@@ -19,7 +19,8 @@
 				return 'Owner';
 			case ChannelRights.ADMIN:
 				return 'Admin';
-			case ChannelRights.USER: return 'a simple user';
+			case ChannelRights.USER:
+				return 'a simple user';
 		}
 	}
 
@@ -53,8 +54,8 @@
 	<div class="channel-details-users">
 		{#each others as user}
 			<div class="channel-details-user">
-			<UserMiniature userId={user.id} />
-				<PendingText tag="p" text={getUser(user.id).then(u => u.name)} />
+				<UserMiniature userId={user.id} />
+				<PendingText tag="p" text={getUser(user.id).then((u) => u.name)} />
 				<p>Role: {channelRightsString(user.rights)}</p>
 				{#if user.muted}
 					<p>(muted)</p>

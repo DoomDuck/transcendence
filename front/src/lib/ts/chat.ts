@@ -1,7 +1,4 @@
-import {
-	BlockUserToServer,
-	ChatEvent,
-} from 'backFrontCommon';
+import { BlockUserToServer, ChatEvent } from 'backFrontCommon';
 import type {
 	ChatFeedbackDto,
 	CMToServer,

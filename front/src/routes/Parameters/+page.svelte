@@ -19,7 +19,7 @@
 		</div>
 	</div>
 	<div id="lastParams">
-		<TotpSetupButton/>
+		<TotpSetupButton />
 		<button id="disco" on:click={disconnect}> Disconnect </button>
 	</div>
 </div>

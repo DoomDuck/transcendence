@@ -14,10 +14,11 @@ import {
 	GameRefuseFromServer,
 	InviteChannelFromServer,
 	GameInviteToServer,
-    JoinChannelToServer,
-    ChatFeedbackDto,
-    CMToServer,
-    CreateChannelToServer,
+	JoinChannelToServer,
+	ChatFeedbackDto,
+	CMToServer,
+	CreateChannelToServer,
+	BlockUserToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -26,7 +27,6 @@ import { readable } from 'svelte/store';
 import type { Readable, Subscriber } from 'svelte/store';
 import { closeLastModalListener } from '$lib/ts/modals';
 
-
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
 export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
@@ -34,47 +34,46 @@ export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
 // const USER_INFO_MOCKUP = new UserInfo(
-//     /* id */ 0, 
-//     /* name */ 'loading...', 
-//     /* win */ 0, 
-//     /* loose */ 0, 
-//     /* score */ 0, 
-//     /* ranking */ 0, 
-//     /* avatar */ null, 
-//     /* isOnline */ true, 
-//     /* inGame */ false, 
-//     /* matchHistory */ [], 
+//     /* id */ 0,
+//     /* name */ 'loading...',
+//     /* win */ 0,
+//     /* loose */ 0,
+//     /* score */ 0,
+//     /* ranking */ 0,
+//     /* avatar */ null,
+//     /* isOnline */ true,
+//     /* inGame */ false,
+//     /* matchHistory */ [],
 // );
 
 const MY_INFO_MOKUP = new MyInfo(
-    /* id */ 0, 
-    /* name */ 'Loading..', 
-    /* friendlist */ [], 
-    /* blocked */ [], 
-    /* win */ 0, 
-    /* loose */ 0, 
-    /* score */ 0, 
-    /* ranking */ 0, 
-    /* avatar */ null, 
-    /* totpSecret */ null, 
-    /* inGame */ false, 
+	/* id */ 0,
+	/* name */ 'Loading..',
+	/* friendlist */ [],
+	/* blocked */ [],
+	/* win */ 0,
+	/* loose */ 0,
+	/* score */ 0,
+	/* ranking */ 0,
+	/* avatar */ null,
+	/* totpSecret */ null,
+	/* inGame */ false
 );
 
 let setMyInfo!: Subscriber<MyInfo>;
 let resolveTotpRequired: ((token: string) => void) | null = null;
 let knownUsers = new Map<Id, UserInfo>();
 
-
 export let gameParams: GameParams | null = null;
-	
-export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, u => {
+
+export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, (u) => {
 	if (!setMyInfo) {
 		updateMyInfo();
 		setMyInfo = u;
 	}
-	return () => { };
+	return () => {};
 });
-	
+
 export let socket: Socket | null = null;
 
 export function connected(): boolean {
@@ -94,8 +93,7 @@ export function connect(code?: string) {
 }
 
 export function disconnect() {
-	if (!connected())
-		return;
+	if (!connected()) return;
 	// TODO: keep or remove
 	// throw new Error('Not connected');
 	socket!.disconnect();
@@ -110,8 +108,8 @@ function onLoginSuccess() {
 
 // TODO: remove
 function addStuff() {
-	onMsgToUser(new DMFromServer(78441, 'salut'));
-	// onMsgToChannel(new 
+	// onMsgToUser(new DMFromServer(78441, 'salut'));
+	// onMsgToChannel(new
 	// addMessage(
 	// 	{
 	// 		sender: -1,
@@ -143,7 +141,6 @@ function onLoginFailure() {
 	goto(LOGGIN_ROUTE);
 }
 
-	
 function setupHooks(socket: Socket) {
 	socket.on('connect_error', onConnectError);
 	socket.on('disconnect', onDisconnect);
@@ -195,7 +192,6 @@ export function updateUserInfo() {
 	// socket!.emit(GetInfoEvent.USER_INFO, onMyInfoResult);
 }
 
-
 // Game
 export function refuseGame(target: Id) {
 	socket!.emit(ChatEvent.GAME_REFUSE, { target });
@@ -210,7 +206,7 @@ export function cancelGame(target: Id) {
 }
 
 export function sendGameInvite(invite: GameInviteToServer, callback: FeedbackCallback) {
-	socket!.emit(ChatEvent.GAME_INVITE, invite, callback)
+	socket!.emit(ChatEvent.GAME_INVITE, invite, callback);
 }
 
 export function clearGameParams() {
@@ -218,7 +214,7 @@ export function clearGameParams() {
 }
 
 export function joinGame(classic: boolean) {
-	socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic)
+	socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic);
 }
 
 export function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
@@ -245,15 +241,17 @@ export function observeGame(id: Id) {
 }
 
 // Users
-export async function getUser(id: Id): Promise<UserInfo>  {
+export async function getUser(id: Id): Promise<UserInfo> {
 	const user = knownUsers.get(id);
 	if (user) return user;
-	return new Promise(r => socket!.emit(GetInfoEvent.USER_INFO, {target: id}, feedback => {
-		if (!feedback.success) throw new Error(`Could not fetch user info ${feedback.errorMessage}`);
-		const user = feedback.result!;
-		knownUsers.set(id, user);
-		r(user);
-	}));
+	return new Promise((r) =>
+		socket!.emit(GetInfoEvent.USER_INFO, { target: id }, (feedback) => {
+			if (!feedback.success) throw new Error(`Could not fetch user info ${feedback.errorMessage}`);
+			const user = feedback.result!;
+			knownUsers.set(id, user);
+			r(user);
+		})
+	);
 }
 
 // Avatar
@@ -267,9 +265,7 @@ export async function uploadAvatar(imageDataUrl: string) {
 // Chat
 export function sendDirectMessage(message: DMToServer) {
 	socket!.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
-		} else {
+		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -305,6 +301,14 @@ export function sendJoinChannel(message: JoinChannelToServer) {
 	});
 }
 
+export function sendBlockUser(message: BlockUserToServer) {
+	socket!.emit(ChatEvent.BLOCK_USER, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
 // Hooks
 function onConnectError() {
 	// Clean close
@@ -322,9 +326,8 @@ function onTotpRequired(callback: (token: string) => void) {
 }
 
 function onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
-	if (feedback.success)
-		setMyInfo(feedback.result!);
-	else console.error("Could not get user info");
+	if (feedback.success) setMyInfo(feedback.result!);
+	else console.error('Could not get user info');
 }
 
 function onGotoGameScreen(classic: boolean, ready: () => void) {
