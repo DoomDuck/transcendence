@@ -7,17 +7,7 @@
 	export let show = false;
 	let targetStr = '';
 
-	function handleBlur(_event: FocusEvent) {
-		targetStr = targetStr.trim();
-	}
-
-	function isPositiveInteger(s: string) {
-		return s.length > 0 && Number.isInteger(+s) && +s >= 0;
-	}
-
 	function handleSubmit() {
-		// DEBUG
-		if (!isPositiveInteger(targetStr)) return false;
 		sendDirectMessage({ target: +targetStr, content });
 		close();
 		return true;
@@ -33,7 +23,7 @@
 <Modal bind:show on:close={close}>
 	<form id="formContainer" on:submit|preventDefault={handleSubmit}>
 		<div id="destinataire">
-			<PositiveIntegerInput placeholder="To :" bind:content />
+			<PositiveIntegerInput placeholder="To :" bind:content={targetStr} />
 		</div>
 		<br />
 		<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />

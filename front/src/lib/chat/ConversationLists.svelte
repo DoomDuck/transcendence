@@ -27,7 +27,6 @@
 			bannedFromChannel={conversation.banned}
 		>
 			<ChannelMiniature channel={conversation.channel} slot="icon" />
-			<!-- <AvatarIcon type={'channel'} slot="icon" imageURL="group_conv_icon.png" /> -->
 			<ConversationListItemText slot="item-text" text={conversation.channel} />
 			<ChannelBox slot="conversation-modal" {conversation} />
 		</ConversationListItem>
