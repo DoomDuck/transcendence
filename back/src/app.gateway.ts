@@ -31,6 +31,7 @@ import type {
   MatchInfoFromServer,
   SetPasswordToServer,
   DeleteChannelToServer,
+  GetChannelInfoToServer,
   SetUsernameToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
@@ -94,6 +95,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
+    this.logger.log('Dans ban User');
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);
   }
 
@@ -133,6 +135,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.BAN_USER)
   async handleBanUser(clientSocket: Socket, banInfo: BanUserToServer) {
+    this.logger.log('Dans ban User');
     return await this.chatService.handleBanUser(
       clientSocket,
       banInfo,
@@ -142,6 +145,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.MUTE_USER)
   async handleMuteUser(clientSocket: Socket, muteInfo: MuteUserToServer) {
+    this.logger.log('mute ban User');
     return await this.chatService.handleMuteUser(
       clientSocket,
       muteInfo,
@@ -272,5 +276,9 @@ export class AppGateway
   @SubscribeMessage(ChatEvent.DELETE_CHANNEL)
   async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
     return this.chatService.handleDeleteChannel(socket, deleteInfo);
+  }
+  @SubscribeMessage(ChatEvent.GET_CHANNEL_INFO)
+  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer) {
+    return this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
 }

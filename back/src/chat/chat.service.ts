@@ -23,6 +23,8 @@ import {
   InviteChannelToServer,
   InviteChannelFromServer,
   DeleteChannelToServer,
+  GetChannelInfoToServer,
+  ChannelUser,
   ServerSocket as Socket,
 } from 'backFrontCommon';
 
@@ -373,5 +375,31 @@ export class ChatService {
     });
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
+  }
+  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer) {
+    const user = this.userService.findOneActiveBySocket(socket);
+    if (!user) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.USER_NOT_FOUND,
+      );
+    }
+    const channel = await this.channelManagerService.findChanByName(
+      chatInfo.channel,
+    );
+    if (!channel) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.CHANNEL_NOT_FOUND,
+      );
+    }
+    let channelUser : ChannelUser[] = [];
+    channel.member.forEach((member) =>{
+      const tempUser = this.userService.findOneActiveBySocket(socket);
+      if (tempUser) {
+        channelUser.push(this.channelManagerService.ChannelUserTransformator(tempUser,channel))
+      }
+      })
+      return {successe : true, result: channelUser}
   }
 }

@@ -17,6 +17,9 @@ import {
   ActiveUserConversationDto,
   ActiveChannelConversationDto,
   UserHistoryDto,
+  ChannelUser,
+  ChannelRights,
+  GetChannelInfoToServer,
 } from 'backFrontCommon';
 import { ServerToClientEvents, ClientToServerEvents } from 'backFrontCommon';
 import { Channel, BannedUser, MutedUser } from './channel.entity';
@@ -318,5 +321,32 @@ export class ChannelManagerService {
   }
   deleteChannel(channel: Channel) {
     this.channelRepository.delete(channel.name);
+  }
+  ChannelUserTransformator(user:ActiveUser, channel:Channel):ChannelUser
+  {
+    if(this.isCreator(user,channel))
+      return {
+            id : user.id,
+             rights : ChannelRights.OWNER,
+             muted : false
+      }
+      if(this.isAdmin(user,channel))
+      return {
+        id : user.id,
+         rights : ChannelRights.ADMIN,
+         muted : false
+  }
+  if(this.isMuted(user,channel))
+  return {
+    id : user.id,
+     rights : ChannelRights.USER,
+     muted : true
+}
+else
+  return {
+  id : user.id,
+   rights : ChannelRights.USER,
+   muted : false
+  }
   }
 }
