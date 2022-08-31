@@ -9,6 +9,8 @@ import { writable } from 'svelte/store';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import type { Id } from 'backFrontCommon/general';
 import { getUser } from '$lib/state';
+import { removeIfPresent } from 'pong';
+import { delay } from 'pong/common/utils';
 // import {
 // 	ChatEvent,
 // 	type CMFromServer,
@@ -66,6 +68,7 @@ export class UserConversation extends Conversation<ActiveUserConversationDto> {
 }
 
 export class ChannelConversation extends Conversation<ActiveChannelConversationDto> {
+	banned: boolean = false;
 	constructor(channel: string) {
 		super({
 			channel,
@@ -143,6 +146,14 @@ export class ChannelConversationList {
 			this.convs.push(new ChannelConversation(channel));
 		}
 		return this;
+	}
+
+	async getBanned(channel: string) {
+		const i = this.convs.findIndex((conv) => conv.channel == channel);
+		if (i == -1) return;
+		this.convs[i].banned = true;
+		await delay(1000);
+		this.convs.splice(i, 1);
 	}
 }
 
