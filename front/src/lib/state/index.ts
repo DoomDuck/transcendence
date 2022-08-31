@@ -265,9 +265,7 @@ export async function uploadAvatar(imageDataUrl: string) {
 // Chat
 export function sendDirectMessage(message: DMToServer) {
 	socket!.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
-		} else {
+		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
