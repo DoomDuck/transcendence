@@ -423,14 +423,22 @@ export class UserService {
     logger.log('end');
   }
 
-  leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
+  async leaveChannel(activeUser: ActiveUser, channel: Channel): Promise<ChatFeedbackDto> {
     if (channel.member.find((id) => id === activeUser.id) === undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.NOT_IN_CHANNEL,
       );
+    const dbUser = await this.findOneDb(activeUser.id);
+      if(!dbUser)
+      return {success:false}
     this.channelManagerService.leaveChannel(channel, activeUser);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+    dbUser.channel.splice(
+      dbUser.channel.indexOf(channel.name),
+      1,
+    );
+    this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
@@ -464,7 +472,7 @@ export class UserService {
   }
 
   blockUser(sender: User, target: User): ChatFeedbackDto {
-    if (sender.blocked.find((user) => user === target.id) === undefined)
+    if (sender.blocked.find((user) => user === target.id) != undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.ALREADY_BLOCKED,
@@ -510,10 +518,10 @@ export class UserService {
         inGame: false,
       };
   }
-  async MatchDbToMatchRelative(
+  MatchDbToMatchRelative(
     user: User,
     match: Match,
-  ): Promise<RelativeMatchInfoFromServer> {
+  ): RelativeMatchInfoFromServer {
     let opponnent;
     let opScore;
     let myScore;
@@ -525,7 +533,7 @@ export class UserService {
       myScore = match.score[0];
       if (match.score[0] > match.score[1]) winner = true;
     } else {
-      opponnent = player0;
+      opponnent = match.player[0];
       opScore = match.score[0];
       myScore = match.score[1];
       if (match.score[1] > match.score[0]) winner = true;

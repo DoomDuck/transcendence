@@ -12,6 +12,7 @@ import {
   PostAvatar,
   MatchInfoToServer,
   UserInfoToServer,
+  ChannelUser,
   Id,
   IsInGameToServer,
 } from 'backFrontCommon';
@@ -32,6 +33,8 @@ import type {
   SetPasswordToServer,
   DeleteChannelToServer,
   GetChannelInfoToServer,
+  FeedbackCallbackWithResult,
+  ChannelInfo,
   SetUsernameToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
@@ -278,7 +281,8 @@ export class AppGateway
     return this.chatService.handleDeleteChannel(socket, deleteInfo);
   }
   @SubscribeMessage(ChatEvent.GET_CHANNEL_INFO)
-  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer) {
-    return this.chatService.handleGetChannelInfo(socket, chatInfo);
+  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer): Promise<RequestFeedbackDto<ChannelInfo>> {
+    this.logger.log(`dans get channel info ${  JSON.stringify((await this.chatService.handleGetChannelInfo(socket, chatInfo)).result)}`);
+    return await this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
 }

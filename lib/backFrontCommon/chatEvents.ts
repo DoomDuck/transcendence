@@ -40,7 +40,7 @@ export class ChatEvent {
   static readonly BLOCK_USER = 'block user'
   static readonly MUTE_USER = 'mute user'
   static readonly BANNED_NOTIF = 'you are banned from a chan'
-  static readonly CHAN_INVIT_NOTIF = 'you are banned from a chan'
+  static readonly CHAN_INVIT_NOTIF = 'chan invite notif'
   static readonly MUTED_NOTIF = 'you are muted from a chan'
   static readonly JOIN_MATCHMAKING = 'join matchmaking'
   static readonly GAME_OBSERVE = 'game observe'

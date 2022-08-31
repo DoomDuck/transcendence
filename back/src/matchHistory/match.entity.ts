@@ -12,7 +12,7 @@ import { User } from '../user/entities/user.entity';
 @Entity('Match')
 export class Match {
   constructor(player: User[], score: number[]) {
-    this.player = Promise.resolve(player);
+    this.player = (player);
 
     this.score = score;
   }
