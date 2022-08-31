@@ -18,7 +18,8 @@ import {
 	ChatFeedbackDto,
 	CMToServer,
 	CreateChannelToServer,
-	BlockUserToServer
+	BlockUserToServer,
+	FriendInviteToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -303,6 +304,14 @@ export function sendJoinChannel(message: JoinChannelToServer) {
 
 export function sendBlockUser(message: BlockUserToServer) {
 	socket!.emit(ChatEvent.BLOCK_USER, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendFriendInvite(message: FriendInviteToServer) {
+	socket!.emit(ChatEvent.FRIEND_INVITE, message, (feedback: ChatFeedbackDto) => {
 		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}

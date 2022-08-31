@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Modal from '$lib/Modal.svelte';
 	import { sendDirectMessage } from '$lib/state';
+	import PositiveIntegerInput from '../PositiveIntegerInput.svelte';
 
 	export let content = '';
 	export let show = false;
@@ -31,14 +32,10 @@
 
 <Modal bind:show on:close={close}>
 	<form id="formContainer" on:submit|preventDefault={handleSubmit}>
-		<input
-			id="destinataire"
-			placeholder="To :"
-			contenteditable="true"
-			bind:value={targetStr}
-			on:blur={handleBlur}
-			required
-		/> <br />
+		<div id="destinataire">
+			<PositiveIntegerInput placeholder="To :" bind:content />
+		</div>
+		<br />
 		<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
 		<button>
 			<img id="btn-send-msg" src="send.png" alt="send message" />
