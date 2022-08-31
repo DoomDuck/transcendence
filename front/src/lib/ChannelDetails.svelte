@@ -55,17 +55,17 @@
 			<div class="channel-details-user">
 			<UserMiniature userId={user.id} />
 				<PendingText tag="p" text={getUser(user.id).then(u => u.name)} />
-				<p>Role: {channelRightsString(user.rights)}</p>
+				<p>{channelRightsString(user.rights)}</p>
 				{#if user.muted}
 					<p>(muted)</p>
 				{/if}
 				<!-- TODO: do not show if user is not admin -->
 				<!-- {#if me?.rights != ChannelRights.USER} -->
-				<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
-					>Mute</SelectDurationButton
+				<SelectDurationButton source='muteIcon.png' on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
+					> </SelectDurationButton
 				>
-				<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
-					>Ban</SelectDurationButton
+				<SelectDurationButton source='banIcon.png' on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+					> </SelectDurationButton
 				>
 				<!-- {/if} -->
 			</div>
