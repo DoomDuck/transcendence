@@ -414,11 +414,7 @@ export class ChatService {
       })
       usersPromise.filter
       const users = Promise.all(usersPromise).then(usersP => usersP.filter(usersPro => usersPro != null))
-      this.logger.debug(`end channel info${JSON.stringify(await users)}`)
-      const result =await users;
-      if (result!= null)
-      return {success : true, result: new ChannelInfo( result)}
-      else {success : false
-      }
+      //this.logger.debug(`end channel info${JSON.stringify(await users)}`)
+      return {success : true, result: new ChannelInfo( (await users)!)}
   }
 }

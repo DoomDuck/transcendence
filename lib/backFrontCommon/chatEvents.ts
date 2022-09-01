@@ -302,6 +302,7 @@ export class MyInfo {
     public name: string,
     public friendlist: Id[],
     public blocked: Id[],
+    public channel: string[],
     public win: number,
     public loose: number,
     public score: number,
