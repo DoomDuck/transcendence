@@ -6,7 +6,7 @@ export function preLogin() {
 	const code = new URLSearchParams(document.location.search).get('code');
 	if (!code) return;
 
-	document.title = "Transcendance";
+	document.title = 'Transcendance';
 	connect(code);
 }
 

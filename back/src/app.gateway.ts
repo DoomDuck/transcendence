@@ -12,6 +12,7 @@ import {
   PostAvatar,
   MatchInfoToServer,
   UserInfoToServer,
+  ChannelUser,
   Id,
   IsInGameToServer,
 } from 'backFrontCommon';
@@ -31,6 +32,9 @@ import type {
   MatchInfoFromServer,
   SetPasswordToServer,
   DeleteChannelToServer,
+  GetChannelInfoToServer,
+  FeedbackCallbackWithResult,
+  ChannelInfo,
   SetUsernameToServer,
 } from 'backFrontCommon';
 import { DMToServer } from 'backFrontCommon';
@@ -94,6 +98,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
+    this.logger.log('Dans ban User');
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);
   }
 
@@ -133,6 +138,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.BAN_USER)
   async handleBanUser(clientSocket: Socket, banInfo: BanUserToServer) {
+    this.logger.log('Dans ban User');
     return await this.chatService.handleBanUser(
       clientSocket,
       banInfo,
@@ -142,6 +148,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.MUTE_USER)
   async handleMuteUser(clientSocket: Socket, muteInfo: MuteUserToServer) {
+    this.logger.log('mute ban User');
     return await this.chatService.handleMuteUser(
       clientSocket,
       muteInfo,
@@ -200,15 +207,15 @@ export class AppGateway
     return await this.matchHistoryService.getAllMatch();
   }
 
-  @SubscribeMessage(GetInfoEvent.MY_MATCH)
-  async handleMyMatch(socket: Socket) {
-    return await this.userService.getMyMatch(socket);
-  }
-
-  @SubscribeMessage(GetInfoEvent.USER_MATCH)
-  async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
-    return await this.userService.getUserMatch(socket, matchInfo.target);
-  }
+  // @SubscribeMessage(GetInfoEvent.MY_MATCH)
+  // async handleMyMatch(socket: Socket) {
+  // return await this.userService.getMyMatch(socket);
+  // }
+  //
+  // @SubscribeMessage(GetInfoEvent.USER_MATCH)
+  // async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
+  // return await this.userService.getUserMatch(socket, matchInfo.target);
+  // }
 
   @SubscribeMessage(ChatEvent.SET_USERNAME)
   async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {
@@ -272,5 +279,17 @@ export class AppGateway
   @SubscribeMessage(ChatEvent.DELETE_CHANNEL)
   async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
     return this.chatService.handleDeleteChannel(socket, deleteInfo);
+  }
+  @SubscribeMessage(ChatEvent.GET_CHANNEL_INFO)
+  async handleGetChannelInfo(
+    socket: Socket,
+    chatInfo: GetChannelInfoToServer,
+  ): Promise<RequestFeedbackDto<ChannelInfo>> {
+    this.logger.log(
+      `dans get channel info ${JSON.stringify(
+        (await this.chatService.handleGetChannelInfo(socket, chatInfo)).result,
+      )}`,
+    );
+    return await this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
 }

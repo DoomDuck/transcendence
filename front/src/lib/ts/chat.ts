@@ -6,7 +6,7 @@ import type {
 	DMToServer,
 	JoinChannelToServer
 } from 'backFrontCommon';
-import { channelConvs } from './chatUtils';
+import { channelConvs, userConvs } from './chatUtils';
 import { socket } from '$lib/state';
 
 export function sendDirectMessage(message: DMToServer) {
@@ -51,7 +51,9 @@ export function sendJoinChannel(message: JoinChannelToServer) {
 
 export function blockUser(dto: BlockUserToServer) {
 	socket!.emit(ChatEvent.BLOCK_USER, dto, (feedback) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			userConvs.update((_) => _.delete(dto.target));
+		} else {
 			alert(feedback.errorMessage);
 		}
 	});

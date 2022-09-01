@@ -26,6 +26,7 @@ export class ChatEvent {
   static readonly SET_USERNAME = "set username"
   static readonly MSG_TO_USER = 'msg to user'
   static readonly JOIN_CHANNEL = 'join channel'
+  static readonly LEAVE_CHANNEL = 'leave channel'
   static readonly CREATE_CHANNEL = 'create channel'
   static readonly INVITE_TO_PRIVATE_CHANNEL = 'invite to channel'
   static readonly GAME_INVITE = 'game invite'
@@ -40,7 +41,7 @@ export class ChatEvent {
   static readonly BLOCK_USER = 'block user'
   static readonly MUTE_USER = 'mute user'
   static readonly BANNED_NOTIF = 'you are banned from a chan'
-  static readonly CHAN_INVIT_NOTIF = 'you are banned from a chan'
+  static readonly CHAN_INVIT_NOTIF = 'chan invite notif'
   static readonly MUTED_NOTIF = 'you are muted from a chan'
   static readonly JOIN_MATCHMAKING = 'join matchmaking'
   static readonly GAME_OBSERVE = 'game observe'
@@ -53,6 +54,8 @@ export class ChatEvent {
   static readonly DELETE_CHANNEL = 'delete channel'
   static readonly GET_CHANNEL_INFO = 'get channel info'
   static readonly BAN_USER = 'ban user'
+  static readonly CHANNEL_DELETED_NOTIF = 'channel deleted notif'
+  static readonly BLOCKED_NOTIF = 'blocked notif'
 
 }
 
@@ -83,6 +86,7 @@ export class ChatError {
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
   static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
   static readonly USER_NOT_IN_GAME = "user not in game";
+  static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
 }
 
 export class DMFromServer  {
@@ -137,8 +141,18 @@ export class JoinChannelToServer {
   ) { }
 }
 
-export type SetPasswordToServer =  {channel: string, password: string};
-export type SetNewAdminToServer =  {channel: string, target: Id};
+export class SetPasswordToServer {
+  constructor(
+    public channel: string,
+    public password: string
+  ) { }
+}
+export class SetNewAdminToServer {
+  constructor(
+    public channel: string,
+    public target: Id
+  ) { }
+}
 
 export enum ChannelCategory {
   PUBLIC, PROTECTED, PRIVATE
@@ -383,7 +397,21 @@ export class ChannelInfo {
     public users: ChannelUser[],
   ) { }
 }
-
+export class LeaveChannelToServer {
+  constructor(
+    public channel: string,
+  ) { }
+}
+export class ChannelDeletedFromServer {
+  constructor(
+    public channel: string,
+  ) { }
+}
+export class BlockUserFromServer {
+  constructor(
+    public source: Id,
+  ) { }
+}
 
 export class ChatFeedbackDto {
   constructor(
@@ -424,7 +452,9 @@ export interface ServerToClientEvents {
   [ChatEvent.DELETE_GAME_INVITE]: (dto: DeleteGameInviteFromServer) => void;
 
   [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
+  [ChatEvent.BLOCKED_NOTIF]: (dto:BlockUserFromServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer) => void;
+  [ChatEvent.CHANNEL_DELETED_NOTIF]: (dto: ChannelDeletedFromServer) => void;
 
   // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }
@@ -458,7 +488,10 @@ export interface ClientToServerEvents {
   [ChatEvent.BAN_USER]: (dto: BanUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.MUTE_USER]: (dto: MuteUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
-  [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer) => void;
+  [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GET_CHANNEL_INFO]: (dto: GetChannelInfoToServer, callback: FeedbackCallbackWithResult<ChannelInfo>) => void;
   [ChatEvent.BLOCK_USER]: (dto: BlockUserToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.SET_USERNAME]: (dto: SetUsernameToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.LEAVE_CHANNEL]: (dto: LeaveChannelToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.SET_NEW_ADMIN]: (dto: SetNewAdminToServer, callback: FeedbackCallback) => void;
 }

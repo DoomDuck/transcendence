@@ -16,19 +16,19 @@ export class MatchHistoryService {
   addOneMatch(player: User[], score: number[]) {
     this.matchRepository.save(new Match(player, score));
   }
-  MatchDbToMatchDTO(match: Match): MatchInfoFromServer {
+  async MatchDbToMatchDTO(match: Match): Promise<MatchInfoFromServer> {
     if (match.score[0] > match.score[1])
       return {
-        winner: match.player[0].id,
-        looser: match.player[1].id,
+        winner: (await match.player)[0].id,
+        looser: (await match.player)[1].id,
         winnerScore: match.score[0],
         looserScore: match.score[1],
         date: match.date,
       };
     else
       return {
-        winner: match.player[1].id,
-        looser: match.player[0].id,
+        winner: (await match.player)[1].id,
+        looser: (await match.player)[0].id,
         winnerScore: match.score[1],
         looserScore: match.score[0],
         date: match.date,
@@ -37,8 +37,8 @@ export class MatchHistoryService {
   async getAllMatch(): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
     let result: MatchInfoFromServer[] = [];
     const matchDb = await this.matchRepository.find();
-    matchDb.forEach((match) => {
-      result.push(this.MatchDbToMatchDTO(match));
+    matchDb.forEach(async (match) => {
+      result.push(await this.MatchDbToMatchDTO(match));
     });
     return { success: true, result: result };
   }
