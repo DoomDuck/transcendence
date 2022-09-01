@@ -426,16 +426,9 @@ export class ChatService {
       }
       return null;
     });
-    usersPromise.filter;
-    const users = Promise.all(usersPromise).then((usersP) =>
-      usersP.filter((usersPro) => usersPro != null),
-    );
-    this.logger.debug(`end channel info${JSON.stringify(await users)}`);
-    const result = await users;
-    if (result != null)
-      return { success: true, result: new ChannelInfo(result) };
-    else {
-      success: false;
-    }
+    const users = await Promise.all(usersPromise);
+    const result = users.filter((user) => user !== null) as ChannelUser[];
+    this.logger.debug(`end channel info${JSON.stringify(result)}`);
+    return { success: true, result: new ChannelInfo(result) };
   }
 }

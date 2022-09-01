@@ -7,6 +7,7 @@ import type {
 import { writable } from 'svelte/store';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import type { Id } from 'backFrontCommon/general';
+import { delay } from 'pong/common/utils';
 
 export abstract class Conversation<DTOType extends { history: ChatMessageDto[] }> {
 	hasNewMessage: boolean = false;
@@ -57,7 +58,6 @@ export class UserConversationList {
 			this.convs.push(conv);
 		}
 		conv.addMessage(message);
-		// conv.dto.history.push(message);
 		return this;
 	}
 
@@ -72,6 +72,12 @@ export class UserConversationList {
 
 	addMessageFromMe(content: string, interlocutor: number): UserConversationList {
 		this.addMessage(messageFromMe(content), interlocutor);
+		return this;
+	}
+
+	delete(userId: Id): UserConversationList {
+		const i = this.convs.findIndex((conv) => conv.interlocutor == userId);
+		if (i != -1) this.convs.splice(i, 1);
 		return this;
 	}
 }
@@ -119,8 +125,14 @@ export class ChannelConversationList {
 		if (i == -1) return;
 		this.convs[i].banned = true;
 		// TODO: figure out why this was there
-		// await delay(1000);
+		await delay(1000);
 		this.convs.splice(i, 1);
+	}
+
+	delete(channel: string): ChannelConversationList {
+		const i = this.convs.findIndex((conv) => conv.channel == channel);
+		if (i != -1) this.convs.splice(i, 1);
+		return this;
 	}
 }
 
