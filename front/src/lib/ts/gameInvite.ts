@@ -89,7 +89,7 @@ export function removeSent(target: Id) {
 }
 
 export function send(dto: GameInviteToServer) {
-	sendGameInvite(dto, ({success, errorMessage }) => {
+	sendGameInvite(dto, ({ success, errorMessage }) => {
 		if (success) popupMethods.addPopup(new SentGameInvite(dto));
 		else alert(errorMessage);
 	});

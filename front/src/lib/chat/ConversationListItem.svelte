@@ -3,6 +3,7 @@
 	import NotificationIcon from './NotificationIcon.svelte';
 
 	export let hasNewMessage: boolean = false;
+	export let bannedFromChannel: boolean = false;
 
 	let showConv = false;
 	let thisRef: any;
@@ -16,7 +17,7 @@
 	}
 </script>
 
-<div class="item" bind:this={thisRef} on:click={handleClickOpenModal}>
+<div class="item" class:bannedFromChannel bind:this={thisRef} on:click={handleClickOpenModal}>
 	<slot name="icon" />
 	<slot name="item-text" />
 	{#if hasNewMessage}
@@ -36,5 +37,8 @@
 		background: #040128;
 		display: flex;
 		border: 1px solid #ff00b8;
+	}
+	.bannedFromChannel {
+		background: #a80a2f;
 	}
 </style>

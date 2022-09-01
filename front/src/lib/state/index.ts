@@ -19,6 +19,9 @@ import {
 	CMToServer,
 	CreateChannelToServer,
 	GetUser,
+	BlockUserToServer,
+	FriendInviteToServer,
+	BanUserFromServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -26,7 +29,6 @@ import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable, writable } from 'svelte/store';
 import type { Readable, Writable, Subscriber } from 'svelte/store';
 import { closeLastModalListener } from '$lib/ts/modals';
-
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -48,32 +50,32 @@ const USER_INFO_MOCKUP = new UserInfo(
 );
 
 const MY_INFO_MOKUP = new MyInfo(
-    /* id */ 0, 
-    /* name */ 'Loading..', 
-    /* friendlist */ [], 
-    /* blocked */ [], 
-    /* win */ 0, 
-    /* loose */ 0, 
-    /* score */ 0, 
-    /* ranking */ 0, 
-    /* avatar */ null, 
-    /* totpSecret */ null, 
-    /* inGame */ false, 
+	/* id */ 0,
+	/* name */ 'Loading..',
+	/* friendlist */ [],
+	/* blocked */ [],
+	/* win */ 0,
+	/* loose */ 0,
+	/* score */ 0,
+	/* ranking */ 0,
+	/* avatar */ null,
+	/* totpSecret */ null,
+	/* inGame */ false
 );
 
 let setMyInfo!: Subscriber<MyInfo>;
 let resolveTotpRequired: ((token: string) => void) | null = null;
 
 export let gameParams: GameParams | null = null;
-	
-export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, u => {
+
+export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, (u) => {
 	if (!setMyInfo) {
 		updateMyInfo();
 		setMyInfo = u;
 	}
-	return () => { };
+	return () => {};
 });
-	
+
 export let socket: Socket | null = null;
 
 export function connected(): boolean {
@@ -116,7 +118,6 @@ function onLoginFailure() {
 	goto(LOGGIN_ROUTE);
 }
 
-	
 function setupHooks(socket: Socket) {
 	socket.on('connect_error', onConnectError);
 	socket.on('disconnect', onDisconnect);
@@ -131,6 +132,7 @@ function setupHooks(socket: Socket) {
 	socket.on(ChatEvent.GAME_ACCEPT, onGameAccept);
 	socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 	socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
+	socket.on(ChatEvent.BANNED_NOTIF, onBannedNotif);
 
 	window.addEventListener('keydown', closeLastModalListener);
 
@@ -188,7 +190,7 @@ export function cancelGame(target: Id) {
 }
 
 export function sendGameInvite(invite: GameInviteToServer, callback: FeedbackCallback) {
-	socket!.emit(ChatEvent.GAME_INVITE, invite, callback)
+	socket!.emit(ChatEvent.GAME_INVITE, invite, callback);
 }
 
 export function clearGameParams() {
@@ -196,7 +198,7 @@ export function clearGameParams() {
 }
 
 export function joinGame(classic: boolean) {
-	socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic)
+	socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic);
 }
 
 export function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
@@ -250,9 +252,7 @@ export async function uploadAvatar(imageDataUrl: string) {
 // Chat
 export function sendDirectMessage(message: DMToServer) {
 	socket!.emit(ChatEvent.MSG_TO_USER, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			userConvs.update((_) => _.addMessageFromMe(message.content, message.target));
-		} else {
+		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -283,6 +283,22 @@ export function sendJoinChannel(message: JoinChannelToServer) {
 		if (feedback.success) {
 			channelConvs.update((_) => _.create(message.channel));
 		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendBlockUser(message: BlockUserToServer) {
+	socket!.emit(ChatEvent.BLOCK_USER, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendFriendInvite(message: FriendInviteToServer) {
+	socket!.emit(ChatEvent.FRIEND_INVITE, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -361,6 +377,13 @@ function onGameRefuse(message: GameRefuseFromServer) {
 
 function onGameCancel(message: GameCancelFromServer) {
 	gameInvite.revokeReceived(message.source);
+}
+
+function onBannedNotif(message: BanUserFromServer) {
+	channelConvs.update((_) => {
+		_.getBanned(message.channel);
+		return _;
+	});
 }
 
 // Used in +layout.svelte

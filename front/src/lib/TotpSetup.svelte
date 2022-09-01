@@ -3,7 +3,7 @@
 	import { enableTotp } from '$lib/state';
 	import { TOTP } from 'otpauth';
 	import CodeDial from './CodeDial.svelte';
-  import Modal from '$lib/Modal.svelte';
+	import Modal from '$lib/Modal.svelte';
 
 	export let show: boolean;
 	const totp = new TOTP({

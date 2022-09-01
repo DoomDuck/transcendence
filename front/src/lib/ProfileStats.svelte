@@ -17,9 +17,11 @@
 	</div>
 	<hr width="200px" />
 	{#each user.matchHistory as { opponent, winner, score, opponentScore }}
-		<div class="gameHistory">{opponent}: {winner ? 'Won' : 'Lost'} ({score} - {opponentScore})</div>
+		<div class="gameHistory">
+			Against {opponent}: {winner ? 'Victory' : 'Defeat'} ({score} - {opponentScore})
+		</div>
 	{/each}
-	{#if user.inGame }
+	{#if user.inGame}
 		<div id="statusLine">
 			<p>Status: In Game</p>
 			<button on:click={() => observeGame(user.id)}> Watch </button>

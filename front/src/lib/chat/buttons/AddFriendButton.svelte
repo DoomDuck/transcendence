@@ -1,18 +1,16 @@
 <script lang="ts">
 	import type { UserInfo } from 'backFrontCommon';
-	import BlockUserModal from '../modals/BlockUserModal.svelte';
-
-	export let user: UserInfo;
+	import AddFriendModal from '../modals/AddFriendModal.svelte';
 
 	let show = false;
 </script>
 
 <img
-	src="blockingIcon.png"
-	alt="block user"
+	src="add-button.png"
+	alt="add friend"
 	width="25px"
 	height="25px"
 	on:click={() => (show = true)}
 />
 
-<BlockUserModal bind:show {user} />
+<AddFriendModal bind:show />

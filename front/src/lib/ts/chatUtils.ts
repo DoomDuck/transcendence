@@ -61,6 +61,7 @@ export class UserConversation extends Conversation<ActiveUserConversationDto> {
 }
 
 export class ChannelConversation extends Conversation<ActiveChannelConversationDto> {
+	banned: boolean = false;
 	constructor(channel: string) {
 		super({
 			channel,
@@ -138,6 +139,15 @@ export class ChannelConversationList {
 			this.convs.push(new ChannelConversation(channel));
 		}
 		return this;
+	}
+
+	async getBanned(channel: string) {
+		const i = this.convs.findIndex((conv) => conv.channel == channel);
+		if (i == -1) return;
+		this.convs[i].banned = true;
+		// TODO: figure out why this was there
+		// await delay(1000);
+		this.convs.splice(i, 1);
 	}
 }
 
