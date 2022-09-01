@@ -21,7 +21,8 @@ import {
 	GetUser,
 	BlockUserToServer,
 	FriendInviteToServer,
-	BanUserFromServer
+	BanUserFromServer,
+	SetUsernameToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -37,16 +38,16 @@ export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
 const USER_INFO_MOCKUP = new UserInfo(
-    /* id */ 0, 
-    /* name */ 'loading...', 
-    /* win */ 0, 
-    /* loose */ 0, 
-    /* score */ 0, 
-    /* ranking */ 0, 
-    /* avatar */ null, 
-    /* isOnline */ true, 
-    /* inGame */ false, 
-    /* matchHistory */ [], 
+	/* id */ 0,
+	/* name */ 'loading...',
+	/* win */ 0,
+	/* loose */ 0,
+	/* score */ 0,
+	/* ranking */ 0,
+	/* avatar */ null,
+	/* isOnline */ true,
+	/* inGame */ false,
+	/* matchHistory */ []
 );
 
 const MY_INFO_MOKUP = new MyInfo(
@@ -109,8 +110,8 @@ function addStuff() {
 	onMsgToUser(new DMFromServer(78441, 'salut'));
 }
 
-export function storeMap<A, B>(store: Readable<A>, f: (a: A) => B) : Readable<B> {
-	 return readable<B>(undefined, setB => store.subscribe(a => setB(f(a))));
+export function storeMap<A, B>(store: Readable<A>, f: (a: A) => B): Readable<B> {
+	return readable<B>(undefined, (setB) => store.subscribe((a) => setB(f(a))));
 }
 
 function onLoginFailure() {
@@ -166,13 +167,9 @@ export function updateMe() {
 }
 
 // Users
-export async function updateUser(id: Id) : Promise<UserInfo> {
-	return new Promise(
-		r => socket!.emit(
-			GetInfoEvent.USER_INFO,
-			new GetUser(id),
-			info => r(onUserInfo(info))
-		)
+export async function updateUser(id: Id): Promise<UserInfo> {
+	return new Promise((r) =>
+		socket!.emit(GetInfoEvent.USER_INFO, new GetUser(id), (info) => r(onUserInfo(info)))
 	);
 }
 
@@ -226,17 +223,17 @@ export function observeGame(id: Id) {
 
 // Users
 
-const knownUsers = new Map<Id, { data?: UserInfo, store: Writable<UserInfo>}>();
-export function getUser(id: Id) : Readable<UserInfo> {
+const knownUsers = new Map<Id, { data?: UserInfo; store: Writable<UserInfo> }>();
+export function getUser(id: Id): Readable<UserInfo> {
 	const entry = knownUsers.get(id);
 	if (entry) return entry.store;
 	const store = writable<UserInfo>(USER_INFO_MOCKUP);
-	knownUsers.set(id, {store});
+	knownUsers.set(id, { store });
 	updateUser(id);
 	return store;
 }
 
-export async function getUserNow(id: Id) : Promise<UserInfo> {
+export async function getUserNow(id: Id): Promise<UserInfo> {
 	const entry = knownUsers.get(id);
 	if (entry?.data) return entry.data;
 	return updateUser(id);
@@ -305,6 +302,14 @@ export function sendFriendInvite(message: FriendInviteToServer) {
 	});
 }
 
+export function sendChangeName(message: SetUsernameToServer) {
+	socket!.emit(ChatEvent.SET_USERNAME, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
 // Hooks
 function onConnectError() {
 	// Clean close
@@ -327,21 +332,19 @@ function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 		const myInfo = feedback.result!;
 		myInfo.friendlist.push(78441);
 		setMyInfo(myInfo);
-	}
-	else console.error("Could not get my info");
+	} else console.error('Could not get my info');
 }
 
-async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>) : Promise<UserInfo> {
-	if (!feedback.success)
-		throw new Error("Could not get user info");
-	const user = feedback.result!; 
+async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserInfo> {
+	if (!feedback.success) throw new Error('Could not get user info');
+	const user = feedback.result!;
 	let entry = knownUsers.get(user.id);
 	if (entry) {
-		entry.store.update(_ => user);
+		entry.store.update((_) => user);
 	} else {
 		knownUsers.set(user.id, {
 			data: user,
-			store: writable(user) 
+			store: writable(user)
 		});
 	}
 	return user;
@@ -382,7 +385,7 @@ function onGameCancel(message: GameCancelFromServer) {
 
 function onBannedNotif(message: BanUserFromServer) {
 	channelConvs.update((_) => {
-		_.getBanned(message.channel);
+		_.getBanned(message.channel).then(() => channelConvs.update((_) => _));
 		return _;
 	});
 }

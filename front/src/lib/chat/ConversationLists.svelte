@@ -14,7 +14,8 @@
 	{#each $userConvs.convs as conversation (conversation.interlocutor)}
 		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage}>
 			<UserMiniature slot="icon" userId={conversation.interlocutor} />
-			<DeStore component={ConversationListItemText}
+			<DeStore
+				component={ConversationListItemText}
 				slot="item-text"
 				text={storeMap(getUser(conversation.interlocutor), (user) => user.name)}
 			/>

@@ -423,14 +423,21 @@ export class UserService {
     logger.log('end');
   }
 
-  leaveChannel(activeUser: ActiveUser, channel: Channel): ChatFeedbackDto {
+  async leaveChannel(
+    activeUser: ActiveUser,
+    channel: Channel,
+  ): Promise<ChatFeedbackDto> {
     if (channel.member.find((id) => id === activeUser.id) === undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.NOT_IN_CHANNEL,
       );
+    const dbUser = await this.findOneDb(activeUser.id);
+    if (!dbUser) return { success: false };
     this.channelManagerService.leaveChannel(channel, activeUser);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+    dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
+    this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
@@ -464,7 +471,7 @@ export class UserService {
   }
 
   blockUser(sender: User, target: User): ChatFeedbackDto {
-    if (sender.blocked.find((user) => user === target.id) === undefined)
+    if (sender.blocked.find((user) => user === target.id) != undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.ALREADY_BLOCKED,
@@ -518,6 +525,7 @@ export class UserService {
     let opScore;
     let myScore;
     let winner = false;
+
     if (match.player[0].id == user.id) {
       opponnent = match.player[1];
       opScore = match.score[1];
@@ -604,41 +612,43 @@ export class UserService {
         result: await this.UserInfoTransformator(target),
       };
   }
-  async getMyMatch(
-    socket: Socket,
-  ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
-    const userDb = await this.findOneDbBySocket(socket);
-    let result: MatchInfoFromServer[] = [];
-    if (!userDb)
-      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    userDb.match.forEach((match) =>
-      result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
-    );
-    return { success: true, result: result };
-  }
-  async getUserMatch(
-    socket: Socket,
-    targetId: Id,
-  ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
-    const userDb = await this.findOneDbBySocket(socket);
-    const targetDb = await this.findOneDb(targetId);
-    let result: MatchInfoFromServer[] = [];
-    if (!userDb)
-      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    if (!targetDb)
-      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
-    targetDb.match.forEach((match) =>
-      result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
-    );
-    return { success: true, result: result };
-  }
+  // async getMyMatch(
+  // socket: Socket,
+  // ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
+  // const userDb = await this.findOneDbBySocket(socket);
+  // let result: MatchInfoFromServer[] = [];
+  // if (!userDb)
+  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  // userDb.match.forEach(async (match) =>
+  // result.push(await this.matchHistoryService.MatchDbToMatchDTO(match)),
+  // );
+  // return { success: true, result: result };
+  // }
+  // async getUserMatch(
+  // socket: Socket,
+  // targetId: Id,
+  // ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
+  // const userDb = await this.findOneDbBySocket(socket);
+  // const targetDb = await this.findOneDb(targetId);
+  // let result: MatchInfoFromServer[] = [];
+  // if (!userDb)
+  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  // if (!targetDb)
+  // return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+  // targetDb.match.forEach((match) =>
+  // result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
+  // );
+  // return { success: true, result: result };
+  // }
 
-  matchForChatUser(match: Match[]): MatchInfoFromServer[] {
+  async matchForChatUser(match: Match[]): Promise<MatchInfoFromServer[]> {
     const result: MatchInfoFromServer[] = [];
     if (!match) return [];
     for (let i = 0; i < Math.min(3, match.length); i++) {
       result.push(
-        this.matchHistoryService.MatchDbToMatchDTO(match[match.length - i]),
+        await this.matchHistoryService.MatchDbToMatchDTO(
+          match[match.length - i],
+        ),
       );
     }
     return result;

@@ -3,7 +3,7 @@
 </script>
 
 <div class="item-text">
-	<h5> {text} </h5>
+	<h5>{text}</h5>
 </div>
 
 <style>

@@ -56,7 +56,7 @@
 		{#each others as user}
 			<div class="channel-details-user">
 				<UserMiniature userId={user.id} />
-				<h5><DeStore component={Text} data={storeMap(getUser(user.id), u => u.name)}/></h5>
+				<h5><DeStore component={Text} data={storeMap(getUser(user.id), (u) => u.name)} /></h5>
 				<p>Role: {channelRightsString(user.rights)}</p>
 				{#if user.muted}
 					<p>(muted)</p>

@@ -5,6 +5,8 @@ import { ChannelManagerService } from '../channelManager/channelManager.service'
 import { Id } from 'backFrontCommon';
 import {
   ChatFeedbackDto,
+  RequestFeedbackDto,
+  ChannelInfo,
   BanUserToServer,
   MuteUserToServer,
   DMToServer,
@@ -23,6 +25,8 @@ import {
   InviteChannelToServer,
   InviteChannelFromServer,
   DeleteChannelToServer,
+  GetChannelInfoToServer,
+  ChannelUser,
   ServerSocket as Socket,
 } from 'backFrontCommon';
 
@@ -103,13 +107,13 @@ export class ChatService {
     );
 
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
+    this.logger.log(`sender: ${tempSender!.name}`);
+    this.logger.log(`channel: ${tempChannel!.name}`);
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
     );
-    if (!feedback) return feedback;
-    this.logger.log(`sender: ${tempSender!.name}`);
-    this.logger.log(`channel: ${tempChannel!.name}`);
+    if (!feedback.success) return feedback;
     tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
@@ -151,6 +155,12 @@ export class ChatService {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
+      );
+    }
+    if (this.channelManagerService.isBanned(tempUser, tempChan)) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.YOU_ARE_BANNED,
       );
     }
     const feedback = await this.channelManagerService.joinChan(
@@ -252,7 +262,10 @@ export class ChatService {
       wss,
     );
     if (feedback.success === true) {
-      this.channelManagerService.leaveChannel(tempChan, tempTarget);
+      this.logger.debug(
+        '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
+      );
+      this.userService.leaveChannel(tempTarget, tempChan);
     }
     return feedback;
   }
@@ -373,5 +386,56 @@ export class ChatService {
     });
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
+  }
+  async handleGetChannelInfo(
+    socket: Socket,
+    chatInfo: GetChannelInfoToServer,
+  ): Promise<RequestFeedbackDto<ChannelInfo>> {
+    const user = this.userService.findOneActiveBySocket(socket);
+    if (!user) {
+      return {
+        success: false,
+        errorMessage: ChatError.USER_NOT_FOUND,
+      };
+    }
+    const channel = await this.channelManagerService.findChanByName(
+      chatInfo.channel,
+    );
+    if (!channel) {
+      return {
+        success: false,
+        errorMessage: ChatError.CHANNEL_NOT_FOUND,
+      };
+    }
+    //let users : ChannelUser[] = [];
+    const usersPromise = channel.member.map(async (member) => {
+      const tempUser = await this.userService.findOneDb(member);
+      if (tempUser) {
+        this.logger.debug(
+          `ta mere dans channel info ${JSON.stringify(
+            this.channelManagerService.ChannelUserTransformator(
+              tempUser,
+              channel,
+            ),
+          )}`,
+        );
+        return this.channelManagerService.ChannelUserTransformator(
+          tempUser,
+          channel,
+        );
+      }
+      return null;
+    });
+    usersPromise.filter;
+    const users = Promise.all(usersPromise).then((usersP) =>
+      usersP.filter((usersPro) => usersPro != null),
+    );
+    this.logger.debug(`end channel info${JSON.stringify(await users)}`);
+    const result = await users;
+    if (result != null)
+      return { success: true, result: new ChannelInfo(result) };
+    else {
+      success: false;
+    }
   }
 }

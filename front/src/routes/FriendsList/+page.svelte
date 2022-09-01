@@ -7,7 +7,7 @@
 <div class="friendsList">
 	<h1>Friends List</h1>
 	{#each $myself.friendlist.map(getUser) as friend}
-		<DeStore component={FriendsListItem} {friend}/>
+		<DeStore component={FriendsListItem} {friend} />
 	{/each}
 </div>
 
