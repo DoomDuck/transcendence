@@ -238,10 +238,9 @@ export async function getUserNow(id: Id): Promise<UserInfo> {
 	return updateUser(id);
 }
 
-export function clearUserCache() {
-	for (const entry of knownUsers.values()) {
-		entry.store.set
-	}
+export function updateAllUsers() {
+	for (const id of knownUsers.keys())
+		updateUser(id);
 }
 
 // Avatar
