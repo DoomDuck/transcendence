@@ -83,6 +83,7 @@ export class ChatError {
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
   static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
   static readonly USER_NOT_IN_GAME = "user not in game";
+  static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
 }
 
 export class DMFromServer  {
@@ -461,4 +462,5 @@ export interface ClientToServerEvents {
   [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer) => void;
   [ChatEvent.GET_CHANNEL_INFO]: (dto: GetChannelInfoToServer, callback: FeedbackCallbackWithResult<ChannelInfo>) => void;
   [ChatEvent.BLOCK_USER]: (dto: BlockUserToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.SET_USERNAME]: (dto: SetUsernameToServer, callback: FeedbackCallback) => void;
 }

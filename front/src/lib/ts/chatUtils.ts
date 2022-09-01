@@ -9,35 +9,7 @@ import { writable } from 'svelte/store';
 import type { CMFromServer, DMFromServer } from 'backFrontCommon/chatEvents';
 import type { Id } from 'backFrontCommon/general';
 import { getUser } from '$lib/state';
-import { removeIfPresent } from 'pong';
 import { delay } from 'pong/common/utils';
-// import {
-// 	ChatEvent,
-// 	type CMFromServer,
-// 	type DMFromServer,
-// 	type RequestFeedbackDto
-// } from 'backFrontCommon/chatEvents';
-// import { usersObject } from './users';
-// import type { Id } from 'backFrontCommon/general';
-// import { state } from './state';
-
-// type ChatMessageGameInvit = {
-// 	source: Id;
-// 	valid: boolean;
-// };
-
-// type ChatMessageEntry = TypeMap<{ message: ChatMessageDto; gameInvite: ChatMessageGameInvit }>;
-
-// export class ConversationHistory {
-// 	private history: ChatMessageEntry[] = [];
-
-// 	addMessage(message: ChatMessageDto) {
-// 		this.history.push({ key: 'message', payload: message });
-// 	}
-// 	addGameInvite(gameInvite: ChatMessageGameInvit) {
-// 		this.history.push({ key: 'gameInvite', payload: gameInvite });
-// 	}
-// }
 
 export abstract class Conversation<DTOType extends { history: ChatMessageDto[] }> {
 	hasNewMessage: boolean = false;

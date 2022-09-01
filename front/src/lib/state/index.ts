@@ -20,7 +20,8 @@ import {
 	CreateChannelToServer,
 	BlockUserToServer,
 	FriendInviteToServer,
-	BanUserFromServer
+	BanUserFromServer,
+	SetUsernameToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -314,6 +315,14 @@ export function sendBlockUser(message: BlockUserToServer) {
 
 export function sendFriendInvite(message: FriendInviteToServer) {
 	socket!.emit(ChatEvent.FRIEND_INVITE, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendChangeName(message: SetUsernameToServer) {
+	socket!.emit(ChatEvent.SET_USERNAME, message, (feedback: ChatFeedbackDto) => {
 		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}

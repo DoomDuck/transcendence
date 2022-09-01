@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { resize } from '$lib/ts/avatar';
 	import { uploadAvatar } from '$lib/state';
+	import ProfileNameInput from './ProfileNameInput.svelte';
 
 	export let name: string;
 	export let avatar: string | null = null;
 
 	let fileinput: HTMLInputElement;
-	let changeName = false;
 
 	const onFileSelected = (event: any) => {
 		let image = event.target.files[0];
@@ -55,20 +55,7 @@
 			bind:this={fileinput}
 		/>
 	</div>
-	{#if !changeName}
-		<h1 on:click={() => (changeName = true)}>{name}</h1>
-	{:else}
-		<div>
-			<input bind:value={name} placeholder={name} />
-			<img
-				src="check.png"
-				alt="confirm new name"
-				width="30"
-				height="30"
-				on:click={() => (changeName = false)}
-			/>
-		</div>
-	{/if}
+	<ProfileNameInput bind:name />
 </div>
 
 <style>

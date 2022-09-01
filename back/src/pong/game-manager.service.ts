@@ -154,6 +154,12 @@ export class GameManagerService {
         errorMessage: ChatError.USER_OFFLINE,
       };
     }
+    if (target.id == source.id) {
+      return {
+        success: false,
+        errorMessage: ChatError.CANNOT_INVITE_YOURSELF,
+      };
+    }
     this.addPendingGameInvite(sourceSocket, source.id, target, dto.classic);
     target.emitOnAllSockets(ChatEvent.GAME_INVITE, {
       source: source.id,
