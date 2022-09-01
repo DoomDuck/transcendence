@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { myInfo, getUser } from '$lib/state';
 	import FriendsListItem from '$lib/FriendsListItem.svelte';
+	import DeStore from '$lib/DeStore.svelte';
 </script>
 
 <div class="friendsList">
 	<h1>Friends List</h1>
-	{#each $myInfo.friendlist.map(getUser) as friendPromise}
-		{#await friendPromise then friend}
-			<FriendsListItem {friend} />
-		{/await}
+	{#each $myInfo.friendlist.map(getUser) as friend}
+		<DeStore component={FriendsListItem} {friend}/>
 	{/each}
 </div>
 

@@ -6,19 +6,15 @@
 
 	export let userId: number;
 
-	const userPromise = getUser(userId);
+	const user = getUser(userId);
 	let showProfile = false;
 </script>
 
-{#await userPromise}
-	<AvatarIcon type={'user'} imageURL="hourglass.png" />
-{:then user}
-	<AvatarIcon
-		type={'user'}
-		imageURL={user.avatar ?? 'errorUser.png'}
-		on:clickOnImage={() => (showProfile = true)}
-	/>
-	<Modal bind:show={showProfile}>
-		<Profile {user} />
-	</Modal>
-{/await}
+<AvatarIcon
+	type={'user'}
+	imageURL={$user.avatar ?? 'errorUser.png'}
+	on:clickOnImage={() => (showProfile = true)}
+/>
+<Modal bind:show={showProfile}>
+	<Profile user={$user} />
+</Modal>

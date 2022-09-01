@@ -1,10 +1,5 @@
-<div class="typography">
-	<slot />
-</div>
+<script lang="ts">
+	export let data: any;
+</script>
 
-<style>
-	.typography > {
-		font-family: 'Press Start 2P';
-		font-style: normal;
-	}
-</style>
+{data}

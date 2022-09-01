@@ -5,8 +5,9 @@
 	import { banUser, muteUser } from './ts/channels';
 	import type { ChannelDetailsData } from './ts/channels';
 	import UserMiniature from './UserMiniature.svelte';
-	import PendingText from './PendingText.svelte';
-	import { getUser } from '$lib/state';
+	import DeStore from '$lib/DeStore.svelte';
+	import Text from '$lib/Text.svelte';
+	import { getUser, storeMap } from '$lib/state';
 
 	export let channel: string;
 	export let channelDetailsData: ChannelDetailsData;
@@ -54,7 +55,7 @@
 		{#each others as user}
 			<div class="channel-details-user">
 			<UserMiniature userId={user.id} />
-				<PendingText tag="p" text={getUser(user.id).then(u => u.name)} />
+				<h5><DeStore component={Text} data={storeMap(getUser(user.id), u => u.name)}/></h5>
 				<p>Role: {channelRightsString(user.rights)}</p>
 				{#if user.muted}
 					<p>(muted)</p>

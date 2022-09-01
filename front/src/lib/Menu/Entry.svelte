@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Text from '$lib/Text.svelte';
 	export let href: string;
 </script>
 
 <h4>
-	<Text><a {href}><slot /></a></Text>
+	<a {href}><slot /></a>
 </h4>
 
 <style>

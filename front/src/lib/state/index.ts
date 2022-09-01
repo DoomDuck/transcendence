@@ -14,16 +14,17 @@ import {
 	GameRefuseFromServer,
 	InviteChannelFromServer,
 	GameInviteToServer,
-    JoinChannelToServer,
-    ChatFeedbackDto,
-    CMToServer,
-    CreateChannelToServer,
+	JoinChannelToServer,
+	ChatFeedbackDto,
+	CMToServer,
+	CreateChannelToServer,
+	GetUser,
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
-import { readable } from 'svelte/store';
-import type { Readable, Subscriber } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
+import type { Readable, Writable, Subscriber } from 'svelte/store';
 import { closeLastModalListener } from '$lib/ts/modals';
 
 
@@ -33,18 +34,18 @@ export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 
 const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
-// const USER_INFO_MOCKUP = new UserInfo(
-//     /* id */ 0, 
-//     /* name */ 'loading...', 
-//     /* win */ 0, 
-//     /* loose */ 0, 
-//     /* score */ 0, 
-//     /* ranking */ 0, 
-//     /* avatar */ null, 
-//     /* isOnline */ true, 
-//     /* inGame */ false, 
-//     /* matchHistory */ [], 
-// );
+const USER_INFO_MOCKUP = new UserInfo(
+    /* id */ 0, 
+    /* name */ 'loading...', 
+    /* win */ 0, 
+    /* loose */ 0, 
+    /* score */ 0, 
+    /* ranking */ 0, 
+    /* avatar */ null, 
+    /* isOnline */ true, 
+    /* inGame */ false, 
+    /* matchHistory */ [], 
+);
 
 const MY_INFO_MOKUP = new MyInfo(
     /* id */ 0, 
@@ -62,8 +63,6 @@ const MY_INFO_MOKUP = new MyInfo(
 
 let setMyInfo!: Subscriber<MyInfo>;
 let resolveTotpRequired: ((token: string) => void) | null = null;
-let knownUsers = new Map<Id, UserInfo>();
-
 
 export let gameParams: GameParams | null = null;
 	
@@ -87,17 +86,12 @@ function loggedIn(): boolean {
 
 export function connect(code?: string) {
 	if (connected()) return;
-	// TODO: Decide on method
-	// throw new Error('Allready connected');
 	socket = io('http://localhost:5000/', { auth: { code } });
 	setupHooks(socket);
 }
 
 export function disconnect() {
-	if (!connected())
-		return;
-	// TODO: keep or remove
-	// throw new Error('Not connected');
+	if (!connected()) return;
 	socket!.disconnect();
 	socket = null;
 	goto(LOGGIN_ROUTE);
@@ -111,31 +105,10 @@ function onLoginSuccess() {
 // TODO: remove
 function addStuff() {
 	onMsgToUser(new DMFromServer(78441, 'salut'));
-	// onMsgToChannel(new 
-	// addMessage(
-	// 	{
-	// 		sender: -1,
-	// 		isMe: true,
-	// 		content: 'Salut,\nJe crée un groupe'
-	// 	},
-	// 	'Un groupe de gens'
-	// );
-	// channelConvs.addMessage(
-	// 	{
-	// 		sender: 1,
-	// 		isMe: false,
-	// 		content: 'Pas intéressé'
-	// 	},
-	// 	'Un groupe de gens'
-	// );
-	// channelConvs.addMessage(
-	// 	{
-	// 		sender: 2,
-	// 		isMe: false,
-	// 		content: 'Moi non plus'
-	// 	},
-	// 	'Un groupe de gens'
-	// );
+}
+
+export function storeMap<A, B>(store: Readable<A>, f: (a: A) => B) : Readable<B> {
+	 return readable<B>(undefined, setB => store.subscribe(a => setB(f(a))));
 }
 
 function onLoginFailure() {
@@ -187,14 +160,19 @@ export function enableTotp(token: string) {
 
 // Update
 export function updateMyInfo() {
-	socket!.emit(GetInfoEvent.MY_INFO, onMyInfoResult);
+	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
 }
 
-export function updateUserInfo() {
-	// TODO
-	// socket!.emit(GetInfoEvent.USER_INFO, onMyInfoResult);
+// Users
+export async function updateUserInfo(id: Id) : Promise<UserInfo> {
+	return new Promise(
+		r => socket!.emit(
+			GetInfoEvent.USER_INFO,
+			new GetUser(id),
+			info => r(onUserInfo(info))
+		)
+	);
 }
-
 
 // Game
 export function refuseGame(target: Id) {
@@ -245,15 +223,20 @@ export function observeGame(id: Id) {
 }
 
 // Users
-export async function getUser(id: Id): Promise<UserInfo>  {
-	const user = knownUsers.get(id);
-	if (user) return user;
-	return new Promise(r => socket!.emit(GetInfoEvent.USER_INFO, {target: id}, feedback => {
-		if (!feedback.success) throw new Error(`Could not fetch user info ${feedback.errorMessage}`);
-		const user = feedback.result!;
-		knownUsers.set(id, user);
-		r(user);
-	}));
+
+const knownUsers = new Map<Id, { data?: UserInfo, store: Writable<UserInfo>}>();
+export function getUser(id: Id) : Readable<UserInfo> {
+	const entry = knownUsers.get(id);
+	if (entry) return entry.store;
+	const store = writable<UserInfo>(USER_INFO_MOCKUP);
+	knownUsers.set(id, {store});
+	return store;
+}
+
+export async function getUserNow(id: Id) : Promise<UserInfo> {
+	const entry = knownUsers.get(id);
+	if (entry?.data) return entry.data;
+	return updateUserInfo(id);
 }
 
 // Avatar
@@ -321,10 +304,30 @@ function onTotpRequired(callback: (token: string) => void) {
 	goto(LOGGIN_TOTP_ROUTE);
 }
 
-function onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
-	if (feedback.success)
-		setMyInfo(feedback.result!);
-	else console.error("Could not get user info");
+function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
+	if (feedback.success) {
+		// TODO: remove
+		const myInfo = feedback.result!;
+		myInfo.friendlist.push(78441);
+		setMyInfo(myInfo);
+	}
+	else console.error("Could not get my info");
+}
+
+async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>) : Promise<UserInfo> {
+	if (!feedback.success)
+		throw new Error("Could not get user info");
+	const user = feedback.result!; 
+	let entry = knownUsers.get(user.id);
+	if (entry) {
+		entry.store.update(_ => user);
+	} else {
+		knownUsers.set(user.id, {
+			data: user,
+			store: writable(user) 
+		});
+	}
+	return user;
 }
 
 function onGotoGameScreen(classic: boolean, ready: () => void) {

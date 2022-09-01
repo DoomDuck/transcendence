@@ -1,21 +1,22 @@
 <script lang="ts">
 	import ConversationListItem from './ConversationListItem.svelte';
-	import { getUser } from '$lib/state';
+	import { getUser, storeMap } from '$lib/state';
 	import { userConvs, channelConvs } from '$lib/ts/chatUtils';
 	import ChannelBox from '$lib/chat/conversationBoxes/ChannelConvBox.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
 	import ConversationListItemText from './ConversationListItemText.svelte';
 	import ConversationBox from './conversationBoxes/UserConvBox.svelte';
 	import ChannelMiniature from '$lib/ChannelMiniature.svelte';
+	import DeStore from '$lib/DeStore.svelte';
 </script>
 
 <div>
 	{#each $userConvs.convs as conversation (conversation.interlocutor)}
 		<ConversationListItem bind:hasNewMessage={conversation.hasNewMessage}>
 			<UserMiniature slot="icon" userId={conversation.interlocutor} />
-			<ConversationListItemText
+			<DeStore component={ConversationListItemText}
 				slot="item-text"
-				text={getUser(conversation.interlocutor).then((user) => user.name)}
+				text={storeMap(getUser(conversation.interlocutor), (user) => user.name)}
 			/>
 			<ConversationBox slot="conversation-modal" {conversation} />
 		</ConversationListItem>

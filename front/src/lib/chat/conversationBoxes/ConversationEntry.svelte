@@ -5,13 +5,14 @@
 
 	export let message: ChatMessageDto;
 	export let type: 'user' | 'channel';
+	const sender = getUser(message.sender);
 </script>
 
 <article class={message.isMe ? 'user' : 'interlocutor'}>
 	<span class="conv-entry">{message.content}</span>
 	<br />
 	{#if type == 'channel' && !message.isMe}
-		<PendingText tag="span" text={getUser(message.sender).then((user) => user.name)} />
+		<PendingText tag="span" text={$sender.name} />
 	{/if}
 </article>
 
