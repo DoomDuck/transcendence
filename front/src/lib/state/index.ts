@@ -63,14 +63,14 @@ const MY_INFO_MOKUP = new MyInfo(
 	/* inGame */ false
 );
 
-let setMyInfo!: Subscriber<MyInfo>;
+let setMyInfo: Subscriber<MyInfo> | undefined;
 let resolveTotpRequired: ((token: string) => void) | null = null;
 
 export let gameParams: GameParams | null = null;
 
 export const myself: Readable<MyInfo> = readable(MY_INFO_MOKUP, (u) => {
 	if (!setMyInfo) {
-		updateMe();
+		updateMyself();
 		setMyInfo = u;
 	}
 	return () => {};
@@ -153,15 +153,15 @@ export function sendTotpToken(token: string) {
 }
 
 export function disableTotp() {
-	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMe);
+	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMyself);
 }
 
 export function enableTotp(token: string) {
-	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMe);
+	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyself);
 }
 
 // Update
-export function updateMe() {
+export function updateMyself() {
 	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
 }
 
@@ -240,6 +240,10 @@ export async function getUserNow(id: Id) : Promise<UserInfo> {
 	const entry = knownUsers.get(id);
 	if (entry?.data) return entry.data;
 	return updateUser(id);
+}
+
+export function clearUserCache() {
+	knownUsers.clear()
 }
 
 // Avatar
@@ -326,7 +330,7 @@ function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 		// TODO: remove
 		const myInfo = feedback.result!;
 		myInfo.friendlist.push(78441);
-		setMyInfo(myInfo);
+		if (setMyInfo) setMyInfo(myInfo);
 	}
 	else console.error("Could not get my info");
 }
