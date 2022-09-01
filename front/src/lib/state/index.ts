@@ -23,11 +23,11 @@ import {
 	FriendInviteToServer,
 	BanUserFromServer,
 	SetUsernameToServer,
-	// LeaveChannelToServer,
+	LeaveChannelToServer,
 	DeleteChannelToServer,
-	// ChannelDeletedFromServer,
-	// BlockUserFromServer,
-	// SetNewAdminToServer
+	ChannelDeletedFromServer,
+	BlockUserFromServer,
+	SetNewAdminToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -245,7 +245,7 @@ export async function getUserNow(id: Id): Promise<UserInfo> {
 }
 
 export function clearUserCache() {
-	knownUsers.clear()
+	knownUsers.clear();
 }
 
 // Avatar
@@ -364,9 +364,8 @@ function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 		// TODO: remove
 		const myInfo = feedback.result!;
 		myInfo.friendlist.push(78441);
-		writableMyself.update(_ => myInfo);
-	}
-	else console.error("Could not get my info");
+		writableMyself.update((_) => myInfo);
+	} else console.error('Could not get my info');
 }
 
 async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserInfo> {
