@@ -4,7 +4,7 @@
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { myInfo } from '$lib/state';
+	import { myself } from '$lib/state';
 </script>
 
 <div id="chat">
@@ -18,7 +18,7 @@
 	</div>
 
 	<div id="mainContainer">
-		<OnlineFriends friends={$myInfo.friendlist} />
+		<OnlineFriends friends={$myself.friendlist} />
 		<br />
 		<ConversationLists />
 	</div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { UserInfo } from 'backFrontCommon';
 	import AddFriendModal from '../modals/AddFriendModal.svelte';
 
 	let show = false;

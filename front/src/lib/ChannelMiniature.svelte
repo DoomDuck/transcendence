@@ -4,7 +4,7 @@
 	import ChannelDetails from './ChannelDetails.svelte';
 	import { getChannelInfo, treatChannelInfo } from './ts/channels';
 	import type { ChannelDetailsData } from './ts/channels';
-	import { myInfo } from '$lib/state';
+	import { myself } from '$lib/state';
 
 	export let channel: string;
 
@@ -12,7 +12,7 @@
 	let channelDetailsData: ChannelDetailsData;
 	function click() {
 		getChannelInfo(channel)
-			.then((info) => treatChannelInfo($myInfo.id, info))
+			.then((info) => treatChannelInfo($myself.id, info))
 			.then((chanData) => {
 				channelDetailsData = chanData;
 				showDetails = true;

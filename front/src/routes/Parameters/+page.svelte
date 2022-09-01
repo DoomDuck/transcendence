@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { myInfo, disconnect } from '$lib/state';
+	import { myself, disconnect } from '$lib/state';
 	import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
 	export let blocked = [{ profilePic: 'cars.jpeg', name: 'Flash McQueen' }];
 </script>
 
 <div id="app">
-	<ProfileParams avatar={$myInfo.avatar} name={$myInfo.name} />
+	<ProfileParams avatar={$myself.avatar} name={$myself.name} />
 	<div id="blockedProfiles">
 		<div class="blocked">
 			<div class="blockedInfos">

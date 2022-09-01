@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import Modal from '$lib/Modal.svelte';
 	import type { UserInfo } from 'backFrontCommon';
 	import { sendBlockUser } from '$lib/state';

@@ -68,9 +68,9 @@ let resolveTotpRequired: ((token: string) => void) | null = null;
 
 export let gameParams: GameParams | null = null;
 
-export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, (u) => {
+export const myself: Readable<MyInfo> = readable(MY_INFO_MOKUP, (u) => {
 	if (!setMyInfo) {
-		updateMyInfo();
+		updateMe();
 		setMyInfo = u;
 	}
 	return () => {};
@@ -153,20 +153,20 @@ export function sendTotpToken(token: string) {
 }
 
 export function disableTotp() {
-	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMyInfo);
+	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMe);
 }
 
 export function enableTotp(token: string) {
-	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyInfo);
+	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMe);
 }
 
 // Update
-export function updateMyInfo() {
+export function updateMe() {
 	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
 }
 
 // Users
-export async function updateUserInfo(id: Id) : Promise<UserInfo> {
+export async function updateUser(id: Id) : Promise<UserInfo> {
 	return new Promise(
 		r => socket!.emit(
 			GetInfoEvent.USER_INFO,
@@ -232,13 +232,14 @@ export function getUser(id: Id) : Readable<UserInfo> {
 	if (entry) return entry.store;
 	const store = writable<UserInfo>(USER_INFO_MOCKUP);
 	knownUsers.set(id, {store});
+	updateUser(id);
 	return store;
 }
 
 export async function getUserNow(id: Id) : Promise<UserInfo> {
 	const entry = knownUsers.get(id);
 	if (entry?.data) return entry.data;
-	return updateUserInfo(id);
+	return updateUser(id);
 }
 
 // Avatar

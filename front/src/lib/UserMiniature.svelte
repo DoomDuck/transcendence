@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Profile from '$lib/Profile.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { getUser } from '$lib/state';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
+	import { getUser } from '$lib/state';
 
 	export let userId: number;
 

@@ -1,7 +1,6 @@
 import {
 	BanUserToServer,
 	ChannelInfo,
-	ChannelRights,
 	ChannelUser,
 	ChatEvent,
 	MuteUserToServer
