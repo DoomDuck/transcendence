@@ -61,6 +61,11 @@ export class ChatService {
         false,
         ChatError.USER_NOT_FOUND,
       );
+      if (target.id === sender.id)
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.YOU_CANT_BLOCK_YOURSELF,
+      );
     return this.userService.blockUser(sender, target);
   }
 
@@ -221,6 +226,12 @@ export class ChatService {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
+      );
+    }
+    if (target.id === sender.id) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_CANT_BE_YOUR_OWN_FRIEND,
       );
     }
     return await this.userService.addFriend(sender, target);

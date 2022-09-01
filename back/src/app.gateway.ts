@@ -130,6 +130,7 @@ export class AppGateway
     clientSocket: Socket,
     friendRequest: FriendInviteToServer,
   ) {
+    this.logger.debug('dans friend invite');
     return await this.chatService.handleFriendInvite(
       clientSocket,
       friendRequest,

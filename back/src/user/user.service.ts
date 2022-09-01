@@ -227,7 +227,7 @@ export class UserService {
     blockedUser: ActiveUser,
   ): Promise<boolean> {
     const tempUserDb = await this.findOneDb(activeUser.id);
-    if (tempUserDb!.blocked.find((blocked) => blocked === blockedUser.id))
+    if (tempUserDb!.blockedFrom.find((blocked) => blocked === blockedUser.id))
       return true;
     else return false;
   }
