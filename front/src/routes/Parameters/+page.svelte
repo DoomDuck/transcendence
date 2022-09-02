@@ -3,6 +3,7 @@
 	import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
+	import UserName from '$lib/chat/UserName.svelte';
 </script>
 
 <div id="app">
@@ -13,6 +14,7 @@
 				{#each $myself.blocked as userId}
 					<div>
 						<UserMiniature {userId} />
+						<UserName {userId} />
 						<button on:click={() => sendUnblockUser({ target: userId })}> unblock </button>
 					</div>
 				{/each}

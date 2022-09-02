@@ -5,6 +5,11 @@
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { myself } from '$lib/state';
+	import { channelConvs } from '$lib/ts/chatUtils';
+
+	$myself.channels.forEach((channel) => {
+		$channelConvs.create(channel);
+	});
 </script>
 
 <div id="chat">

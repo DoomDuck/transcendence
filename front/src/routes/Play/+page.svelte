@@ -6,7 +6,6 @@
 	import { delay } from 'pong/common/utils';
 
 	let background = gameParams?.classic ? '/starsSky.png' : '/gameBackground.png';
-	// background = `url(${background})`;
 
 	onMount(() => {
 		if (!gameParamsAreValid(gameParams!)) {

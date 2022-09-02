@@ -2,7 +2,7 @@
 	import type { UserInfo } from 'backFrontCommon';
 	import ProfileStats from './ProfileStats.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
-	import { myself, sendFriendInvite } from './state';
+	import { myself, sendBlockUser, sendFriendInvite, sendUnblockUser } from './state';
 	import SendNewMessageButton from './chat/buttons/SendNewMessageButton.svelte';
 
 	export let user: UserInfo;
@@ -18,9 +18,15 @@
 		{:else}
 			<button on:click={() => sendFriendInvite({ target: user.id })}>Add to friends</button>
 		{/if}
-		<SendNewMessageButton target={user.id}>
-			<button>Send message</button>
-		</SendNewMessageButton>
+		{#if $myself.blocked.includes(user.id)}
+			<span>You blocked this person :(</span>
+			<button on:click={() => sendUnblockUser({ target: user.id })}>Unblock</button>
+		{:else}
+			<button on:click={() => sendBlockUser({ target: user.id })}>Block</button>
+			<SendNewMessageButton target={user.id}>
+				<button>Send message</button>
+			</SendNewMessageButton>
+		{/if}
 	</div>
 	<ProfileStats {user} />
 </div>

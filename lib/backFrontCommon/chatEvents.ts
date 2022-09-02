@@ -316,6 +316,7 @@ export class MyInfo {
     public name: string,
     public friendlist: Id[],
     public blocked: Id[],
+    public channels: string[],
     public win: number,
     public loose: number,
     public score: number,
@@ -385,6 +386,11 @@ export enum ChannelRights {
   ADMIN,
   USER
 }
+export enum ChannelType {
+  PUBLIC,
+  PASSWORD_PROTECTED,
+  PRIVATE,
+}
 export class ChannelUser {
   constructor(
     public id: Id,
@@ -395,6 +401,8 @@ export class ChannelUser {
 export class ChannelInfo {
   constructor (
     public users: ChannelUser[],
+    public bannedUsers: Id[],
+    public channelType: ChannelType,
   ) { }
 }
 export class LeaveChannelToServer {

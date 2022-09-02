@@ -28,7 +28,8 @@ import {
 	ChannelDeletedFromServer,
 	BlockUserFromServer,
 	SetNewAdminToServer,
-	UnblockUserToServer
+	UnblockUserToServer,
+	ChannelInfo
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -61,6 +62,7 @@ const MY_INFO_MOKUP = new MyInfo(
 	/* name */ 'loading..',
 	/* friendlist */ [],
 	/* blocked */ [],
+	/* channels */ [],
 	/* win */ 0,
 	/* loose */ 0,
 	/* score */ 0,
@@ -298,7 +300,19 @@ export function sendJoinChannel(message: JoinChannelToServer) {
 
 export function sendBlockUser(message: BlockUserToServer) {
 	socket!.emit(ChatEvent.BLOCK_USER, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			updateMyself();
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendUnblockUser(message: UnblockUserToServer) {
+	socket!.emit(ChatEvent.UNBLOCK_USER, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			updateMyself();
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -342,14 +356,6 @@ export function sendDeleteChannel(message: DeleteChannelToServer) {
 
 export function sendSetNewAdminToServer(message: SetNewAdminToServer) {
 	socket!.emit(ChatEvent.SET_NEW_ADMIN, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
-			alert(`error: ${feedback.errorMessage}`);
-		}
-	});
-}
-
-export function sendUnblockUser(message: UnblockUserToServer) {
-	socket!.emit(ChatEvent.UNBLOCK_USER, message, (feedback: ChatFeedbackDto) => {
 		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
