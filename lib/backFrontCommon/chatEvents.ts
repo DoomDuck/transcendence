@@ -57,9 +57,10 @@ export class ChatEvent {
   static readonly BAN_USER = 'ban user'
   static readonly CHANNEL_DELETED_NOTIF = 'channel deleted notif'
   static readonly BLOCKED_NOTIF = 'blocked notif'
-  static readonly UNBLOCK_USER = 'unblock user'
   static readonly GET_BANNED_IN_CHANNEL = "get banned in channel"
+  static readonly UNBLOCK_USER = 'unblock user'
   static readonly UNBAN_USER = "unban user"
+  static readonly UNMUTE_USER = "unmute user"
 }
 
 export class ChatError {
@@ -86,6 +87,7 @@ export class ChatError {
   static readonly ALREADY_MUTED ="user already muted";
   static readonly NOT_BANNED ="user not banned";
   static readonly NOT_MUTED ="user not muted";
+  static readonly NOT_BLOCKED ="user was not blocked";
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
   static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
   static readonly USER_NOT_IN_GAME = "user not in game";
@@ -448,6 +450,13 @@ export class ChannelSummary {
     public category: ChannelCategory,
   ) { }
 }
+export class UnmuteUserToServer {
+  constructor(
+    public channel: string,
+    public target: Id
+  ) { }
+}
+
 
 export class ChatFeedbackDto {
   constructor(
@@ -534,4 +543,6 @@ export interface ClientToServerEvents {
   [ChatEvent.UNBLOCK_USER]: (dto: UnblockUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GET_BANNED_IN_CHANNEL]: (dto: GetBannedListToServer, callback: FeedbackCallbackWithResult<GetBannedListFromServer>) => void;
   [ChatEvent.UNBAN_USER]: (dto: UnbanUserToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.UNMUTE_USER]: (dto: UnmuteUserToServer, callback: FeedbackCallback) => void;
+
 }

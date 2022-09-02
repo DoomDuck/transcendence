@@ -6,6 +6,8 @@ import {
   ActiveChannelConversationDto,
   ActiveUserConversationDto,
   PostAvatar,
+  FeedbackCallbackWithResult,
+  LeaderboardItemDto,
   ServerToClientEvents,
   UserInfoToServer,
 } from 'backFrontCommon';
@@ -21,6 +23,7 @@ import {
   UserInfo,
   RequestFeedbackDto,
   ChatFeedbackDto,
+  UnblockUserToServer,
   UserHistoryDto,
   Id,
   ChatEvent,
@@ -101,12 +104,37 @@ export class UserService {
     );
     return chatMessageDto;
   }
-  async getLeaderboard(): Promise<User[]> {
-    return await this.usersRepository.find({
-      order: {
-        score: 'DESC', // "ASC"
-      },
-    });
+  leaderbordTransformator(users: User[]): LeaderboardItemDto[] {
+    let result: LeaderboardItemDto[] = [];
+    users.forEach((user) =>
+      result.push(
+        new LeaderboardItemDto(
+          user.id,
+          user.name,
+          user.win,
+          user.loose,
+          user.score,
+        ),
+      ),
+    );
+    return result;
+  }
+  async getLeaderboard(
+    socket: Socket,
+  ): FeedbackCallbackWithResult<LeaderboardItemDto[]> {
+    const userDb = await this.findOneDbBySocket(socket);
+    if (!userDb)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    return {
+      success: true,
+      result: this.leaderbordTransformator(
+        await this.usersRepository.find({
+          order: {
+            score: 'DESC', // "ASC"
+          },
+        }),
+      ),
+    };
   }
 
   async getRanking(user: User): Promise<number> {
@@ -223,11 +251,11 @@ export class UserService {
     await this.usersRepository.delete(id);
   }
   async isBlocked(
-    activeUser: ActiveUser,
-    blockedUser: ActiveUser,
+    activeUser: ActiveUser | User,
+    blockerUser: ActiveUser | User,
   ): Promise<boolean> {
     const tempUserDb = await this.findOneDb(activeUser.id);
-    if (tempUserDb!.blockedFrom.find((blocked) => blocked === blockedUser.id))
+    if (tempUserDb!.blockedFrom.find((blocked) => blocked === blockerUser.id))
       return true;
     else return false;
   }
@@ -654,5 +682,22 @@ export class UserService {
       );
     }
     return result;
+  }
+  async handleUnblockUser(socket: Socket, unblockInfo: UnblockUserToServer) {
+    const sender = await this.findOneDbBySocket(socket);
+    const target = await this.findOneDb(unblockInfo.target);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    else if (!target)
+      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+    if (!(await this.isBlocked(target, sender)))
+      return { success: false, errorMessage: ChatError.NOT_BLOCKED };
+    sender.blocked.splice(sender.blocked.indexOf(target.id), 1);
+    target.blockedFrom.splice(target.blockedFrom.indexOf(sender.id), 1);
+    this.usersRepository.update(sender!.id, { blocked: sender.blocked });
+    this.usersRepository.update(target!.id, {
+      blockedFrom: target.blockedFrom,
+    });
+    return { success: true };
   }
 }
