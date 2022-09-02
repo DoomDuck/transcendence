@@ -10,6 +10,7 @@ import {
   GetInfoEvent,
   RequestFeedbackDto,
   PostAvatar,
+  LeaderboardItemDto,
   MatchInfoToServer,
   LeaveChannelToServer,
   UserInfoToServer,
@@ -31,12 +32,14 @@ import type {
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
+  UnbanUserToServer,
   UserInfo,
   MatchInfoFromServer,
   SetPasswordToServer,
   UnblockUserToServer,
   DeleteChannelToServer,
   GetChannelInfoToServer,
+  UnmuteUserToServer,
   FeedbackCallbackWithResult,
   ChannelInfo,
   SetUsernameToServer,
@@ -98,6 +101,11 @@ export class AppGateway
   async onTotpUpdate(socket: Socket, secret: string | null) {
     await this.loginService.onTotpUpdate(socket, secret);
     return {}; // Send feedback
+  }
+  @SubscribeMessage(LoginEvent.GET_LEADERBOARD)
+  async getLeaderboard(socket: Socket) {
+    return await this.userService.getLeaderboard(socket);
+
   }
 
   @SubscribeMessage(ChatEvent.BLOCK_USER)
@@ -231,8 +239,18 @@ export class AppGateway
   // return await this.userService.getUserMatch(socket, matchInfo.target);
   // }
   @SubscribeMessage(ChatEvent.UNBLOCK_USER)
-  async handleUNBLOCK_USER(socket: Socket, unblockInfo: UnblockUserToServer) {
+  async handleUnblockUser(socket: Socket, unblockInfo: UnblockUserToServer) {
     return await this.userService.handleUnblockUser(socket, unblockInfo);
+  }
+
+  @SubscribeMessage(ChatEvent.UNBAN_USER)
+  async handleUnbanUser(socket: Socket, unBanInfo: UnbanUserToServer) {
+    return await this.chatService.handleUnbanUser(socket, unBanInfo);
+  }
+
+  @SubscribeMessage(ChatEvent.UNMUTE_USER)
+  async handleUnmuteUser(socket: Socket, unmuteInfo: UnmuteUserToServer) {
+    return await this.chatService.handleUnmuteUser(socket, unmuteInfo);
   }
   @SubscribeMessage(ChatEvent.SET_USERNAME)
   async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {

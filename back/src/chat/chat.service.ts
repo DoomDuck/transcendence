@@ -16,8 +16,10 @@ import {
   CMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
+  UnmuteUserToServer,
   BlockUserToServer,
   FriendInviteToServer,
+  UnbanUserToServer,
   ChannelCategory,
   ChatEvent,
   ChatError,
@@ -358,7 +360,38 @@ export class ChatService {
       return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
     return await this.channelManagerService.setNewAdmin(user, target, channel);
   }
-
+  async handleUnbanUser(socket: Socket, unBanInfo: UnbanUserToServer) {
+    const user = await this.userService.findOneDbBySocket(socket);
+    if (!user)
+    return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  const channel = await this.channelManagerService.findChanByName(
+    unBanInfo.channel,
+  );
+  if (!channel)
+    return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+  const target = await this.userService.findOneDb(unBanInfo.target);
+  if (!target)
+    return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+  if (!this.channelManagerService.isAdmin(user,channel))
+    return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
+  return this.channelManagerService.unBanUser(target,channel)
+  }
+  async handleUnmuteUser(socket: Socket, unmuteInfo: UnmuteUserToServer) {
+    const user = await this.userService.findOneDbBySocket(socket);
+    if (!user)
+    return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  const channel = await this.channelManagerService.findChanByName(
+    unmuteInfo.channel,
+  );
+  if (!channel)
+    return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+  const target = await this.userService.findOneDb(unmuteInfo.target);
+  if (!target)
+    return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+  if (!this.channelManagerService.isAdmin(user,channel))
+    return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
+  return this.channelManagerService.unMuteUser(target,channel)
+  }
   async handleInviteChannel(
     socket: Socket,
     inviteInfo: InviteChannelToServer,

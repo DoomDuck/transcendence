@@ -6,6 +6,8 @@ import {
   ActiveChannelConversationDto,
   ActiveUserConversationDto,
   PostAvatar,
+  FeedbackCallbackWithResult,
+  LeaderboardItemDto,
   ServerToClientEvents,
   UserInfoToServer,
 } from 'backFrontCommon';
@@ -102,13 +104,23 @@ export class UserService {
     );
     return chatMessageDto;
   }
-  async getLeaderboard(): Promise<User[]> {
-    return await this.usersRepository.find({
+  leaderbordTransformator(users :User[]): LeaderboardItemDto[]
+  {
+    let result : LeaderboardItemDto[] = [];
+    users.forEach(user => result.push(new LeaderboardItemDto(user.id, user.name, user.win,user.loose,user.score) ))
+    return result;
+  }
+  async getLeaderboard(socket :Socket): FeedbackCallbackWithResult<LeaderboardItemDto[]>{
+    const userDb = await this.findOneDbBySocket(socket);
+    if (!userDb) 
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    return {success:true , result : this.leaderbordTransformator( await this.usersRepository.find({
       order: {
         score: 'DESC', // "ASC"
       },
-    });
-  }
+    }))
+  } 
+}
 
   async getRanking(user: User): Promise<number> {
     return (await this.getLeaderboard()).indexOf(user);
@@ -673,6 +685,8 @@ export class UserService {
         target.blockedFrom.indexOf(sender.id),
         1,
       );
+      this.usersRepository.update(sender!.id, { blocked: sender.blocked });
+      this.usersRepository.update(target!.id, { blockedFrom: target.blockedFrom });
       return {success:true}
   }
 }

@@ -258,13 +258,16 @@ export class ChannelManagerService {
           ),
       );
       channel.banned.push(
-        new BannedUser(new Date(d.getTime() + duration), target.id),
+        new BannedUser(new Date(d.getTime() + duration * 1000), target.id),
       );
       this.channelRepository.update(channel.name, { banned: channel.banned });
       return new ChatFeedbackDto(true);
     }
   }
+  async getPublicProtectedChan(){
+      return await this.channelRepository.find( {where: {category : ChannelCategory.public | ChannelCategory.protected}})
 
+  }
   unBanUser(user: ActiveUser | User, channel: Channel): ChatFeedbackDto {
     const banInfo = channel.banned.find((banned) => user.id === banned.userId);
     if (banInfo === undefined)
@@ -307,7 +310,7 @@ export class ChannelManagerService {
           ),
       );
       channel.muted.push(
-        new MutedUser(new Date(d.getTime() + duration), target.id),
+        new MutedUser(new Date(d.getTime() + duration*1000), target.id),
       );
       this.channelRepository.update(channel.name, { muted: channel.muted });
       return new ChatFeedbackDto(true);
