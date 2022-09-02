@@ -29,7 +29,8 @@ import {
 	BlockUserFromServer,
 	SetNewAdminToServer,
 	UnblockUserToServer,
-	ChannelInfo
+	ChannelInfo,
+	ChannelType
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -71,6 +72,12 @@ const MY_INFO_MOKUP = new MyInfo(
 	/* totpSecret */ null,
 	/* inGame */ false
 );
+
+const CHANNEL_INFO_MOCKUP: ChannelInfo = {
+	users: [],
+	bannedUsers: [],
+	channelType: ChannelType.PUBLIC
+};
 
 let resolveTotpRequired: ((token: string) => void) | null = null;
 
@@ -168,18 +175,6 @@ export function enableTotp(token: string) {
 	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyself);
 }
 
-// Update
-export function updateMyself() {
-	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
-}
-
-// Users
-export async function updateUser(id: Id): Promise<UserInfo> {
-	return new Promise((r) =>
-		socket!.emit(GetInfoEvent.USER_INFO, new GetUser(id), (info) => r(onUserInfo(info)))
-	);
-}
-
 // Game
 export function refuseGame(target: Id) {
 	socket!.emit(ChatEvent.GAME_REFUSE, { target });
@@ -228,7 +223,41 @@ export function observeGame(id: Id) {
 	});
 }
 
+// Myself
+export function updateMyself() {
+	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
+}
+
+function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
+	if (feedback.success) {
+		// TODO: remove
+		const myInfo = feedback.result!;
+		// myInfo.friendlist.push(78441);
+		writableMyself.set(myInfo);
+	} else console.error('Could not get my info');
+}
+
 // Users
+export async function updateUser(id: Id): Promise<UserInfo> {
+	return new Promise((r) =>
+		socket!.emit(GetInfoEvent.USER_INFO, new GetUser(id), (info) => r(onUserInfo(info)))
+	);
+}
+
+async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserInfo> {
+	if (!feedback.success) throw new Error('Could not get user info');
+	const user = feedback.result!;
+	let entry = knownUsers.get(user.id);
+	if (entry) {
+		entry.store.set(user);
+	} else {
+		knownUsers.set(user.id, {
+			data: user,
+			store: writable(user)
+		});
+	}
+	return user;
+}
 
 const knownUsers = new Map<Id, { data?: UserInfo; store: Writable<UserInfo> }>();
 export function getUser(id: Id): Readable<UserInfo> {
@@ -248,6 +277,38 @@ export async function getUserNow(id: Id): Promise<UserInfo> {
 
 export function updateAllUsers() {
 	for (const id of knownUsers.keys()) updateUser(id);
+}
+
+// Channels
+
+const knownChannels = new Map<string, { store: Writable<ChannelInfo> }>();
+export function getChannel(channel: string): Readable<ChannelInfo> {
+	const entry = knownChannels.get(channel);
+	if (entry) return entry.store;
+	const store = writable<ChannelInfo>(CHANNEL_INFO_MOCKUP);
+	knownChannels.set(channel, { store });
+	updateChannel(channel);
+	return store;
+}
+
+export async function updateChannel(channel: string): Promise<ChannelInfo> {
+	return new Promise((r) =>
+		socket!.emit(ChatEvent.GET_CHANNEL_INFO, { channel }, (info) => r(onChannelInfo(channel, info)))
+	);
+}
+
+function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
+	if (!feedback.success) throw new Error('Could not get user info');
+	const info = feedback.result!;
+	let entry = knownChannels.get(channel);
+	if (entry) {
+		entry.store.set(info);
+	} else {
+		knownChannels.set(channel, {
+			store: writable(info)
+		});
+	}
+	return info;
 }
 
 // Avatar
@@ -376,30 +437,6 @@ function onDisconnect() {
 function onTotpRequired(callback: (token: string) => void) {
 	resolveTotpRequired = callback;
 	goto(LOGGIN_TOTP_ROUTE);
-}
-
-function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
-	if (feedback.success) {
-		// TODO: remove
-		const myInfo = feedback.result!;
-		// myInfo.friendlist.push(78441);
-		writableMyself.set(myInfo);
-	} else console.error('Could not get my info');
-}
-
-async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserInfo> {
-	if (!feedback.success) throw new Error('Could not get user info');
-	const user = feedback.result!;
-	let entry = knownUsers.get(user.id);
-	if (entry) {
-		entry.store.set(user);
-	} else {
-		knownUsers.set(user.id, {
-			data: user,
-			store: writable(user)
-		});
-	}
-	return user;
 }
 
 function onGotoGameScreen(classic: boolean, ready: () => void) {
