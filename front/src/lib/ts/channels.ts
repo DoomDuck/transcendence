@@ -5,7 +5,8 @@ import {
 	ChatEvent,
 	ChatFeedbackDto,
 	MuteUserToServer,
-	type ClientToServerEvents
+	type ClientToServerEvents,
+  type FeedbackCallbackWithResult
 } from 'backFrontCommon';
 import { socket, updateChannel } from '$lib/state';
 
@@ -58,4 +59,13 @@ const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {
 };
 export const banUser = channelAction(ChatEvent.BAN_USER);
 export const muteUser = channelAction(ChatEvent.MUTE_USER);
+
+// export type Len<ArrayType extends any[]> = ArrayType extends {length: infer L} ? L : never;
+// export type ArgsFromDTO<DTO> = DTO extends undefined ? [] : [DTO]
+// export type SocketIOArgs<DTO, Result> = [...ArgsFromDTO<DTO>, FeedbackCallbackWithResult<Result>];
+// export type ParametersForKey<Key extends keyof ClientToServerEvents> = Parameters<ClientToServerEvents[Key]>;
+// export type ArgsLenForKey<Key extends keyof ClientToServerEvents> = Len<ParametersForKey<Key>>;
+// export type DTOForKey<Key extends keyof ClientToServerEvents, N extends ArgsLenForKey<Key>> = N extends 1 ? undefined : N extends 2 ? ...
+
+
 // export const unMuteUser = channelAction(ChatEvent.UNMUTE_USER);
