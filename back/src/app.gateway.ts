@@ -295,8 +295,4 @@ export class AppGateway
     );
     return await this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
-  @SubscribeMessage(ChatEvent.GET_BANNED_IN_CHANNEL)
-  async handleBannedList(socket: Socket, bannedInfo: GetBannedListToServer) {
-    return this.chatService.handleBannedList(socket, bannedInfo);
-  }
 }
