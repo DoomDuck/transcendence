@@ -53,9 +53,9 @@ export class ChannelManagerService {
     if (banInfo === undefined) return false;
     else {
       const unBanDate = new Date(banInfo!.unbanDate);
-      this.logger.debug(JSON.stringify(unBanDate))
-      this.logger.debug(newDate.getTime())
-      this.logger.debug(unBanDate.getTime())
+      this.logger.debug(JSON.stringify(unBanDate));
+      this.logger.debug(newDate.getTime());
+      this.logger.debug(unBanDate.getTime());
       if (unBanDate.getTime() > newDate.getTime()) return true;
       else {
         this.unBanUser(user, channel);
@@ -72,7 +72,8 @@ export class ChannelManagerService {
     else {
       const unMuteDate = new Date(muteInfo!.unmuteDate);
       if (unMuteDate.getTime() > newDate.getTime()) return true;
-      else {channel
+      else {
+        channel;
         this.unMuteUser(user, channel);
         return false;
       }
@@ -140,9 +141,13 @@ export class ChannelManagerService {
   leaveChannel(channel: Channel, user: ActiveUser | User) {
     if (user.id === channel.creator) channel.creator = -1;
     channel.member.splice(channel.member.indexOf(user.id), 1);
-    if (this.isAdmin(user,channel))
+    if (this.isAdmin(user, channel))
       channel.admin.splice(channel.admin.indexOf(user.id), 1);
-    this.channelRepository.update(channel.name!, { member: channel.member, admin: channel.admin, creator:channel.creator });
+    this.channelRepository.update(channel.name!, {
+      member: channel.member,
+      admin: channel.admin,
+      creator: channel.creator,
+    });
   }
   async findChanByName(name: string): Promise<Channel | null> {
     return this.channelRepository.findOneBy({ name });

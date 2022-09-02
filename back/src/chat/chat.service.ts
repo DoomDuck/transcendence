@@ -63,7 +63,7 @@ export class ChatService {
         false,
         ChatError.USER_NOT_FOUND,
       );
-      if (target.id === sender.id)
+    if (target.id === sender.id)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.YOU_CANT_BLOCK_YOURSELF,
@@ -442,6 +442,15 @@ export class ChatService {
     const users = await Promise.all(usersPromise);
     const result = users.filter((user) => user !== null) as ChannelUser[];
     this.logger.debug(`end channel info${JSON.stringify(result)}`);
-    return { success: true, result: new ChannelInfo(result, channel.banned.map(banned =>{ return banned.userId}),channel.category) };
+    return {
+      success: true,
+      result: new ChannelInfo(
+        result,
+        channel.banned.map((banned) => {
+          return banned.userId;
+        }),
+        channel.category,
+      ),
+    };
   }
 }
