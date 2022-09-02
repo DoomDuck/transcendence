@@ -57,7 +57,7 @@ const USER_INFO_MOCKUP = new UserInfo(
 
 const MY_INFO_MOKUP = new MyInfo(
 	/* id */ 0,
-	/* name */ 'Loading..',
+	/* name */ 'loading..',
 	/* friendlist */ [],
 	/* blocked */ [],
 	/* win */ 0,
@@ -104,13 +104,7 @@ export function disconnect() {
 }
 
 function onLoginSuccess() {
-	// addStuff();
 	goto(LOGGIN_SUCCESS_ROUTE);
-}
-
-// TODO: remove
-function addStuff() {
-	onMsgToUser(new DMFromServer(78441, 'salut'));
 }
 
 export function storeMap<A, B>(store: Readable<A>, f: (a: A) => B): Readable<B> {
@@ -244,15 +238,16 @@ export async function getUserNow(id: Id): Promise<UserInfo> {
 	return updateUser(id);
 }
 
-export function clearUserCache() {
-	knownUsers.clear();
+export function updateAllUsers() {
+	for (const id of knownUsers.keys()) updateUser(id);
 }
 
 // Avatar
 export async function uploadAvatar(imageDataUrl: string) {
 	socket!.emit(ChatEvent.POST_AVATAR, { imageDataUrl }, (feedback) => {
-		// TODO: change
-		alert(JSON.stringify(feedback));
+		if (!feedback.success) {
+			alert(feedback.errorMessage);
+		}
 	});
 }
 
@@ -364,7 +359,7 @@ function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 		// TODO: remove
 		const myInfo = feedback.result!;
 		myInfo.friendlist.push(78441);
-		writableMyself.update((_) => myInfo);
+		writableMyself.set(myInfo);
 	} else console.error('Could not get my info');
 }
 
@@ -373,7 +368,7 @@ async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserI
 	const user = feedback.result!;
 	let entry = knownUsers.get(user.id);
 	if (entry) {
-		entry.store.update((_) => user);
+		entry.store.set(user);
 	} else {
 		knownUsers.set(user.id, {
 			data: user,

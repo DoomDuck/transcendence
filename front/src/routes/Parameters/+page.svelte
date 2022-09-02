@@ -2,7 +2,7 @@
 	import { myself, disconnect } from '$lib/state';
 	import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
-	export let blocked = [{ profilePic: 'cars.jpeg', name: 'Flash McQueen' }];
+	import UserMiniature from '$lib/UserMiniature.svelte';
 </script>
 
 <div id="app">
@@ -10,12 +10,13 @@
 	<div id="blockedProfiles">
 		<div class="blocked">
 			<div class="blockedInfos">
-				{#each blocked as { profilePic, name }}
-					<img class="roundedImage" src={profilePic} alt="contact" />
-					<h3>{name}</h3>
+				{#each $myself.blocked as userId}
+					<div>
+						<UserMiniature {userId} />
+						<button> unblock </button>
+					</div>
 				{/each}
 			</div>
-			<button> unblock </button>
 		</div>
 	</div>
 	<div id="lastParams">
