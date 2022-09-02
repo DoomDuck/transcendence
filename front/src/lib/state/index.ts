@@ -446,16 +446,6 @@ export function sendUnbanUser(message: UnbanUserToServer) {
 	});
 }
 
-export function sendInviteToChannel(message: InviteChannelToServer) {
-	socket!.emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			updateChannel(message.channel);
-		} else {
-			alert(`error: ${feedback.errorMessage}`);
-		}
-	});
-}
-
 export async function sendGetLeaderboard(): Promise<LeaderboardItemDto[]> {
 	return new Promise((resolve) => {
 		socket!.emit(ChatEvent.GET_LEADERBOARD, (feedback) => {

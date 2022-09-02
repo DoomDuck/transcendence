@@ -122,16 +122,20 @@ export class UserService {
     socket: Socket,
   ): Promise<RequestFeedbackDto<LeaderboardItemDto[]>> {
     const userDb = await this.findOneDbBySocket(socket);
-    if(!userDb)
-     return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-    this.logger.log(`get leaderboard ${JSON.stringify(this.leaderbordTransformator(
-      await this.usersRepository.find({
-        order: {
-          score: 'DESC', // "ASC"
-        },
-      }),
-    ))}`)
-     return {
+    if (!userDb)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    this.logger.log(
+      `get leaderboard ${JSON.stringify(
+        this.leaderbordTransformator(
+          await this.usersRepository.find({
+            order: {
+              score: 'DESC', // "ASC"
+            },
+          }),
+        ),
+      )}`,
+    );
+    return {
       success: true,
       result: this.leaderbordTransformator(
         await this.usersRepository.find({
@@ -144,11 +148,13 @@ export class UserService {
   }
 
   async getRanking(user: User): Promise<number> {
-    return ((await this.usersRepository.find({
-      order: {
-        score: 'DESC', // "ASC"
-      },
-    })).indexOf(user))
+    return (
+      await this.usersRepository.find({
+        order: {
+          score: 'DESC', // "ASC"
+        },
+      })
+    ).indexOf(user);
   }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],

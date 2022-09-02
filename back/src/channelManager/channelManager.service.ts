@@ -219,10 +219,8 @@ export class ChannelManagerService {
     this.channelRepository.update(channel.name!, { admin: channel.admin });
     return new ChatFeedbackDto(true);
   }
-  async allChan()
-  {
-    FileWatcherEventKind
-
+  async allChan() {
+    FileWatcherEventKind;
   }
   msgToChannelVerif(
     channel: Channel | null,
@@ -273,13 +271,15 @@ export class ChannelManagerService {
     }
   }
   async getPublicProtectedChan() {
-    const chanDb= await this.channelRepository.find({
+    const chanDb = await this.channelRepository.find({
       where: { category: ChannelCategory.PUBLIC | ChannelCategory.PROTECTED },
     });
-    let result : ChannelSummary[] = [];
-     chanDb.forEach(chan => result.push(new ChannelSummary(chan.name,chan.category)))
-      return result;
-    }
+    let result: ChannelSummary[] = [];
+    chanDb.forEach((chan) =>
+      result.push(new ChannelSummary(chan.name, chan.category)),
+    );
+    return result;
+  }
   unBanUser(user: ActiveUser | User, channel: Channel): ChatFeedbackDto {
     const banInfo = channel.banned.find((banned) => user.id === banned.userId);
     if (banInfo === undefined)
