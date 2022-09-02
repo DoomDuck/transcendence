@@ -2,25 +2,35 @@
 	import Modal from '$lib/Modal.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelDetails from './ChannelDetails.svelte';
-	import { getChannelInfo, treatChannelInfo } from './ts/channels';
-	import type { ChannelDetailsData } from './ts/channels';
-	import { myself } from '$lib/state';
+	import { getChannel, myself } from '$lib/state';
+	import { ChannelCategory } from 'backFrontCommon';
 
 	export let channel: string;
 
+	const channelStore = getChannel(channel);
 	let showDetails = false;
-	let channelDetailsData: ChannelDetailsData;
+
+	function channelImageFromType(category: ChannelCategory) {
+		switch (category) {
+			case ChannelCategory.PUBLIC:
+				return 'group_conv_icon.png';
+			case ChannelCategory.PROTECTED:
+				return 'key.png';
+			case ChannelCategory.PRIVATE:
+				return 'hidden.png';
+		}
+	}
+
 	function click() {
-		getChannelInfo(channel)
-			.then((info) => treatChannelInfo($myself.id, info))
-			.then((chanData) => {
-				channelDetailsData = chanData;
-				showDetails = true;
-			});
+		showDetails = true;
 	}
 </script>
 
-<AvatarIcon type={'channel'} imageURL="group_conv_icon.png" on:clickOnImage={click} />
+<AvatarIcon
+	type={'channel'}
+	imageURL={channelImageFromType($channelStore.channelType)}
+	on:clickOnImage={click}
+/>
 <Modal bind:show={showDetails}>
-	<ChannelDetails {channel} {channelDetailsData} />
+	<ChannelDetails {channel} channelInfo={$channelStore} />
 </Modal>
