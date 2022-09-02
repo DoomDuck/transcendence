@@ -30,7 +30,8 @@ import {
 	SetNewAdminToServer,
 	UnblockUserToServer,
 	ChannelInfo,
-	ChannelCategory
+	ChannelCategory,
+	UnbanUserToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -228,6 +229,8 @@ export function updateMyself() {
 	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
 }
 
+export function getMyself() {}
+
 function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 	if (feedback.success) {
 		// TODO: remove
@@ -401,7 +404,10 @@ export function sendChangeName(message: SetUsernameToServer) {
 
 export function sendLeaveChannel(message: LeaveChannelToServer) {
 	socket!.emit(ChatEvent.LEAVE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			channelConvs.update((_) => _.delete(message.channel));
+			closeAllModals();
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -409,7 +415,10 @@ export function sendLeaveChannel(message: LeaveChannelToServer) {
 
 export function sendDeleteChannel(message: DeleteChannelToServer) {
 	socket!.emit(ChatEvent.DELETE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			channelConvs.update((_) => _.delete(message.channel));
+			closeAllModals();
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -417,6 +426,14 @@ export function sendDeleteChannel(message: DeleteChannelToServer) {
 
 export function sendSetNewAdminToServer(message: SetNewAdminToServer) {
 	socket!.emit(ChatEvent.SET_NEW_ADMIN, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendUnbanUser(message: UnbanUserToServer) {
+	socket!.emit(ChatEvent.UNBAN_USER, message, (feedback: ChatFeedbackDto) => {
 		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}

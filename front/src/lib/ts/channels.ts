@@ -42,24 +42,6 @@ export async function getChannelInfo(channel: string): Promise<ChannelInfo> {
 // 	});
 // }
 
-export type ChannelDetailsData = {
-	me?: ChannelUser;
-	others: ChannelUser[];
-};
-
-export function treatChannelInfo(myId: number, channelInfo: ChannelInfo): ChannelDetailsData {
-	const i = channelInfo.users.findIndex((user) => user.id == myId);
-	let others: ChannelUser[];
-	let me: ChannelUser | undefined;
-	if (i != -1) {
-		me = channelInfo.users[i];
-		others = channelInfo.users.filter((_, j) => j != i);
-	} else {
-		others = [...channelInfo.users];
-	}
-	return { me, others };
-}
-
 export function banUser(dto: BanUserToServer) {
 	socket!.emit(ChatEvent.BAN_USER, dto, (feedback) => {
 		if (!feedback.success) {

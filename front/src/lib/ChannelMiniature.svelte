@@ -2,8 +2,6 @@
 	import Modal from '$lib/Modal.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelDetails from './ChannelDetails.svelte';
-	import { getChannelInfo, treatChannelInfo } from './ts/channels';
-	import type { ChannelDetailsData } from './ts/channels';
 	import { getChannel, myself } from '$lib/state';
 	import { ChannelCategory } from 'backFrontCommon';
 
@@ -11,7 +9,6 @@
 
 	const channelStore = getChannel(channel);
 	let showDetails = false;
-	let channelDetailsData: ChannelDetailsData;
 
 	function channelImageFromType(category: ChannelCategory) {
 		switch (category) {
@@ -25,8 +22,6 @@
 	}
 
 	function click() {
-		channelDetailsData = treatChannelInfo($myself.id, $channelStore);
-		console.log(JSON.stringify(channelDetailsData));
 		showDetails = true;
 	}
 </script>
@@ -37,5 +32,5 @@
 	on:clickOnImage={click}
 />
 <Modal bind:show={showDetails}>
-	<ChannelDetails {channel} {channelDetailsData} />
+	<ChannelDetails {channel} channelInfo={$channelStore} />
 </Modal>

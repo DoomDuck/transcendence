@@ -1,24 +1,36 @@
 <script lang="ts">
-	import { ChannelRights } from 'backFrontCommon';
+	import { ChannelInfo, ChannelRights, ChannelUser } from 'backFrontCommon';
 	import type { Id } from 'backFrontCommon';
 	import SelectDurationButton from './chat/buttons/SelectDurationButton.svelte';
 	import { banUser, muteUser } from './ts/channels';
-	import type { ChannelDetailsData } from './ts/channels';
 	import UserMiniature from './UserMiniature.svelte';
-	import DeStore from '$lib/DeStore.svelte';
-	import Text from '$lib/Text.svelte';
 	import {
-		getUser,
 		sendDeleteChannel,
 		sendLeaveChannel,
 		sendSetNewAdminToServer,
-		storeMap
+		sendUnbanUser,
+		myself
 	} from '$lib/state';
+	import { beforeUpdate, onMount } from 'svelte';
+	import UserName from './chat/UserName.svelte';
 
 	export let channel: string;
-	export let channelDetailsData: ChannelDetailsData;
-	const me = channelDetailsData.me;
-	const others = channelDetailsData.others;
+	export let channelInfo: ChannelInfo;
+
+	let me: ChannelUser | undefined;
+	let others: ChannelUser[];
+
+	beforeUpdate(() => {
+		const i = channelInfo.users.findIndex((user) => user.id == $myself.id);
+		if (i != -1) {
+			me = channelInfo.users[i];
+			others = channelInfo.users.filter((_, j) => j != i);
+		} else {
+			others = [...channelInfo.users];
+		}
+		console.log(JSON.stringify(others));
+		console.log(JSON.stringify(channelInfo.bannedUsers));
+	});
 
 	function channelRightsString(rights: ChannelRights): string {
 		switch (rights) {
@@ -62,7 +74,7 @@
 		{#each others as user}
 			<div class="channel-details-user">
 				<UserMiniature userId={user.id} />
-				<h5><DeStore component={Text} data={storeMap(getUser(user.id), (u) => u.name)} /></h5>
+				<UserName userId={user.id} />
 				<p>Role: {channelRightsString(user.rights)}</p>
 				{#if user.muted}
 					<p>(muted)</p>
@@ -83,6 +95,17 @@
 			</div>
 		{/each}
 	</div>
+	{#if me?.rights != ChannelRights.ADMIN}
+		<div class="channel-details-users">
+			{#each channelInfo.bannedUsers as userId}
+				<div class="channel-details-user banned">
+					<UserMiniature {userId} />
+					<UserName {userId} />
+					<button on:click={() => sendUnbanUser({ channel, target: userId })}>Unban</button>
+				</div>
+			{/each}
+		</div>
+	{/if}
 	<button id="leave-button" on:click={() => sendLeaveChannel({ channel })}>Leave Channel</button>
 	{#if me?.rights == ChannelRights.OWNER}
 		<button id="delete-button" on:click={() => sendDeleteChannel({ channel })}
@@ -100,6 +123,9 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+	}
+	.banned {
+		opacity: 0.7;
 	}
 	#delete-button {
 		background-color: #a80a2f;

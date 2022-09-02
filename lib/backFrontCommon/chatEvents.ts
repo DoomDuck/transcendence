@@ -58,6 +58,7 @@ export class ChatEvent {
   static readonly BLOCKED_NOTIF = 'blocked notif'
   static readonly UNBLOCK_USER = 'unblock user'
   static readonly GET_BANNED_IN_CHANNEL = "get banned in channel"
+  static readonly UNBAN_USER = "unban user"
 }
 
 export class ChatError {
@@ -433,6 +434,12 @@ export class UnblockUserToServer {
     public target: Id
   ) { }
 }
+export class UnbanUserToServer {
+  constructor(
+    public channel: string,
+    public target: Id
+  ) { }
+}
 
 export class ChatFeedbackDto {
   constructor(
@@ -517,6 +524,5 @@ export interface ClientToServerEvents {
   [ChatEvent.SET_NEW_ADMIN]: (dto: SetNewAdminToServer, callback: FeedbackCallback) => void;
   [ChatEvent.UNBLOCK_USER]: (dto: UnblockUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GET_BANNED_IN_CHANNEL]: (dto: GetBannedListToServer, callback: FeedbackCallbackWithResult<GetBannedListFromServer>) => void;
-
-
+  [ChatEvent.UNBAN_USER]: (dto: UnbanUserToServer, callback: FeedbackCallback) => void;
 }
