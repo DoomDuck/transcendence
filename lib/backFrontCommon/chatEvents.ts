@@ -91,6 +91,7 @@ export class ChatError {
   static readonly YOU_CANT_BLOCK_YOURSELF="you can't be your own friend";
   static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"
   static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
+  static readonly MUST_SPECIFY_PASSWORD = "must specify password";
 }
 
 export class DMFromServer  {

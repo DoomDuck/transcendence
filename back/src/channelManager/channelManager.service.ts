@@ -91,6 +91,8 @@ export class ChannelManagerService {
     this.logger.log(chanInfo.channel);
     this.logger.log(chanInfo.password);
     if (chanInfo.category === ChannelCategory.PROTECTED) {
+      if(!chanInfo.password)
+        return new ChatFeedbackDto(false, ChatError.MUST_SPECIFY_PASSWORD);
       const hash = await bcrypt.hash(chanInfo.password!, 10);
       this.logger.log(`hash = ${hash}`);
       return this.channelRepository.save(
