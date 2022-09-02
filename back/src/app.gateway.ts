@@ -102,11 +102,18 @@ export class AppGateway
     await this.loginService.onTotpUpdate(socket, secret);
     return {}; // Send feedback
   }
-  @SubscribeMessage(LoginEvent.GET_LEADERBOARD)
+  @SubscribeMessage(ChatEvent.GET_LEADERBOARD)
   async getLeaderboard(socket: Socket) {
+    this.logger.debug('dans get leaderboard appgateway')
     return await this.userService.getLeaderboard(socket);
+  
   }
-
+   @SubscribeMessage(GetInfoEvent.GET_CHANNELS_LIST)
+   async getChannelsList(socket: Socket) {
+     return await this.chatService.getChannelsList(socket);
+  
+   }
+ 
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
     this.logger.log('Dans ban User');

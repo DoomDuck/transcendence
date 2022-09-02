@@ -9,6 +9,7 @@ import {
   ChatFeedbackDto,
   RequestFeedbackDto,
   ChannelInfo,
+  ChannelSummary,
   BanUserToServer,
   MuteUserToServer,
   LeaveChannelToServer,
@@ -500,5 +501,11 @@ export class ChatService {
         channel.category,
       ),
     };
+  }
+  async getChannelsList(socket: Socket):Promise<RequestFeedbackDto<ChannelSummary[]>> {
+    const sender = this.userService.findOneActiveBySocket(socket);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+      return{success: true, result: await this.channelManagerService.getPublicProtectedChan()}
   }
 }
