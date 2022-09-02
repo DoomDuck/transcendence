@@ -32,7 +32,8 @@ import {
 	ChannelInfo,
 	ChannelCategory,
 	UnbanUserToServer,
-	InviteChannelToServer
+	InviteChannelToServer,
+	LeaderboardItemDto
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -452,6 +453,15 @@ export function sendInviteToChannel(message: InviteChannelToServer) {
 		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
+	});
+}
+
+export async function sendGetLeaderboard(): Promise<LeaderboardItemDto[]> {
+	return new Promise((resolve) => {
+		socket!.emit(ChatEvent.GET_LEADERBOARD, (feedback) => {
+			if (feedback.success) resolve(feedback.result!);
+			else console.error('cannot get leaderboard');
+		});
 	});
 }
 

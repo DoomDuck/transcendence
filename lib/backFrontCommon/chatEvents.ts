@@ -19,6 +19,7 @@ export class GetInfoEvent{
   static readonly USER_MATCH = "user match info";
   static readonly ALL_MATCH = "all match info";
   static readonly IS_IN_GAME = "is in game";
+  static readonly GET_CHANNELS_LIST = "get channels list";
 }
 
 export class ChatEvent {
@@ -441,6 +442,12 @@ export class UnbanUserToServer {
     public target: Id
   ) { }
 }
+export class ChannelSummary {
+  constructor(
+    public channel: string,
+    public category: ChannelCategory,
+  ) { }
+}
 
 export class ChatFeedbackDto {
   constructor(
@@ -496,6 +503,7 @@ export interface ClientToServerEvents {
   [GetInfoEvent.MY_INFO]: (callback: FeedbackCallbackWithResult<MyInfo>) => void;
   [GetInfoEvent.USER_INFO]: (dto: GetUser, callback: FeedbackCallbackWithResult<UserInfo>) => void;
   [GetInfoEvent.IS_IN_GAME]: (dto: IsInGameToServer, callback: FeedbackCallbackWithResult<boolean>) => void;
+  [GetInfoEvent.GET_CHANNELS_LIST]: (callback: FeedbackCallbackWithResult<ChannelSummary[]>) => void;
 
   // Chat
   [ChatEvent.MSG_TO_USER]: (dto: DMToServer, callback: FeedbackCallback) => void;

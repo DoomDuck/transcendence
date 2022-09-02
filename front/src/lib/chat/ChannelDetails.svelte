@@ -54,6 +54,12 @@
 			duration
 		});
 	}
+	// function onUnMuteUser(userId: Id) {
+	//   unMuteUser({
+	//     channel,
+	//     targtet: userId
+	//   });
+	// }
 	function onBanUser(userId: Id, duration: number) {
 		banUser({
 			channel,
@@ -68,6 +74,7 @@
 </script>
 
 <div id="channel-details">
+	<!-- Myself -->
 	{#if me}
 		<p>You are in this channel</p>
 		<p>You are {channelRightsString(me.rights)}</p>
@@ -78,19 +85,25 @@
 		<p>You are not in this channel</p>
 	{/if}
 	<br />
+
+	<!-- Other users -->
 	<div class="channel-details-users">
 		{#each others as user}
 			<div class="channel-details-user">
+				<!-- User Info -->
 				<UserMiniature userId={user.id} />
 				<UserName userId={user.id} />
 				<p>Role: {channelRightsString(user.rights)}</p>
-				{#if user.muted}
-					<p>(muted)</p>
-				{/if}
+
+				<!-- Actions on User -->
 				{#if me?.rights != ChannelRights.USER}
-					<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
-						>Mute</SelectDurationButton
-					>
+					{#if !user.muted}
+						<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
+							>Mute</SelectDurationButton
+						>
+					{:else}
+						<button on:click={() => onUnMuteUser(user.id)} />
+					{/if}
 					<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
 						>Ban</SelectDurationButton
 					>
@@ -103,7 +116,9 @@
 			</div>
 		{/each}
 	</div>
-	{#if me?.rights != ChannelRights.ADMIN}
+
+	<!-- Banned Users -->
+	{#if me?.rights != ChannelRights.USER}
 		<div class="channel-details-users">
 			{#each channelInfo.bannedUsers as userId}
 				<div class="channel-details-user banned">
@@ -114,6 +129,8 @@
 			{/each}
 		</div>
 	{/if}
+
+	<!-- Actions on Channel -->
 	{#if channelInfo.channelType == ChannelCategory.PRIVATE}
 		<div id="invite-user">
 			<span id="invite-user-text">Invite user</span>
