@@ -9,9 +9,10 @@
 		sendLeaveChannel,
 		sendSetNewAdminToServer,
 		sendUnbanUser,
-		myself
+		myself,
+		updateChannel
 	} from '$lib/state';
-	import { beforeUpdate, onMount } from 'svelte';
+	import { beforeUpdate } from 'svelte';
 	import UserName from './chat/UserName.svelte';
 
 	export let channel: string;
@@ -28,8 +29,6 @@
 		} else {
 			others = [...channelInfo.users];
 		}
-		console.log(JSON.stringify(others));
-		console.log(JSON.stringify(channelInfo.bannedUsers));
 	});
 
 	function channelRightsString(rights: ChannelRights): string {

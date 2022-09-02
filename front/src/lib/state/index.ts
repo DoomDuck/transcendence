@@ -300,6 +300,10 @@ export async function updateChannel(channel: string): Promise<ChannelInfo> {
 	);
 }
 
+export function updateAllChannels() {
+	for (const channel of knownChannels.keys()) updateChannel(channel);
+}
+
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
 	if (!feedback.success) throw new Error('Could not get user info');
 	const info = feedback.result!;

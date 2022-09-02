@@ -106,9 +106,12 @@ export class AppGateway
   }
 
   @SubscribeMessage(ChatEvent.LEAVE_CHANNEL)
-  async handleLeaveChannel(clientSocket: Socket, leaveInfo: LeaveChannelToServer) {
+  async handleLeaveChannel(
+    clientSocket: Socket,
+    leaveInfo: LeaveChannelToServer,
+  ) {
     this.logger.log('Dans ban User');
-    return await this.chatService.handleLeaveChannel(clientSocket,leaveInfo );
+    return await this.chatService.handleLeaveChannel(clientSocket, leaveInfo);
   }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)

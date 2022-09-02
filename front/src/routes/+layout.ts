@@ -1,6 +1,12 @@
 import { goto } from '$app/navigation';
 import { browser } from '$app/env';
-import { forceRoute, isBlocked, LOGGIN_SUCCESS_ROUTE } from '$lib/state';
+import {
+	forceRoute,
+	isBlocked,
+	LOGGIN_SUCCESS_ROUTE,
+	updateAllChannels,
+	updateChannel
+} from '$lib/state';
 import { redirect } from '@sveltejs/kit';
 import type { LoadEvent } from '@sveltejs/kit';
 import { connected, updateMyself, updateAllUsers } from '$lib/state';
@@ -15,6 +21,7 @@ export function load({ url }: LoadEvent) {
 	if (connected()) {
 		updateMyself();
 		updateAllUsers();
+		updateAllChannels();
 	}
 	const route = forceRoute();
 	if (route && route !== url.pathname) {

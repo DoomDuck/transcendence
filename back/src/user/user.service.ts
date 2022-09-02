@@ -434,7 +434,7 @@ export class UserService {
       );
     const dbUser = await this.findOneDb(activeUser.id);
     if (!dbUser) return { success: false };
-     this.channelManagerService.leaveChannel(channel, activeUser);
+    this.channelManagerService.leaveChannel(channel, activeUser);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
     dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });

@@ -141,8 +141,7 @@ export class ChannelManagerService {
     channel.member.splice(channel.member.indexOf(user.id), 1);
     if (this.isAdmin(user, channel))
       channel.admin.splice(channel.admin.indexOf(user.id), 1);
-    if(channel.member.length === 0)
-    this.deleteChannel(channel);
+    if (channel.member.length === 0) this.deleteChannel(channel);
     this.channelRepository.update(channel.name!, {
       member: channel.member,
       admin: channel.admin,
