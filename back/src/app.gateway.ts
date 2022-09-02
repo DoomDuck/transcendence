@@ -11,6 +11,7 @@ import {
   RequestFeedbackDto,
   PostAvatar,
   MatchInfoToServer,
+  LeaveChannelToServer,
   UserInfoToServer,
   ChannelUser,
   GetBannedListToServer,
@@ -102,6 +103,12 @@ export class AppGateway
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
     this.logger.log('Dans ban User');
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);
+  }
+
+  @SubscribeMessage(ChatEvent.LEAVE_CHANNEL)
+  async handleLeaveChannel(clientSocket: Socket, leaveInfo: LeaveChannelToServer) {
+    this.logger.log('Dans ban User');
+    return await this.chatService.handleLeaveChannel(clientSocket,leaveInfo );
   }
 
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)

@@ -11,12 +11,14 @@ import {
   ChannelInfo,
   BanUserToServer,
   MuteUserToServer,
+  LeaveChannelToServer,
   DMToServer,
   CMToServer,
   CreateChannelToServer,
   JoinChannelToServer,
   BlockUserToServer,
   FriendInviteToServer,
+  ChannelCategory,
   ChatEvent,
   ChatError,
   Server,
@@ -89,7 +91,8 @@ export class ChatService {
         false,
         ChatError.CHANNEL_ALREADY_EXISTS,
       );
-
+      if(!chanInfo.password && chanInfo.category === ChannelCategory.PROTECTED)
+      return new ChatFeedbackDto(false, ChatError.MUST_SPECIFY_PASSWORD);
     const newChan = await this.channelManagerService.createChan(
       tempUser,
       chanInfo,
@@ -114,8 +117,6 @@ export class ChatService {
     );
 
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
-    this.logger.log(`sender: ${tempSender!.name}`);
-    this.logger.log(`channel: ${tempChannel!.name}`);
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
@@ -399,6 +400,18 @@ export class ChatService {
     });
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
+  }
+  async handleLeaveChannel(clientSocket: Socket, leaveInfo: LeaveChannelToServer) {
+
+    const sender = this.userService.findOneActiveBySocket(clientSocket);
+    if (!sender)
+    return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  const channel = await this.channelManagerService.findChanByName(
+    leaveInfo.channel,
+  );
+  if (!channel)
+    return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+    return this.userService.leaveChannel(sender,channel);
   }
   async handleGetChannelInfo(
     socket: Socket,

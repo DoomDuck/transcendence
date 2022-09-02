@@ -92,8 +92,6 @@ export class ChannelManagerService {
     this.logger.log(chanInfo.channel);
     this.logger.log(chanInfo.password);
     if (chanInfo.category === ChannelCategory.PROTECTED) {
-      if(!chanInfo.password)
-        return new ChatFeedbackDto(false, ChatError.MUST_SPECIFY_PASSWORD);
       const hash = await bcrypt.hash(chanInfo.password!, 10);
       this.logger.log(`hash = ${hash}`);
       return this.channelRepository.save(
@@ -143,6 +141,8 @@ export class ChannelManagerService {
     channel.member.splice(channel.member.indexOf(user.id), 1);
     if (this.isAdmin(user, channel))
       channel.admin.splice(channel.admin.indexOf(user.id), 1);
+    if(channel.member.length === 0)
+    this.deleteChannel(channel);
     this.channelRepository.update(channel.name!, {
       member: channel.member,
       admin: channel.admin,
