@@ -5,8 +5,15 @@
 	import { banUser, muteUser } from './ts/channels';
 	import type { ChannelDetailsData } from './ts/channels';
 	import UserMiniature from './UserMiniature.svelte';
-	import PendingText from './PendingText.svelte';
-	import { getUser } from '$lib/state';
+	import DeStore from '$lib/DeStore.svelte';
+	import Text from '$lib/Text.svelte';
+	import {
+		getUser,
+		sendDeleteChannel,
+		sendLeaveChannel,
+		sendSetNewAdminToServer,
+		storeMap
+	} from '$lib/state';
 
 	export let channel: string;
 	export let channelDetailsData: ChannelDetailsData;
@@ -55,23 +62,33 @@
 		{#each others as user}
 			<div class="channel-details-user">
 				<UserMiniature userId={user.id} />
-				<PendingText tag="p" text={getUser(user.id).then((u) => u.name)} />
+				<h5><DeStore component={Text} data={storeMap(getUser(user.id), (u) => u.name)} /></h5>
 				<p>Role: {channelRightsString(user.rights)}</p>
 				{#if user.muted}
 					<p>(muted)</p>
 				{/if}
-				<!-- TODO: do not show if user is not admin -->
-				<!-- {#if me?.rights != ChannelRights.USER} -->
-				<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
-					>Mute</SelectDurationButton
-				>
-				<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
-					>Ban</SelectDurationButton
-				>
-				<!-- {/if} -->
+				{#if me?.rights != ChannelRights.USER}
+					<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
+						>Mute</SelectDurationButton
+					>
+					<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+						>Ban</SelectDurationButton
+					>
+					{#if user.rights == ChannelRights.USER}
+						<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}
+							>Set Admin</button
+						>
+					{/if}
+				{/if}
 			</div>
 		{/each}
 	</div>
+	<button id="leave-button" on:click={() => sendLeaveChannel({ channel })}>Leave Channel</button>
+	{#if me?.rights == ChannelRights.OWNER}
+		<button id="delete-button" on:click={() => sendDeleteChannel({ channel })}
+			>Delete channel</button
+		>
+	{/if}
 </div>
 
 <style>
@@ -83,5 +100,8 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
+	}
+	#delete-button {
+		background-color: #a80a2f;
 	}
 </style>

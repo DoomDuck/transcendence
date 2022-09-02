@@ -10,6 +10,7 @@ import type { ErrorCallback, FinishCallback } from "../common/utils";
  */
 export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
   // ballOutAlreadyEmitted: boolean = false;
+  playerId?: number;
 
   constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
     super(socket, onFinish, onError);
@@ -29,6 +30,7 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
       (playerId: number, ready: () => void) => {
         setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
         // this.setupBallOutOutgoingEvent(playerId);
+        this.playerId = playerId;
         ready();
       }
     );

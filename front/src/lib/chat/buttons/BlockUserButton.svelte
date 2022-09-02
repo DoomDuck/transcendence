@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Modal from '$lib/Modal.svelte';
+
 	import type { UserInfo } from 'backFrontCommon';
 	import BlockUserModal from '../modals/BlockUserModal.svelte';
 
@@ -15,4 +17,6 @@
 	on:click={() => (show = true)}
 />
 
-<BlockUserModal bind:show {user} />
+<Modal bind:show>
+	<BlockUserModal bind:show {user} />
+</Modal>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
 	import { sendJoinChannel } from '$lib/state';
 	export let show = false;
 
@@ -19,19 +18,17 @@
 	}
 </script>
 
-<Modal bind:show>
-	<form id="joinChannel" on:submit|preventDefault={handleSubmit}>
-		<input
-			id="channelName"
-			placeholder="Channel Name"
-			bind:value={channelName}
-			on:blur={handleBlur}
-			required
-		/>
-		<input bind:value={password} placeholder="Optionnal password" />
-		<input type="submit" value="Join channel" />
-	</form>
-</Modal>
+<form id="joinChannel" on:submit|preventDefault={handleSubmit}>
+	<input
+		id="channelName"
+		placeholder="Channel Name"
+		bind:value={channelName}
+		on:blur={handleBlur}
+		required
+	/>
+	<input bind:value={password} placeholder="Optionnal password" />
+	<input type="submit" value="Join channel" />
+</form>
 
 <style>
 	#joinChannel {

@@ -2,7 +2,6 @@
 	import Switch from '$lib/Switch.svelte';
 	import type { UserInfo } from 'backFrontCommon';
 	import * as gameInvite from '$lib/ts/gameInvite';
-	import Modal from '$lib/Modal.svelte';
 
 	export let show = false;
 	export let user: UserInfo;
@@ -15,14 +14,12 @@
 	}
 </script>
 
-<Modal bind:show>
-	<div id="invitation">
-		<Switch options={['Classic Mode', 'WeIrD Mode']} bind:mode />
-		<button on:click={sendInvite}>
-			Invit {user.name} to play
-		</button>
-	</div>
-</Modal>
+<div id="invitation">
+	<Switch options={['Classic Mode', 'WeIrD Mode']} bind:mode />
+	<button on:click={sendInvite}>
+		Invit {user.name} to play
+	</button>
+</div>
 
 <style>
 	#invitation {

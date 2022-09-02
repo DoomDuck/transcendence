@@ -154,10 +154,10 @@ export class GameManagerService {
         errorMessage: ChatError.USER_OFFLINE,
       };
     }
-    if (target.id === source.id) {
+    if (target.id == source.id) {
       return {
         success: false,
-        errorMessage: ChatError.YOU_CANT_PLAY_WITH_YOURSELF,
+        errorMessage: ChatError.CANNOT_INVITE_YOURSELF,
       };
     }
     this.addPendingGameInvite(sourceSocket, source.id, target, dto.classic);

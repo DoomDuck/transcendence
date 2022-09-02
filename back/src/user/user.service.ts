@@ -423,21 +423,20 @@ export class UserService {
     logger.log('end');
   }
 
-  async leaveChannel(activeUser: ActiveUser, channel: Channel): Promise<ChatFeedbackDto> {
+  async leaveChannel(
+    activeUser: ActiveUser,
+    channel: Channel,
+  ): Promise<ChatFeedbackDto> {
     if (channel.member.find((id) => id === activeUser.id) === undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.NOT_IN_CHANNEL,
       );
     const dbUser = await this.findOneDb(activeUser.id);
-      if(!dbUser)
-      return {success:false}
+    if (!dbUser) return { success: false };
     this.channelManagerService.leaveChannel(channel, activeUser);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
-    dbUser.channel.splice(
-      dbUser.channel.indexOf(channel.name),
-      1,
-    );
+    dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);
   }

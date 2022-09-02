@@ -1,5 +1,5 @@
 import type { GameInviteToServer, Id } from 'backFrontCommon';
-import { refuseGame, acceptGame, cancelGame, getUser, sendGameInvite } from '$lib/state';
+import { refuseGame, acceptGame, cancelGame, getUserNow, sendGameInvite } from '$lib/state';
 import { PopupCategory, popups, popupMethods } from './popups';
 import type { CanBePopup } from './popups';
 import type { GameInviteFromServer } from 'backFrontCommon/chatEvents';
@@ -16,7 +16,7 @@ export class ReceivedGameInvite implements CanBePopup {
 
 	constructor(public dto: GameInviteFromServer) {
 		this.text = '';
-		getUser(dto.source).then(({ name }) => {
+		getUserNow(dto.source).then(({ name }) => {
 			if (this.valid) {
 				this.text = `You have been invited by ${name} to play (${_modeString(dto.classic)})`;
 				popups.update((_) => _);
@@ -42,7 +42,7 @@ export class ReceivedGameInvite implements CanBePopup {
 	revoke() {
 		this.popupCategory = PopupCategory.ERROR;
 		this.text = 'Invitation cancelled';
-		this.valid = false;
+		// this.valid = false;
 		popups.update((_) => _);
 		setTimeout(() => {
 			popupMethods.removePopup(this);
@@ -56,7 +56,7 @@ export class SentGameInvite implements CanBePopup {
 
 	constructor(public dto: GameInviteToServer) {
 		this.text = '';
-		getUser(dto.target).then(({ name }) => {
+		getUserNow(dto.target).then(({ name }) => {
 			this.text = `You have invited ${name}... (${_modeString(dto.classic)})`;
 			popups.update((_) => _);
 		});

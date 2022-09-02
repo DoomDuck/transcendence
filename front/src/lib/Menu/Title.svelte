@@ -1,8 +1,7 @@
 <script lang="ts">
-	import Text from '$lib/Text.svelte';
 </script>
 
-<Text><h1><slot /></h1></Text>
+<h1><slot /></h1>
 
 <style>
 	h1 {

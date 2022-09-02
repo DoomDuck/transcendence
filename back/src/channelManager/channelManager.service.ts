@@ -38,7 +38,7 @@ export class ChannelManagerService {
     else return false;
   }
 
-  isAdmin(user: ActiveUser | User , channel: Channel): boolean {
+  isAdmin(user: ActiveUser | User, channel: Channel): boolean {
     if (channel.admin.find((users) => user.id === users) != undefined)
       return true;
     else return false;
@@ -47,8 +47,8 @@ export class ChannelManagerService {
     const banInfo = channel.banned.find(
       (bannedList) => bannedList.userId === user.id,
     );
-    this.logger.debug(`ban list : ${JSON.stringify(channel)}`)
-    this.logger.debug(`ban1 list : ${JSON.stringify(channel.banned)}`)
+    this.logger.debug(`ban list : ${JSON.stringify(channel)}`);
+    this.logger.debug(`ban1 list : ${JSON.stringify(channel.banned)}`);
     const newDate = new Date();
     if (banInfo === undefined) return false;
     else {
@@ -63,7 +63,7 @@ export class ChannelManagerService {
       }
     }
   }
-  isMuted(user: ActiveUser| User, channel: Channel): boolean {
+  isMuted(user: ActiveUser | User, channel: Channel): boolean {
     const muteInfo = channel.muted.find(
       (mutedList) => mutedList.userId === user.id,
     );
@@ -78,7 +78,7 @@ export class ChannelManagerService {
       }
     }
   }
-  isMember(user: ActiveUser |User , channel: Channel): boolean {
+  isMember(user: ActiveUser | User, channel: Channel): boolean {
     if (channel.member.find((users) => user.id === users) != undefined)
       return true;
     else return false;
@@ -224,13 +224,13 @@ export class ChannelManagerService {
     if (!channel)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_NOT_FOUND);
     if (!sender) return new ChatFeedbackDto(false, ChatError.U_DO_NOT_EXIST);
-    if ((channel.member.find((id) => id === sender.id))===undefined)
+    if (channel.member.find((id) => id === sender.id) === undefined)
       return new ChatFeedbackDto(false, ChatError.NOT_IN_CHANNEL);
     if (this.isMuted(sender, channel))
       return new ChatFeedbackDto(false, ChatError.YOU_ARE_MUTED);
-      if (this.isBanned(sender, channel))
+    if (this.isBanned(sender, channel))
       return new ChatFeedbackDto(false, ChatError.YOU_ARE_BANNED);
-    return {success:true};
+    return { success: true };
   }
 
   banUser(
@@ -262,7 +262,7 @@ export class ChannelManagerService {
     }
   }
 
-  unBanUser(user: ActiveUser |User, channel: Channel): ChatFeedbackDto {
+  unBanUser(user: ActiveUser | User, channel: Channel): ChatFeedbackDto {
     const banInfo = channel.banned.find((banned) => user.id === banned.userId);
     if (banInfo === undefined)
       return new ChatFeedbackDto(false, ChatError.NOT_BANNED);
@@ -272,7 +272,7 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(true);
     }
   }
-  unMuteUser(user: ActiveUser | User , channel: Channel): ChatFeedbackDto {
+  unMuteUser(user: ActiveUser | User, channel: Channel): ChatFeedbackDto {
     const muteInfo = channel.muted.find((muted) => user.id === muted.userId);
     if (muteInfo === undefined)
       return new ChatFeedbackDto(false, ChatError.NOT_MUTED);
@@ -333,30 +333,29 @@ export class ChannelManagerService {
   deleteChannel(channel: Channel) {
     this.channelRepository.delete(channel.name);
   }
-  ChannelUserTransformator(user:User, channel:Channel):ChannelUser
-  {
-    if(this.isCreator(user,channel))
+  ChannelUserTransformator(user: User, channel: Channel): ChannelUser {
+    if (this.isCreator(user, channel))
       return {
-            id : user.id,
-             rights : ChannelRights.OWNER,
-             muted : false
-      }
-    if(this.isAdmin(user,channel))
+        id: user.id,
+        rights: ChannelRights.OWNER,
+        muted: false,
+      };
+    if (this.isAdmin(user, channel))
       return {
-        id : user.id,
-         rights : ChannelRights.ADMIN,
-         muted : false
-     }
-    if(this.isMuted(user,channel))
+        id: user.id,
+        rights: ChannelRights.ADMIN,
+        muted: false,
+      };
+    if (this.isMuted(user, channel))
       return {
-        id : user.id,
-         rights : ChannelRights.USER,
-         muted : true
-    }
-  return {
-      id : user.id,
-    rights : ChannelRights.USER,
-     muted : false
-  }
+        id: user.id,
+        rights: ChannelRights.USER,
+        muted: true,
+      };
+    return {
+      id: user.id,
+      rights: ChannelRights.USER,
+      muted: false,
+    };
   }
 }

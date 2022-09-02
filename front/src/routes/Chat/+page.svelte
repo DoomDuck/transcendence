@@ -4,7 +4,12 @@
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { myInfo } from '$lib/state';
+	import { myself } from '$lib/state';
+	import { channelConvs } from '$lib/ts/chatUtils';
+
+	$myself.channels.forEach((channel) => {
+		$channelConvs.create(channel);
+	});
 </script>
 
 <div id="chat">
@@ -13,12 +18,14 @@
 		<div id="options">
 			<CreateChannelButton />
 			<JoinChannelButton />
-			<SendNewMessageButton />
+			<SendNewMessageButton>
+				<img id="btn-new-message" src="pencil.png" width="40" height="40" alt="write msg" />
+			</SendNewMessageButton>
 		</div>
 	</div>
 
 	<div id="mainContainer">
-		<OnlineFriends friends={$myInfo.friendlist} />
+		<OnlineFriends friends={$myself.friendlist} />
 		<br />
 		<ConversationLists />
 	</div>
@@ -68,5 +75,8 @@
 		line-height: 300%;
 		-webkit-text-stroke: 2px #00bfff;
 		font-size: 3em;
+	}
+	#btn-new-message {
+		float: right;
 	}
 </style>

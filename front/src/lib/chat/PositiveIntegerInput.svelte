@@ -1,13 +1,20 @@
 <script lang="ts">
+	export let value: number = 0;
 	export let placeholder: string;
-	export let content = '';
+	export let invalid = false;
+	let content = '';
+	$: {
+		if (!invalid) value = +content;
+	}
 
 	function handleBlur(_event: FocusEvent) {
+		content = content.trim();
 		if (content != '0') content = content.replace(/^0*/g, '');
 	}
 
 	function handleInput() {
-		content = content.replaceAll(/\D/g, '');
+		invalid = !content.match(/^\s*\d*\s*$/);
+		// content = content.replaceAll(/\D/g, '');
 	}
 </script>
 
@@ -19,9 +26,16 @@
 	on:input={handleInput}
 	required
 />
+{#if invalid}
+	<span id="invalid-id">Input should be a positive integer</span>
+{/if}
 
 <style>
 	input {
 		width: 100%;
+	}
+	#invalid-id {
+		color: red;
+		font-size: 12px;
 	}
 </style>

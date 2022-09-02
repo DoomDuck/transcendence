@@ -18,16 +18,25 @@ import {
 	ChatFeedbackDto,
 	CMToServer,
 	CreateChannelToServer,
+	GetUser,
 	BlockUserToServer,
 	FriendInviteToServer,
-	BanUserFromServer
+	BanUserFromServer,
+	SetUsernameToServer,
+	LeaveChannelToServer,
+	DeleteChannelToServer,
+	ChannelDeletedFromServer,
+	BlockUserFromServer,
+	SetNewAdminToServer,
+	UnblockUserToServer,
+	ChannelInfo
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
-import { readable } from 'svelte/store';
-import type { Readable, Subscriber } from 'svelte/store';
-import { closeLastModalListener } from '$lib/ts/modals';
+import { readable, writable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
+import { closeAllModals, closeLastModalListener, modalCallbackStackRef } from '$lib/ts/modals';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -35,24 +44,25 @@ export const LOGGIN_SUCCESS_ROUTE: string = '/Main';
 
 const LOGGIN_ROUTES = [LOGGIN_ROUTE, LOGGIN_TOTP_ROUTE];
 
-// const USER_INFO_MOCKUP = new UserInfo(
-//     /* id */ 0,
-//     /* name */ 'loading...',
-//     /* win */ 0,
-//     /* loose */ 0,
-//     /* score */ 0,
-//     /* ranking */ 0,
-//     /* avatar */ null,
-//     /* isOnline */ true,
-//     /* inGame */ false,
-//     /* matchHistory */ [],
-// );
+const USER_INFO_MOCKUP = new UserInfo(
+	/* id */ 0,
+	/* name */ 'loading...',
+	/* win */ 0,
+	/* loose */ 0,
+	/* score */ 0,
+	/* ranking */ 0,
+	/* avatar */ null,
+	/* isOnline */ true,
+	/* inGame */ false,
+	/* matchHistory */ []
+);
 
 const MY_INFO_MOKUP = new MyInfo(
 	/* id */ 0,
-	/* name */ 'Loading..',
+	/* name */ 'loading..',
 	/* friendlist */ [],
 	/* blocked */ [],
+	/* channels */ [],
 	/* win */ 0,
 	/* loose */ 0,
 	/* score */ 0,
@@ -62,19 +72,16 @@ const MY_INFO_MOKUP = new MyInfo(
 	/* inGame */ false
 );
 
-let setMyInfo!: Subscriber<MyInfo>;
 let resolveTotpRequired: ((token: string) => void) | null = null;
-let knownUsers = new Map<Id, UserInfo>();
 
 export let gameParams: GameParams | null = null;
 
-export const myInfo: Readable<MyInfo> = readable(MY_INFO_MOKUP, (u) => {
-	if (!setMyInfo) {
-		updateMyInfo();
-		setMyInfo = u;
-	}
+const writableMyself = writable(MY_INFO_MOKUP, () => {
+	updateMyself();
 	return () => {};
 });
+
+export const myself: Readable<MyInfo> = writableMyself;
 
 export let socket: Socket | null = null;
 
@@ -88,59 +95,33 @@ function loggedIn(): boolean {
 
 export function connect(code?: string) {
 	if (connected()) return;
-	// TODO: Decide on method
-	// throw new Error('Allready connected');
 	socket = io('http://localhost:5000/', { auth: { code } });
 	setupHooks(socket);
 }
 
 export function disconnect() {
 	if (!connected()) return;
-	// TODO: keep or remove
-	// throw new Error('Not connected');
 	socket!.disconnect();
 	socket = null;
 	goto(LOGGIN_ROUTE);
 }
 
 function onLoginSuccess() {
-	addStuff();
 	goto(LOGGIN_SUCCESS_ROUTE);
 }
 
-// TODO: remove
-function addStuff() {
-	// onMsgToUser(new DMFromServer(78441, 'salut'));
-	// onMsgToChannel(new
-	// addMessage(
-	// 	{
-	// 		sender: -1,
-	// 		isMe: true,
-	// 		content: 'Salut,\nJe crée un groupe'
-	// 	},
-	// 	'Un groupe de gens'
-	// );
-	// channelConvs.addMessage(
-	// 	{
-	// 		sender: 1,
-	// 		isMe: false,
-	// 		content: 'Pas intéressé'
-	// 	},
-	// 	'Un groupe de gens'
-	// );
-	// channelConvs.addMessage(
-	// 	{
-	// 		sender: 2,
-	// 		isMe: false,
-	// 		content: 'Moi non plus'
-	// 	},
-	// 	'Un groupe de gens'
-	// );
+export function storeMap<A, B>(store: Readable<A>, f: (a: A) => B): Readable<B> {
+	return readable<B>(undefined, (setB) => store.subscribe((a) => setB(f(a))));
 }
 
 function onLoginFailure() {
 	disconnect();
 	goto(LOGGIN_ROUTE);
+}
+
+export function redirectHome() {
+	if (connected()) goto('/Main');
+	else goto('/');
 }
 
 function setupHooks(socket: Socket) {
@@ -158,6 +139,8 @@ function setupHooks(socket: Socket) {
 	socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 	socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
 	socket.on(ChatEvent.BANNED_NOTIF, onBannedNotif);
+	socket.on(ChatEvent.CHANNEL_DELETED_NOTIF, onChannelDeletedNotif);
+	socket.on(ChatEvent.BLOCKED_NOTIF, onBlockedNotif);
 
 	window.addEventListener('keydown', closeLastModalListener);
 
@@ -178,21 +161,23 @@ export function sendTotpToken(token: string) {
 }
 
 export function disableTotp() {
-	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMyInfo);
+	socket!.emit(LoginEvent.TOTP_UPDATE, null, updateMyself);
 }
 
 export function enableTotp(token: string) {
-	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyInfo);
+	socket!.emit(LoginEvent.TOTP_UPDATE, token, updateMyself);
 }
 
 // Update
-export function updateMyInfo() {
-	socket!.emit(GetInfoEvent.MY_INFO, onMyInfoResult);
+export function updateMyself() {
+	socket!.emit(GetInfoEvent.MY_INFO, onMyInfo);
 }
 
-export function updateUserInfo() {
-	// TODO
-	// socket!.emit(GetInfoEvent.USER_INFO, onMyInfoResult);
+// Users
+export async function updateUser(id: Id): Promise<UserInfo> {
+	return new Promise((r) =>
+		socket!.emit(GetInfoEvent.USER_INFO, new GetUser(id), (info) => r(onUserInfo(info)))
+	);
 }
 
 // Game
@@ -244,24 +229,33 @@ export function observeGame(id: Id) {
 }
 
 // Users
-export async function getUser(id: Id): Promise<UserInfo> {
-	const user = knownUsers.get(id);
-	if (user) return user;
-	return new Promise((r) =>
-		socket!.emit(GetInfoEvent.USER_INFO, { target: id }, (feedback) => {
-			if (!feedback.success) throw new Error(`Could not fetch user info ${feedback.errorMessage}`);
-			const user = feedback.result!;
-			knownUsers.set(id, user);
-			r(user);
-		})
-	);
+
+const knownUsers = new Map<Id, { data?: UserInfo; store: Writable<UserInfo> }>();
+export function getUser(id: Id): Readable<UserInfo> {
+	const entry = knownUsers.get(id);
+	if (entry) return entry.store;
+	const store = writable<UserInfo>(USER_INFO_MOCKUP);
+	knownUsers.set(id, { store });
+	updateUser(id);
+	return store;
+}
+
+export async function getUserNow(id: Id): Promise<UserInfo> {
+	const entry = knownUsers.get(id);
+	if (entry?.data) return entry.data;
+	return updateUser(id);
+}
+
+export function updateAllUsers() {
+	for (const id of knownUsers.keys()) updateUser(id);
 }
 
 // Avatar
 export async function uploadAvatar(imageDataUrl: string) {
 	socket!.emit(ChatEvent.POST_AVATAR, { imageDataUrl }, (feedback) => {
-		// TODO: change
-		alert(JSON.stringify(feedback));
+		if (!feedback.success) {
+			alert(feedback.errorMessage);
+		}
 	});
 }
 
@@ -306,7 +300,19 @@ export function sendJoinChannel(message: JoinChannelToServer) {
 
 export function sendBlockUser(message: BlockUserToServer) {
 	socket!.emit(ChatEvent.BLOCK_USER, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			updateMyself();
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendUnblockUser(message: UnblockUserToServer) {
+	socket!.emit(ChatEvent.UNBLOCK_USER, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			updateMyself();
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -314,6 +320,42 @@ export function sendBlockUser(message: BlockUserToServer) {
 
 export function sendFriendInvite(message: FriendInviteToServer) {
 	socket!.emit(ChatEvent.FRIEND_INVITE, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			updateMyself();
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendChangeName(message: SetUsernameToServer) {
+	socket!.emit(ChatEvent.SET_USERNAME, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			updateMyself();
+		} else {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendLeaveChannel(message: LeaveChannelToServer) {
+	socket!.emit(ChatEvent.LEAVE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendDeleteChannel(message: DeleteChannelToServer) {
+	socket!.emit(ChatEvent.DELETE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendSetNewAdminToServer(message: SetNewAdminToServer) {
+	socket!.emit(ChatEvent.SET_NEW_ADMIN, message, (feedback: ChatFeedbackDto) => {
 		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
@@ -336,12 +378,32 @@ function onTotpRequired(callback: (token: string) => void) {
 	goto(LOGGIN_TOTP_ROUTE);
 }
 
-function onMyInfoResult(feedback: RequestFeedbackDto<MyInfo>) {
-	if (feedback.success) setMyInfo(feedback.result!);
-	else console.error('Could not get user info');
+function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
+	if (feedback.success) {
+		// TODO: remove
+		const myInfo = feedback.result!;
+		// myInfo.friendlist.push(78441);
+		writableMyself.set(myInfo);
+	} else console.error('Could not get my info');
+}
+
+async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserInfo> {
+	if (!feedback.success) throw new Error('Could not get user info');
+	const user = feedback.result!;
+	let entry = knownUsers.get(user.id);
+	if (entry) {
+		entry.store.set(user);
+	} else {
+		knownUsers.set(user.id, {
+			data: user,
+			store: writable(user)
+		});
+	}
+	return user;
 }
 
 function onGotoGameScreen(classic: boolean, ready: () => void) {
+	closeAllModals();
 	gameParams = { classic, online: true };
 	if (window.location.href != '/Play') goto('/Play').then(ready);
 }
@@ -376,9 +438,17 @@ function onGameCancel(message: GameCancelFromServer) {
 
 function onBannedNotif(message: BanUserFromServer) {
 	channelConvs.update((_) => {
-		_.getBanned(message.channel);
+		_.getBanned(message.channel).then(() => channelConvs.update((_) => _));
 		return _;
 	});
+}
+
+function onBlockedNotif(message: BlockUserFromServer) {
+	userConvs.update((_) => _.delete(message.source));
+}
+
+function onChannelDeletedNotif(message: ChannelDeletedFromServer) {
+	channelConvs.subscribe((_) => _.delete(message.channel));
 }
 
 // Used in +layout.svelte

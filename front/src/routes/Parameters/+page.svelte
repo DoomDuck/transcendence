@@ -1,21 +1,24 @@
 <script lang="ts">
-	import { myInfo, disconnect } from '$lib/state';
+	import { myself, disconnect, sendUnblockUser } from '$lib/state';
 	import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
-	export let blocked = [{ profilePic: 'cars.jpeg', name: 'Flash McQueen' }];
+	import UserMiniature from '$lib/UserMiniature.svelte';
+	import UserName from '$lib/chat/UserName.svelte';
 </script>
 
 <div id="app">
-	<ProfileParams avatar={$myInfo.avatar} name={$myInfo.name} />
+	<ProfileParams avatar={$myself.avatar} name={$myself.name} />
 	<div id="blockedProfiles">
 		<div class="blocked">
 			<div class="blockedInfos">
-				{#each blocked as { profilePic, name }}
-					<img class="roundedImage" src={profilePic} alt="contact" />
-					<h3>{name}</h3>
+				{#each $myself.blocked as userId}
+					<div>
+						<UserMiniature {userId} />
+						<UserName {userId} />
+						<button on:click={() => sendUnblockUser({ target: userId })}> unblock </button>
+					</div>
 				{/each}
 			</div>
-			<button> unblock </button>
 		</div>
 	</div>
 	<div id="lastParams">

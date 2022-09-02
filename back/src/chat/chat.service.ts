@@ -4,6 +4,8 @@ import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Id } from 'backFrontCommon';
 import {
+  GetBannedListToServer,
+  GetBannedListFromServer,
   ChatFeedbackDto,
   RequestFeedbackDto,
   ChannelInfo,
@@ -162,7 +164,7 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    if (this.channelManagerService.isBanned(tempUser,tempChan)) {
+    if (this.channelManagerService.isBanned(tempUser, tempChan)) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.YOU_ARE_BANNED,
@@ -273,9 +275,10 @@ export class ChatService {
       wss,
     );
     if (feedback.success === true) {
-      this.logger.debug("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
-      this.userService.leaveChannel( tempTarget,tempChan);
-
+      this.logger.debug(
+        '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
+      );
+      this.userService.leaveChannel(tempTarget, tempChan);
     }
     return feedback;
   }
@@ -397,12 +400,15 @@ export class ChatService {
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
   }
-  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer):Promise<RequestFeedbackDto<ChannelInfo>> {
+  async handleGetChannelInfo(
+    socket: Socket,
+    chatInfo: GetChannelInfoToServer,
+  ): Promise<RequestFeedbackDto<ChannelInfo>> {
     const user = this.userService.findOneActiveBySocket(socket);
     if (!user) {
       return {
-        success:false,
-        errorMessage:ChatError.USER_NOT_FOUND,
+        success: false,
+        errorMessage: ChatError.USER_NOT_FOUND,
       };
     }
     const channel = await this.channelManagerService.findChanByName(
@@ -410,22 +416,43 @@ export class ChatService {
     );
     if (!channel) {
       return {
-        success:false,
-        errorMessage:  ChatError.CHANNEL_NOT_FOUND,
-    }
+        success: false,
+        errorMessage: ChatError.CHANNEL_NOT_FOUND,
+      };
     }
     //let users : ChannelUser[] = [];
     const usersPromise = channel.member.map(async (member) => {
       const tempUser = await this.userService.findOneDb(member);
       if (tempUser) {
-        this.logger.debug(`ta mere dans channel info ${JSON.stringify((this.channelManagerService.ChannelUserTransformator(tempUser,channel)))}`)
-      return this.channelManagerService.ChannelUserTransformator(tempUser,channel);
+        this.logger.debug(
+          `ta mere dans channel info ${JSON.stringify(
+            this.channelManagerService.ChannelUserTransformator(
+              tempUser,
+              channel,
+            ),
+          )}`,
+        );
+        return this.channelManagerService.ChannelUserTransformator(
+          tempUser,
+          channel,
+        );
       }
       return null;
-      })
-      usersPromise.filter
-      const users = Promise.all(usersPromise).then(usersP => usersP.filter(usersPro => usersPro != null))
-      //this.logger.debug(`end channel info${JSON.stringify(await users)}`)
-      return {success : true, result: new ChannelInfo( (await users)!)}
+    });
+    const users = await Promise.all(usersPromise);
+    const result = users.filter((user) => user !== null) as ChannelUser[];
+    this.logger.debug(`end channel info${JSON.stringify(result)}`);
+    return { success: true, result: new ChannelInfo(result) };
+  }
+  async handleBannedList(socket: Socket, bannedInfo: GetBannedListToServer):Promise<RequestFeedbackDto<GetBannedListToServer>> {
+    const sender = this.userService.findOneActiveBySocket(socket);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      bannedInfo.channel,
+    );
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+      return {users : channel.banned}
   }
 }

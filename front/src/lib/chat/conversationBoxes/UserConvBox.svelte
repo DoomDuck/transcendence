@@ -4,10 +4,11 @@
 	import ConversationEntry from './ConversationEntry.svelte';
 	import BlockUserButton from '../buttons/BlockUserButton.svelte';
 	import GameInviteButton from '../buttons/GameInviteButton.svelte';
-	import { sendDirectMessage } from '$lib/state';
+	import { getUser, sendDirectMessage } from '$lib/state';
 	import { UserConversation } from '$lib/ts/chatUtils';
 
 	export let conversation: UserConversation;
+	let interlocutor = getUser(conversation.interlocutor);
 
 	let div: HTMLDivElement;
 	let autoscroll: boolean;
@@ -38,15 +39,11 @@
 <!-- to refacto -->
 <div class="chat">
 	<div id="title">
-		{#await conversation.getInterlocuterAsDto()}
-			<h2>...</h2>
-		{:then user}
-			<h2>{user.name}</h2>
-			<div id="options">
-				<BlockUserButton {user} />
-				<GameInviteButton {user} />
-			</div>
-		{/await}
+		<h2>{$interlocutor.name}</h2>
+		<div id="options">
+			<BlockUserButton user={$interlocutor} />
+			<GameInviteButton user={$interlocutor} />
+		</div>
 	</div>
 	<div class="scrollable" bind:this={div}>
 		{#each conversation.history as message}

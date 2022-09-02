@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Modal from '$lib/Modal.svelte';
+
 	import CreateChannelModal from '../modals/CreateChannelModal.svelte';
 	let show = false;
 </script>
@@ -11,7 +13,9 @@
 	on:click={() => (show = true)}
 />
 
-<CreateChannelModal bind:show on:createChannel />
+<Modal bind:show>
+	<CreateChannelModal bind:show on:createChannel />
+</Modal>
 
 <style>
 	img {

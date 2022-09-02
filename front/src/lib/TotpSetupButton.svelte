@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { myInfo, disableTotp } from '$lib/state';
+	import { myself, disableTotp } from '$lib/state';
 	import TotpSetup from '$lib/TotpSetup.svelte';
 
 	let showTotpSetup = false;
@@ -9,7 +9,7 @@
 	}
 </script>
 
-{#if !$myInfo.totpSecret}
+{#if !$myself.totpSecret}
 	<button on:click={enableTotp}> enable 2fa </button>
 {:else}
 	<button on:click={disableTotp}> disable 2fa </button>

@@ -34,5 +34,6 @@
 	.user-icon {
 		-webkit-border-radius: 50%;
 		border-radius: 50%;
+		background-color: white;
 	}
 </style>

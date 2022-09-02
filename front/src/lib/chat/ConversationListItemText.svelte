@@ -1,11 +1,9 @@
 <script lang="ts">
-	import PendingText from '$lib/PendingText.svelte';
-
-	export let text: string | Promise<string>;
+	export let text: string;
 </script>
 
 <div class="item-text">
-	<PendingText tag="h5" {text} />
+	<h5>{text}</h5>
 </div>
 
 <style>

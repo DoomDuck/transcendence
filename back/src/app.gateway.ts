@@ -13,6 +13,8 @@ import {
   MatchInfoToServer,
   UserInfoToServer,
   ChannelUser,
+  GetBannedListToServer,
+  GetBannedListFromServer,
   Id,
   IsInGameToServer,
 } from 'backFrontCommon';
@@ -282,8 +284,19 @@ export class AppGateway
     return this.chatService.handleDeleteChannel(socket, deleteInfo);
   }
   @SubscribeMessage(ChatEvent.GET_CHANNEL_INFO)
-  async handleGetChannelInfo(socket: Socket, chatInfo: GetChannelInfoToServer): Promise<RequestFeedbackDto<ChannelInfo>> {
-    this.logger.log(`dans get channel info ${  JSON.stringify((await this.chatService.handleGetChannelInfo(socket, chatInfo)).result)}`);
+  async handleGetChannelInfo(
+    socket: Socket,
+    chatInfo: GetChannelInfoToServer,
+  ): Promise<RequestFeedbackDto<ChannelInfo>> {
+    this.logger.log(
+      `dans get channel info ${JSON.stringify(
+        (await this.chatService.handleGetChannelInfo(socket, chatInfo)).result,
+      )}`,
+    );
     return await this.chatService.handleGetChannelInfo(socket, chatInfo);
+  }
+  @SubscribeMessage(ChatEvent.GET_BANNED_IN_CHANNEL)
+  async handleBannedList(socket: Socket, bannedInfo: GetBannedListToServer) {
+    return this.chatService.handleBannedList(socket, bannedInfo);
   }
 }
