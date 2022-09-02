@@ -34,10 +34,8 @@
 	}
 
 	#app {
-		background-image: url('/starsSky.png');
 		width: 100%;
 		height: 100%;
-		overflow-y: scroll;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -45,7 +43,6 @@
 	#blockedProfiles {
 		width: 50vw;
 		height: 600px;
-		overflow-y: auto;
 		overflow-x: hidden;
 		display: flex;
 		flex-direction: column;

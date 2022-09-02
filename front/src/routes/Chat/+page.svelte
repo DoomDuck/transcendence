@@ -39,11 +39,8 @@
 	#chat {
 		width: 100%;
 		height: 100%;
-		background-image: url('/starsSky.png');
-		background-size: cover;
 		display: flex;
 		flex-direction: column;
-		overflow-y: scroll;
 	}
 
 	#title {
