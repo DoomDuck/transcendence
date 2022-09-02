@@ -30,7 +30,7 @@ import {
 	SetNewAdminToServer,
 	UnblockUserToServer,
 	ChannelInfo,
-	ChannelType
+	ChannelCategory
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -76,7 +76,7 @@ const MY_INFO_MOKUP = new MyInfo(
 const CHANNEL_INFO_MOCKUP: ChannelInfo = {
 	users: [],
 	bannedUsers: [],
-	channelType: ChannelType.PUBLIC
+	channelType: ChannelCategory.PUBLIC
 };
 
 let resolveTotpRequired: ((token: string) => void) | null = null;

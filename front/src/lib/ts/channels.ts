@@ -47,7 +47,7 @@ export type ChannelDetailsData = {
 	others: ChannelUser[];
 };
 
-export async function treatChannelInfo(myId: number, channelInfo: ChannelInfo): ChannelDetailsData {
+export function treatChannelInfo(myId: number, channelInfo: ChannelInfo): ChannelDetailsData {
 	const i = channelInfo.users.findIndex((user) => user.id == myId);
 	let others: ChannelUser[];
 	let me: ChannelUser | undefined;

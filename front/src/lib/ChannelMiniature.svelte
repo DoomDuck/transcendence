@@ -5,7 +5,7 @@
 	import { getChannelInfo, treatChannelInfo } from './ts/channels';
 	import type { ChannelDetailsData } from './ts/channels';
 	import { getChannel, myself } from '$lib/state';
-	import { ChannelType } from 'backFrontCommon';
+	import { ChannelCategory } from 'backFrontCommon';
 
 	export let channel: string;
 
@@ -13,19 +13,20 @@
 	let showDetails = false;
 	let channelDetailsData: ChannelDetailsData;
 
-	function channelImageFromType(channelType: ChannelType) {
-		switch (channelType) {
-			case ChannelType.PUBLIC:
+	function channelImageFromType(category: ChannelCategory) {
+		switch (category) {
+			case ChannelCategory.PUBLIC:
 				return 'group_conv_icon.png';
-			case ChannelType.PASSWORD_PROTECTED:
+			case ChannelCategory.PROTECTED:
 				return 'key.png';
-			case ChannelType.PRIVATE:
+			case ChannelCategory.PRIVATE:
 				return 'hidden.png';
 		}
 	}
 
 	function click() {
 		channelDetailsData = treatChannelInfo($myself.id, $channelStore);
+		console.log(JSON.stringify(channelDetailsData));
 		showDetails = true;
 	}
 </script>
