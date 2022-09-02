@@ -21,6 +21,7 @@ import {
   UserInfo,
   RequestFeedbackDto,
   ChatFeedbackDto,
+  UnblockUserToServer,
   UserHistoryDto,
   Id,
   ChatEvent,
@@ -223,11 +224,11 @@ export class UserService {
     await this.usersRepository.delete(id);
   }
   async isBlocked(
-    activeUser: ActiveUser,
-    blockedUser: ActiveUser,
+    activeUser: ActiveUser|User,
+    blockerUser: ActiveUser|User,
   ): Promise<boolean> {
     const tempUserDb = await this.findOneDb(activeUser.id);
-    if (tempUserDb!.blockedFrom.find((blocked) => blocked === blockedUser.id))
+    if (tempUserDb!.blockedFrom.find((blocked) => blocked === blockerUser.id))
       return true;
     else return false;
   }
@@ -654,5 +655,24 @@ export class UserService {
       );
     }
     return result;
+  }
+  async handleUnblockUser(socket: Socket, unblockInfo: UnblockUserToServer) {
+    const sender = await this.findOneDbBySocket(socket);
+    const target = await this.findOneDb(unblockInfo.target);
+      if (!sender)
+    return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  else if (!target)
+    return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+    if(!await this.isBlocked(target,sender))
+       return { success: false, errorMessage: ChatError.NOT_BLOCKED};
+       sender.blocked.splice(
+        sender.blocked.indexOf(target.id),
+        1,
+      );
+      target.blockedFrom.splice(
+        target.blockedFrom.indexOf(sender.id),
+        1,
+      );
+      return {success:true}
   }
 }

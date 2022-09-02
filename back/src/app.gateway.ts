@@ -34,6 +34,7 @@ import type {
   UserInfo,
   MatchInfoFromServer,
   SetPasswordToServer,
+  UnblockUserToServer,
   DeleteChannelToServer,
   GetChannelInfoToServer,
   FeedbackCallbackWithResult,
@@ -229,7 +230,10 @@ export class AppGateway
   // async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
   // return await this.userService.getUserMatch(socket, matchInfo.target);
   // }
-
+  @SubscribeMessage(ChatEvent.UNBLOCK_USER)
+  async handleUNBLOCK_USER(socket: Socket, unblockInfo: UnblockUserToServer) {
+    return await this.userService.handleUnblockUser(socket, unblockInfo);
+  }
   @SubscribeMessage(ChatEvent.SET_USERNAME)
   async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {
     return await this.userService.setUsername(socket, setInfo.name);
