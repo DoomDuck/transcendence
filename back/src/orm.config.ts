@@ -9,7 +9,7 @@ export const config: TypeOrmModuleOptions = {
   username: 'hgallien',
   password: 'root',
   port: 5432,
-  host: '127.0.0.1',
+  host: 'localhost',
   database: 'postgres',
   // TODO: CHANGE IN PRODUCTION
   synchronize: true,
