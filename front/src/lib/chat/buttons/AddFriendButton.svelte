@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Modal from '$lib/Modal.svelte';
+
 	import AddFriendModal from '../modals/AddFriendModal.svelte';
 
 	let show = false;
@@ -12,4 +14,6 @@
 	on:click={() => (show = true)}
 />
 
-<AddFriendModal bind:show />
+<Modal bind:show>
+	<AddFriendModal bind:show />
+</Modal>

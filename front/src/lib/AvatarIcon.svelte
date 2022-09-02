@@ -29,11 +29,11 @@
 		margin-right: 2%;
 		margin-top: auto;
 		margin-bottom: auto;
-		background-color: white;
 	}
 
 	.user-icon {
 		-webkit-border-radius: 50%;
 		border-radius: 50%;
+		background-color: white;
 	}
 </style>

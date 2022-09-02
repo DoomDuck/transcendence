@@ -35,7 +35,7 @@ import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable, writable } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
-import { closeLastModalListener } from '$lib/ts/modals';
+import { closeAllModals, closeLastModalListener, modalCallbackStackRef } from '$lib/ts/modals';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -397,6 +397,7 @@ async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserI
 }
 
 function onGotoGameScreen(classic: boolean, ready: () => void) {
+	closeAllModals();
 	gameParams = { classic, online: true };
 	if (window.location.href != '/Play') goto('/Play').then(ready);
 }

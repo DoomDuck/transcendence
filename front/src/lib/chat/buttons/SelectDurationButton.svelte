@@ -8,6 +8,7 @@
 <button on:click={() => (show = true)}>
 	<slot />
 </button>
+
 <Modal bind:show>
 	<SelectDurationModal bind:show on:selectDuration />
 </Modal>

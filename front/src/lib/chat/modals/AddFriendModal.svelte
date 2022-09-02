@@ -1,36 +1,28 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
 	import { sendFriendInvite } from '$lib/state';
 	import PositiveIntegerInput from '../PositiveIntegerInput.svelte';
 
 	export let show: boolean = false;
 	let target: number;
 	let invalidTarget: boolean;
-	let content: string;
 
 	function handleSubmit() {
 		if (invalidTarget) return;
 		sendFriendInvite({ target });
-		close();
-	}
-	function close() {
-		content = '';
 		show = false;
 	}
 </script>
 
-<Modal bind:show on:close={() => (show = false)}>
-	<form id="addNewFriend" on:submit|preventDefault={handleSubmit}>
-		Add a friend
-		<PositiveIntegerInput
-			placeholder="Friend's ID:"
-			bind:value={target}
-			bind:invalid={invalidTarget}
-		/>
-		<br />
-		<div>
-			<input type="submit" value="Add" />
-			<button on:click={close}>Cancel</button>
-		</div>
-	</form>
-</Modal>
+<form id="addNewFriend" on:submit|preventDefault={handleSubmit}>
+	Add a friend
+	<PositiveIntegerInput
+		placeholder="Friend's ID:"
+		bind:value={target}
+		bind:invalid={invalidTarget}
+	/>
+	<br />
+	<div>
+		<input type="submit" value="Add" />
+		<button on:click={() => (show = false)}>Cancel</button>
+	</div>
+</form>

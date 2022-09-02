@@ -1,6 +1,7 @@
 <script lang="ts">
 	import GameInviteModal from '../modals/GameInviteModal.svelte';
 	import type { UserInfo } from 'backFrontCommon';
+	import Modal from '$lib/Modal.svelte';
 
 	let show = false;
 	export let user: UserInfo;
@@ -15,7 +16,9 @@
 	height="40px"
 />
 
-<GameInviteModal bind:show {user} />
+<Modal bind:show>
+	<GameInviteModal bind:show {user} />
+</Modal>
 
 <style>
 	.play {

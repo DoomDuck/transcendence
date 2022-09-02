@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Modal from '$lib/Modal.svelte';
+
 	import SendNewMessageModal from '../modals/SendNewMessageModal.svelte';
 
 	export let target: number | undefined = undefined;
@@ -10,4 +12,6 @@
 	<slot />
 </div>
 
-<SendNewMessageModal bind:show bind:predefinedTarget={target} />
+<Modal bind:show>
+	<SendNewMessageModal bind:show bind:predefinedTarget={target} />
+</Modal>

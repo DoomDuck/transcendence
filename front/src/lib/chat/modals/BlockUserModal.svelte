@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
 	import type { UserInfo } from 'backFrontCommon';
 	import { sendBlockUser } from '$lib/state';
 
@@ -15,12 +14,10 @@
 	}
 </script>
 
-<Modal bind:show>
+<div>
+	<h4>Confirm blocking user {user.name} ?</h4>
 	<div>
-		<h4>Confirm blocking user {user.name} ?</h4>
-		<div>
-			<button on:click={handleBlockUser}>Yes</button>
-			<button on:click={handleClose}>Cancel</button>
-		</div>
+		<button on:click={handleBlockUser}>Yes</button>
+		<button on:click={handleClose}>Cancel</button>
 	</div>
-</Modal>
+</div>

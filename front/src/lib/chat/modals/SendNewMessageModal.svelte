@@ -1,7 +1,5 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
 	import { sendDirectMessage } from '$lib/state';
-	import SendNewMessageButton from '../buttons/SendNewMessageButton.svelte';
 	import PositiveIntegerInput from '../PositiveIntegerInput.svelte';
 
 	export let content = '';
@@ -14,33 +12,27 @@
 	function handleSubmit() {
 		if (invalidTarget) return;
 		sendDirectMessage({ target, content });
-		close();
-		return true;
-	}
-
-	function close() {
 		show = false;
+		return true;
 	}
 </script>
 
-<Modal bind:show on:close={close}>
-	<form id="formContainer" on:submit|preventDefault={handleSubmit}>
-		{#if predefinedTarget === undefined}
-			<div id="destinataire">
-				<PositiveIntegerInput
-					placeholder="ID of the target user:"
-					bind:value={target}
-					bind:invalid={invalidTarget}
-				/>
-			</div>
-		{/if}
-		<br />
-		<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
-		<button>
-			<img id="btn-send-msg" src="send.png" alt="send message" />
-		</button>
-	</form>
-</Modal>
+<form id="formContainer" on:submit|preventDefault={handleSubmit}>
+	{#if predefinedTarget === undefined}
+		<div id="destinataire">
+			<PositiveIntegerInput
+				placeholder="ID of the target user:"
+				bind:value={target}
+				bind:invalid={invalidTarget}
+			/>
+		</div>
+	{/if}
+	<br />
+	<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
+	<button>
+		<img id="btn-send-msg" src="send.png" alt="send message" />
+	</button>
+</form>
 
 <style>
 	#formContainer {

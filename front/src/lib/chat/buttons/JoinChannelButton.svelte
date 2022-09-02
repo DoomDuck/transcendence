@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Modal from '$lib/Modal.svelte';
+
 	import JoinChannelModal from '../modals/JoinChannelModal.svelte';
 
 	let show = false;
@@ -13,4 +15,6 @@
 />
 >
 
-<JoinChannelModal bind:show on:joinChannel />
+<Modal bind:show>
+	<JoinChannelModal bind:show on:joinChannel />
+</Modal>

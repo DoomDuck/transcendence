@@ -34,6 +34,16 @@ export function closeLastModal() {
 	});
 }
 
+export function closeAllModals() {
+	modalCallbackStack.update((callbacks) => {
+		while (callbacks.length > 0) {
+			callbacks[callbacks.length - 1]();
+			callbacks.pop();
+		}
+		return [];
+	});
+}
+
 export function closeLastModalListener(event: KeyboardEvent) {
 	if (event.key == 'Escape') closeLastModal();
 }
