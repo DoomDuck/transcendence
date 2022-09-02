@@ -208,7 +208,7 @@ export class ChannelManagerService {
   }
   async setNewAdmin(
     sender: ActiveUser,
-    target: ActiveUser,
+    target: User,
     channel: Channel,
   ): Promise<ChatFeedbackDto> {
     if (channel.creator != sender.id)
@@ -242,10 +242,11 @@ export class ChannelManagerService {
 
   banUser(
     sender: ActiveUser,
-    target: ActiveUser,
+    target: User,
     channel: Channel,
     duration: number,
     wss: Server,
+    targetActive?: ActiveUser
   ): ChatFeedbackDto {
     const d = new Date();
     if (
@@ -257,7 +258,8 @@ export class ChannelManagerService {
     if (this.isBanned(target, channel))
       return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
     else {
-      target.socketUser.forEach((socket) =>
+      if(targetActive)
+      targetActive.socketUser.forEach((socket) =>
         wss
           .to(socket.id)
           .emit(
@@ -302,10 +304,11 @@ export class ChannelManagerService {
   }
   muteUser(
     sender: ActiveUser,
-    target: ActiveUser,
+    target: User,
     channel: Channel,
     duration: number,
     wss: Server,
+    activeTarget?:ActiveUser
   ): ChatFeedbackDto {
     const d = new Date();
     if (channel.admin.find((admin) => admin === sender.id) === undefined)
@@ -313,7 +316,8 @@ export class ChannelManagerService {
     if (this.isMuted(target, channel))
       return new ChatFeedbackDto(false, ChatError.ALREADY_MUTED);
     else {
-      target.socketUser.forEach((socket) =>
+      if(activeTarget)
+      activeTarget.socketUser.forEach((socket) =>
         wss
           .to(socket.id)
           .emit(

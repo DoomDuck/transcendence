@@ -116,6 +116,10 @@ export class GameManagerService {
         [players[0]!, players[1]!],
         [score1, score2],
       );
+      this.userService.scoreUpdate(
+        [players[0]!, players[1]!],
+        [score1, score2],
+      )
     };
     const onFinally = async () => {
       removeIfPresent(this.games, gameInstance);

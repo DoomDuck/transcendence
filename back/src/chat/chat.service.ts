@@ -199,7 +199,7 @@ export class ChatService {
     if (!target) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
-        ChatError.USER_NOT_FOUND,
+        ChatError.USER_OFFLINE,
       );
     }
     const feedback = await this.userService.sendMessageToUser(
@@ -255,13 +255,14 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    const tempTarget = this.userService.findOneActive(banInfo.target);
+    const tempTarget = await this.userService.findOneDb(banInfo.target);
     if (!tempTarget) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
       );
     }
+    const activeTarget = this.userService.findOneActive(banInfo.target);
     const tempChan = await this.channelManagerService.findChanByName(
       banInfo.channel,
     );
@@ -277,12 +278,13 @@ export class ChatService {
       tempChan,
       banInfo.duration,
       wss,
+      this.userService.findOneActive(tempTarget.id)
     );
     if (feedback.success === true) {
       this.logger.debug(
         '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
       );
-      this.userService.leaveChannel(tempTarget, tempChan);
+      this.userService.leaveChannel(tempTarget, tempChan,activeTarget );
     }
     return feedback;
   }
@@ -299,7 +301,7 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    const tempTarget = this.userService.findOneActive(muteInfo.target);
+    const tempTarget = await  this.userService.findOneDb(muteInfo.target);
     if (!tempTarget) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -309,6 +311,7 @@ export class ChatService {
     const tempChan = await this.channelManagerService.findChanByName(
       muteInfo.channel,
     );
+    const activeTarget = this.userService.findOneActive(muteInfo.target);
     if (!tempChan) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -321,6 +324,7 @@ export class ChatService {
       tempChan,
       muteInfo.duration,
       wss,
+      activeTargets
     );
     return feedback;
   }
@@ -356,7 +360,7 @@ export class ChatService {
     );
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-    const target = this.userService.findOneActive(setInfo.target);
+    const target = await this.userService.findOneDb(setInfo.target);
     if (!target)
       return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
     return await this.channelManagerService.setNewAdmin(user, target, channel);
@@ -408,7 +412,7 @@ export class ChatService {
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
     const target = this.userService.findOneActive(inviteInfo.target);
     if (!target)
-      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+      return { success: false, errorMessage: ChatError.USER_OFFLINE };
     return this.channelManagerService.inviteUserToChannel(
       sender,
       target,

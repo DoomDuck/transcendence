@@ -64,6 +64,8 @@ export class ChatEvent {
 }
 
 export class ChatError {
+  
+
   static readonly U_DO_NOT_EXIST ="u do not exist";
   static readonly USER_NOT_FOUND ="user not found";
   static readonly USER_OFFLINE ="user offline";

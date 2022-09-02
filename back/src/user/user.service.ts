@@ -103,6 +103,33 @@ export class UserService {
     );
     return chatMessageDto;
   }
+  async scoreUpdate(player:User[], score:number[])
+  {
+    if(score[0] > score[1])
+      {
+        this.usersRepository.update(player[0].id,{
+              win:player[0].win + 1,
+              score: player[0].score +17
+            } );
+        this.usersRepository.update(player[1].id,{
+              loose:player[1].loose + 1,
+              score: player[1].score -17
+            } )
+
+      }
+      else
+      {
+        this.usersRepository.update(player[1].id,{
+          win:player[1].win + 1,
+          score: player[1].score +17
+        } );
+        this.usersRepository.update(player[0].id,{
+          loose:player[0].loose + 1,
+          score: player[0].score-17
+      })
+        
+  }
+}
   leaderbordTransformator(users: User[]): LeaderboardItemDto[] {
     let result: LeaderboardItemDto[] = [];
     users.forEach((user) =>
@@ -462,19 +489,19 @@ export class UserService {
   }
 
   async leaveChannel(
-    activeUser: ActiveUser,
+    dbUser: User,
     channel: Channel,
+    activeUser?: ActiveUser,
   ): Promise<ChatFeedbackDto> {
-    if (channel.member.find((id) => id === activeUser.id) === undefined)
+    if (channel.member.find((id) => id === dbUser.id) === undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.NOT_IN_CHANNEL,
       );
-    const dbUser = await this.findOneDb(activeUser.id);
-    if (!dbUser) return { success: false };
-    this.channelManagerService.leaveChannel(channel, activeUser);
+    this.channelManagerService.leaveChannel(channel, dbUser);
+    if(activeUser)
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
-    dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
+      dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);
   }
