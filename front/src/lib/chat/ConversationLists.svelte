@@ -6,7 +6,7 @@
 	import UserMiniature from '$lib/UserMiniature.svelte';
 	import ConversationListItemText from './ConversationListItemText.svelte';
 	import ConversationBox from './conversationBoxes/UserConvBox.svelte';
-	import ChannelMiniature from '$lib/ChannelMiniature.svelte';
+	import ChannelMiniature from '$lib/chat/ChannelMiniature.svelte';
 	import DeStore from '$lib/DeStore.svelte';
 </script>
 

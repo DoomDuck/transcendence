@@ -1,25 +1,30 @@
 <script lang="ts">
-	import { ChannelInfo, ChannelRights, ChannelUser } from 'backFrontCommon';
+	import { ChannelCategory, ChannelInfo, ChannelRights, ChannelUser } from 'backFrontCommon';
 	import type { Id } from 'backFrontCommon';
-	import SelectDurationButton from './chat/buttons/SelectDurationButton.svelte';
-	import { banUser, muteUser } from './ts/channels';
-	import UserMiniature from './UserMiniature.svelte';
+	import SelectDurationButton from './buttons/SelectDurationButton.svelte';
+	import { banUser, muteUser } from '$lib/ts/channels';
+	import UserMiniature from '$lib/UserMiniature.svelte';
 	import {
 		sendDeleteChannel,
 		sendLeaveChannel,
 		sendSetNewAdminToServer,
 		sendUnbanUser,
 		myself,
-		updateChannel
+		updateChannel,
+		sendInviteToChannel
 	} from '$lib/state';
 	import { beforeUpdate } from 'svelte';
-	import UserName from './chat/UserName.svelte';
+	import UserName from './UserName.svelte';
+	import PositiveIntegerInput from './PositiveIntegerInput.svelte';
 
 	export let channel: string;
 	export let channelInfo: ChannelInfo;
 
 	let me: ChannelUser | undefined;
 	let others: ChannelUser[];
+
+	let inviteUserInvalid: boolean;
+	let inviteUserId: number;
 
 	beforeUpdate(() => {
 		const i = channelInfo.users.findIndex((user) => user.id == $myself.id);
@@ -55,6 +60,10 @@
 			target: userId,
 			duration
 		});
+	}
+	function onInviteUser() {
+		if (inviteUserInvalid) return;
+		sendInviteToChannel({ channel, target: inviteUserId });
 	}
 </script>
 
@@ -105,6 +114,21 @@
 			{/each}
 		</div>
 	{/if}
+	{#if channelInfo.channelType == ChannelCategory.PRIVATE}
+		<div id="invite-user">
+			<span id="invite-user-text">Invite user</span>
+			<div id="invite-user-input-and-button">
+				<div id="invite-user-input">
+					<PositiveIntegerInput
+						placeholder="User Id"
+						bind:invalid={inviteUserInvalid}
+						bind:value={inviteUserId}
+					/>
+				</div>
+				<button id="invite-user-button" on:click={onInviteUser}>Send</button>
+			</div>
+		</div>
+	{/if}
 	<button id="leave-button" on:click={() => sendLeaveChannel({ channel })}>Leave Channel</button>
 	{#if me?.rights == ChannelRights.OWNER}
 		<button id="delete-button" on:click={() => sendDeleteChannel({ channel })}
@@ -117,6 +141,7 @@
 	#channel-details {
 		display: flex;
 		flex-direction: column;
+		width: 40vw;
 	}
 	.channel-details-user {
 		display: flex;
@@ -128,5 +153,23 @@
 	}
 	#delete-button {
 		background-color: #a80a2f;
+	}
+	#invite-user {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	#invite-user-text {
+		margin-right: auto;
+	}
+	#invite-user-input-and-button {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		margin-left: auto;
+		width: 50%;
+	}
+	#invite-user-input {
+		width: 80%;
 	}
 </style>
