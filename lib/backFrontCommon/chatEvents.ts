@@ -56,7 +56,7 @@ export class ChatEvent {
   static readonly BAN_USER = 'ban user'
   static readonly CHANNEL_DELETED_NOTIF = 'channel deleted notif'
   static readonly BLOCKED_NOTIF = 'blocked notif'
-
+  static readonly UNBLOCK_USER = 'unblock user'
 }
 
 export class ChatError {
@@ -412,6 +412,11 @@ export class BlockUserFromServer {
     public source: Id,
   ) { }
 }
+export class UnblockUserToServer {
+  constructor(
+    public target: Id
+  ) { }
+}
 
 export class ChatFeedbackDto {
   constructor(
@@ -494,4 +499,5 @@ export interface ClientToServerEvents {
   [ChatEvent.SET_USERNAME]: (dto: SetUsernameToServer, callback: FeedbackCallback) => void;
   [ChatEvent.LEAVE_CHANNEL]: (dto: LeaveChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.SET_NEW_ADMIN]: (dto: SetNewAdminToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.UNBLOCK_USER]: (dto: UnblockUserToServer, callback: FeedbackCallback) => void;
 }

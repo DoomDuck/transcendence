@@ -29,6 +29,7 @@
 		margin-right: 2%;
 		margin-top: auto;
 		margin-bottom: auto;
+		background-color: white;
 	}
 
 	.user-icon {

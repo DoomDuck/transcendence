@@ -27,7 +27,8 @@ import {
 	DeleteChannelToServer,
 	ChannelDeletedFromServer,
 	BlockUserFromServer,
-	SetNewAdminToServer
+	SetNewAdminToServer,
+	UnblockUserToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -114,6 +115,11 @@ export function storeMap<A, B>(store: Readable<A>, f: (a: A) => B): Readable<B> 
 function onLoginFailure() {
 	disconnect();
 	goto(LOGGIN_ROUTE);
+}
+
+export function redirectHome() {
+	if (connected()) goto('/Main');
+	else goto('/');
 }
 
 function setupHooks(socket: Socket) {
@@ -300,7 +306,9 @@ export function sendBlockUser(message: BlockUserToServer) {
 
 export function sendFriendInvite(message: FriendInviteToServer) {
 	socket!.emit(ChatEvent.FRIEND_INVITE, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			updateMyself();
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -308,7 +316,9 @@ export function sendFriendInvite(message: FriendInviteToServer) {
 
 export function sendChangeName(message: SetUsernameToServer) {
 	socket!.emit(ChatEvent.SET_USERNAME, message, (feedback: ChatFeedbackDto) => {
-		if (!feedback.success) {
+		if (feedback.success) {
+			updateMyself();
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
@@ -338,6 +348,14 @@ export function sendSetNewAdminToServer(message: SetNewAdminToServer) {
 	});
 }
 
+export function sendUnblockUser(message: UnblockUserToServer) {
+	socket!.emit(ChatEvent.UNBLOCK_USER, message, (feedback: ChatFeedbackDto) => {
+		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
 // Hooks
 function onConnectError() {
 	// Clean close
@@ -358,7 +376,7 @@ function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 	if (feedback.success) {
 		// TODO: remove
 		const myInfo = feedback.result!;
-		myInfo.friendlist.push(78441);
+		// myInfo.friendlist.push(78441);
 		writableMyself.set(myInfo);
 	} else console.error('Could not get my info');
 }

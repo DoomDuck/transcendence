@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { myself, disconnect } from '$lib/state';
+	import { myself, disconnect, sendUnblockUser } from '$lib/state';
 	import TotpSetupButton from '$lib/TotpSetupButton.svelte';
 	import ProfileParams from '$lib/ProfileParams.svelte';
 	import UserMiniature from '$lib/UserMiniature.svelte';
@@ -13,7 +13,7 @@
 				{#each $myself.blocked as userId}
 					<div>
 						<UserMiniature {userId} />
-						<button> unblock </button>
+						<button on:click={() => sendUnblockUser({ target: userId })}> unblock </button>
 					</div>
 				{/each}
 			</div>

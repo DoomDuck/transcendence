@@ -1,16 +1,18 @@
 <script lang="ts">
 	import Pong from '$lib/pong/Pong.svelte';
 	import { gameParamsAreValid } from '$lib/ts/gameParams';
-	import { gameParams } from '$lib/state';
+	import { gameParams, redirectHome } from '$lib/state';
 	import { onMount } from 'svelte';
+	import { delay } from 'pong/common/utils';
 
 	let background = gameParams?.classic ? '/starsSky.png' : '/gameBackground.png';
 	// background = `url(${background})`;
 
 	onMount(() => {
-		if (!gameParamsAreValid(gameParams!))
-			// TODO: ERROR PAGE
-			throw Error('INVALID GAME PARAMS');
+		if (!gameParamsAreValid(gameParams!)) {
+			alert('Invalid game params');
+			delay(1000).then(() => redirectHome());
+		}
 	});
 </script>
 

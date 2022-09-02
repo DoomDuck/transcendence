@@ -13,7 +13,9 @@
 		<div id="options">
 			<CreateChannelButton />
 			<JoinChannelButton />
-			<SendNewMessageButton />
+			<SendNewMessageButton>
+				<img id="btn-new-message" src="pencil.png" width="40" height="40" alt="write msg" />
+			</SendNewMessageButton>
 		</div>
 	</div>
 
@@ -68,5 +70,8 @@
 		line-height: 300%;
 		-webkit-text-stroke: 2px #00bfff;
 		font-size: 3em;
+	}
+	#btn-new-message {
+		float: right;
 	}
 </style>

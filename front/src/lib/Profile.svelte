@@ -1,8 +1,10 @@
 <script lang="ts">
 	import type { UserInfo } from 'backFrontCommon';
-
 	import ProfileStats from './ProfileStats.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
+	import { myself, sendFriendInvite } from './state';
+	import SendNewMessageButton from './chat/buttons/SendNewMessageButton.svelte';
+
 	export let user: UserInfo;
 </script>
 
@@ -11,6 +13,14 @@
 		<AvatarIcon type={'user'} imageURL={user.avatar ?? 'errorUser.png'} />
 		<h3>{user.name}</h3>
 		<div>ID: {user.id}</div>
+		{#if $myself.friendlist.includes(user.id)}
+			<span>Your friend already :)</span>
+		{:else}
+			<button on:click={() => sendFriendInvite({ target: user.id })}>Add to friends</button>
+		{/if}
+		<SendNewMessageButton target={user.id}>
+			<button>Send message</button>
+		</SendNewMessageButton>
 	</div>
 	<ProfileStats {user} />
 </div>

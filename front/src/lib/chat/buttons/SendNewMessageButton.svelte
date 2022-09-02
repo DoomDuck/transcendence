@@ -1,22 +1,13 @@
 <script lang="ts">
 	import SendNewMessageModal from '../modals/SendNewMessageModal.svelte';
 
+	export let target: number | undefined = undefined;
+
 	let show = false;
 </script>
 
-<img
-	id="btn-new-message"
-	src="pencil.png"
-	width="40"
-	height="40"
-	alt="write msg"
-	on:click={() => (show = true)}
-/>
+<div on:click={() => (show = true)}>
+	<slot />
+</div>
 
-<SendNewMessageModal bind:show />
-
-<style>
-	#btn-new-message {
-		float: right;
-	}
-</style>
+<SendNewMessageModal bind:show bind:predefinedTarget={target} />

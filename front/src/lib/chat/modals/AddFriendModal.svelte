@@ -4,10 +4,13 @@
 	import PositiveIntegerInput from '../PositiveIntegerInput.svelte';
 
 	export let show: boolean = false;
+	let target: number;
+	let invalidTarget: boolean;
 	let content: string;
 
 	function handleSubmit() {
-		sendFriendInvite({ target: +content });
+		if (invalidTarget) return;
+		sendFriendInvite({ target });
 		close();
 	}
 	function close() {
@@ -19,7 +22,11 @@
 <Modal bind:show on:close={() => (show = false)}>
 	<form id="addNewFriend" on:submit|preventDefault={handleSubmit}>
 		Add a friend
-		<PositiveIntegerInput placeholder="Friend's ID:" bind:content />
+		<PositiveIntegerInput
+			placeholder="Friend's ID:"
+			bind:value={target}
+			bind:invalid={invalidTarget}
+		/>
 		<br />
 		<div>
 			<input type="submit" value="Add" />
