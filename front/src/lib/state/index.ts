@@ -31,7 +31,8 @@ import {
 	UnblockUserToServer,
 	ChannelInfo,
 	ChannelCategory,
-	UnbanUserToServer
+	UnbanUserToServer,
+	InviteChannelToServer
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -439,6 +440,16 @@ export function sendSetNewAdminToServer(message: SetNewAdminToServer) {
 export function sendUnbanUser(message: UnbanUserToServer) {
 	socket!.emit(ChatEvent.UNBAN_USER, message, (feedback: ChatFeedbackDto) => {
 		if (!feedback.success) {
+			alert(`error: ${feedback.errorMessage}`);
+		}
+	});
+}
+
+export function sendInviteToChannel(message: InviteChannelToServer) {
+	socket!.emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+		if (feedback.success) {
+			updateChannel(message.channel);
+		} else {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});
