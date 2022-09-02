@@ -227,7 +227,7 @@ export class UserService {
     blockedUser: ActiveUser,
   ): Promise<boolean> {
     const tempUserDb = await this.findOneDb(activeUser.id);
-    if (tempUserDb!.blocked.find((blocked) => blocked === blockedUser.id))
+    if (tempUserDb!.blockedFrom.find((blocked) => blocked === blockedUser.id))
       return true;
     else return false;
   }
@@ -495,6 +495,7 @@ export class UserService {
         friendlist: user.friendlist,
         blocked: user.blocked,
         win: user.win,
+        channel:user.channel,
         loose: user.loose,
         score: user.score,
         ranking: await this.getRanking(user),
@@ -509,6 +510,7 @@ export class UserService {
         friendlist: user.friendlist,
         blocked: user.blocked,
         win: user.win,
+        channel:user.channel,
         loose: user.loose,
         score: user.score,
         ranking: await this.getRanking(user),

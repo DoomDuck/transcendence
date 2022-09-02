@@ -57,6 +57,7 @@ export class ChatEvent {
   static readonly CHANNEL_DELETED_NOTIF = 'channel deleted notif'
   static readonly BLOCKED_NOTIF = 'blocked notif'
   static readonly UNBLOCK_USER = 'unblock user'
+  static readonly GET_BANNED_IN_CHANNEL = "get banned in channel"
 }
 
 export class ChatError {
@@ -86,6 +87,9 @@ export class ChatError {
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
   static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
   static readonly USER_NOT_IN_GAME = "user not in game";
+  static readonly YOU_CANT_BE_YOUR_OWN_FRIEND="you can't be your own friend";
+  static readonly YOU_CANT_BLOCK_YOURSELF="you can't be your own friend";
+  static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"
   static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
 }
 
@@ -271,7 +275,16 @@ export class RelativeMatchInfoFromServer {
   ) { }
 };
 
-
+export class GetBannedListToServer   {
+  constructor(
+    public channel:string
+  ) { }
+}
+export class GetBannedListFromServer   {
+  constructor(
+    public users:Id[]
+  ) { }
+}
 export class SetUsernameToServer   {
   constructor(
     public name:string
@@ -508,4 +521,7 @@ export interface ClientToServerEvents {
   [ChatEvent.LEAVE_CHANNEL]: (dto: LeaveChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.SET_NEW_ADMIN]: (dto: SetNewAdminToServer, callback: FeedbackCallback) => void;
   [ChatEvent.UNBLOCK_USER]: (dto: UnblockUserToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.GET_BANNED_IN_CHANNEL]: (dto: GetBannedListToServer, callback: FeedbackCallbackWithResult<GetBannedListFromServer>) => void;
+
+  
 }

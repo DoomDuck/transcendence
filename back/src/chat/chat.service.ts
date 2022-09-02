@@ -4,6 +4,8 @@ import { UserService } from '../user/user.service';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { Id } from 'backFrontCommon';
 import {
+  GetBannedListToServer,
+  GetBannedListFromServer,
   ChatFeedbackDto,
   RequestFeedbackDto,
   ChannelInfo,
@@ -60,6 +62,11 @@ export class ChatService {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
+      );
+      if (target.id === sender.id)
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.YOU_CANT_BLOCK_YOURSELF,
       );
     return this.userService.blockUser(sender, target);
   }
@@ -221,6 +228,12 @@ export class ChatService {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
+      );
+    }
+    if (target.id === sender.id) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.U_CANT_BE_YOUR_OWN_FRIEND,
       );
     }
     return await this.userService.addFriend(sender, target);
@@ -430,5 +443,16 @@ export class ChatService {
     const result = users.filter((user) => user !== null) as ChannelUser[];
     this.logger.debug(`end channel info${JSON.stringify(result)}`);
     return { success: true, result: new ChannelInfo(result) };
+  }
+  async handleBannedList(socket: Socket, bannedInfo: GetBannedListToServer):Promise<RequestFeedbackDto<GetBannedListToServer>> {
+    const sender = this.userService.findOneActiveBySocket(socket);
+    if (!sender)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const channel = await this.channelManagerService.findChanByName(
+      bannedInfo.channel,
+    );
+    if (!channel)
+      return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
+      return {users : channel.banned}
   }
 }

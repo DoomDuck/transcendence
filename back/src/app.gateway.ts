@@ -13,6 +13,8 @@ import {
   MatchInfoToServer,
   UserInfoToServer,
   ChannelUser,
+  GetBannedListToServer,
+  GetBannedListFromServer,
   Id,
   IsInGameToServer,
 } from 'backFrontCommon';
@@ -130,6 +132,7 @@ export class AppGateway
     clientSocket: Socket,
     friendRequest: FriendInviteToServer,
   ) {
+    this.logger.debug('dans friend invite');
     return await this.chatService.handleFriendInvite(
       clientSocket,
       friendRequest,
@@ -291,5 +294,9 @@ export class AppGateway
       )}`,
     );
     return await this.chatService.handleGetChannelInfo(socket, chatInfo);
+  }
+  @SubscribeMessage(ChatEvent.GET_BANNED_IN_CHANNEL)
+  async handleBannedList(socket: Socket, bannedInfo: GetBannedListToServer) {
+    return this.chatService.handleBannedList(socket, bannedInfo);
   }
 }
