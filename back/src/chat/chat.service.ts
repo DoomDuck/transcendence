@@ -104,7 +104,7 @@ export class ChatService {
         false,
         ChatError.CHANNEL_NOT_FOUND,
       );
-    this.channelManagerService.joinChan(tempUser, newChan);
+  //this.channelManagerService.joinChan(tempUser, newChan);
     this.userService.joinChanUser(tempUser, newChan);
 
     this.logger.debug('end create channel');

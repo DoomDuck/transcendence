@@ -183,11 +183,7 @@ export class ChannelManagerService {
     user: ActiveUser,
     channel: Channel,
   ): Promise<ChatFeedbackDto> {
-    if (
-      channel.member.find((element) => element === user.id) &&
-      user.id != channel.creator
-    )
-      return new ChatFeedbackDto(false, ChatError.ALREADY_IN_CHANNEL);
+    
     channel.member.push(user.id);
     this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
@@ -247,7 +243,8 @@ export class ChannelManagerService {
     wss: Server,
   ): ChatFeedbackDto {
     const d = new Date();
-    if (channel.admin.find((admin) => admin === sender.id) === undefined)
+    if (target.id === channel.creator || !this.isAdmin(sender,channel)
+    || (sender.id != channel.creator && this.isAdmin(target,channel) ))
       return new ChatFeedbackDto(false, ChatError.INSUFICIENT_PERMISSION);
     if (this.isBanned(target, channel))
       return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
@@ -328,12 +325,14 @@ export class ChannelManagerService {
       return { success: false, errorMessage: ChatError.ALREADY_IN_CHANNEL };
     if (this.isBanned(target, channel))
       return { success: false, errorMessage: ChatError.USER_IS_BANNED };
+      this.joinChanPrivate(target,channel)
     target.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, {
         channel: channel.name,
         source: sender.id,
       }),
     );
+
     return { success: true };
   }
   deleteChannel(channel: Channel) {
