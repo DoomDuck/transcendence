@@ -15,6 +15,8 @@ RUN cd lib/pong/ && npm install
 RUN cd back/ && npm install
 RUN cd front/ && npm install
 COPY . ./
+# RUN sed -i 's/\/\/\ \(import {.*IsInt.*}\)/\1/' lib/backFrontCommon/chatEvents.ts
+# RUN sed -i 's/\/\/ @/@/' lib/backFrontCommon/chatEvents.ts
 RUN cd back/ && npm run build
 RUN cd front/ && npm run build
 
