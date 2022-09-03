@@ -6,7 +6,6 @@
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { myself } from '$lib/state';
 	import { channelConvs } from '$lib/ts/chatUtils';
-	import UserName from '$lib/chat/UserName.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 
 	$myself.channels.forEach((channel) => {

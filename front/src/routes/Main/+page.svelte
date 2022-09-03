@@ -1,7 +1,3 @@
-<script lang="ts">
-	import { myself } from '$lib/state';
-</script>
-
 <nav id="menu">
 	<div id="options">
 		<h1 class="typography">Transcendence</h1>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sendChangeName, socket } from './state';
+	import { sendChangeName } from './state';
 
 	export let name: string;
 	let changeName = false;

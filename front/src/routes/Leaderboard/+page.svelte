@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { sendGetLeaderboard, socket } from '$lib/state';
+	import { sendGetLeaderboard } from '$lib/state';
 
-	import { ChatEvent, LeaderboardItemDto } from 'backFrontCommon';
+	import { LeaderboardItemDto } from 'backFrontCommon';
 	import { onMount } from 'svelte';
 
 	let entries: LeaderboardItemDto[] = [];
