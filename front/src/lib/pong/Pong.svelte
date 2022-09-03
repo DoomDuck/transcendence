@@ -38,11 +38,11 @@
 				gameOverScoreDisplay = `(${sideStrings[0]}) ${score1} - ${score2} (${sideStrings[1]})`;
 			}
 			gameIsOver = true;
-			delay(5000).then(() => goto('/Main'));
+			delay(5000).then(() => goto('/Main', { replaceState: true }));
 		};
 		const onError = (message: string) => {
 			alert(message);
-			delay(1000).then(() => goto('/Main'));
+			delay(1000).then(() => goto('/Main', { replaceState: true }));
 		};
 
 		let ctx: ClientGameContext;

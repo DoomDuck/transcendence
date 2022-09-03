@@ -38,11 +38,7 @@ export class ActiveUser {
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite = false;
-  get inGame(): boolean {
-    return this.numberOfCurrentGames > 0;
-  }
-  inMatchmaking: boolean = false;
-  numberOfCurrentGames = 0;
+  inGame = false;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
@@ -134,7 +130,7 @@ export class UserService {
     }
   }
   leaderbordTransformator(users: User[]): LeaderboardItemDto[] {
-    let result: LeaderboardItemDto[] = [];
+    const result: LeaderboardItemDto[] = [];
     users.forEach((user) =>
       result.push(
         new LeaderboardItemDto(

@@ -19,6 +19,8 @@ import {
   GetBannedListFromServer,
   Id,
   IsInGameToServer,
+  FeedbackCallback,
+  GameStyleFromServer,
 } from 'backFrontCommon';
 import type {
   UserHistoryDto,
@@ -190,12 +192,15 @@ export class AppGateway
   }
 
   @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
-  handleJoinMatchMaking(socket: Socket, classic: boolean) {
+  handleJoinMatchMaking(socket: Socket, classic: boolean): ChatFeedbackDto {
     return this.gameManagerService.addMatchmaking(socket, classic);
   }
 
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)
-  async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
+  async handleObserve(
+    socket: Socket,
+    userId: Id,
+  ): Promise<RequestFeedbackDto<GameStyleFromServer>> {
     return this.gameManagerService.handleObserve(socket, userId);
   }
 

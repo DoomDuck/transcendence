@@ -8,13 +8,14 @@ import {
   GameAcceptToServer,
   GameRefuseToServer,
   ChatFeedbackDto,
+  RequestFeedbackDto,
+  GameStyleFromServer,
 } from 'backFrontCommon';
 import { ServerSocket as Socket } from 'backFrontCommon';
 import { GameInviteToServer } from 'backFrontCommon';
 import { ActiveUser, UserService } from '../user/user.service';
 import { GameCancelToServer } from 'backFrontCommon';
 import { MatchHistoryService } from '../matchHistory/matchHistory.service';
-import { GameEvent } from 'pong/common/constants';
 
 /* eslint-disable */
 
@@ -25,12 +26,24 @@ type PendingGameInvite = {
   classic: boolean;
 };
 
+class ActiveGame {
+  constructor(
+    public players: [ActiveUser, ActiveUser],
+    public ctx: ServerGameContext,
+  ) {}
+
+  get playersSocket(): [Socket, Socket] {
+    return this.ctx.players;
+  }
+}
+
 @Injectable()
 export class GameManagerService {
-  private matchQueueClassic: Socket[] = [];
-  private matchQueueCustom: Socket[] = [];
+  private matchQueueClassic: [Socket, ActiveUser][] = [];
+  private matchQueueCustom: [Socket, ActiveUser][] = [];
   private pendingGameInvits: PendingGameInvite[] = [];
-  private games: ServerGameContext[] = [];
+  // private games: ServerGameContext[] = [];
+  private games: ActiveGame[] = [];
   private logger: Logger = new Logger('GameManagerService');
 
   constructor(
@@ -38,14 +51,33 @@ export class GameManagerService {
     private userService: UserService,
   ) {}
 
-  addMatchmaking(socket: Socket, classic: boolean) {
-    if (classic)
-      this.addSocketToMatchQueue(this.matchQueueClassic, socket, true);
-    else this.addSocketToMatchQueue(this.matchQueueCustom, socket, false);
+  addMatchmaking(socket: Socket, classic: boolean): ChatFeedbackDto {
+    let matchQueue = classic ? this.matchQueueClassic : this.matchQueueCustom;
+    if (
+      matchQueue.find(([userSocket, user]) =>
+        user.socketUser.includes(socket),
+      ) !== undefined
+    ) {
+      return {
+        success: false,
+        errorMessage: ChatError.ALREADY_IN_MATCHMAKING,
+      };
+    }
+    if (this.userService.findOneActiveBySocket(socket)?.inGame) {
+      return {
+        success: false,
+        errorMessage: ChatError.YOU_ARE_ALREADY_IN_GAME,
+      };
+    }
+    this.addSocketToMatchQueue(matchQueue, socket, classic);
     socket.on('disconnect', () => this.handleQuitMatchmaking(socket));
+    return { success: true };
   }
 
-  async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
+  async handleObserve(
+    socket: Socket,
+    userId: Id,
+  ): Promise<RequestFeedbackDto<GameStyleFromServer>> {
     const user = this.userService.findOneActive(userId);
     if (user === undefined) {
       return {
@@ -55,10 +87,9 @@ export class GameManagerService {
     }
     const game = this.games.find(
       (game) =>
-        user.socketUser.includes(game.players[0]) ||
-        user.socketUser.includes(game.players[1]),
+        user.socketUser.includes(game.playersSocket[0]) ||
+        user.socketUser.includes(game.playersSocket[1]),
     );
-
     user.socketUser.forEach((socket) => {
       console.log(`USER: ${socket.id}`);
     });
@@ -71,19 +102,20 @@ export class GameManagerService {
         errorMessage: ChatError.USER_NOT_IN_GAME,
       };
     }
-    game.addObserver(socket);
-    return { success: true };
+    game.ctx.addObserver(socket);
+    return { success: true, result: { classic: game.ctx.classic } };
   }
 
   addSocketToMatchQueue(
-    matchQueue: Socket[],
+    matchQueue: [Socket, ActiveUser][],
     socket: Socket,
     classic: boolean,
   ) {
-    matchQueue.push(socket);
+    const activeUser = this.userService.findOneActiveBySocket(socket)!;
+    matchQueue.push([socket, activeUser]);
     if (matchQueue.length >= 2) {
       this.logger.log('two clients are waiting for a game');
-      this.startGame([matchQueue[0], matchQueue[1]], classic);
+      this.startGame([matchQueue[0][0], matchQueue[1][0]], classic);
       matchQueue.splice(0, 2);
     }
   }
@@ -108,21 +140,28 @@ export class GameManagerService {
         [score1, score2],
       );
     };
+
     const onFinally = () => {
-      this.removeGameInstance(gameInstance);
+      this.removeGame(activeGame);
     };
+
     const gameInstance: ServerGameContext = new ServerGameContext(
       playerSockets,
       classic,
       onFinish,
       onFinally,
     );
-    this.games.push(gameInstance);
+    const activeGame = new ActiveGame(
+      this.activeUsersFromSockets(playerSockets),
+      gameInstance,
+    );
+    this.games.push(activeGame);
+
     for (let i = 0; i < 2; i++) {
       const activeUser = this.userService.findOneActiveBySocket(
         playerSockets[i],
       );
-      if (activeUser !== undefined) activeUser.numberOfCurrentGames++;
+      if (activeUser !== undefined) activeUser.inGame = true;
       playerSockets[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
         playerSockets[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
           this.logger.log(`player ${i} ready`);
@@ -132,11 +171,10 @@ export class GameManagerService {
     }
   }
 
-  removeGameInstance(gameInstance: ServerGameContext) {
-    removeIfPresent(this.games, gameInstance);
-    gameInstance.players.forEach((playerSocket) => {
-      const activeUser = this.userService.findOneActiveBySocket(playerSocket);
-      if (activeUser !== undefined) activeUser.numberOfCurrentGames--;
+  removeGame(activeGame: ActiveGame) {
+    removeIfPresent(this.games, activeGame);
+    activeGame.players.forEach((activeUser) => {
+      activeUser.inGame = false;
     });
   }
 
@@ -161,6 +199,13 @@ export class GameManagerService {
         errorMessage: ChatError.USER_IN_GAME,
       };
     }
+    const i = this.findIndexGameInviteFromSource(sourceSocket, dto.target);
+    if (i != -1) {
+      return {
+        success: false,
+        errorMessage: ChatError.USER_ALREADY_INVITED,
+      };
+    }
     this.addPendingGameInvite(sourceSocket, source.id, target, dto.classic);
     target.emitOnAllSockets(ChatEvent.GAME_INVITE, {
       source: source.id,
@@ -169,6 +214,22 @@ export class GameManagerService {
 
     // this.logger.log(`After handleGameInvite, pending invits = ${invitsToString(this.pendingGameInvits)}`);
     return { success: true };
+  }
+
+  private findIndexGameInviteFromSource(sourceSocket: Socket, targetId: Id) {
+    return this.pendingGameInvits.findIndex(
+      (invite: PendingGameInvite) =>
+        invite.sourceSocket.id == sourceSocket.id &&
+        invite.target.id == targetId,
+    );
+  }
+
+  private findIndexGameInviteFromTarget(targetSocket: Socket, sourceId: Id) {
+    const target = this.userService.findOneActiveBySocket(targetSocket)!;
+    return this.pendingGameInvits.findIndex(
+      (invite: PendingGameInvite) =>
+        target.id == invite.target.id && sourceId == invite.sourceId,
+    );
   }
 
   // GAME_ACCEPT
@@ -182,6 +243,12 @@ export class GameManagerService {
       return {
         success: false,
         errorMessage: ChatError.NO_SUCH_GAME_INVITATION,
+      };
+    }
+    if (this.userService.findOneActive(dto.target)?.inGame) {
+      return {
+        success: false,
+        errorMessage: ChatError.USER_IN_GAME,
       };
     }
     gameInvite.sourceSocket.emit(ChatEvent.GAME_ACCEPT, {
@@ -204,11 +271,7 @@ export class GameManagerService {
 
   // GAME_CANCEL
   handleGameCancel(sourceSocket: Socket, dto: GameCancelToServer) {
-    const i = this.pendingGameInvits.findIndex(
-      (gameInvite: PendingGameInvite) =>
-        gameInvite.sourceSocket.id == sourceSocket.id &&
-        gameInvite.target.id == dto.target,
-    );
+    const i = this.findIndexGameInviteFromSource(sourceSocket, dto.target);
     if (i == -1) return;
     const gameInvite = this.pendingGameInvits[i];
     this.pendingGameInvits.splice(i, 1);
@@ -241,11 +304,17 @@ export class GameManagerService {
   }
 
   handleQuitMatchmaking(socket: Socket) {
-    removeIfPresent(this.matchQueueClassic, socket);
-    removeIfPresent(this.matchQueueCustom, socket);
+    this.matchQueueClassic = this.matchQueueClassic.filter(
+      ([s, _]) => s != socket,
+    );
+    this.matchQueueCustom = this.matchQueueCustom.filter(
+      ([s, _]) => s != socket,
+    );
   }
 
-  addPendingGameInvite(
+  // Utils
+
+  private addPendingGameInvite(
     sourceSocket: Socket,
     sourceId: Id,
     target: ActiveUser,
@@ -273,7 +342,7 @@ export class GameManagerService {
     });
   }
 
-  findAndRemovePendingGameInvite(
+  private findAndRemovePendingGameInvite(
     sourceId: Id,
     targetId: Id,
   ): PendingGameInvite | undefined {
@@ -291,20 +360,28 @@ export class GameManagerService {
     return gameInvite;
   }
 
-  removeBySourceId(id: Id) {
+  private removeBySourceId(id: Id) {
     this.pendingGameInvits = this.pendingGameInvits.filter(
       (invite) => invite.sourceId != id,
     );
   }
 
-  removeByTargetId(id: Id) {
+  private removeByTargetId(id: Id) {
     this.pendingGameInvits = this.pendingGameInvits.filter(
       (invite) => invite.target.id != id,
     );
   }
 
+  private activeUsersFromSockets(
+    sockets: [Socket, Socket],
+  ): [ActiveUser, ActiveUser] {
+    return sockets.map(
+      (socket) => this.userService.findOneActiveBySocket(socket)!,
+    ) as [ActiveUser, ActiveUser];
+  }
+
   // DEBUG
-  _invitsToString() {
+  private _invitsToString() {
     return (
       '[' +
       this.pendingGameInvits
@@ -316,11 +393,9 @@ export class GameManagerService {
       ']'
     );
   }
-  _gamesToString(): string {
+  private _gamesToString(): string {
     let games = this.games.map((game) => {
-      let players = game.players
-        .map((socket) => this.userService.findOneActiveBySocket(socket))
-        .map((user) => `${user?.name}`);
+      let players = game.players.map((user) => `${user?.name}`);
       return `P1: ${players[0]} vs P2: ${players[1]}`;
     });
     return games.join('\n');

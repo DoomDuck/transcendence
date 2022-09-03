@@ -100,7 +100,9 @@ export class ChatError {
   static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"
   static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
   static readonly MUST_SPECIFY_PASSWORD = "must specify password";
-  static readonly ALREADY_IN_MATCHMAKING = "you are already in matchmaking";
+  static readonly USER_ALREADY_INVITED = "user already invited";
+  static readonly ALREADY_IN_MATCHMAKING = "already in matchmaking";
+  static readonly YOU_ARE_ALREADY_IN_GAME = "you are already in game";
 }
 
 export class DMFromServer  {
@@ -462,6 +464,12 @@ export class UnmuteUserToServer {
     public target: Id
   ) { }
 }
+export class GameStyleFromServer {
+  constructor(
+    public classic: boolean,
+  ) { }
+}
+
 
 
 export class ChatFeedbackDto {
@@ -531,11 +539,11 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_FRIENDS]: (callback: FeedbackCallbackWithResult<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: FeedbackCallbackWithResult<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: FeedbackCallbackWithResult<UserHistoryDto>) => void;
-  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
+  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
-  [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallback) => void;
+  [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallbackWithResult<GameStyleFromServer>) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
   [ChatEvent.BAN_USER]: (dto: BanUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.MUTE_USER]: (dto: MuteUserToServer, callback: FeedbackCallback) => void;

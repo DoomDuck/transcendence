@@ -37,7 +37,7 @@ export class ServerGameContext {
   gameAlreadyStarted: boolean = true;
   listeners: Listeners<Socket> = new Listeners();
 
-  constructor(public players: [Socket, Socket], classic: boolean, public onFinish: FinishCallback, public onFinally: FinallyCallback) {
+  constructor(public players: [Socket, Socket], public classic: boolean, public onFinish: FinishCallback, public onFinally: FinallyCallback) {
     this.game = new Game();
     for (let [emitter, receiver] of [
       [PLAYER1, PLAYER2],
