@@ -35,14 +35,17 @@ export class ReceivedGameInvite implements CanBePopup {
 	}
 	onAccept() {
 		acceptGame(this.dto.source, ({ success, errorMessage }) => {
-			if (success) popupMethods.removePopup(this);
-			else alert(errorMessage);
+			if (success) {
+				popupMethods.removeBy((popup) => popup instanceof ReceivedGameInvite);
+			} else {
+				popupMethods.removePopup(this);
+				alert(errorMessage);
+			}
 		});
 	}
 	revoke() {
 		this.popupCategory = PopupCategory.ERROR;
 		this.text = 'Invitation cancelled';
-		// this.valid = false;
 		popups.update((_) => _);
 		setTimeout(() => {
 			popupMethods.removePopup(this);

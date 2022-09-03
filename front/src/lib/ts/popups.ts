@@ -24,10 +24,23 @@ function addPopup(popup: CanBePopup) {
 }
 
 function removePopup(popup: CanBePopup) {
-	popups.update((_) => _.filter((popup2) => popup !== popup2));
+	removeBy((popup2) => popup !== popup2);
+}
+
+function removeBy(filterCallback: (popup: CanBePopup) => boolean) {
+	popups.update((_) => {
+		return _.filter((_) => {
+			if (filterCallback(_)) {
+				_.onClose?.();
+				return false;
+			}
+			return true;
+		});
+	});
 }
 
 export const popupMethods = {
 	addPopup,
+	removeBy,
 	removePopup
 };

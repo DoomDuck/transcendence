@@ -4,6 +4,7 @@
 		ClientGameContextOnlineObserver,
 		ClientGameContextOffline,
 		ClientGameContextOnlinePlayer,
+		ClientGameContextOnline,
 		ClientGameContext
 	} from 'pong';
 	import { goto } from '$app/navigation';
@@ -51,6 +52,12 @@
 		} else ctx = new ClientGameContextOffline(onFinish, classic);
 		ctx.animate();
 		ctx.startGame();
+
+		return () => {
+			if (!gameIsOver && online) {
+				(ctx as ClientGameContextOnline).exitGame();
+			}
+		};
 	});
 </script>
 

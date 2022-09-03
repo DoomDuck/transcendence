@@ -2,7 +2,7 @@ services:
   db:
     image: postgres
     restart: always
-    env_file: .env
+    env_file: front/.env
   server:
     build: .
     ports: [ "5000:5000" ]

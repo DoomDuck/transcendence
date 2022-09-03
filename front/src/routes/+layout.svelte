@@ -5,8 +5,9 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		const timeout = setInterval(updateAllStores, 1000);
-		return () => clearInterval(timeout);
+		// TODO: put back
+		// const timeout = setInterval(updateAllStores, 1000);
+		// return () => clearInterval(timeout);
 	});
 </script>
 

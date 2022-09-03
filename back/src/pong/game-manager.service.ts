@@ -14,6 +14,7 @@ import { GameInviteToServer } from 'backFrontCommon';
 import { ActiveUser, UserService } from '../user/user.service';
 import { GameCancelToServer } from 'backFrontCommon';
 import { MatchHistoryService } from '../matchHistory/matchHistory.service';
+import { GameEvent } from 'pong/common/constants';
 
 /* eslint-disable */
 
@@ -23,20 +24,6 @@ type PendingGameInvite = {
   target: ActiveUser;
   classic: boolean;
 };
-
-// DEBUG
-function invitsToString(invits: PendingGameInvite[]) {
-  return (
-    '[' +
-    invits
-      .map(
-        (invite) => `{source: ${invite.sourceId}, target: ${invite.target.id}}`,
-      )
-      .join(', ') +
-    ']'
-  );
-}
-//
 
 @Injectable()
 export class GameManagerService {
@@ -117,12 +104,8 @@ export class GameManagerService {
         [score1, score2],
       );
     };
-    const onFinally = async () => {
-      removeIfPresent(this.games, gameInstance);
-      playerSockets.forEach((playerSocket) => {
-        const activeUser = this.userService.findOneActiveBySocket(playerSocket);
-        if (activeUser !== undefined) activeUser.numberOfCurrentGames--;
-      });
+    const onFinally = () => {
+      this.removeGameInstance(gameInstance);
     };
     const gameInstance: ServerGameContext = new ServerGameContext(
       playerSockets,
@@ -145,6 +128,14 @@ export class GameManagerService {
     }
   }
 
+  removeGameInstance(gameInstance: ServerGameContext) {
+    removeIfPresent(this.games, gameInstance);
+    gameInstance.players.forEach((playerSocket) => {
+      const activeUser = this.userService.findOneActiveBySocket(playerSocket);
+      if (activeUser !== undefined) activeUser.numberOfCurrentGames--;
+    });
+  }
+
   handleGameInvite(sourceSocket: Socket, dto: GameInviteToServer) {
     const source = this.userService.findOneActiveBySocket(sourceSocket)!;
     const target = this.userService.findOneActive(dto.target);
@@ -158,6 +149,12 @@ export class GameManagerService {
       return {
         success: false,
         errorMessage: ChatError.CANNOT_INVITE_YOURSELF,
+      };
+    }
+    if (target.inGame) {
+      return {
+        success: false,
+        errorMessage: ChatError.USER_IN_GAME,
       };
     }
     this.addPendingGameInvite(sourceSocket, source.id, target, dto.classic);
@@ -301,4 +298,28 @@ export class GameManagerService {
       (invite) => invite.target.id != id,
     );
   }
+
+  // DEBUG
+  _invitsToString() {
+    return (
+      '[' +
+      this.pendingGameInvits
+        .map(
+          (invite) =>
+            `{source: ${invite.sourceId}, target: ${invite.target.id}}`,
+        )
+        .join(', ') +
+      ']'
+    );
+  }
+  _gamesToString(): string {
+    let games = this.games.map((game) => {
+      let players = game.players
+        .map((socket) => this.userService.findOneActiveBySocket(socket))
+        .map((user) => `${user?.name}`);
+      return `P1: ${players[0]} vs P2: ${players[1]}`;
+    });
+    return games.join('\n');
+  }
+  //
 }

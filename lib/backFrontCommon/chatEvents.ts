@@ -91,6 +91,7 @@ export class ChatError {
   static readonly CHANNEL_ALREADY_EXISTS = "channel already exists";
   static readonly NO_SUCH_GAME_INVITATION = "no such game invitation";
   static readonly USER_NOT_IN_GAME = "user not in game";
+  static readonly USER_IN_GAME = "user in game";
   static readonly YOU_CANT_BE_YOUR_OWN_FRIEND="you can't be your own friend";
   static readonly YOU_CANT_BLOCK_YOURSELF="you can't be your own friend";
   static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"

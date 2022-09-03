@@ -40,6 +40,7 @@ import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable, writable } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
 import { closeAllModals, closeLastModalListener } from '$lib/ts/modals';
+import { HOSTNAME } from '$env/static/private';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -105,7 +106,7 @@ function loggedIn(): boolean {
 export function connect(code?: string) {
 	if (connected()) return;
 	// TODO: use .env config
-	socket = io('http://localhost:5000/', { auth: { code } });
+	socket = io(`http://${HOSTNAME}:5000/`, { auth: { code } });
 	setupHooks(socket);
 }
 
@@ -156,9 +157,11 @@ function setupHooks(socket: Socket) {
 
 	// DEBUG
 	socket.onAny((event: string, ...args: any[]) => {
+		// if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
 		console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
 	});
 	socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+		// if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
 		console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
 	});
 }
@@ -215,6 +218,7 @@ export function playGame(online: boolean, observe?: boolean, matchMaking?: boole
 export function observeGame(id: Id) {
 	socket!.emit(ChatEvent.GAME_OBSERVE, id, (feedback) => {
 		if (feedback.success) {
+			closeAllModals();
 			gameParams = {
 				online: true,
 				observe: true
@@ -481,10 +485,13 @@ function onTotpRequired(callback: (token: string) => void) {
 	goto(LOGGIN_TOTP_ROUTE);
 }
 
+export const pongKeyForRefresh = writable(Symbol());
 function onGotoGameScreen(classic: boolean, ready: () => void) {
+	if (!connected()) return;
 	closeAllModals();
 	gameParams = { classic, online: true };
-	if (window.location.href != '/Play') goto('/Play').then(ready);
+	pongKeyForRefresh.set(Symbol());
+	goto('/Play').then(ready);
 }
 
 function onMsgToUser(message: DMFromServer) {

@@ -12,17 +12,18 @@ export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
   constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
     super(socket, onFinish, onError);
 
-    this.socket.on(GameEvent.OBSERVER_UPDATE, (gameDataPlainObject: any) => {
+    this.listeners.add(socket, GameEvent.OBSERVER_UPDATE, (gameDataPlainObject: any) => {
       assignRecursively(
         this.gameManager.game.state.data.current,
         gameDataPlainObject
       );
     });
-    this.socket.on(GameEvent.PLAYER_DISCONNECT, (playerId: number) => {
-      this.gameManager.game.pause();
-      this.finally();
-      this.onError!(`The player ${playerId + 1} has disconnected`);
-    });
+    this.listeners.add(socket, GameEvent.PLAYER_DISCONNECT,
+      (playerId: number) => this.errorExit(`The player ${playerId + 1} has disconnected`)
+     );
+    this.listeners.add(socket, GameEvent.EXIT_GAME,
+      (playerId: number) => this.errorExit(`The player ${playerId + 1} has quited`)
+     );
   }
 
   animate() {
@@ -34,6 +35,10 @@ export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
   }
 
   startGame() {}
+
+  exitGame() {
+    this.socket.emit(GameEvent.STOP_OBSERVING);
+  }
 }
 
 function assignRecursively<T>(instance: T, plainObject: any) {

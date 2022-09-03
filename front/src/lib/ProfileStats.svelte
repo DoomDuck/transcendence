@@ -21,14 +21,6 @@
 			Against {opponent}: {winner ? 'Victory' : 'Defeat'} ({score} - {opponentScore})
 		</div>
 	{/each}
-	{#if user.inGame}
-		<div id="statusLine">
-			<p>Status: In Game</p>
-			<button on:click={() => observeGame(user.id)}> Watch </button>
-		</div>
-	{:else}
-		<p>Status: Not in game</p>
-	{/if}
 </div>
 
 <style>
@@ -48,17 +40,6 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-around;
-	}
-
-	#statusLine {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
-
-	p {
-		color: #c9c7c7;
-		text-align: center;
 	}
 	hr {
 		margin: 2px 25px;

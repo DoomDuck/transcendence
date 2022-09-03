@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Pong from '$lib/pong/Pong.svelte';
 	import { gameParamsAreValid } from '$lib/ts/gameParams';
-	import { gameParams, redirectHome } from '$lib/state';
+	import { gameParams, redirectHome, pongKeyForRefresh } from '$lib/state';
 	import { onMount } from 'svelte';
 	import { delay } from 'pong/common/utils';
 
@@ -16,7 +16,9 @@
 </script>
 
 <div id="Play" style="--background: url({background})">
-	<Pong />
+	{#key $pongKeyForRefresh}
+		<Pong />
+	{/key}
 </div>
 
 <style>

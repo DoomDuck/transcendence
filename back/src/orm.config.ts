@@ -5,13 +5,13 @@ import { Channel } from './channelManager/channel.entity';
 import { DatabaseFile } from './user/entities/databaseFile.entity';
 import { ConfigService } from '@nestjs/config';
 
-export function typeOrmFactory(config: ConfigService) : TypeOrmModuleOptions {
+export function typeOrmFactory(config: ConfigService): TypeOrmModuleOptions {
   return {
     type: 'postgres',
-    username: config.get("POSTGRES_USER"),
-    password: config.get("POSTGRES_PASSWORD"),
+    username: config.get('POSTGRES_USER'),
+    password: config.get('POSTGRES_PASSWORD'),
     port: 5432,
-    host: config.get("POSTGRES_DB"),
+    host: config.get('POSTGRES_DB'),
     database: 'postgres',
     // TODO: CHANGE IN PRODUCTION
     synchronize: true,
@@ -19,4 +19,3 @@ export function typeOrmFactory(config: ConfigService) : TypeOrmModuleOptions {
     // entities: ["dist/**/*.entity{.ts,.js}"],
   };
 }
-

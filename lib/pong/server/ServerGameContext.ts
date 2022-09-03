@@ -13,6 +13,7 @@ import { type BarInputEventStruct } from "../common/game/events";
 import { Spawner } from "../common/game/Spawner";
 import {
   delay,
+  Listeners,
   randomGravitonCoords,
   randomPortalCoords,
   removeIfPresent,
@@ -34,7 +35,7 @@ export class ServerGameContext {
   gameLoopHandle?: ReturnType<typeof setInterval>;
   ballOutAlreadyConsumed: boolean = false;
   gameAlreadyStarted: boolean = true;
-  // observerSendStateQueue: ((Game) => void)[] = [];
+  listeners: Listeners<Socket> = new Listeners();
 
   constructor(public players: [Socket, Socket], classic: boolean, public onFinish: FinishCallback, public onFinally: FinallyCallback) {
     this.game = new Game();
@@ -42,18 +43,23 @@ export class ServerGameContext {
       [PLAYER1, PLAYER2],
       [PLAYER2, PLAYER1],
     ]) {
-      this.players[emitter].on(
-        GameEvent.SEND_BAR_EVENT,
-        (...args: BarInputEventStruct) => {
-          this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
-          this.game.state.registerEvent(new BarInputEvent(...args));
-        }
-      );
-      this.players[emitter].on(GameEvent.READY, () => this.isReady(emitter));
-      // this.players[emitter].on(GameEvent.BALL_OUT, (playerId: number) => {
-      //   this.handleGoal(playerId);
-      // });
-      this.players[emitter].on("disconnect", () => this.handlePlayerDisconnect(emitter));
+      this.listeners.add(this.players[emitter], GameEvent.SEND_BAR_EVENT, (...args: BarInputEventStruct) => {
+        this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
+        this.game.state.registerEvent(new BarInputEvent(...args));
+      });
+      this.listeners.add(this.players[emitter], GameEvent.READY, () => this.isReady(emitter));
+      this.listeners.add(this.players[emitter], "disconnect", () => this.handlePlayerDisconnect(emitter));
+      this.listeners.add(this.players[emitter], GameEvent.EXIT_GAME, () => this.handleExitGame(emitter));
+      // this.players[emitter].on(
+      //   GameEvent.SEND_BAR_EVENT,
+      //   (...args: BarInputEventStruct) => {
+      //     this.players[receiver].emit(GameEvent.RECEIVE_BAR_EVENT, ...args);
+      //     this.game.state.registerEvent(new BarInputEvent(...args));
+      //   }
+      // );
+      // this.players[emitter].on(GameEvent.READY, () => this.isReady(emitter));
+      // this.players[emitter].on("disconnect", () => this.handlePlayerDisconnect(emitter));
+      // this.players[emitter].on(GameEvent.EXIT_GAME, () => this.handleExitGame(emitter));
     }
 
     if (!classic) {
@@ -73,6 +79,11 @@ export class ServerGameContext {
     }, GSettings.GAME_STEP_MS);
   }
 
+  finally() {
+    this.listeners.removeAll();
+    this.onFinally();
+  }
+
   isReady(playerId: number) {
     this.ready[playerId] = true;
     if (this.ready[0] && this.ready[1]) {
@@ -90,6 +101,9 @@ export class ServerGameContext {
   addObserver(socket: Socket) {
     this.observers.push(socket);
     socket.on("disconnect", () => {
+      removeIfPresent(this.observers, socket);
+    });
+    socket.on(GameEvent.STOP_OBSERVING, () => {
       removeIfPresent(this.observers, socket);
     });
   }
@@ -190,16 +204,24 @@ export class ServerGameContext {
       observer.emit(GameEvent.GAME_OVER, score);
     }
     clearInterval(this.gameLoopHandle);
-    this.onFinally();
+    this.finally();
     this.onFinish(score[0], score[1]);
   }
 
-  handlePlayerDisconnect(playerId: number) {
-    this.players[1 - playerId].emit(GameEvent.PLAYER_DISCONNECT, playerId);
+  handleGameTermination(event: string, playerId: number) {
+    this.players[1 - playerId].emit(event, playerId);
     for (let observer of this.observers) {
-      observer.emit(GameEvent.PLAYER_DISCONNECT, playerId);
+      observer.emit(event, playerId);
     }
     clearInterval(this.gameLoopHandle);
-    this.onFinally();
+    this.finally();
+  }
+
+  handlePlayerDisconnect(playerId: number) {
+    this.handleGameTermination(GameEvent.PLAYER_DISCONNECT, playerId);
+  }
+
+  handleExitGame(playerId: number) {
+    this.handleGameTermination(GameEvent.EXIT_GAME, playerId);
   }
 }

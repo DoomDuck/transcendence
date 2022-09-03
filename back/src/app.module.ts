@@ -16,9 +16,9 @@ import { join } from 'path';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      imports:[ConfigModule],
+      imports: [ConfigModule],
       useFactory: typeOrmFactory,
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     UserModule,
     LoginModule,

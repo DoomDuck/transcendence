@@ -48,3 +48,19 @@ export function removeIfPresent<T>(array: Array<T>, element: T) {
 export type FinishCallback = (score1: number, score2: number) => void;
 export type FinallyCallback = () => void;
 export type ErrorCallback = (message: string) => void;
+
+type Callback = (...args: any) => any;
+type OnOffMethods = (event: string, listener: Callback) => any;
+export class Listeners<Socket extends { on: OnOffMethods, off: OnOffMethods } > {
+  array: [socket: Socket, event: string, listener: Callback][] = [];
+  add(socket: Socket, event: string, listener: Callback) {
+    socket.on(event, listener);
+    this.array.push([socket, event, listener]);
+  }
+
+  removeAll() {
+    for (let [socket, event, listener] of this.array) {
+      socket.off(event, listener);
+    }
+  }
+}
