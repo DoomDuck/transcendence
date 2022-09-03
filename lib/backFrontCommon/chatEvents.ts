@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDate, IsIn, IsInstance, IsInt, IsOptional, IsPositive, IsString, IsUrl } from "class-validator";
+// import { IsArray, IsBoolean, IsDate, IsIn, IsInstance, IsInt, IsOptional, IsPositive, IsString, IsUrl } from "class-validator";
 import type { UserHistoryDto } from "./chatConversationsDto"
 import type { Id } from "./general"
 
@@ -657,7 +657,7 @@ export class UserInfo {
   isOnline: boolean;
   // @IsBoolean() 
   inGame: boolean;
-  @IsArray() @IsInstance(RelativeMatchInfoFromServer)
+  // @IsArray() @IsInstance(RelativeMatchInfoFromServer)
   matchHistory: RelativeMatchInfoFromServer[];
   constructor(
     id: Id,
