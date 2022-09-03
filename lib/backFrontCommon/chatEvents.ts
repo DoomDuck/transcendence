@@ -77,6 +77,7 @@ export class ChatError {
   static readonly YOU_ARE_BLOCKED ="you are blocked";
   static readonly NOT_IN_CHANNEL ="not in channel";
   static readonly ALREADY_FRIEND = "already friend";
+  static readonly ALREADY_IN_GAME = "already in game";
   static readonly ALREADY_IN_CHANNEL = "already in channel";
   static readonly ALREADY_ADMIN = "already admin";
   static readonly NAME_ALREADY_IN_USE = "name already in use";
@@ -98,6 +99,7 @@ export class ChatError {
   static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"
   static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
   static readonly MUST_SPECIFY_PASSWORD = "must specify password";
+  static readonly ALREADY_IN_MATCHMAKING = "you are already in matchmaking";
 }
 
 export class DMFromServer  {
@@ -528,7 +530,8 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_FRIENDS]: (callback: FeedbackCallbackWithResult<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: FeedbackCallbackWithResult<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: FeedbackCallbackWithResult<UserHistoryDto>) => void;
-  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
+  // [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
+  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean,callback: FeedbackCallback) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;

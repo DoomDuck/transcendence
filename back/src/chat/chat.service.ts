@@ -81,7 +81,7 @@ export class ChatService {
     chanInfo: CreateChannelToServer,
   ) {
     const tempUser = this.userService.findOneActiveBySocket(clientSocket);
-    const tempDb= await this.userService.findOneDbBySocket(clientSocket);
+    const tempDb = await this.userService.findOneDbBySocket(clientSocket);
     if (!tempDb)
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -108,8 +108,8 @@ export class ChatService {
         false,
         ChatError.CHANNEL_NOT_FOUND,
       );
-    //this.channelManagerService.joinChan(tempUser, newChan);
-    this.userService.joinChanUser(tempDb, newChan,tempUser);
+    // this.channelManagerService.joinChan(tempUser, newChan);
+    this.userService.joinChanUser(tempDb, newChan, tempUser);
 
     this.logger.debug('end create channel');
     return this.channelManagerService.newChatFeedbackDto(true);
@@ -157,7 +157,7 @@ export class ChatService {
     );
     const tempUser = await this.userService.findOneDbBySocket(clientSocket);
 
-    const tempActive =  this.userService.findOneActiveBySocket(clientSocket);
+    const tempActive = this.userService.findOneActiveBySocket(clientSocket);
     this.logger.log(
       `any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`,
     );
@@ -186,7 +186,7 @@ export class ChatService {
     );
     if (feedback.success === true) {
       this.logger.log(`joining chanUSer `);
-      this.userService.joinChanUser( tempUser, tempChan,tempActive);
+      this.userService.joinChanUser(tempUser, tempChan, tempActive);
     }
 
     return feedback;
@@ -201,7 +201,7 @@ export class ChatService {
       );
     }
     const targetDb = await this.userService.findOneDb(dm.target);
-	if (!targetDb) {
+    if (!targetDb) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
@@ -423,7 +423,7 @@ export class ChatService {
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
     const target = await this.userService.findOneDb(inviteInfo.target);
-    const activeTarget =  this.userService.findOneActive(inviteInfo.target);
+    const activeTarget = this.userService.findOneActive(inviteInfo.target);
     if (!target)
       return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
     const feedback = this.channelManagerService.inviteUserToChannel(
@@ -431,11 +431,11 @@ export class ChatService {
       target,
       channel,
       wss,
-	  activeTarget
+      activeTarget,
     );
-	if (feedback.success)
-		this.userService.joinChanUser(target,channel)
-	return feedback
+    if (feedback.success)
+      this.userService.joinChanUser(target, channel, activeTarget);
+    return feedback;
   }
 
   async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
@@ -449,9 +449,13 @@ export class ChatService {
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
     if (!this.channelManagerService.isCreator(sender, channel))
       return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
-    channel.member.forEach((member) => {
-      const tempUser = this.userService.findOneActive(member);
-      if (tempUser) this.channelManagerService.leaveChannel(channel, tempUser);
+    channel.member.forEach(async (member) => {
+      const tempUser = await this.userService.findOneDb(member);
+      const tempActive = this.userService.findOneActive(member);
+      if (tempUser) {
+        this.logger.debug(tempUser.name);
+        this.userService.leaveChannel(tempUser, channel, tempActive);
+      }
     });
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
@@ -527,16 +531,17 @@ export class ChatService {
   async getChannelsList(
     socket: Socket,
   ): Promise<RequestFeedbackDto<ChannelSummary[]>> {
-
-  this.logger.log('dans getchannellist');
+    this.logger.log('dans getchannellist');
     const sender = this.userService.findOneActiveBySocket(socket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-  const result =  await this.channelManagerService.getPublicProtectedChan(sender);
-  this.logger.log(JSON.stringify(result));
+    const result = await this.channelManagerService.getPublicProtectedChan(
+      sender,
+    );
+    this.logger.log(JSON.stringify(result));
     return {
       success: true,
-      result: result
+      result: result,
     };
   }
 }

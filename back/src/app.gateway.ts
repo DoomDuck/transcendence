@@ -184,7 +184,7 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
   handleJoinMatchMaking(socket: Socket, classic: boolean) {
-    this.gameManagerService.addMatchmaking(socket, classic);
+    return this.gameManagerService.addMatchmaking(socket, classic);
   }
 
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)

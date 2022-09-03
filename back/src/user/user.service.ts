@@ -41,6 +41,7 @@ export class ActiveUser {
   get inGame(): boolean {
     return this.numberOfCurrentGames > 0;
   }
+  inMatchmaking: boolean = false;
   numberOfCurrentGames = 0;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
@@ -79,7 +80,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly databaseFilesService: DatabaseFilesService,
     private readonly channelManagerService: ChannelManagerService,
     private readonly matchHistoryService: MatchHistoryService,
   ) {}
@@ -90,6 +90,12 @@ export class UserService {
       user.socketUser.forEach((socket) => logger.debug(socket.id));
     });
   }
+  isInMatchmaking(socket: Socket): boolean {
+    const user = this.findOneActiveBySocket(socket);
+    if (user) return user.inMatchmaking;
+    else return false;
+  }
+
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
     chatMessage.forEach((message) =>
@@ -304,25 +310,26 @@ export class UserService {
     logger.log(`userDto = ${userDto.id}`);
     logger.log(id);
     let i = 0;
-    let UserDb = await this.findOneDb(id);
-    if (UserDb === null) {
+    let userDb = await this.findOneDb(id);
+    if (userDb === null) {
       while (await this.findOneDbByName(userDto.name)) {
         i++;
         userDto.name = userDto.name + i;
       }
-      UserDb = await this.usersRepository.save(
+      userDb = await this.usersRepository.save(
         new User(userDto.id, userDto.name),
       );
     }
-    logger.log(UserDb.name);
+    logger.log(userDb.name);
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       this.arrayActiveUser.push(
-        new ActiveUser(UserDb.id, userDto.name, userDto.socket),
+        new ActiveUser(userDb.id, userDto.name, userDto.socket),
       );
     } else {
       tempUser.socketUser.push(userDto.socket);
     }
+    userDb.channel.forEach((chan) => userDto.socket.join(chan));
     logger.log('end add one user');
   }
 
@@ -341,9 +348,9 @@ export class UserService {
     }
   }
 
-  async joinChanUser(user: User, channel: Channel, activeUser?:ActiveUser) {
+  async joinChanUser(user: User, channel: Channel, activeUser?: ActiveUser) {
     const logger = new Logger('joinChanUser');
-  
+
     user.channel.push(channel.name);
     this.usersRepository.update(user!.id, { channel: user.channel });
 
@@ -497,6 +504,8 @@ export class UserService {
     this.channelManagerService.leaveChannel(channel, dbUser);
     if (activeUser)
       activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+
+    this.logger.debug(`in leave channel${dbUser.name} `);
     dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);

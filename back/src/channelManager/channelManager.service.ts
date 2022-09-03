@@ -266,14 +266,16 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(true);
     }
   }
-  async getPublicProtectedChan(user:User | ActiveUser) {
+  async getPublicProtectedChan(user: User | ActiveUser) {
     let chanDb = await this.channelRepository.find({
-      where: { category: ChannelCategory.PUBLIC},
+      where: { category: ChannelCategory.PUBLIC },
     });
-	this.logger.debug(`dans get public protect ${JSON.stringify(chanDb)}`)
+    this.logger.debug(`dans get public protect ${JSON.stringify(chanDb)}`);
     let result: ChannelSummary[] = [];
     chanDb.forEach((chan) =>
-      result.push(new ChannelSummary(chan.name, chan.category, this.isMember(user,chan))),
+      result.push(
+        new ChannelSummary(chan.name, chan.category, this.isMember(user, chan)),
+      ),
     );
     return result;
   }
@@ -332,7 +334,7 @@ export class ChannelManagerService {
     target: User,
     channel: Channel,
     wss: Server,
-	activeTarget?:ActiveUser
+    activeTarget?: ActiveUser,
   ): ChatFeedbackDto {
     if (!this.isAdmin(sender, channel))
       return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
@@ -341,13 +343,13 @@ export class ChannelManagerService {
     if (this.isBanned(target, channel))
       return { success: false, errorMessage: ChatError.USER_IS_BANNED };
     this.joinChanPrivate(target, channel);
-	if(activeTarget)
-	activeTarget.socketUser.forEach((socket) =>
-	  wss.to(socket.id).emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, {
-		channel: channel.name,
-		source: sender.id,
-	  }),
-	);
+    if (activeTarget)
+      activeTarget.socketUser.forEach((socket) =>
+        wss.to(socket.id).emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, {
+          channel: channel.name,
+          source: sender.id,
+        }),
+      );
     return { success: true };
   }
   deleteChannel(channel: Channel) {
