@@ -1,4 +1,4 @@
-// import { IsInt, IsString } from "class-validator";
+// import { IsArray, IsBoolean, IsDate, IsIn, IsInstance, IsInt, IsOptional, IsPositive, IsString, IsUrl } from "class-validator";
 import type { UserHistoryDto } from "./chatConversationsDto"
 import type { Id } from "./general"
 
@@ -99,18 +99,28 @@ export class ChatError {
   static readonly MUST_SPECIFY_PASSWORD = "must specify password";
 }
 
-export class DMFromServer  {
+export class DMFromServer {
+  // @IsPositive() @IsInt() 
+  source: Id;
+  // @IsString() 
+  content: string;
+  // @IsOptional() @IsBoolean() 
+  isMe: boolean | undefined;
   constructor(
-    public source: Id,
-    public content: string,
-	public isMe?:boolean
-  ) { }
+    source: Id,
+    content: string,
+	isMe?: boolean
+  ) {
+    this.source = source;
+    this.content = content;
+    this.isMe = isMe;
+  }
 }
 
 export class DMToServer {
-  // @IsInt()
+  // @IsPositive() @IsInt() 
   target: Id;
-  // @IsString()
+  // @IsString() 
   content: string;
 
   constructor(
@@ -122,46 +132,91 @@ export class DMToServer {
   }
 }
 
-export class CMFromServer  {
+export class CMFromServer {
+  // @IsPositive() @IsInt() 
+  source: Id;
+  // @IsString() 
+  channel: string;
+  // @IsString() 
+  content: string;
   constructor(
-    public source: Id,
-    public channel: string,
-    public content: string,
-  ) { }
+    source: Id,
+    channel: string,
+    content: string,
+  ) {
+    this.source = source;
+    this.channel = channel;
+    this.content = content;
+  }
 }
 
-export class CMToServer  {
+export class CMToServer {
+  // @IsString() 
+  channel: string;
+  // @IsString() 
+  content: string;
   constructor(
-    public channel: string,
-    public content: string,
-  ) { }
+      channel: string,
+      content: string,
+  ) {
+      this.channel = channel;
+      this.content = content;
+  }
 }
 
 export class JoinChannelFromServer {
-  constructor(
-    public channel: string,
-    public newUser: Id,
-  ) { }
+  //   @IsString() 
+  channel: string;
+  //   @IsPositive() @IsInt() 
+  newUser: Id;
+    constructor(
+      channel: string,
+      newUser: Id,
+    ) {
+      this.channel = channel;
+      this.newUser = newUser;
+    }
 }
 
 export class JoinChannelToServer {
-  constructor(
-    public channel: string,
-    public password?:string,
-  ) { }
+  //   @IsString() 
+  channel: string;
+  //   @IsOptional() @IsString() 
+  password?: string;
+    constructor(
+      channel: string,
+      password?: string,
+    ) {
+      this.channel = channel;
+      this.password = password;
+   }
 }
 
 export class SetPasswordToServer {
+  // @IsString() 
+  channel: string;
+  // @IsString() 
+  password: string;
   constructor(
-    public channel: string,
-    public password: string
-  ) { }
+    channel: string,
+    password: string
+  ) {
+    this.channel = channel;
+    this.password = password;
+  }
 }
 export class SetNewAdminToServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  target: Id;
   constructor(
-    public channel: string,
-    public target: Id
-  ) { }
+    channel: string,
+    target: Id
+  ) {
+    this.channel = channel;
+    this.target = target;
+  }
 }
 
 export enum ChannelCategory {
@@ -169,236 +224,556 @@ export enum ChannelCategory {
 };
 
 export class FriendInviteToServer {
-  constructor(public target: Id)  { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor(
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 
 export class CreateChannelToServer {
+  // @IsString() 
+  channel: string;
+  // @IsIn([ChannelCategory.PRIVATE, ChannelCategory.PROTECTED, ChannelCategory.PUBLIC]) 
+  category: ChannelCategory;
+  // @IsOptional() @IsString() 
+  password: string | undefined;
   constructor(
-    public channel: string,
-    public category: ChannelCategory,
-    public password?: string,
-  ) { }
+    channel: string,
+    category: ChannelCategory,
+    password?: string,
+  ) {
+    this.channel = channel;
+    this.category = category;
+    this.password = password;
+  }
 }
 
 export class InviteChannelFromServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  source: Id;
   constructor(
-    public channel: string,
-    public source: Id
-  ) { }
+    channel: string,
+    source: Id
+  ) {
+    this.channel = channel;
+    this.source = source;
+  }
 }
 
 export class InviteChannelToServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  target: Id;
   constructor(
-    public channel: string,
-    public target: Id,
-  ) { }
+    channel: string,
+    target: Id,
+  ) {
+    this.channel = channel;
+    this.target = target;
+  }
 }
 
 export class GameInviteFromServer {
-  constructor(public source: Id, public classic: boolean) { }
+  // @IsPositive() @IsInt() 
+  source: Id;
+  // @IsBoolean() 
+  classic: boolean;
+  constructor(
+    source: Id,
+    classic: boolean
+  ) {
+    this.source = source;
+    this.classic = classic;
+  }
 }
 
 export class GameInviteToServer {
-  constructor(public target: Id, public classic: boolean) { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  // @IsBoolean() 
+  classic: boolean;
+  constructor(
+    target: Id,
+    classic: boolean,
+  ) {
+    this.target = target;
+    this.classic = classic;
+  }
 }
 
 export class GameAcceptFromServer {
-  constructor(public source: Id) { }
+  // @IsPositive() @IsInt() 
+  source: Id;
+  constructor(
+    source: Id
+  ) {
+    this.source = source;
+  }
 }
 
 export class GameAcceptToServer {
-  constructor(public target: Id) { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor(
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 
 export class GameRefuseFromServer {
+  // @IsPositive() @IsInt() 
+  source: Id;
+  // @IsOptional() @IsString() 
+  reason: string | undefined;
   constructor(
-    public source: Id,
-    public reason?: string,
-  ) { }
+    source: Id,
+    reason?: string,
+  ) {
+    this.source = source;
+    this.reason = reason;
+  }
 }
 
 export class GameRefuseToServer {
+  // @IsPositive() @IsInt() 
+  target: Id;
+  // @IsOptional() @IsString() 
+  reason: string | undefined;
   constructor(
-    public target: Id,
-    public reason?: string,
-  ) { }
+    target: Id,
+    reason?: string,
+  ) {
+    this.target = target;
+    this.reason = reason;
+  }
 }
 
 export class PostAvatar {
-  constructor(public imageDataUrl: string) {  }
+  // @IsUrl() 
+  imageDataUrl: string;
+  constructor(
+    imageDataUrl: string
+  ) { 
+    this.imageDataUrl = imageDataUrl;
+  }
 }
 
 export class GetUser {
-  constructor(public target: Id) { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor(
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 
 export class LeaderboardItemDto {
+  // @IsPositive() @IsInt()
+  id: Id;
+  // @IsString()
+  name: string;
+  // @IsPositive() @IsInt()
+  victory: number;
+  // @IsPositive() @IsInt()
+  defeat: number;
+  // @IsInt()
+  score: number;
   constructor(
-    public id : number,
-    public name : string,
-    public victory : number,
-    public defeat : number,
-    public score : number,
-  ) { }
+    id : number,
+    name : string,
+    victory : number,
+    defeat : number,
+    score : number,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.victory = victory;
+    this.defeat = defeat;
+    this.score = score;
+  }
 }
 
 export class GetLeaderBoardResponse {
-  constructor(public items: LeaderboardItemDto[]) {  }
-}
-
-export class BlockUserToServer  {
-  constructor(public target: Id) { }
-}
-
-export class BanUserToServer  {
+  // @IsArray() @IsInstance(LeaderboardItemDto) 
+  items: LeaderboardItemDto[];
   constructor(
-    public channel:string,
-    public target: Id,
-    public duration:number,
-  ) { }
+    items: LeaderboardItemDto[]
+  ) { 
+    this.items = items;
+  }
+}
+
+export class BlockUserToServer {
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor(
+    target: Id
+  ) {
+    this.target = target;
+  }
+}
+
+export class BanUserToServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  target: Id;
+  // @IsPositive() @IsInt() 
+  duration: number;
+  constructor(
+    channel: string,
+    target: Id,
+    duration: number,
+  ) {
+    this.channel = channel;
+    this.target = target;
+    this.duration = duration;
+  }
 }
 
 export class MatchInfoToServer {
-  constructor(public target: Id) { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor(
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 
 export class MatchInfoFromServer {
+  // @IsPositive() @IsInt() 
+  winner: Id;
+  // @IsPositive() @IsInt() 
+  looser: Id;
+  // @IsPositive() @IsInt() 
+  winnerScore: number;
+  // @IsPositive() @IsInt() 
+  looserScore: number;
+  // @IsDate()
+  date: Date;
   constructor(
-   public winner: Id,
-   public looser: Id,
-   public winnerScore : number,
-   public looserScore:number,
-   public date : Date
-  ) { }
+    winner: Id,
+    looser: Id,
+    winnerScore : number,
+    looserScore: number,
+    date : Date
+  ) {
+    this.winner = winner;
+    this.looser = looser;
+    this.winnerScore = winnerScore;
+    this.looserScore = looserScore;
+    this.date = date 
+  }
 };
 
 export class RelativeMatchInfoFromServer {
+  // @IsPositive() @IsInt() 
+  opponent: Id;
+  // @IsBoolean() 
+  winner: boolean;
+  // @IsPositive() @IsInt()
+  score: number;
+  // @IsPositive() @IsInt() 
+  opponentScore: number;
   constructor(
-    public opponent: Id,
-    public winner: boolean,
-    public score : number,
-    public opponentScore: number
-  ) { }
+    opponent: Id,
+    winner: boolean,
+    score : number,
+    opponentScore: number
+  ) {
+    this.opponent = opponent;
+    this.winner = winner;
+    this.score = score;
+    this.opponentScore = opponentScore;
+  }
 };
 
-export class GetBannedListToServer   {
+export class GetBannedListToServer {
+  // @IsString() 
+  channel: string;
   constructor(
-    public channel:string
-  ) { }
+    channel: string
+  ) {
+    this.channel = channel;
+  }
 }
-export class GetBannedListFromServer   {
+export class GetBannedListFromServer {
+  // @IsArray() @IsInt() 
+  users: Id[];
   constructor(
-    public users:Id[]
-  ) { }
+    users: Id[]
+  ) {
+    this.users = users;
+  }
 }
-export class SetUsernameToServer   {
+export class SetUsernameToServer {
+  // @IsString() 
+  name: string;
   constructor(
-    public name:string
-  ) { }
-}
-
-export class GameCancelFromServer   {
-  constructor(
-    public source: Id,
-    public reason?: string,
-  ) { }
-}
-
-export class GameCancelToServer   {
-  constructor(
-    public target: Id,
-    public reason?: string,
-  ) { }
+    name: string
+  ) {
+    this.name = name;
+  }
 }
 
-export class DeleteGameInviteFromServer   {
+export class GameCancelFromServer {
+  // @IsPositive() @IsInt() 
+  source: Id;
+  // @IsOptional() @IsString() 
+  reason: string | undefined;
   constructor(
-    public target: Id
-  ) { }
+    source: Id,
+    reason?: string,
+  ) {
+    this.source = source;
+    this.reason = reason;
+  }
 }
 
-export class ChanInviteAccept   {
+export class GameCancelToServer {
+  // @IsPositive() @IsInt() 
+  target: Id;
+  // @IsOptional() @IsString() 
+  reason: string | undefined;
   constructor(
-    public channel: string,
-  ) { }
+    target: Id,
+    reason?: string,
+  ) {
+    this.target = target;
+    this.reason = reason;
+  }
 }
 
-export class ChanInviteRefuse   {
+export class DeleteGameInviteFromServer {
+  // @IsPositive() @IsInt() 
+  target: Id;
   constructor(
-    public channel: string,
-  ) { }
+    target: Id
+  ) {
+    this.target = target;
+  }
+}
+
+export class ChanInviteAccept {
+  // @IsPositive() @IsInt() 
+  channel: string;
+  constructor(
+    channel: string,
+  ) {
+    this.channel = channel;
+  }
+}
+
+export class ChanInviteRefuse {
+  // @IsString() 
+  channel: string;
+  constructor(
+    channel: string
+  ) {
+    this.channel = channel;
+  }
 }
 
 export class MyInfo {
+  // @IsPositive() @IsInt() 
+  id: Id;
+  // @IsString() 
+  name: string;
+  // @IsArray() @IsPositive() @IsInt() 
+  friendlist: Id[];
+  // @IsArray() @IsPositive() @IsInt() 
+  blocked: Id[];
+  // @IsArray() @IsString() 
+  channels: string[];
+  // @IsPositive() @IsInt() 
+  win: number;
+  // @IsPositive() @IsInt() 
+  loose: number;
+  // @IsPositive() @IsInt() 
+  score: number;
+  // @IsPositive() @IsInt() 
+  ranking: number;
+  // TODO: check for null
+  // @IsString() 
+  avatar: string | null;
+  // @IsString() 
+  totpSecret: string | null;
+  // @IsBoolean() 
+  inGame: boolean;
   constructor (
-    public id: Id,
-    public name: string,
-    public friendlist: Id[],
-    public blocked: Id[],
-    public channels: string[],
-    public win: number,
-    public loose: number,
-    public score: number,
-    public ranking: number,
-    public avatar: string | null,
-    public totpSecret: string | null,
-    public inGame: boolean
-  ) { }
+    id: Id,
+    name: string,
+    friendlist: Id[],
+    blocked: Id[],
+    channels: string[],
+    win: number,
+    loose: number,
+    score: number,
+    ranking: number,
+    avatar: string | null,
+    totpSecret: string | null,
+    inGame: boolean
+  ) {
+    this.id = id;
+    this.name = name;
+    this.friendlist = friendlist;
+    this.blocked = blocked;
+    this.channels = channels;
+    this.win = win;
+    this.loose = loose;
+    this.score = score;
+    this.ranking = ranking;
+    this.avatar = avatar;
+    this.totpSecret = totpSecret;
+    this.inGame = inGame;
+  }
 };
 
-export class UserInfo  {
+export class UserInfo {
+  // @IsPositive() @IsInt() 
+  id: Id;
+  // @IsString() 
+  name: string;
+  // @IsPositive() @IsInt() 
+  win: number;
+  // @IsPositive() @IsInt() 
+  loose: number;
+  // @IsPositive() @IsInt() 
+  score: number;
+  // @IsPositive() @IsInt() 
+  ranking: number;
+  // TODO: check for null
+  // @IsString() 
+  avatar: string | null;
+  // @IsBoolean() 
+  isOnline: boolean;
+  // @IsBoolean() 
+  inGame: boolean;
+  // @IsArray() @IsInstance(RelativeMatchInfoFromServer)
+  matchHistory: RelativeMatchInfoFromServer[];
   constructor(
-    public id: Id,
-    public name: string,
-    public win: number,
-    public loose: number,
-    public score: number,
-    public ranking: number,
-    public avatar: string | null,
-    public isOnline: boolean,
-    public inGame: boolean,
-    public matchHistory: RelativeMatchInfoFromServer[]
-  ) { }
+    id: Id,
+    name: string,
+    win: number,
+    loose: number,
+    score: number,
+    ranking: number,
+    avatar: string | null,
+    isOnline: boolean,
+    inGame: boolean,
+    matchHistory: RelativeMatchInfoFromServer[]
+  ) {
+    this.id = id;
+    this.name = name;
+    this.win = win;
+    this.loose = loose;
+    this.score = score;
+    this.ranking = ranking;
+    this.avatar = avatar;
+    this.isOnline = isOnline;
+    this.inGame = inGame;
+    this.matchHistory = matchHistory;
+  }
 };
 
 export class UserInfoToServer {
-  constructor(public target: Id) { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor(
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 
-export class BanUserFromServer  {
+export class BanUserFromServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  sender: Id;
+  // @IsPositive() @IsInt() 
+  duration: number;
   constructor(
-    public channel:string,
-    public sender:Id,
-    public duration:number,
-  ) { }
+    channel: string,
+    sender: Id,
+    duration: number,
+  ) {
+    this.channel = channel;
+    this.sender = sender;
+    this.duration = duration;
+  }
 }
 
-export class MuteUserToServer  {
+export class MuteUserToServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  target: Id;
+  // @IsPositive() @IsInt() 
+  duration: number;
   constructor(
-    public channel:string,
-    public target: Id,
-    public duration:number,
-  ) { }
+    channel: string,
+    target: Id,
+    duration: number,
+  ) {
+    this.channel = channel;
+    this.target = target;
+    this.duration = duration;
+  }
 }
 
 export class MuteUserFromServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  sender: Id;
+  // @IsPositive() @IsInt() 
+  duration: number;
   constructor(
-    public channel:string,
-    public sender: Id,
-    public duration:number,
-  ) { }
+    channel: string,
+    sender: Id,
+    duration: number,
+  ) {
+    this.channel = channel;
+    this.sender = sender;
+    this.duration = duration;
+  }
 };
-export class DeleteChannelToServer
-{
-	constructor(
-	  public channel:string
-	){ }
+export class DeleteChannelToServer {
+  // @IsString() 
+  channel: string;
+  constructor(
+    channel: string
+  ) {
+    this.channel = channel;
+  }
 }
 export class IsInGameToServer {
-  constructor (public target: Id) { }
+  // @IsPositive() @IsInt() 
+  target: Id;
+  constructor (
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 export class GetChannelInfoToServer {
-  constructor (public channel: string) { }
+  // @IsString() 
+  channel: string;
+  constructor (
+    channel: string
+  ) {
+    this.channel = channel;
+  }
 }
 export enum ChannelRights {
   OWNER,
@@ -406,74 +781,148 @@ export enum ChannelRights {
   USER
 }
 export class ChannelUser {
+  // @IsPositive() @IsInt() 
+  id: Id;
+  // @IsIn([ChannelRights.ADMIN, ChannelRights.OWNER, ChannelRights.USER]) 
+  rights: ChannelRights;
+  // @IsBoolean() 
+  muted: boolean;
   constructor(
-    public id: Id,
-    public rights: ChannelRights,
-    public muted: boolean
-  ) { }
+    id: Id,
+    rights: ChannelRights,
+    muted: boolean,
+  ) {
+    this.id = id;
+    this.rights = rights;
+    this.muted = muted;
+  }
 }
 export class ChannelInfo {
+  // @IsArray() @IsInstance(ChannelUser) 
+  users: ChannelUser[];
+  // @IsArray() @IsPositive() @IsInt() 
+  bannedUsers: Id[];
+  // @IsString() 
+  channelType: ChannelCategory;
   constructor (
-    public users: ChannelUser[],
-    public bannedUsers: Id[],
-    public channelType: ChannelCategory,
-  ) { }
+    users: ChannelUser[],
+    bannedUsers: Id[],
+    channelType: ChannelCategory,
+  ) {
+    this.users = users;
+    this.bannedUsers = bannedUsers;
+    this.channelType = channelType;
+  }
 }
 export class LeaveChannelToServer {
+  // @IsString() 
+  channel: string;
   constructor(
-    public channel: string,
-  ) { }
+    channel: string,
+  ) {
+    this.channel = channel;
+  }
 }
 export class ChannelDeletedFromServer {
+  // @IsString() 
+  channel: string;
   constructor(
-    public channel: string,
-  ) { }
+    channel: string,
+  ) {
+    this.channel = channel;
+  }
 }
 export class BlockUserFromServer {
+  // @IsPositive() @IsInt() 
+  source: Id;
   constructor(
-    public source: Id,
-  ) { }
+    source: Id
+  ) {
+    this.source = source;
+  }
 }
 export class UnblockUserToServer {
+  // @IsPositive() @IsInt() 
+  target: Id;
   constructor(
-    public target: Id
-  ) { }
+    target: Id
+  ) {
+    this.target = target;
+  }
 }
 export class UnbanUserToServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  target: Id;
   constructor(
-    public channel: string,
-    public target: Id
-  ) { }
+    channel: string,
+    target: Id,
+  ) {
+    this.channel = channel;
+    this.target = target;
+  }
 }
 export class ChannelSummary {
+  // @IsString() 
+  channel: string;
+  // @IsString() 
+  category: ChannelCategory;
   constructor(
-    public channel: string,
-    public category: ChannelCategory,
-  ) { }
+    channel: string,
+    category: ChannelCategory,
+  ) {
+    this.channel = channel;
+    this.category = category;
+  }
 }
 export class UnmuteUserToServer {
+  // @IsString() 
+  channel: string;
+  // @IsPositive() @IsInt() 
+  target: Id;
   constructor(
-    public channel: string,
-    public target: Id
-  ) { }
+    channel: string,
+    target: Id
+  ) {
+    this.channel = channel;
+    this.target = target;
+  }
 }
 
 
 export class ChatFeedbackDto {
+  // @IsBoolean() 
+  success: boolean;
+  // @IsOptional() @IsString() 
+  errorMessage: string | undefined;
   constructor(
-    public success: boolean,
-    public errorMessage?: string,
-  ) { }
+    success: boolean,
+    errorMessage?: string,
+  ) {
+    this.success = success;
+    this.errorMessage = errorMessage;
+  }
 }
 
 export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
 
 export class RequestFeedbackDto<Result> {
+  // @IsBoolean() 
+  success: boolean;
+  // @IsString() 
+  errorMessage?: string;
+  // @IsString() 
+  result?: Result;
   constructor(
-    public success: boolean,
-    public errorMessage?: string,
-    public result?: Result,
-  ) { }
+    success: boolean,
+    errorMessage?: string,
+    result?: Result,
+  ) {
+    this.success = success;
+    this.errorMessage = errorMessage;
+    this.result = result;
+  }
 }
 
 export type FeedbackCallbackWithResult<Result> = (feedback: RequestFeedbackDto<Result>) => void;
@@ -497,9 +946,9 @@ export interface ServerToClientEvents {
   [ChatEvent.PLAYER_ID_CONFIRMED]: (playerId: Id, callback: () => void) => void;
   [ChatEvent.DELETE_GAME_INVITE]: (dto: DeleteGameInviteFromServer) => void;
 
-  [ChatEvent.BANNED_NOTIF]: (dto:BanUserFromServer) => void;
-  [ChatEvent.BLOCKED_NOTIF]: (dto:BlockUserFromServer) => void;
-  [ChatEvent.MUTED_NOTIF]: (dto:MuteUserFromServer) => void;
+  [ChatEvent.BANNED_NOTIF]: (dto: BanUserFromServer) => void;
+  [ChatEvent.BLOCKED_NOTIF]: (dto: BlockUserFromServer) => void;
+  [ChatEvent.MUTED_NOTIF]: (dto: MuteUserFromServer) => void;
   [ChatEvent.CHANNEL_DELETED_NOTIF]: (dto: ChannelDeletedFromServer) => void;
 
   // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
@@ -535,7 +984,7 @@ export interface ClientToServerEvents {
   [ChatEvent.BAN_USER]: (dto: BanUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.MUTE_USER]: (dto: MuteUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.QUIT_MATCHMAKING]: () => void;
-  [ChatEvent.DELETE_CHANNEL]: (dto:DeleteChannelToServer, callback: FeedbackCallback) => void;
+  [ChatEvent.DELETE_CHANNEL]: (dto: DeleteChannelToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GET_CHANNEL_INFO]: (dto: GetChannelInfoToServer, callback: FeedbackCallbackWithResult<ChannelInfo>) => void;
   [ChatEvent.BLOCK_USER]: (dto: BlockUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.SET_USERNAME]: (dto: SetUsernameToServer, callback: FeedbackCallback) => void;
@@ -545,5 +994,4 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_BANNED_IN_CHANNEL]: (dto: GetBannedListToServer, callback: FeedbackCallbackWithResult<GetBannedListFromServer>) => void;
   [ChatEvent.UNBAN_USER]: (dto: UnbanUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.UNMUTE_USER]: (dto: UnmuteUserToServer, callback: FeedbackCallback) => void;
-
 }

@@ -1,13 +1,7 @@
 import {
-	BanUserToServer,
-	ChannelInfo,
-	ChannelUser,
-	ChatError,
 	ChatEvent,
 	ChatFeedbackDto,
-	MuteUserToServer,
 	type ClientToServerEvents,
-	type FeedbackCallbackWithResult
 } from 'backFrontCommon';
 import { socket, updateChannel } from '$lib/state';
 

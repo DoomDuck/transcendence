@@ -2,7 +2,7 @@
 	import Modal from '$lib/Modal.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import ChannelDetails from './ChannelDetails.svelte';
-	import { getChannel, myself, updateChannel } from '$lib/state';
+	import { getChannel, updateChannel } from '$lib/state';
 	import { ChannelCategory } from 'backFrontCommon';
 
 	export let channel: string;
