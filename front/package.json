@@ -4,6 +4,7 @@
 	"scripts": {
 		"dev": "vite dev --cors --host",
 		"build": "vite build",
+		"serve": "vite serve --cors --host",
 		"package": "svelte-kit package",
 		"preview": "vite preview",
 		"postinstall": "svelte-kit sync",
