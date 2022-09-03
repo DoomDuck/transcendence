@@ -11,6 +11,6 @@ export class LoginController {
   @Get()
   login(@Res() response: Response): void {
     this.logger.log('User just logged in!');
-    response.redirect(this.loginService.auth_url);
+    response.redirect(this.loginService.authUrl);
   }
 }

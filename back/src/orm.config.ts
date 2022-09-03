@@ -11,11 +11,9 @@ export function typeOrmFactory(config: ConfigService): TypeOrmModuleOptions {
     username: config.get('POSTGRES_USER'),
     password: config.get('POSTGRES_PASSWORD'),
     port: 5432,
-    host: config.get('POSTGRES_DB'),
+    host: config.get('POSTGRES_ADDRESS'),
     database: 'postgres',
-    // TODO: CHANGE IN PRODUCTION
     synchronize: true,
     entities: [User, DatabaseFile, Channel, Match],
-    // entities: ["dist/**/*.entity{.ts,.js}"],
   };
 }

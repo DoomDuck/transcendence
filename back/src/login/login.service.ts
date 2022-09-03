@@ -14,7 +14,8 @@ const AUTH_URL = 'https://api.intra.42.fr/oauth/authorize';
 
 @Injectable()
 export class LoginService {
-  readonly auth_url: string;
+  readonly authUrl: string;
+  private readonly redirectURI: string;
 
   private readonly logger = new Logger('LoginService');
   private clientsRequiringTotp = new Map<
@@ -26,23 +27,23 @@ export class LoginService {
     private configService: ConfigService,
     private userService: UserService,
   ) {
-    const appId = configService.get<string>('PUBLIC_APP_42_ID');
-    const redirectURI = configService.get<string>('REDIRECT_URI');
+    const appId = configService.getOrThrow<string>('PUBLIC_APP_42_ID');
+    const serverAddress = configService.getOrThrow<string>('PUBLIC_SERVER_ADDRESS');
+    const serverPagePort = configService.getOrThrow<string>('PUBLIC_SERVER_PAGE_PORT');
+    this.redirectURI = `http://${serverAddress}:${serverPagePort}`;
 
-    if (!(appId && redirectURI)) throw Error('Could not get environment');
+    const encodedURI = encodeURIComponent(this.redirectURI);
 
-    const encodedURI = encodeURIComponent(redirectURI);
-
-    this.auth_url = `${AUTH_URL}?client_id=${appId}&redirect_uri=${encodedURI}&response_type=code`;
+    this.authUrl = `${AUTH_URL}?client_id=${appId}&redirect_uri=${encodedURI}&response_type=code`;
   }
 
   async fetchToken(code: string): Promise<string> {
     const body = JSON.stringify({
       grant_type: 'authorization_code',
-      client_id: this.configService.get<string>('PUBLIC_APP_42_ID'),
-      client_secret: this.configService.get<string>('APP_42_SECRET'),
+      client_id: this.configService.getOrThrow<string>('PUBLIC_APP_42_ID'),
+      client_secret: this.configService.getOrThrow<string>('APP_42_SECRET'),
       code,
-      redirect_uri: this.configService.get<string>('REDIRECT_URI'),
+      redirect_uri: this.redirectURI,
     });
     const response = await fetch(`https://api.intra.42.fr/oauth/token/`, {
       method: 'POST',

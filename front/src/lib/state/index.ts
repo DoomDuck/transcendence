@@ -40,7 +40,7 @@ import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable, writable } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
 import { closeAllModals, closeLastModalListener } from '$lib/ts/modals';
-import { HOSTNAME } from '$env/static/private';
+import { PUBLIC_SERVER_ADDRESS, PUBLIC_SERVER_REQUEST_PORT } from '$env/static/public';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -106,7 +106,7 @@ function loggedIn(): boolean {
 export function connect(code?: string) {
 	if (connected()) return;
 	// TODO: use .env config
-	socket = io(`http://${HOSTNAME}:5000/`, { auth: { code } });
+	socket = io(`http://${PUBLIC_SERVER_ADDRESS}:${PUBLIC_SERVER_REQUEST_PORT}`, { auth: { code } });
 	setupHooks(socket);
 }
 

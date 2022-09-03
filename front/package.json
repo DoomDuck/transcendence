@@ -6,7 +6,7 @@
 		"build": "vite build",
 		"serve": "vite serve --cors --host",
 		"package": "svelte-kit package",
-		"preview": "vite preview",
+		"preview": "vite preview --host",
 		"postinstall": "svelte-kit sync",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",

@@ -1,4 +1,4 @@
-FROM node:alpine
+ FROM node:alpine
 
 RUN mkdir /www
 WORKDIR /www
@@ -12,9 +12,16 @@ COPY back/package*.json back/
 COPY front/package*.json front/
 RUN cd lib/backFrontCommon/ && npm install
 RUN cd lib/pong/ && npm install
-RUN cd back/ && npm install && npm run build
+RUN cd back/ && npm install
 RUN cd front/ && npm install
 COPY . .
+RUN cd back/ && npm run build
+RUN cd front/ && npm run build
 
-CMD tail -f
-# CMD (cd back && npm run start:prod) & (cd front && npm run serve)
+# COPY lib/ .
+# COPY back/ back/
+# COPY front/ .
+# RUN cd front/ && npm run
+
+# CMD tail -f
+CMD (cd back && npm run start:prod) & (cd front && npm run serve)

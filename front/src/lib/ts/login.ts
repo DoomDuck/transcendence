@@ -1,5 +1,5 @@
 import { connect } from '$lib/state';
-import { PUBLIC_LOGIN_URI } from '$env/static/public';
+import { PUBLIC_SERVER_ADDRESS, PUBLIC_SERVER_REQUEST_PORT } from '$env/static/public';
 
 // Check if being redirected 42 OAuth
 export function preLogin() {
@@ -14,7 +14,9 @@ export function preLogin() {
 
 // Login to 42
 export function login() {
-	window.location.assign(PUBLIC_LOGIN_URI);
+	window.location.assign(
+    `http://${PUBLIC_SERVER_ADDRESS}:${PUBLIC_SERVER_REQUEST_PORT}/login`
+  );
 }
 
 export function guestLogin() {
