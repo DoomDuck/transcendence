@@ -72,7 +72,7 @@ export class GameManagerService {
       };
     }
     game.addObserver(socket);
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
 
   addSocketToMatchQueue(
@@ -136,7 +136,7 @@ export class GameManagerService {
     });
   }
 
-  handleGameInvite(sourceSocket: Socket, dto: GameInviteToServer) {
+  handleGameInvite(sourceSocket: Socket, dto: GameInviteToServer): ChatFeedbackDto {
     const source = this.userService.findOneActiveBySocket(sourceSocket)!;
     const target = this.userService.findOneActive(dto.target);
     if (target === undefined) {
@@ -164,7 +164,7 @@ export class GameManagerService {
     });
 
     // this.logger.log(`After handleGameInvite, pending invits = ${invitsToString(this.pendingGameInvits)}`);
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
 
   // GAME_ACCEPT
@@ -184,7 +184,7 @@ export class GameManagerService {
       source: gameInvite.target.id,
     });
     this.startGame([gameInvite.sourceSocket, targetSocket], gameInvite.classic);
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
 
   // GAME_REFUSE

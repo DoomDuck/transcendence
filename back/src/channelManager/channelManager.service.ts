@@ -235,7 +235,7 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(false, ChatError.YOU_ARE_MUTED);
     if (this.isBanned(sender, channel))
       return new ChatFeedbackDto(false, ChatError.YOU_ARE_BANNED);
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
 
   banUser(
@@ -347,8 +347,7 @@ export class ChannelManagerService {
         source: sender.id,
       }),
     );
-
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
   deleteChannel(channel: Channel) {
     this.channelRepository.delete(channel.name);

@@ -9,6 +9,7 @@ import {
   LeaderboardItemDto,
   ServerToClientEvents,
   UserInfoToServer,
+  DMFromServer,
 } from 'backFrontCommon';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from '../channelManager/channel.entity';
@@ -209,7 +210,7 @@ export class UserService {
       return { success: false, errorMessage: ChatError.NAME_ALREADY_IN_USE };
     }
     this.usersRepository.update(userDb!.id, { name: name });
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
   findAllDb(): Promise<User[]> {
     return this.usersRepository.find();
@@ -370,7 +371,7 @@ export class UserService {
       avatar: avatarInfo.imageDataUrl,
     });
 
-    return { success: true };
+    return new ChatFeedbackDto(true);
   }
 
   updateUserConversation(
@@ -477,7 +478,7 @@ export class UserService {
         ChatError.NOT_IN_CHANNEL,
       );
     const dbUser = await this.findOneDb(activeUser.id);
-    if (!dbUser) return { success: false };
+    if (!dbUser) return new ChatFeedbackDto(false);
     this.channelManagerService.leaveChannel(channel, activeUser);
     activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
     dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
@@ -498,10 +499,10 @@ export class UserService {
       );
     }
     target.socketUser.forEach((socket) =>
-      wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
-        source: sender.id,
-        content: content,
-      }),
+      wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, new DMFromServer(
+        sender.id,
+        content,
+      ))
     );
     sender.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {
