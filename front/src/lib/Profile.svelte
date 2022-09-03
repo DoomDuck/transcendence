@@ -2,7 +2,7 @@
 	import type { UserInfo } from 'backFrontCommon';
 	import ProfileStats from './ProfileStats.svelte';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
-	import { myself, sendBlockUser, sendFriendInvite, sendUnblockUser } from './state';
+	import { myself, observeGame, sendBlockUser, sendFriendInvite, sendUnblockUser } from './state';
 	import SendNewMessageButton from './chat/buttons/SendNewMessageButton.svelte';
 
 	export let user: UserInfo;
@@ -29,6 +29,14 @@
 		{/if}
 	</div>
 	<ProfileStats {user} />
+	{#if user.inGame}
+		<div id="statusLine">
+			<p>Status: In Game</p>
+			<button on:click={() => observeGame(user.id)}> Watch </button>
+		</div>
+	{:else}
+		<p>Status: Not in game</p>
+	{/if}
 </div>
 
 <style>
@@ -53,5 +61,14 @@
 		flex-direction: column;
 		justify-content: center;
 		font-family: 'Lato', sans-serif;
+	}
+	#statusLine {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+	}
+	p {
+		color: #c9c7c7;
+		text-align: center;
 	}
 </style>

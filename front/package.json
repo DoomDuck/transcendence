@@ -2,7 +2,7 @@
 	"name": "front",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "vite dev --cors",
+		"dev": "vite dev --cors --host",
 		"build": "vite build",
 		"package": "svelte-kit package",
 		"preview": "vite preview",
@@ -34,7 +34,7 @@
 	"type": "module",
 	"dependencies": {
 		"backFrontCommon": "file:../lib/backFrontCommon",
-		"i": "^0.3.7",
+		"kit": "github:sveltejs/kit",
 		"otpauth": "^8.0.2",
 		"pong": "file:../lib/pong",
 		"qrcode": "^1.5.1",

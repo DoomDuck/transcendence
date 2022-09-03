@@ -1,3 +1,3 @@
-export { ClientGameContext, ClientGameContextOffline, ClientGameContextOnlinePlayer, ClientGameContextOnlineObserver } from "./client";
+export { ClientGameContext, ClientGameContextOffline, ClientGameContextOnlinePlayer, ClientGameContextOnlineObserver, ClientGameContextOnline } from "./client";
 export { ServerGameContext } from "./server";
 export { removeIfPresent } from "./common/utils";

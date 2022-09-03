@@ -60,6 +60,7 @@ import { Logger } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
 import { ServerSocket as Socket, Server } from 'backFrontCommon';
+import { GameEvent } from 'pong/common/constants';
 @WebSocketGateway()
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -84,11 +85,13 @@ export class AppGateway
 
     // DEBUG
     socket.onAny((event: string, ...args: any[]) => {
+      // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
       console.log(
         `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
       );
     });
     socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+      // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
       console.log(`[SENT] event '${event}' with args: ${JSON.stringify(args)}`);
     });
   }

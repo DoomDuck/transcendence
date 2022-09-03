@@ -188,6 +188,11 @@ export class GameEvent {
   static readonly GAME_OVER = "gameOver";
   // playerId: number
   static readonly PLAYER_DISCONNECT = "playerDisconnect";
+  //
+  static readonly EXIT_GAME = "exitGame";
+  //
+  static readonly STOP_OBSERVING = "stopObserving";
+
 }
 
 export enum KeyValue {

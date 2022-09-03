@@ -18,14 +18,14 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
     // incomming events
     this.transmitEventFromServerToGame(GameEvent.START);
     this.transmitEventFromServerToGame(GameEvent.PAUSE);
-    // this.socket.on(GameEvent.RESET, () => {
+    // this.listeners.add(this.socket, GameEvent.RESET, () => {
     //   this.ballOutAlreadyEmitted = false;
     // });
     this.transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.transmitEventFromServerToGame(GameEvent.SPAWN_PORTAL);
     this.transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_EVENT);
 
-    this.socket.on(
+    this.listeners.add(this.socket,
       ChatEvent.PLAYER_ID_CONFIRMED,
       (playerId: number, ready: () => void) => {
         setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
@@ -35,11 +35,8 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
       }
     );
 
-    this.socket.on(GameEvent.PLAYER_DISCONNECT, (_) => {
-      this.gameManager.game.pause();
-      this.finally();
-      this.onError!("The other player has disconnected");
-    });
+    this.listeners.add(this.socket, GameEvent.PLAYER_DISCONNECT, () => this.errorExit("the other player has disconnected"));
+    this.listeners.add(this.socket, GameEvent.EXIT_GAME, () => this.errorExit("the other player has exited"));
   }
 
   animate() {
@@ -53,6 +50,10 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
   }
 
   startGame() {}
+
+  exitGame() {
+    this.socket.emit(GameEvent.EXIT_GAME);
+  }
 
   // private setupBallOutOutgoingEvent(playerId: number) {
   //   GameProducedEvent.registerEvent(
