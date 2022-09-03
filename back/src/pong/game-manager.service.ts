@@ -118,7 +118,7 @@ export class GameManagerService {
       const activeUser = this.userService.findOneActiveBySocket(
         playerSockets[i],
       );
-      if (activeUser !== undefined) activeUser.numberOfCurrentGames++;
+      if (activeUser !== undefined) activeUser.inGame = true;
       playerSockets[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
         playerSockets[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
           this.logger.log(`player ${i} ready`);
@@ -132,7 +132,7 @@ export class GameManagerService {
     removeIfPresent(this.games, gameInstance);
     gameInstance.players.forEach((playerSocket) => {
       const activeUser = this.userService.findOneActiveBySocket(playerSocket);
-      if (activeUser !== undefined) activeUser.numberOfCurrentGames--;
+      if (activeUser !== undefined) activeUser.inGame = false;
     });
   }
 

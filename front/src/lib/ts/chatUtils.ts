@@ -70,11 +70,6 @@ export class UserConversationList {
 		return this;
 	}
 
-	addMessageFromMe(content: string, interlocutor: number): UserConversationList {
-		this.addMessage(messageFromMe(content), interlocutor);
-		return this;
-	}
-
 	delete(userId: Id): UserConversationList {
 		const i = this.convs.findIndex((conv) => conv.interlocutor == userId);
 		if (i != -1) this.convs.splice(i, 1);
@@ -105,11 +100,6 @@ export class ChannelConversationList {
 			},
 			message.channel
 		);
-		return this;
-	}
-
-	addMessageFromMe(content: string, channel: string): ChannelConversationList {
-		this.addMessage(messageFromMe(content), channel);
 		return this;
 	}
 

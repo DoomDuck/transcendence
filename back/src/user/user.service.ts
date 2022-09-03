@@ -38,10 +38,7 @@ export class ActiveUser {
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite = false;
-  get inGame(): boolean {
-    return this.numberOfCurrentGames > 0;
-  }
-  numberOfCurrentGames = 0;
+  inGame: boolean;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
