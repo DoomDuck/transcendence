@@ -278,13 +278,13 @@ export class ChatService {
       tempChan,
       banInfo.duration,
       wss,
-      this.userService.findOneActive(tempTarget.id)
+      this.userService.findOneActive(tempTarget.id),
     );
     if (feedback.success === true) {
       this.logger.debug(
         '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
       );
-      this.userService.leaveChannel(tempTarget, tempChan,activeTarget );
+      this.userService.leaveChannel(tempTarget, tempChan, activeTarget);
     }
     return feedback;
   }
@@ -301,7 +301,7 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    const tempTarget = await  this.userService.findOneDb(muteInfo.target);
+    const tempTarget = await this.userService.findOneDb(muteInfo.target);
     if (!tempTarget) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -324,7 +324,7 @@ export class ChatService {
       tempChan,
       muteInfo.duration,
       wss,
-      activeTargets
+      activeTarget,
     );
     return feedback;
   }
@@ -443,15 +443,16 @@ export class ChatService {
     clientSocket: Socket,
     leaveInfo: LeaveChannelToServer,
   ) {
-    const sender = this.userService.findOneActiveBySocket(clientSocket);
+    const sender = await this.userService.findOneDbBySocket(clientSocket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const activeSender = this.userService.findOneActiveBySocket(clientSocket);
     const channel = await this.channelManagerService.findChanByName(
       leaveInfo.channel,
     );
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-    return this.userService.leaveChannel(sender, channel);
+    return this.userService.leaveChannel(sender, channel, activeSender);
   }
   async handleGetChannelInfo(
     socket: Socket,
@@ -506,10 +507,15 @@ export class ChatService {
       ),
     };
   }
-  async getChannelsList(socket: Socket):Promise<RequestFeedbackDto<ChannelSummary[]>> {
+  async getChannelsList(
+    socket: Socket,
+  ): Promise<RequestFeedbackDto<ChannelSummary[]>> {
     const sender = this.userService.findOneActiveBySocket(socket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-      return{success: true, result: await this.channelManagerService.getPublicProtectedChan()}
+    return {
+      success: true,
+      result: await this.channelManagerService.getPublicProtectedChan(),
+    };
   }
 }

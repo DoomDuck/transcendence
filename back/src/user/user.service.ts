@@ -103,33 +103,27 @@ export class UserService {
     );
     return chatMessageDto;
   }
-  async scoreUpdate(player:User[], score:number[])
-  {
-    if(score[0] > score[1])
-      {
-        this.usersRepository.update(player[0].id,{
-              win:player[0].win + 1,
-              score: player[0].score +17
-            } );
-        this.usersRepository.update(player[1].id,{
-              loose:player[1].loose + 1,
-              score: player[1].score -17
-            } )
-
-      }
-      else
-      {
-        this.usersRepository.update(player[1].id,{
-          win:player[1].win + 1,
-          score: player[1].score +17
-        } );
-        this.usersRepository.update(player[0].id,{
-          loose:player[0].loose + 1,
-          score: player[0].score-17
-      })
-        
+  async scoreUpdate(player: User[], score: number[]) {
+    if (score[0] > score[1]) {
+      this.usersRepository.update(player[0].id, {
+        win: player[0].win + 1,
+        score: player[0].score + 17,
+      });
+      this.usersRepository.update(player[1].id, {
+        loose: player[1].loose + 1,
+        score: player[1].score - 17,
+      });
+    } else {
+      this.usersRepository.update(player[1].id, {
+        win: player[1].win + 1,
+        score: player[1].score + 17,
+      });
+      this.usersRepository.update(player[0].id, {
+        loose: player[0].loose + 1,
+        score: player[0].score - 17,
+      });
+    }
   }
-}
   leaderbordTransformator(users: User[]): LeaderboardItemDto[] {
     let result: LeaderboardItemDto[] = [];
     users.forEach((user) =>
@@ -149,16 +143,20 @@ export class UserService {
     socket: Socket,
   ): Promise<RequestFeedbackDto<LeaderboardItemDto[]>> {
     const userDb = await this.findOneDbBySocket(socket);
-    if(!userDb)
-     return {success:false, errorMessage:ChatError.U_DO_NOT_EXIST}
-    this.logger.log(`get leaderboard ${JSON.stringify(this.leaderbordTransformator(
-      await this.usersRepository.find({
-        order: {
-          score: 'DESC', // "ASC"
-        },
-      }),
-    ))}`)
-     return {
+    if (!userDb)
+      return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    this.logger.log(
+      `get leaderboard ${JSON.stringify(
+        this.leaderbordTransformator(
+          await this.usersRepository.find({
+            order: {
+              score: 'DESC', // "ASC"
+            },
+          }),
+        ),
+      )}`,
+    );
+    return {
       success: true,
       result: this.leaderbordTransformator(
         await this.usersRepository.find({
@@ -171,11 +169,13 @@ export class UserService {
   }
 
   async getRanking(user: User): Promise<number> {
-    return ((await this.usersRepository.find({
-      order: {
-        score: 'DESC', // "ASC"
-      },
-    })).indexOf(user))
+    return (
+      await this.usersRepository.find({
+        order: {
+          score: 'DESC', // "ASC"
+        },
+      })
+    ).indexOf(user);
   }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],
@@ -499,9 +499,9 @@ export class UserService {
         ChatError.NOT_IN_CHANNEL,
       );
     this.channelManagerService.leaveChannel(channel, dbUser);
-    if(activeUser)
-    activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
-      dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
+    if (activeUser)
+      activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+    dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);
   }

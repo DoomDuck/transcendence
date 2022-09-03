@@ -219,10 +219,8 @@ export class ChannelManagerService {
     this.channelRepository.update(channel.name!, { admin: channel.admin });
     return new ChatFeedbackDto(true);
   }
-  async allChan()
-  {
-    FileWatcherEventKind
-
+  async allChan() {
+    FileWatcherEventKind;
   }
   msgToChannelVerif(
     channel: Channel | null,
@@ -246,7 +244,7 @@ export class ChannelManagerService {
     channel: Channel,
     duration: number,
     wss: Server,
-    targetActive?: ActiveUser
+    targetActive?: ActiveUser,
   ): ChatFeedbackDto {
     const d = new Date();
     if (
@@ -258,15 +256,15 @@ export class ChannelManagerService {
     if (this.isBanned(target, channel))
       return new ChatFeedbackDto(false, ChatError.ALREADY_BANNED);
     else {
-      if(targetActive)
-      targetActive.socketUser.forEach((socket) =>
-        wss
-          .to(socket.id)
-          .emit(
-            ChatEvent.BANNED_NOTIF,
-            new BanUserFromServer(channel.name, sender.id, duration),
-          ),
-      );
+      if (targetActive)
+        targetActive.socketUser.forEach((socket) =>
+          wss
+            .to(socket.id)
+            .emit(
+              ChatEvent.BANNED_NOTIF,
+              new BanUserFromServer(channel.name, sender.id, duration),
+            ),
+        );
       channel.banned.push(
         new BannedUser(new Date(d.getTime() + duration * 1000), target.id),
       );
@@ -275,13 +273,15 @@ export class ChannelManagerService {
     }
   }
   async getPublicProtectedChan() {
-    const chanDb= await this.channelRepository.find({
+    const chanDb = await this.channelRepository.find({
       where: { category: ChannelCategory.PUBLIC | ChannelCategory.PROTECTED },
     });
-    let result : ChannelSummary[] = [];
-     chanDb.forEach(chan => result.push(new ChannelSummary(chan.name,chan.category)))
-      return result;
-    }
+    let result: ChannelSummary[] = [];
+    chanDb.forEach((chan) =>
+      result.push(new ChannelSummary(chan.name, chan.category)),
+    );
+    return result;
+  }
   unBanUser(user: ActiveUser | User, channel: Channel): ChatFeedbackDto {
     const banInfo = channel.banned.find((banned) => user.id === banned.userId);
     if (banInfo === undefined)
@@ -308,7 +308,7 @@ export class ChannelManagerService {
     channel: Channel,
     duration: number,
     wss: Server,
-    activeTarget?:ActiveUser
+    activeTarget?: ActiveUser,
   ): ChatFeedbackDto {
     const d = new Date();
     if (channel.admin.find((admin) => admin === sender.id) === undefined)
@@ -316,15 +316,15 @@ export class ChannelManagerService {
     if (this.isMuted(target, channel))
       return new ChatFeedbackDto(false, ChatError.ALREADY_MUTED);
     else {
-      if(activeTarget)
-      activeTarget.socketUser.forEach((socket) =>
-        wss
-          .to(socket.id)
-          .emit(
-            ChatEvent.MUTED_NOTIF,
-            new MuteUserFromServer(channel.name, sender.id, duration),
-          ),
-      );
+      if (activeTarget)
+        activeTarget.socketUser.forEach((socket) =>
+          wss
+            .to(socket.id)
+            .emit(
+              ChatEvent.MUTED_NOTIF,
+              new MuteUserFromServer(channel.name, sender.id, duration),
+            ),
+        );
       channel.muted.push(
         new MutedUser(new Date(d.getTime() + duration * 1000), target.id),
       );
