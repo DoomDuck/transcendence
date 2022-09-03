@@ -39,7 +39,7 @@ import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable, writable } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
-import { closeAllModals, closeLastModalListener, modalCallbackStackRef } from '$lib/ts/modals';
+import { closeAllModals, closeLastModalListener } from '$lib/ts/modals';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
