@@ -531,8 +531,7 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_FRIENDS]: (callback: FeedbackCallbackWithResult<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: FeedbackCallbackWithResult<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: FeedbackCallbackWithResult<UserHistoryDto>) => void;
-  // [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
-  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean,callback: FeedbackCallback) => void;
+  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;

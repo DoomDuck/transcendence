@@ -95,7 +95,10 @@ export class UserService {
     if (user) return user.inMatchmaking;
     else return false;
   }
-
+  setInMatchmaking(socket: Socket) {
+    let user = this.findOneActiveBySocket(socket);
+    if (user) user.inMatchmaking = true;
+  }
   dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
     chatMessage.forEach((message) =>

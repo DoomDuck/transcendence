@@ -115,7 +115,11 @@ export class ChatService {
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
-  async handleMessageChannel(clientSocket: Socket, dto: CMToServer) {
+  async handleMessageChannel(
+    clientSocket: Socket,
+    dto: CMToServer,
+    wss: Server,
+  ) {
     const tempChannel = await this.channelManagerService.findChanByName(
       dto.channel,
     );
@@ -139,7 +143,7 @@ export class ChatService {
           dto.content,
         );
     });
-    clientSocket
+    wss
       .to(tempChannel!.name)
       .except(await this.userService.getArrayBlockedFrom(tempSender!))
       .emit(ChatEvent.MSG_TO_CHANNEL, {

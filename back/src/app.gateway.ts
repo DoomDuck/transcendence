@@ -140,7 +140,11 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   async handleMessageChannel(clientSocket: Socket, dto: CMToServer) {
-    return await this.chatService.handleMessageChannel(clientSocket, dto);
+    return await this.chatService.handleMessageChannel(
+      clientSocket,
+      dto,
+      this.wss,
+    );
   }
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)

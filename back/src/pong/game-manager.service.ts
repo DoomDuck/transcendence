@@ -39,13 +39,10 @@ export class GameManagerService {
   ) {}
 
   addMatchmaking(socket: Socket, classic: boolean) {
-    if (this.userService.isInMatchmaking(socket))
-      return { success: false, errorMessage: ChatError.ALREADY_IN_MATCHMAKING };
     if (classic)
       this.addSocketToMatchQueue(this.matchQueueClassic, socket, true);
     else this.addSocketToMatchQueue(this.matchQueueCustom, socket, false);
     socket.on('disconnect', () => this.handleQuitMatchmaking(socket));
-    return { success: true };
   }
 
   async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
