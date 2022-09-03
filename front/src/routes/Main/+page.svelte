@@ -14,7 +14,6 @@
 		<h4 class="typography">
 			<a href="/Parameters">Parameters</a>
 		</h4>
-		<p style="color: white">(DEBUG) My id is {$myself.id}</p>
 	</div>
 </nav>
 

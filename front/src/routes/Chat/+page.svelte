@@ -6,11 +6,22 @@
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
 	import { myself } from '$lib/state';
 	import { channelConvs } from '$lib/ts/chatUtils';
+import UserName from '$lib/chat/UserName.svelte';
+import AvatarIcon from '$lib/AvatarIcon.svelte';
 
 	$myself.channels.forEach((channel) => {
 		$channelConvs.create(channel);
 	});
 </script>
+
+<div id="header">
+  <AvatarIcon
+    type={'user'}
+    imageURL={$myself.avatar ?? 'errorUser.png'}
+  />
+  <span>{$myself.name}</span>
+  <span>ID: {$myself.id}</span>
+</div>
 
 <div id="chat">
 	<div id="title">
@@ -79,4 +90,16 @@
 	#btn-new-message {
 		float: right;
 	}
+  #header {
+    position: absolute;
+    top: 0;
+    left: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: left;
+		gap: 10px;
+		background: #12072e;
+		color: #fa1ec7;
+		font-size: .5em;
+  }
 </style>

@@ -536,8 +536,7 @@ export class UserService {
       return {
         id: user.id,
         name: user.name,
-        friendlist: user.friendlist,
-        blocked: user.blocked,
+        friendlist: user.friendlist,        blocked: user.blocked,
         win: user.win,
         channels: user.channel,
         loose: user.loose,

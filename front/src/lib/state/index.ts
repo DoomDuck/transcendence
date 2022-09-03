@@ -32,7 +32,6 @@ import {
 	ChannelInfo,
 	ChannelCategory,
 	UnbanUserToServer,
-	InviteChannelToServer,
 	LeaderboardItemDto
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
@@ -105,6 +104,7 @@ function loggedIn(): boolean {
 
 export function connect(code?: string) {
 	if (connected()) return;
+  // TODO: use .env config
 	socket = io('http://localhost:5000/', { auth: { code } });
 	setupHooks(socket);
 }
@@ -309,7 +309,7 @@ export function updateAllChannels() {
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
 	if (!feedback.success) throw new Error('Could not get user info');
 	const info = feedback.result!;
-	let entry = knownChannels.get(channel);
+	const entry = knownChannels.get(channel);
 	if (entry) {
 		entry.store.set(info);
 	} else {
@@ -318,6 +318,16 @@ function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo
 		});
 	}
 	return info;
+}
+
+// All
+
+export function updateAllStores() {
+	if (connected()) {
+		updateMyself();
+		updateAllUsers();
+		updateAllChannels();
+	}
 }
 
 // Avatar
@@ -530,3 +540,4 @@ export function forceRoute(): string | null {
 export function isBlocked(pathname: string): boolean {
 	return loggedIn() && LOGGIN_ROUTES.includes(pathname);
 }
+
