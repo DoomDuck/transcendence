@@ -364,9 +364,7 @@ export function sendCreateChannel(message: CreateChannelToServer) {
 
 export function sendChannelMessage(message: CMToServer) {
 	socket!.emit(ChatEvent.MSG_TO_CHANNEL, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			channelConvs.update((_) => _.addMessageFromMe(message.content, message.channel));
-		} else {
+		if (!feedback.success) {
 			alert(`error: ${feedback.errorMessage}`);
 		}
 	});

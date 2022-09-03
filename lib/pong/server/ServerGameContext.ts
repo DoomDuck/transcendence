@@ -73,7 +73,7 @@ export class ServerGameContext {
       this.game.frame();
       this.spawner?.frame();
       for (let observer of this.observers) {
-        observer.emit(GameEvent.OBSERVER_UPDATE, this.game.state.data.current);
+        observer.emit(GameEvent.OBSERVER_UPDATE, this.game.state.data.current, this.game.score);
       }
       this.checkBallOut();
     }, GSettings.GAME_STEP_MS);

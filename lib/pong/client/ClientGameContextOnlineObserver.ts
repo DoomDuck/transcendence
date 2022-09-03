@@ -12,11 +12,12 @@ export class ClientGameContextOnlineObserver extends ClientGameContextOnline {
   constructor(socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
     super(socket, onFinish, onError);
 
-    this.listeners.add(socket, GameEvent.OBSERVER_UPDATE, (gameDataPlainObject: any) => {
+    this.listeners.add(socket, GameEvent.OBSERVER_UPDATE, (gameDataPlainObject: any, score: [number, number]) => {
       assignRecursively(
         this.gameManager.game.state.data.current,
         gameDataPlainObject
       );
+      this.gameManager.renderer.scorePanels.score = score;
     });
     this.listeners.add(socket, GameEvent.PLAYER_DISCONNECT,
       (playerId: number) => this.errorExit(`The player ${playerId + 1} has disconnected`)
