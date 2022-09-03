@@ -32,7 +32,6 @@ import {
 	ChannelInfo,
 	ChannelCategory,
 	UnbanUserToServer,
-	InviteChannelToServer,
 	LeaderboardItemDto
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
@@ -40,7 +39,7 @@ import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
 import { channelConvs, userConvs } from '../ts/chatUtils';
 import { readable, writable } from 'svelte/store';
 import type { Readable, Writable } from 'svelte/store';
-import { closeAllModals, closeLastModalListener, modalCallbackStackRef } from '$lib/ts/modals';
+import { closeAllModals, closeLastModalListener } from '$lib/ts/modals';
 
 const LOGGIN_ROUTE: string = '/';
 const LOGGIN_TOTP_ROUTE: string = '/totp';
@@ -105,6 +104,7 @@ function loggedIn(): boolean {
 
 export function connect(code?: string) {
 	if (connected()) return;
+	// TODO: use .env config
 	socket = io('http://localhost:5000/', { auth: { code } });
 	setupHooks(socket);
 }
@@ -309,7 +309,7 @@ export function updateAllChannels() {
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
 	if (!feedback.success) throw new Error(feedback.errorMessage);
 	const info = feedback.result!;
-	let entry = knownChannels.get(channel);
+	const entry = knownChannels.get(channel);
 	if (entry) {
 		entry.store.set(info);
 	} else {
@@ -318,6 +318,16 @@ function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo
 		});
 	}
 	return info;
+}
+
+// All
+
+export function updateAllStores() {
+	if (connected()) {
+		updateMyself();
+		updateAllUsers();
+		updateAllChannels();
+	}
 }
 
 // Avatar

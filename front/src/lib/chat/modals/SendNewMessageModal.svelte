@@ -39,14 +39,12 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-		width: 250;
+		width: 30vw;
 	}
 
 	#destinataire {
 		width: 100%;
-		height: 5em;
 	}
-
 	#message {
 		width: 100%;
 		height: 5em;

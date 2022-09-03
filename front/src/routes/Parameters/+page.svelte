@@ -9,17 +9,15 @@
 <div id="app">
 	<ProfileParams avatar={$myself.avatar} name={$myself.name} />
 	<div id="blockedProfiles">
-		<div class="blocked">
-			<div class="blockedInfos">
-				{#each $myself.blocked as userId}
-					<div>
-						<UserMiniature {userId} />
-						<UserName {userId} />
-						<button on:click={() => sendUnblockUser({ target: userId })}> unblock </button>
-					</div>
-				{/each}
+		{#each $myself.blocked as userId}
+			<div class="blockedEntry">
+				<UserMiniature {userId} />
+				<UserName {userId} />
+				<button class="unblockButton" on:click={() => sendUnblockUser({ target: userId })}>
+					unblock
+				</button>
 			</div>
-		</div>
+		{/each}
 	</div>
 	<div id="lastParams">
 		<TotpSetupButton />
@@ -32,47 +30,30 @@
 		font-family: 'Lato', sans-serif;
 		color: #06bcff;
 	}
-
 	#app {
-		background-image: url('/starsSky.png');
 		width: 100%;
 		height: 100%;
-		overflow-y: scroll;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 	}
 	#blockedProfiles {
 		width: 50vw;
-		height: 600px;
-		overflow-y: auto;
 		overflow-x: hidden;
+		overflow-y: auto;
+		height: 600px;
+		border: 1px solid #ff00b8;
 		display: flex;
 		flex-direction: column;
-		border: 1px solid #ff00b8;
 	}
-	.blocked {
-		width: 50vw;
-		height: 100px;
+	.blockedEntry {
+		width: 100%;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		justify-content: space-between;
 	}
-	.roundedImage {
-		overflow: hidden;
-		-webkit-border-radius: 50px;
-		-moz-border-radius: 50px;
-		border-radius: 30px;
-		width: 60px;
-		height: 60px;
-		margin: 20px;
-	}
-	.blockedInfos {
-		display: flex;
-		flex-direction: row;
-		justify-content: right;
-		align-items: center;
+	.unblockButton {
+		margin-left: auto;
 	}
 	button {
 		margin: 20px;

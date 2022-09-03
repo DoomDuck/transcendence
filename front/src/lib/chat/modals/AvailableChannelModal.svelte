@@ -5,6 +5,7 @@
 	let channels: ChannelSummary[] = [];
 
 	socket!.emit(GetInfoEvent.GET_CHANNELS_LIST, (feedback: RequestFeedbackDto<ChannelSummary[]>) => {
+		console.log(JSON.stringify(feedback));
 		if (feedback.success) channels = feedback.result!;
 		else console.error('could not get channels list');
 	});
