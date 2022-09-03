@@ -11,7 +11,7 @@
 	<div id="online">
 		<!-- <br> -->
 		<div class="title-line">
-			<span class="title-element">Online friends</span>
+			<span class="title-element">Friends</span>
 			<div class="title-element"><AddFriendButton /></div>
 		</div>
 		<!-- <br> -->
