@@ -86,16 +86,7 @@ export class UserService {
       user.socketUser.forEach((socket) => logger.debug(socket.id));
     });
   }
-  isInMatchmaking(socket: Socket): boolean {
-    const user = this.findOneActiveBySocket(socket);
-    if (user) return user.inMatchmaking;
-    else return false;
-  }
-  setInMatchmaking(socket: Socket) {
-    let user = this.findOneActiveBySocket(socket);
-    if (user) user.inMatchmaking = true;
-  }
-  dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
+    dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
     chatMessage.forEach((message) =>
       chatMessageDto.push(
