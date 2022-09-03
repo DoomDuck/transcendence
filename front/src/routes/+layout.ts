@@ -1,11 +1,6 @@
 import { goto } from '$app/navigation';
 import { browser } from '$app/env';
-import {
-	forceRoute,
-	isBlocked,
-	LOGGIN_SUCCESS_ROUTE,
-	updateAllStores,
-} from '$lib/state';
+import { forceRoute, isBlocked, LOGGIN_SUCCESS_ROUTE, updateAllStores } from '$lib/state';
 import { redirect } from '@sveltejs/kit';
 import type { LoadEvent } from '@sveltejs/kit';
 
@@ -16,7 +11,7 @@ function safe_redirect(route: string) {
 
 export function load({ url }: LoadEvent) {
 	// TODO: find a better way
-  updateAllStores();
+	updateAllStores();
 	const route = forceRoute();
 	if (route && route !== url.pathname) {
 		safe_redirect(route);

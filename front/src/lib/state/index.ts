@@ -104,7 +104,7 @@ function loggedIn(): boolean {
 
 export function connect(code?: string) {
 	if (connected()) return;
-  // TODO: use .env config
+	// TODO: use .env config
 	socket = io('http://localhost:5000/', { auth: { code } });
 	setupHooks(socket);
 }
@@ -540,4 +540,3 @@ export function forceRoute(): string | null {
 export function isBlocked(pathname: string): boolean {
 	return loggedIn() && LOGGIN_ROUTES.includes(pathname);
 }
-

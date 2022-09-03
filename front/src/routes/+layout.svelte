@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Popups from '$lib/Popups.svelte';
-  import { updateAllStores } from '$lib/state';
+	import { updateAllStores } from '$lib/state';
 	import { closeLastModal, modalCallbackStack } from '$lib/ts/modals';
-  import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
-  onMount(() => {
-    const timeout = setInterval(updateAllStores, 1000);
-    return () => clearInterval(timeout);
-  })
+	onMount(() => {
+		const timeout = setInterval(updateAllStores, 1000);
+		return () => clearInterval(timeout);
+	});
 </script>
 
 <div id="background">
