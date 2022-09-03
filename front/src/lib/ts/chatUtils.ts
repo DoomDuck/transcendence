@@ -114,7 +114,6 @@ export class ChannelConversationList {
 		const i = this.convs.findIndex((conv) => conv.channel == channel);
 		if (i == -1) return;
 		this.convs[i].banned = true;
-		// TODO: figure out why this was there
 		await delay(1000);
 		this.convs.splice(i, 1);
 	}

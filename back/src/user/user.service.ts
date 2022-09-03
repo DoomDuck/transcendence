@@ -38,7 +38,7 @@ export class ActiveUser {
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite = false;
-  inGame: boolean;
+  inGame = false;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
@@ -101,7 +101,7 @@ export class UserService {
     return chatMessageDto;
   }
   leaderbordTransformator(users: User[]): LeaderboardItemDto[] {
-    let result: LeaderboardItemDto[] = [];
+    const result: LeaderboardItemDto[] = [];
     users.forEach((user) =>
       result.push(
         new LeaderboardItemDto(

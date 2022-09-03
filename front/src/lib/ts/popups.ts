@@ -24,7 +24,7 @@ function addPopup(popup: CanBePopup) {
 }
 
 function removePopup(popup: CanBePopup) {
-	removeBy((popup2) => popup !== popup2);
+	removeBy((popup2) => popup == popup2);
 }
 
 function removeBy(filterCallback: (popup: CanBePopup) => boolean) {
