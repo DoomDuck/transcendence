@@ -375,16 +375,16 @@ export class GetUser {
 }
 
 export class LeaderboardItemDto {
-  // @IsPositive() @IsInt() id 
-  : Id;
-  // @IsString() name 
-  : string;
-  // @IsPositive() @IsInt() victory 
-  : number;
-  // @IsPositive() @IsInt() defeat 
-  : number;
-  // @IsInt() score 
-  : number;
+  // @IsPositive() @IsInt()
+  id: Id;
+  // @IsString()
+  name: string;
+  // @IsPositive() @IsInt()
+  victory: number;
+  // @IsPositive() @IsInt()
+  defeat: number;
+  // @IsInt()
+  score: number;
   constructor(
     id : number,
     name : string,
@@ -457,8 +457,8 @@ export class MatchInfoFromServer {
   winnerScore: number;
   // @IsPositive() @IsInt() 
   looserScore: number;
-  // @IsDate() date 
-  : Date
+  // @IsDate()
+  date: Date;
   constructor(
     winner: Id,
     looser: Id,
@@ -470,7 +470,7 @@ export class MatchInfoFromServer {
     this.looser = looser;
     this.winnerScore = winnerScore;
     this.looserScore = looserScore;
-    this.date  = date 
+    this.date = date 
   }
 };
 
@@ -479,8 +479,8 @@ export class RelativeMatchInfoFromServer {
   opponent: Id;
   // @IsBoolean() 
   winner: boolean;
-  // @IsPositive() @IsInt() score 
-  : number;
+  // @IsPositive() @IsInt()
+  score: number;
   // @IsPositive() @IsInt() 
   opponentScore: number;
   constructor(

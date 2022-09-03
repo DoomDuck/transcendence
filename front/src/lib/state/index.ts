@@ -10,8 +10,10 @@ import {
 	DMToServer,
 	GameAcceptFromServer,
 	GameCancelFromServer,
+	GameCancelToServer,
 	GameInviteFromServer,
 	GameRefuseFromServer,
+	GameRefuseToServer,
 	InviteChannelFromServer,
 	GameInviteToServer,
 	JoinChannelToServer,
@@ -180,7 +182,7 @@ export function enableTotp(token: string) {
 
 // Game
 export function refuseGame(target: Id) {
-	socket!.emit(ChatEvent.GAME_REFUSE, { target });
+	socket!.emit(ChatEvent.GAME_REFUSE, new GameRefuseToServer(target));
 }
 
 export function acceptGame(target: Id, callback: FeedbackCallback) {
@@ -188,7 +190,7 @@ export function acceptGame(target: Id, callback: FeedbackCallback) {
 }
 
 export function cancelGame(target: Id) {
-	socket!.emit(ChatEvent.GAME_CANCEL, { target });
+	socket!.emit(ChatEvent.GAME_CANCEL, new GameCancelToServer(target));
 }
 
 export function sendGameInvite(invite: GameInviteToServer, callback: FeedbackCallback) {
@@ -235,9 +237,7 @@ export function getMyself() {}
 
 function onMyInfo(feedback: RequestFeedbackDto<MyInfo>) {
 	if (feedback.success) {
-		// TODO: remove
 		const myInfo = feedback.result!;
-		// myInfo.friendlist.push(78441);
 		writableMyself.set(myInfo);
 	} else console.error('Could not get my info');
 }
@@ -321,9 +321,8 @@ function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo
 }
 
 // All
-
 export function updateAllStores() {
-	if (connected()) {
+	if (loggedIn()) {
 		updateMyself();
 		updateAllUsers();
 		updateAllChannels();
