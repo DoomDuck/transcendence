@@ -2,16 +2,14 @@
 	import { ChannelCategory, ChannelInfo, ChannelRights, ChannelUser } from 'backFrontCommon';
 	import type { Id } from 'backFrontCommon';
 	import SelectDurationButton from './buttons/SelectDurationButton.svelte';
-	import { banUser, muteUser } from '$lib/ts/channels';
+	import { banUser, muteUser, sendInviteToChannel, unMuteUser } from '$lib/ts/channels';
 	import UserMiniature from '$lib/UserMiniature.svelte';
 	import {
 		sendDeleteChannel,
 		sendLeaveChannel,
 		sendSetNewAdminToServer,
 		sendUnbanUser,
-		myself,
-		updateChannel,
-		sendInviteToChannel
+		myself
 	} from '$lib/state';
 	import { beforeUpdate } from 'svelte';
 	import UserName from './UserName.svelte';
@@ -54,12 +52,12 @@
 			duration
 		});
 	}
-	// function onUnMuteUser(userId: Id) {
-	//   unMuteUser({
-	//     channel,
-	//     targtet: userId
-	//   });
-	// }
+	function onUnMuteUser(userId: Id) {
+		unMuteUser({
+			channel,
+			target: userId
+		});
+	}
 	function onBanUser(userId: Id, duration: number) {
 		banUser({
 			channel,
@@ -102,7 +100,7 @@
 							>Mute</SelectDurationButton
 						>
 					{:else}
-						<button on:click={() => onUnMuteUser(user.id)} />
+						<button on:click={() => onUnMuteUser(user.id)}>UnMute</button>
 					{/if}
 					<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
 						>Ban</SelectDurationButton

@@ -87,7 +87,7 @@ export class ChannelManagerService {
     else return false;
   }
   async createChan(
-    activeUser: ActiveUser,
+    activeUser: ActiveUser | User,
     chanInfo: CreateChannelToServer,
   ): Promise<Channel> {
     this.logger.log('createChan');
@@ -158,7 +158,7 @@ export class ChannelManagerService {
     return this.channelRepository.find();
   }
   async joinChan(
-    user: ActiveUser,
+    user: ActiveUser | User,
     channel: Channel,
     password?: string,
   ): Promise<ChatFeedbackDto> {
@@ -167,22 +167,16 @@ export class ChannelManagerService {
     if (channel.category === ChannelCategory.PRIVATE)
       return new ChatFeedbackDto(false, ChatError.CHANNEL_IS_PRIVATE);
     if (channel.category === ChannelCategory.PROTECTED) {
-      this.logger.debug(`password = ${password}`);
-      this.logger.debug(`hash password = ${await bcrypt.hash(password!, 10)}`);
-      this.logger.debug(
-        `result ${await bcrypt.compare(password!, channel.passHash!)}`,
-      );
       if (!password || !(await bcrypt.compare(password, channel.passHash!)))
         return new ChatFeedbackDto(false, ChatError.WRONG_PASSWORD);
     }
-    this.logger.log(`user == ${user.id}added`);
     channel.member.push(user.id);
     this.channelRepository.update(channel.name!, { member: channel.member });
     return new ChatFeedbackDto(true);
   }
 
   async joinChanPrivate(
-    user: ActiveUser,
+    user: ActiveUser | User,
     channel: Channel,
   ): Promise<ChatFeedbackDto> {
     channel.member.push(user.id);
@@ -272,13 +266,14 @@ export class ChannelManagerService {
       return new ChatFeedbackDto(true);
     }
   }
-  async getPublicProtectedChan() {
-    const chanDb = await this.channelRepository.find({
-      where: { category: ChannelCategory.PUBLIC | ChannelCategory.PROTECTED },
+  async getPublicProtectedChan(user:User | ActiveUser) {
+    let chanDb = await this.channelRepository.find({
+      where: { category: ChannelCategory.PUBLIC},
     });
+	this.logger.debug(`dans get public protect ${JSON.stringify(chanDb)}`)
     let result: ChannelSummary[] = [];
     chanDb.forEach((chan) =>
-      result.push(new ChannelSummary(chan.name, chan.category)),
+      result.push(new ChannelSummary(chan.name, chan.category, this.isMember(user,chan))),
     );
     return result;
   }
@@ -334,9 +329,10 @@ export class ChannelManagerService {
   }
   inviteUserToChannel(
     sender: ActiveUser,
-    target: ActiveUser,
+    target: User,
     channel: Channel,
     wss: Server,
+	activeTarget?:ActiveUser
   ): ChatFeedbackDto {
     if (!this.isAdmin(sender, channel))
       return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
@@ -345,13 +341,13 @@ export class ChannelManagerService {
     if (this.isBanned(target, channel))
       return { success: false, errorMessage: ChatError.USER_IS_BANNED };
     this.joinChanPrivate(target, channel);
-    target.socketUser.forEach((socket) =>
-      wss.to(socket.id).emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, {
-        channel: channel.name,
-        source: sender.id,
-      }),
-    );
-
+	if(activeTarget)
+	activeTarget.socketUser.forEach((socket) =>
+	  wss.to(socket.id).emit(ChatEvent.INVITE_TO_PRIVATE_CHANNEL, {
+		channel: channel.name,
+		source: sender.id,
+	  }),
+	);
     return { success: true };
   }
   deleteChannel(channel: Channel) {

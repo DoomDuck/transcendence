@@ -81,7 +81,8 @@ export class ChatService {
     chanInfo: CreateChannelToServer,
   ) {
     const tempUser = this.userService.findOneActiveBySocket(clientSocket);
-    if (!tempUser)
+    const tempDb= await this.userService.findOneDbBySocket(clientSocket);
+    if (!tempDb)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
@@ -97,7 +98,7 @@ export class ChatService {
     if (!chanInfo.password && chanInfo.category === ChannelCategory.PROTECTED)
       return new ChatFeedbackDto(false, ChatError.MUST_SPECIFY_PASSWORD);
     const newChan = await this.channelManagerService.createChan(
-      tempUser,
+      tempDb,
       chanInfo,
     );
 
@@ -108,7 +109,7 @@ export class ChatService {
         ChatError.CHANNEL_NOT_FOUND,
       );
     //this.channelManagerService.joinChan(tempUser, newChan);
-    this.userService.joinChanUser(tempUser, newChan);
+    this.userService.joinChanUser(tempDb, newChan,tempUser);
 
     this.logger.debug('end create channel');
     return this.channelManagerService.newChatFeedbackDto(true);
@@ -119,12 +120,15 @@ export class ChatService {
       dto.channel,
     );
 
+    this.logger.debug('dans message to chan');
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
     );
     if (!feedback.success) return feedback;
+
+    this.logger.debug('dans message to chan1');
     tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
@@ -151,8 +155,9 @@ export class ChatService {
     const tempChan = await this.channelManagerService.findChanByName(
       joinInfo.channel,
     );
-    const tempUser = this.userService.findOneActiveBySocket(clientSocket);
+    const tempUser = await this.userService.findOneDbBySocket(clientSocket);
 
+    const tempActive =  this.userService.findOneActiveBySocket(clientSocket);
     this.logger.log(
       `any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`,
     );
@@ -181,7 +186,7 @@ export class ChatService {
     );
     if (feedback.success === true) {
       this.logger.log(`joining chanUSer `);
-      this.userService.joinChanUser(tempUser, tempChan);
+      this.userService.joinChanUser( tempUser, tempChan,tempActive);
     }
 
     return feedback;
@@ -193,6 +198,13 @@ export class ChatService {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
+      );
+    }
+    const targetDb = await this.userService.findOneDb(dm.target);
+	if (!targetDb) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.USER_NOT_FOUND,
       );
     }
     const target = this.userService.findOneActive(dm.target);
@@ -410,15 +422,20 @@ export class ChatService {
     );
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-    const target = this.userService.findOneActive(inviteInfo.target);
+    const target = await this.userService.findOneDb(inviteInfo.target);
+    const activeTarget =  this.userService.findOneActive(inviteInfo.target);
     if (!target)
-      return { success: false, errorMessage: ChatError.USER_OFFLINE };
-    return this.channelManagerService.inviteUserToChannel(
+      return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
+    const feedback = this.channelManagerService.inviteUserToChannel(
       sender,
       target,
       channel,
       wss,
+	  activeTarget
     );
+	if (feedback.success)
+		this.userService.joinChanUser(target,channel)
+	return feedback
   }
 
   async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
@@ -510,12 +527,16 @@ export class ChatService {
   async getChannelsList(
     socket: Socket,
   ): Promise<RequestFeedbackDto<ChannelSummary[]>> {
+
+  this.logger.log('dans getchannellist');
     const sender = this.userService.findOneActiveBySocket(socket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+  const result =  await this.channelManagerService.getPublicProtectedChan(sender);
+  this.logger.log(JSON.stringify(result));
     return {
       success: true,
-      result: await this.channelManagerService.getPublicProtectedChan(),
+      result: result
     };
   }
 }

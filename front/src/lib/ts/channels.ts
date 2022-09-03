@@ -2,6 +2,7 @@ import {
 	BanUserToServer,
 	ChannelInfo,
 	ChannelUser,
+	ChatError,
 	ChatEvent,
 	ChatFeedbackDto,
 	MuteUserToServer,
@@ -9,41 +10,6 @@ import {
 	type FeedbackCallbackWithResult
 } from 'backFrontCommon';
 import { socket, updateChannel } from '$lib/state';
-
-export async function getChannelInfo(channel: string): Promise<ChannelInfo> {
-	return new Promise((resolve, reject) => {
-		socket!.emit(ChatEvent.GET_CHANNEL_INFO, { channel }, (feedback) => {
-			if (!feedback.success) {
-				alert(feedback.errorMessage);
-				reject();
-			}
-			resolve(feedback.result!);
-		});
-	});
-}
-
-// AIDE POUR DEBUG
-// export async function getChannelInfo(_channel: string): Promise<ChannelInfo> {
-// 	return Promise.resolve({
-// 		users: [
-// 			{
-// 				id: 77080,
-// 				muted: false,
-// 				rights: ChannelRights.ADMIN
-// 			},
-// 			{
-// 				id: 1000,
-// 				muted: false,
-// 				rights: ChannelRights.ADMIN
-// 			},
-// 			{
-// 				id: 1001,
-// 				muted: true,
-// 				rights: ChannelRights.USER
-// 			}
-// 		]
-// 	});
-// }
 
 const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {
 	return <DTO extends Parameters<ClientToServerEvents[Key]>[0] & { channel: string }>(dto: DTO) => {
@@ -59,12 +25,25 @@ const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {
 };
 export const banUser = channelAction(ChatEvent.BAN_USER);
 export const muteUser = channelAction(ChatEvent.MUTE_USER);
+export const unMuteUser = channelAction(ChatEvent.UNMUTE_USER);
+export const sendInviteToChannel = channelAction(ChatEvent.INVITE_TO_PRIVATE_CHANNEL);
 
 // export type Len<ArrayType extends any[]> = ArrayType extends {length: infer L} ? L : never;
 // export type ArgsFromDTO<DTO> = DTO extends undefined ? [] : [DTO]
 // export type SocketIOArgs<DTO, Result> = [...ArgsFromDTO<DTO>, FeedbackCallbackWithResult<Result>];
 // export type ParametersForKey<Key extends keyof ClientToServerEvents> = Parameters<ClientToServerEvents[Key]>;
 // export type ArgsLenForKey<Key extends keyof ClientToServerEvents> = Len<ParametersForKey<Key>>;
-// export type DTOForKey<Key extends keyof ClientToServerEvents, N extends ArgsLenForKey<Key>> = N extends 1 ? undefined : N extends 2 ? ...
+// export type DTOForKey<Key extends keyof ClientToServerEvents> = ArgsLenForKey<Key> extends 1 ? undefined : ArgsLenForKey<Key> extends 2 ? ParametersForKey<Key>[0] : never;
 
-// export const unMuteUser = channelAction(ChatEvent.UNMUTE_USER);
+// const request = <Key extends keyof ClientToServerEvents>(event: Key) => {
+// 	return (...dtoArg: ArgsFromDTO<DTOForKey<Key>>) => {
+// 		const callback = (feedback: ChatFeedbackDto) => {
+// 			if (feedback.success) {
+
+// 			} else {
+// 				alert(feedback.errorMessage);
+// 			}
+// 		};
+// 		socket!.emit(event, ...([...dtoArg, callback] as unknown as Parameters<ClientToServerEvents[Key]>));
+// 	};
+// };

@@ -341,15 +341,11 @@ export class UserService {
     }
   }
 
-  async joinChanUser(activeUser: ActiveUser, channel: Channel) {
+  async joinChanUser(user: User, channel: Channel, activeUser?:ActiveUser) {
     const logger = new Logger('joinChanUser');
-
-    logger.log('ici');
-    logger.log(activeUser.id);
-    const dbUser = await this.findOneDb(activeUser.id);
-    if (dbUser === null) return;
-    dbUser.channel.push(channel.name);
-    this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
+  
+    user.channel.push(channel.name);
+    this.usersRepository.update(user!.id, { channel: user.channel });
 
     if (activeUser) {
       this.updateChannelConversation(activeUser, activeUser, channel);

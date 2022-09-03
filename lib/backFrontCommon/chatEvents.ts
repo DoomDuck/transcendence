@@ -450,6 +450,7 @@ export class ChannelSummary {
   constructor(
     public channel: string,
     public category: ChannelCategory,
+	public inChan: boolean,
   ) { }
 }
 export class UnmuteUserToServer {
