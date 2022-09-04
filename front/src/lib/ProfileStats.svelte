@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { UserInfo } from 'backFrontCommon';
-	import { observeGame } from '$lib/state';
+	import { getUser, storeMap } from '$lib/state';
+	import DeStore from './DeStore.svelte';
+	import ProfileParamHistory from './ProfileParamHistory.svelte';
 
 	export let user: UserInfo;
 </script>
@@ -16,9 +18,17 @@
 		</div>
 	</div>
 	<hr width="200px" />
-	{#each user.matchHistory as { opponent, winner, score, opponentScore }}
+	{#each user.matchHistory as { opponent: opponentId, winner, score, opponentScore }}
 		<div class="gameHistory">
-			Against {opponent}: {winner ? 'Victory' : 'Defeat'} ({score} - {opponentScore})
+			<DeStore
+				component={ProfileParamHistory}
+				slot="text"
+				text={storeMap(getUser(opponentId), (opponent) => {
+					return `Against ${opponent.name}: ${
+						winner ? 'Victory' : 'Defeat'
+					} (${score} - ${opponentScore})`;
+				})}
+			/>
 		</div>
 	{/each}
 </div>

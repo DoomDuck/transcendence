@@ -9,10 +9,10 @@
 		{ id: 'protected', label: 'Password-protected', value: ChannelCategory.PROTECTED },
 		{ id: 'private', label: 'Private', value: ChannelCategory.PRIVATE }
 	];
-	let channelName: string;
+	let channelName: string = '';
 	let chosenCategory: ChannelCategory = ChannelCategory.PUBLIC;
 	$: isPasswordProtected = chosenCategory == ChannelCategory.PROTECTED;
-	let password: string | undefined;
+	let password: string | undefined = undefined;
 
 	function handleSubmit() {
 		show = false;

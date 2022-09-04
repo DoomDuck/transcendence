@@ -369,13 +369,12 @@ export function sendChannelMessage(message: CMToServer) {
 }
 
 export async function sendJoinChannel(message: JoinChannelToServer): Promise<void> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 				channelConvs.update((_) => _.create(message.channel));
 				resolve();
 			} else {
-				reject();
 				alert(`error: ${feedback.errorMessage}`);
 			}
 		});

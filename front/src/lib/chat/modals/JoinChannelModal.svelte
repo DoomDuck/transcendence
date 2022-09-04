@@ -2,7 +2,7 @@
 	import { sendJoinChannel } from '$lib/state';
 	export let show = false;
 
-	let channelName: string;
+	let channelName: string = '';
 	let password: string | undefined;
 
 	function handleSubmit() {

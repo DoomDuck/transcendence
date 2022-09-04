@@ -18,7 +18,8 @@
 			.then((imageDataURL) => {
 				avatar = imageDataURL;
 				uploadAvatar(avatar);
-			});
+			})
+			.catch((e) => {});
 	};
 </script>
 

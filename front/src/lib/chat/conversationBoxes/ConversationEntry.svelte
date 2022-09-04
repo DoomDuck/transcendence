@@ -5,7 +5,7 @@
 	export let message: ChatMessageDto;
 	export let type: 'user' | 'channel';
 	let sender = getUser(message.sender);
-	let isMe = message.sender == $myself.id;
+	let isMe = type == 'channel' ? message.sender == $myself.id : message.isMe!;
 </script>
 
 <article class={isMe ? 'user' : 'interlocutor'}>
