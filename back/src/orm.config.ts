@@ -2,7 +2,6 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
 import { Match } from './matchHistory/match.entity';
 import { Channel } from './channelManager/channel.entity';
-import { DatabaseFile } from './user/entities/databaseFile.entity';
 import { ConfigService } from '@nestjs/config';
 
 export function typeOrmFactory(config: ConfigService): TypeOrmModuleOptions {
@@ -14,6 +13,6 @@ export function typeOrmFactory(config: ConfigService): TypeOrmModuleOptions {
     host: config.get('POSTGRES_ADDRESS'),
     database: 'postgres',
     synchronize: true,
-    entities: [User, DatabaseFile, Channel, Match],
+    entities: [User,  Channel, Match],
   };
 }

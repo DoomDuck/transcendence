@@ -86,16 +86,16 @@ export class AppGateway
     await this.loginService.handleConnection(socket);
 
     // DEBUG
-    socket.onAny((event: string, ...args: any[]) => {
-      // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
-      console.log(
-        `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
-      );
-    });
-    socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-      // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
-      console.log(`[SENT] event '${event}' with args: ${JSON.stringify(args)}`);
-    });
+    // socket.onAny((event: string, ...args: any[]) => {
+      // // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
+      // console.log(
+        // `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
+      // );
+    // });
+    // socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+      // // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
+      // console.log(`[SENT] event '${event}' with args: ${JSON.stringify(args)}`);
+    // });
   }
 
   handleDisconnect(socket: Socket) {
@@ -111,7 +111,6 @@ export class AppGateway
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GET_LEADERBOARD)
   async getLeaderboard(socket: Socket) {
-    this.logger.debug('dans get leaderboard appgateway');
     return await this.userService.getLeaderboard(socket);
   }
   @UsePipes(new ValidationPipe())
@@ -123,7 +122,6 @@ export class AppGateway
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
-    this.logger.log('Dans ban User');
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);
   }
 
@@ -133,7 +131,6 @@ export class AppGateway
     clientSocket: Socket,
     leaveInfo: LeaveChannelToServer,
   ) {
-    this.logger.log('Dans ban User');
     return await this.chatService.handleLeaveChannel(clientSocket, leaveInfo);
   }
 
@@ -174,7 +171,6 @@ export class AppGateway
     clientSocket: Socket,
     friendRequest: FriendInviteToServer,
   ) {
-    this.logger.debug('dans friend invite');
     return await this.chatService.handleFriendInvite(
       clientSocket,
       friendRequest,
@@ -184,7 +180,6 @@ export class AppGateway
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.BAN_USER)
   async handleBanUser(clientSocket: Socket, banInfo: BanUserToServer) {
-    this.logger.log('Dans ban User');
     return await this.chatService.handleBanUser(
       clientSocket,
       banInfo,
@@ -195,7 +190,6 @@ export class AppGateway
   @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.MUTE_USER)
   async handleMuteUser(clientSocket: Socket, muteInfo: MuteUserToServer) {
-    this.logger.log('mute ban User');
     return await this.chatService.handleMuteUser(
       clientSocket,
       muteInfo,
@@ -361,11 +355,7 @@ export class AppGateway
     socket: Socket,
     chatInfo: GetChannelInfoToServer,
   ): Promise<RequestFeedbackDto<ChannelInfo>> {
-    this.logger.log(
-      `dans get channel info ${JSON.stringify(
-        (await this.chatService.handleGetChannelInfo(socket, chatInfo)).result,
-      )}`,
-    );
+   
     return await this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
 }
