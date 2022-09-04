@@ -87,6 +87,10 @@ export class ChatService {
         false,
         ChatError.U_DO_NOT_EXIST,
       );
+	  if(chanInfo.channel.length >50)
+		  return{success:false, errorMessage:ChatError.CHANNEL_NAME_TOO_LONG}
+
+	  
     const tempChan = await this.channelManagerService.findChanByName(
       chanInfo.channel,
     );

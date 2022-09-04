@@ -106,6 +106,7 @@ export class ChatError {
   static readonly USER_ALREADY_INVITED = "user already invited";
   static readonly ALREADY_IN_MATCHMAKING = "already in matchmaking";
   static readonly YOU_ARE_ALREADY_IN_GAME = "you are already in game";
+  static readonly CHANNEL_NAME_TOO_LONG = "the channel name is too long";
 }
 
 export class DMFromServer {
