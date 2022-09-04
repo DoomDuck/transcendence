@@ -88,7 +88,7 @@
 			<!-- User Info -->
 			<UserMiniature userId={user.id} />
 			<UserName userId={user.id} />
-			<p>{channelRightsString(user.rights)}</p>
+			<p id='rights'>{channelRightsString(user.rights)}</p>
 
 			<!-- Actions on User -->
 			{#if me?.rights != ChannelRights.USER}
@@ -152,7 +152,7 @@
 	#channel-details {
 		display: flex;
 		flex-direction: column;
-		width: 40vw;
+		width: 50vw;
 		color: rgb(136, 172, 255);
 		overflow: auto;
 		justify-content: center;
@@ -160,6 +160,9 @@
 	#channelRights {
 		text-align: center;
 		color: rgb(104, 134, 240);
+	}
+	#rights{
+		width: 10vw;
 	}
 	.channel-details-user {
 		width: 100%;
