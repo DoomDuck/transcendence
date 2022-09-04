@@ -16,7 +16,6 @@ import { Channel } from '../channelManager/channel.entity';
 import { ChannelManagerService } from '../channelManager/channelManager.service';
 import { MatchHistoryService } from '../matchHistory/matchHistory.service';
 import { Repository } from 'typeorm';
-import { DatabaseFilesService } from './databaseFile.service';
 import { ServerSocket as Socket, Server } from 'backFrontCommon';
 import {
   MyInfo,
@@ -142,17 +141,6 @@ export class UserService {
     const userDb = await this.findOneDbBySocket(socket);
     if (!userDb)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-    this.logger.log(
-      `get leaderboard ${JSON.stringify(
-        this.leaderbordTransformator(
-          await this.usersRepository.find({
-            order: {
-              score: 'DESC',
-            },
-          }),
-        ),
-      )}`,
-    );
     return {
       success: true,
       result: this.leaderbordTransformator(
@@ -298,8 +286,6 @@ export class UserService {
     const id = userDto.id;
     const logger = new Logger('addone');
 
-    logger.log(`userDto = ${userDto.id}`);
-    logger.log(id);
     let i = 0;
     let userDb = await this.findOneDb(id);
     if (userDb === null) {
@@ -311,7 +297,6 @@ export class UserService {
         new User(userDto.id, userDto.name),
       );
     }
-    logger.log(userDb.name);
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       this.arrayActiveUser.push(
@@ -321,7 +306,6 @@ export class UserService {
       tempUser.socketUser.push(userDto.socket);
     }
     userDb.channel.forEach((chan) => userDto.socket.join(chan));
-    logger.log('end add one user');
   }
 
   async addOneGuest(socket: Socket) {
@@ -347,10 +331,6 @@ export class UserService {
 
     if (activeUser) {
       this.updateChannelConversation(activeUser, activeUser, channel);
-      logger.log(
-        `la active name = ${activeUser.name} channel name = ${channel.name}`,
-      );
-      logger.log(activeUser.socketUser);
       activeUser.socketUser.forEach((socket: Socket) =>
         socket.join(channel.name),
       );
@@ -478,8 +458,6 @@ export class UserService {
         );
       }
     }
-    logger.log(' second print');
-    logger.log('end');
   }
 
   async leaveChannel(
@@ -496,7 +474,6 @@ export class UserService {
     if (activeUser)
       activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
 
-    this.logger.debug(`in leave channel${dbUser.name} `);
     dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);
@@ -610,9 +587,6 @@ export class UserService {
     user: User,
   ): Promise<RelativeMatchInfoFromServer[]> {
     const result: RelativeMatchInfoFromServer[] = [];
-    this.logger.debug(
-      `dans relative match history ${JSON.stringify(user.match)}`,
-    );
     if (!user.match) return [];
     for (let i = 0; i < Math.min(3, user.match.length); i++) {
       let match = user.match[user.match.length - 1 - i];
@@ -674,35 +648,6 @@ export class UserService {
         result: await this.UserInfoTransformator(target),
       };
   }
-  // async getMyMatch(
-  // socket: Socket,
-  // ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
-  // const userDb = await this.findOneDbBySocket(socket);
-  // let result: MatchInfoFromServer[] = [];
-  // if (!userDb)
-  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-  // userDb.match.forEach(async (match) =>
-  // result.push(await this.matchHistoryService.MatchDbToMatchDTO(match)),
-  // );
-  // return { success: true, result: result };
-  // }
-  // async getUserMatch(
-  // socket: Socket,
-  // targetId: Id,
-  // ): Promise<RequestFeedbackDto<MatchInfoFromServer[]>> {
-  // const userDb = await this.findOneDbBySocket(socket);
-  // const targetDb = await this.findOneDb(targetId);
-  // let result: MatchInfoFromServer[] = [];
-  // if (!userDb)
-  // return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
-  // if (!targetDb)
-  // return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
-  // targetDb.match.forEach((match) =>
-  // result.push(this.matchHistoryService.MatchDbToMatchDTO(match)),
-  // );
-  // return { success: true, result: result };
-  // }
-
   async matchForChatUser(match: Match[]): Promise<MatchInfoFromServer[]> {
     const result: MatchInfoFromServer[] = [];
     if (!match) return [];

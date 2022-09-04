@@ -13,30 +13,18 @@ import {
 import { GameState } from "../../common/entities";
 import { Game } from "../../common/game";
 import { BarInputEvent } from "../../common/game/events";
+import { ClientGameContextOffline } from "../ClientGameContextOffline";
+import { ClientGameContextOnline } from "../ClientGameContextOnline";
 
 export function handleKeydownOffline(e: KeyboardEvent, state: GameState) {
   let barIdAndKey = barIdAndKeyFromEventOffline(e);
   if (barIdAndKey)
-    state.registerEvent(
-      new BarInputEvent(
-        state.data.actualNow,
-        barIdAndKey[0],
-        barIdAndKey[1],
-        true
-      )
-    );
+    keyAction(state, barIdAndKey[0], barIdAndKey[1], true);
 }
 export function handleKeyupOffline(e: KeyboardEvent, state: GameState) {
   let barIdAndKey = barIdAndKeyFromEventOffline(e);
   if (barIdAndKey)
-    state.registerEvent(
-      new BarInputEvent(
-        state.data.actualNow,
-        barIdAndKey[0],
-        barIdAndKey[1],
-        false
-      )
-    );
+    keyAction(state, barIdAndKey[0], barIdAndKey[1], false);
 }
 
 function barIdAndKeyFromEventOffline(
@@ -60,65 +48,66 @@ export function handleKeyOnline(
   socket: Socket,
   pressed: boolean
 ) {
-  if (GSettings.BAR_UPKEYS.includes(e.key)) {
-    state.registerEvent(
-      new BarInputEvent(state.data.actualNow, playerId, UP, pressed)
-    );
-    socket.emit(
-      GameEvent.SEND_BAR_EVENT,
-      state.data.actualNow,
-      playerId,
-      UP,
-      pressed
-    );
-    console.log(
-      ` -> sended ${state.data.actualNow}, ${playerId}, ${UP}, ${pressed}`
-    );
-  } else if (GSettings.BAR_DOWNKEYS.includes(e.key)) {
-    state.registerEvent(
-      new BarInputEvent(state.data.actualNow, playerId, DOWN, pressed)
-    );
-    socket.emit(
-      GameEvent.SEND_BAR_EVENT,
-      state.data.actualNow,
-      playerId,
-      DOWN,
-      pressed
-    );
-    console.log(
-      ` -> sended ${state.data.actualNow}, ${playerId}, ${DOWN}, ${pressed}`
-    );
-  }
+  if (GSettings.BAR_UPKEYS.includes(e.key))
+    keyActionOnline(state, socket, playerId, UP, pressed);
+  else if (GSettings.BAR_DOWNKEYS.includes(e.key))
+    keyActionOnline(state, socket, playerId, DOWN, pressed);
 }
 
-export function setupKeyboardOffline(game: Game) {
-  window.addEventListener(
+export function keyAction(state: GameState, playerId: number, keyValue: KeyValue, pressed: boolean) {
+  state.registerEvent(
+    new BarInputEvent(
+      state.data.actualNow,
+      playerId,
+      keyValue,
+      pressed
+    )
+  );
+}
+
+
+export function keyActionOnline(state: GameState, socket: Socket, playerId: number, keyValue: KeyValue, pressed: boolean) {
+  keyAction(state, playerId, keyValue, pressed);
+  socket.emit(
+    GameEvent.SEND_BAR_EVENT,
+    state.data.actualNow,
+    playerId,
+    keyValue,
+    pressed
+  );
+}
+
+
+export function setupKeyboardOffline(ctx: ClientGameContextOffline) {
+  const game = ctx.gameManager.game;
+  ctx.registerWindowListener(
     "keydown",
-    (e: KeyboardEvent) => handleKeydownOffline(e, game.state),
+    (e: Event) => handleKeydownOffline(e as KeyboardEvent, game.state),
     false
   );
-  window.addEventListener(
+  ctx.registerWindowListener(
     "keyup",
-    (e: KeyboardEvent) => handleKeyupOffline(e, game.state),
+    (e: Event) => handleKeyupOffline(e as KeyboardEvent, game.state),
     false
   );
 }
 
 export function setupKeyboardOnline(
-  game: Game,
+  ctx: ClientGameContextOnline,
   playerId: number,
   socket: Socket
 ) {
-  window.addEventListener(
+  const game = ctx.gameManager.game;
+  ctx.registerWindowListener(
     "keydown",
-    (e: KeyboardEvent) =>
-      handleKeyOnline(e, game.state, playerId, socket, true),
-    false
+    (e: Event) =>
+      handleKeyOnline(e as KeyboardEvent, game.state, playerId, socket, true),
+      false
   );
-  window.addEventListener(
+  ctx.registerWindowListener(
     "keyup",
-    (e: KeyboardEvent) =>
-      handleKeyOnline(e, game.state, playerId, socket, false),
-    false
+    (e: Event) =>
+      handleKeyOnline(e as KeyboardEvent, game.state, playerId, socket, false),
+      false
   );
 }

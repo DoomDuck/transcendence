@@ -35,7 +35,7 @@ import {
 	ChannelCategory,
 	UnbanUserToServer,
 	LeaderboardItemDto,
-    ChatError
+	ChatError
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -153,20 +153,19 @@ function setupHooks(socket: Socket) {
 	socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 	socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
 	socket.on(ChatEvent.BANNED_NOTIF, onBannedNotif);
-	socket.on(ChatEvent.CHANNEL_DELETED_NOTIF, onChannelDeletedNotif);
 	socket.on(ChatEvent.BLOCKED_NOTIF, onBlockedNotif);
 
 	window.addEventListener('keydown', closeLastModalListener);
 
 	// DEBUG
-	socket.onAny((event: string, ...args: any[]) => {
-		if (Object.getOwnPropertyNames(event).includes(event)) return;
-		console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
-	});
-	socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-		if (Object.getOwnPropertyNames(event).includes(event)) return;
-		console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
-	});
+	// socket.onAny((event: string, ...args: any[]) => {
+	// 	if (Object.getOwnPropertyNames(event).includes(event)) return;
+	// 	console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
+	// });
+	// socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+	// 	if (Object.getOwnPropertyNames(event).includes(event)) return;
+	// 	console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
+	// });
 }
 
 // Totp
@@ -303,9 +302,14 @@ export function updateAllChannels() {
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
 	if (!feedback.success) {
 		if (feedback.errorMessage == ChatError.CHANNEL_NOT_FOUND) {
-			channelConvs.update(c => { c.delete(channel); return c; })
+			if (knownChannels.has(channel)) {
+				knownChannels.delete(channel);
+			}
+			channelConvs.update((c) => {
+				c.delete(channel);
+				return c;
+			});
 		}
-		throw new Error(feedback.errorMessage);
 	}
 	const info = feedback.result!;
 	const entry = knownChannels.get(channel);
@@ -324,9 +328,7 @@ export function updateAllStores() {
 	if (loggedIn()) {
 		updateMyself();
 		updateAllUsers();
-		try {
-			updateAllChannels();
-		} catch (e) {}
+		updateAllChannels();
 	}
 }
 
@@ -533,10 +535,6 @@ function onBannedNotif(message: BanUserFromServer) {
 
 function onBlockedNotif(message: BlockUserFromServer) {
 	userConvs.update((_) => _.delete(message.source));
-}
-
-function onChannelDeletedNotif(message: ChannelDeletedFromServer) {
-	channelConvs.subscribe((_) => _.delete(message.channel));
 }
 
 // Used in +layout.svelte

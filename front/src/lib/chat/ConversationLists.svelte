@@ -51,7 +51,7 @@
 		width: 80vw;
 		background: #12072e;
 	}
-	
+
 	#channel-convs-header {
 		display: flex;
 		flex-direction: row;

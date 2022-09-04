@@ -1,9 +1,10 @@
 import { Socket } from "socket.io-client";
-import { GameEvent } from "../common/constants";
+import { GameEvent, KeyValue } from "../common/constants";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
 import { ChatEvent, type Id } from "backFrontCommon";
 import type { ErrorCallback, FinishCallback } from "../common/utils";
+import { keyActionOnline } from "./game/keyboardInput";
 
 /**
  * Online version of the game in the client as a player (see ClientGameContext)
@@ -31,8 +32,11 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
     this.listeners.add(this.socket,
       ChatEvent.PLAYER_ID_CONFIRMED,
       (playerId: number, ready: () => void) => {
-        setupKeyboardOnline(this.gameManager.game, playerId, this.socket);
-        // this.setupBallOutOutgoingEvent(playerId);
+        setupKeyboardOnline(this, playerId, this.socket);
+        this.registerWindowListener('blur', () => {
+          keyActionOnline(this.gameManager.game.state, socket, playerId, KeyValue.UP, false);
+          keyActionOnline(this.gameManager.game.state, socket, playerId, KeyValue.DOWN, false);
+        })
         this.playerId = playerId;
         ready();
       }

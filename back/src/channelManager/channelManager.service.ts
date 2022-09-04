@@ -49,15 +49,10 @@ export class ChannelManagerService {
     const banInfo = channel.banned.find(
       (bannedList) => bannedList.userId === user.id,
     );
-    this.logger.debug(`ban list : ${JSON.stringify(channel)}`);
-    this.logger.debug(`ban1 list : ${JSON.stringify(channel.banned)}`);
     const newDate = new Date();
     if (banInfo === undefined) return false;
     else {
       const unBanDate = new Date(banInfo!.unbanDate);
-      this.logger.debug(JSON.stringify(unBanDate));
-      this.logger.debug(newDate.getTime());
-      this.logger.debug(unBanDate.getTime());
       if (unBanDate.getTime() > newDate.getTime()) return true;
       else {
         this.unBanUser(user, channel);
@@ -90,12 +85,8 @@ export class ChannelManagerService {
     activeUser: ActiveUser | User,
     chanInfo: CreateChannelToServer,
   ): Promise<Channel> {
-    this.logger.log('createChan');
-    this.logger.log(chanInfo.channel);
-    this.logger.log(chanInfo.password);
     if (chanInfo.category === ChannelCategory.PROTECTED) {
       const hash = await bcrypt.hash(chanInfo.password!, 10);
-      this.logger.log(`hash = ${hash}`);
       return this.channelRepository.save(
         new Channel(chanInfo.channel, activeUser.id, chanInfo.category, hash),
       );
@@ -270,7 +261,6 @@ export class ChannelManagerService {
     let chanDb = await this.channelRepository.find({
       where: { category: ChannelCategory.PUBLIC },
     });
-    this.logger.debug(`dans get public protect ${JSON.stringify(chanDb)}`);
     let result: ChannelSummary[] = [];
     chanDb.forEach((chan) =>
       result.push(

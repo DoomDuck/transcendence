@@ -114,7 +114,6 @@ export class GameManagerService {
     const activeUser = this.userService.findOneActiveBySocket(socket)!;
     matchQueue.push([socket, activeUser]);
     if (matchQueue.length >= 2) {
-      this.logger.log('two clients are waiting for a game');
       this.startGame([matchQueue[0][0], matchQueue[1][0]], classic);
       matchQueue.splice(0, 2);
     }
@@ -164,7 +163,6 @@ export class GameManagerService {
       if (activeUser !== undefined) activeUser.inGame = true;
       playerSockets[i].emit(ChatEvent.GOTO_GAME_SCREEN, classic, () => {
         playerSockets[i].emit(ChatEvent.PLAYER_ID_CONFIRMED, i, () => {
-          this.logger.log(`player ${i} ready`);
           gameInstance.isReady(i);
         });
       });
@@ -215,7 +213,6 @@ export class GameManagerService {
       classic: dto.classic,
     });
 
-    // this.logger.log(`After handleGameInvite, pending invits = ${invitsToString(this.pendingGameInvits)}`);
     return new ChatFeedbackDto(true);
   }
 
@@ -241,7 +238,6 @@ export class GameManagerService {
     dto: GameAcceptToServer,
   ): ChatFeedbackDto {
     const gameInvite = this.handleGameResponse(targetSocket, dto.target);
-    // this.logger.log(`After handleGameResponse, pending invits = ${invitsToString(this.pendingGameInvits)}`);
     if (gameInvite === undefined) {
       return {
         success: false,
@@ -264,7 +260,6 @@ export class GameManagerService {
   // GAME_REFUSE
   handleGameRefuse(targetSocket: Socket, dto: GameRefuseToServer) {
     const gameInvite = this.handleGameResponse(targetSocket, dto.target);
-    // this.logger.log(`After handleGameResponse, pending invits = ${invitsToString(this.pendingGameInvits)}`);
     if (gameInvite === undefined) return;
     gameInvite.sourceSocket.emit(ChatEvent.GAME_REFUSE, {
       source: gameInvite.target.id,

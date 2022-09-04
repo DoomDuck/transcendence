@@ -46,9 +46,6 @@ export class ChatService {
     private channelManagerService: ChannelManagerService,
   ) {}
   private logger: Logger = new Logger('ChatGateway');
-  afterInit(server: any) {
-    this.logger.log('Initialized chat ');
-  }
 
   // Random login for guest
   generateRandomId(): number {
@@ -105,7 +102,6 @@ export class ChatService {
       chanInfo,
     );
 
-    this.logger.debug('after create channel');
     if (!newChan)
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -114,7 +110,6 @@ export class ChatService {
     // this.channelManagerService.joinChan(tempUser, newChan);
     this.userService.joinChanUser(tempDb, newChan, tempUser);
 
-    this.logger.debug('end create channel');
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
@@ -127,7 +122,6 @@ export class ChatService {
       dto.channel,
     );
 
-    this.logger.debug('dans message to chan');
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
@@ -135,7 +129,6 @@ export class ChatService {
     );
     if (!feedback.success) return feedback;
 
-    this.logger.debug('dans message to chan1');
     tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
@@ -165,9 +158,6 @@ export class ChatService {
     const tempUser = await this.userService.findOneDbBySocket(clientSocket);
 
     const tempActive = this.userService.findOneActiveBySocket(clientSocket);
-    this.logger.log(
-      `any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`,
-    );
     if (!tempChan) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -192,7 +182,6 @@ export class ChatService {
       joinInfo.password,
     );
     if (feedback.success === true) {
-      this.logger.log(`joining chanUSer `);
       this.userService.joinChanUser(tempUser, tempChan, tempActive);
     }
 
@@ -227,11 +216,7 @@ export class ChatService {
       dm.content,
       target,
     );
-    this.logger.debug(
-      `active history = ${JSON.stringify(
-        await this.userService.getUserHistory(clientSocket),
-      )}`,
-    );
+
     return feedback;
   }
 
@@ -305,9 +290,6 @@ export class ChatService {
       this.userService.findOneActive(tempTarget.id),
     );
     if (feedback.success === true) {
-      this.logger.debug(
-        '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
-      );
       this.userService.leaveChannel(tempTarget, tempChan, activeTarget);
     }
     return feedback;
@@ -470,7 +452,6 @@ export class ChatService {
       const tempUser = await this.userService.findOneDb(member);
       const tempActive = this.userService.findOneActive(member);
       if (tempUser) {
-        this.logger.debug(tempUser.name);
         this.userService.leaveChannel(tempUser, channel, tempActive);
       }
     });
@@ -516,14 +497,6 @@ export class ChatService {
     const usersPromise = channel.member.map(async (member) => {
       const tempUser = await this.userService.findOneDb(member);
       if (tempUser) {
-        this.logger.debug(
-          `ta mere dans channel info ${JSON.stringify(
-            this.channelManagerService.ChannelUserTransformator(
-              tempUser,
-              channel,
-            ),
-          )}`,
-        );
         return this.channelManagerService.ChannelUserTransformator(
           tempUser,
           channel,
@@ -533,7 +506,6 @@ export class ChatService {
     });
     const users = await Promise.all(usersPromise);
     const result = users.filter((user) => user !== null) as ChannelUser[];
-    this.logger.debug(`end channel info${JSON.stringify(result)}`);
     return {
       success: true,
       result: new ChannelInfo(
@@ -548,14 +520,12 @@ export class ChatService {
   async getChannelsList(
     socket: Socket,
   ): Promise<RequestFeedbackDto<ChannelSummary[]>> {
-    this.logger.log('dans getchannellist');
     const sender = this.userService.findOneActiveBySocket(socket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
     const result = await this.channelManagerService.getPublicProtectedChan(
       sender,
     );
-    this.logger.log(JSON.stringify(result));
     return {
       success: true,
       result: result,

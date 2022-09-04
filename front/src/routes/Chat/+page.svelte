@@ -14,8 +14,8 @@
 		$channelConvs.create(channel);
 	});
 
- 	const myUser = getUser($myself.id);
-	
+	const myUser = getUser($myself.id);
+
 	let showMyProfile: boolean = false;
 </script>
 
@@ -23,11 +23,11 @@
 	<AvatarIcon
 		type={'user'}
 		imageURL={$myself.avatar ?? 'errorUser.png'}
-		on:clickOnImage={() => showMyProfile = true}
+		on:clickOnImage={() => (showMyProfile = true)}
 	/>
 </div>
 <Modal bind:show={showMyProfile}>
-	<Profile user={$myUser}/>
+	<Profile user={$myUser} />
 </Modal>
 
 <div id="chat">

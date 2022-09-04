@@ -28,7 +28,7 @@
 </form>
 
 <style>
-	form{
+	form {
 		overflow: hidden;
 	}
 </style>

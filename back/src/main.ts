@@ -4,9 +4,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { SocketAdapter } from './socket.adapter';
 import { ValidationPipe } from '@nestjs/common';
 
-import { validateSync } from 'class-validator';
-import { GetUser } from 'backFrontCommon';
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useWebSocketAdapter(new SocketAdapter(app));

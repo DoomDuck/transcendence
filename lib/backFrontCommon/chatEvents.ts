@@ -64,7 +64,7 @@ export class ChatEvent {
 }
 
 export class ChatError {
-  
+
 
   static readonly U_DO_NOT_EXIST ="u do not exist";
   static readonly USER_NOT_FOUND ="user not found";
@@ -110,11 +110,11 @@ export class ChatError {
 }
 
 export class DMFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
-  // @IsString() 
+  // @IsString()
   content: string;
-  // @IsOptional() @IsBoolean() 
+  // @IsOptional() @IsBoolean()
   isMe: boolean | undefined;
   constructor(
     source: Id,
@@ -128,9 +128,9 @@ export class DMFromServer {
 }
 
 export class DMToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
-  // @IsString() 
+  // @IsString()
   content: string;
 
   constructor(
@@ -143,11 +143,11 @@ export class DMToServer {
 }
 
 export class CMFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsString() 
+  // @IsString()
   content: string;
   constructor(
     source: Id,
@@ -161,9 +161,9 @@ export class CMFromServer {
 }
 
 export class CMToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsString() 
+  // @IsString()
   content: string;
   constructor(
       channel: string,
@@ -175,9 +175,9 @@ export class CMToServer {
 }
 
 export class JoinChannelFromServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   newUser: Id;
     constructor(
       channel: string,
@@ -189,9 +189,9 @@ export class JoinChannelFromServer {
 }
 
 export class JoinChannelToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   password?: string;
     constructor(
       channel: string,
@@ -203,9 +203,9 @@ export class JoinChannelToServer {
 }
 
 export class SetPasswordToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsString() 
+  // @IsString()
   password: string;
   constructor(
     channel: string,
@@ -216,9 +216,9 @@ export class SetPasswordToServer {
   }
 }
 export class SetNewAdminToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     channel: string,
@@ -234,7 +234,7 @@ export enum ChannelCategory {
 };
 
 export class FriendInviteToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -244,11 +244,11 @@ export class FriendInviteToServer {
 }
 
 export class CreateChannelToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsIn([ChannelCategory.PRIVATE, ChannelCategory.PROTECTED, ChannelCategory.PUBLIC]) 
+  // @IsIn([ChannelCategory.PRIVATE, ChannelCategory.PROTECTED, ChannelCategory.PUBLIC])
   category: ChannelCategory;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   password: string | undefined;
   constructor(
     channel: string,
@@ -262,9 +262,9 @@ export class CreateChannelToServer {
 }
 
 export class InviteChannelFromServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
   constructor(
     channel: string,
@@ -276,9 +276,9 @@ export class InviteChannelFromServer {
 }
 
 export class InviteChannelToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     channel: string,
@@ -290,9 +290,9 @@ export class InviteChannelToServer {
 }
 
 export class GameInviteFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
-  // @IsBoolean() 
+  // @IsBoolean()
   classic: boolean;
   constructor(
     source: Id,
@@ -304,9 +304,9 @@ export class GameInviteFromServer {
 }
 
 export class GameInviteToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
-  // @IsBoolean() 
+  // @IsBoolean()
   classic: boolean;
   constructor(
     target: Id,
@@ -318,7 +318,7 @@ export class GameInviteToServer {
 }
 
 export class GameAcceptFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
   constructor(
     source: Id
@@ -328,7 +328,7 @@ export class GameAcceptFromServer {
 }
 
 export class GameAcceptToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -338,9 +338,9 @@ export class GameAcceptToServer {
 }
 
 export class GameRefuseFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   reason: string | undefined;
   constructor(
     source: Id,
@@ -352,9 +352,9 @@ export class GameRefuseFromServer {
 }
 
 export class GameRefuseToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   reason: string | undefined;
   constructor(
     target: Id,
@@ -366,17 +366,17 @@ export class GameRefuseToServer {
 }
 
 export class PostAvatar {
-  // @IsUrl() 
+  // @IsUrl()
   imageDataUrl: string;
   constructor(
     imageDataUrl: string
-  ) { 
+  ) {
     this.imageDataUrl = imageDataUrl;
   }
 }
 
 export class GetUser {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -412,17 +412,17 @@ export class LeaderboardItemDto {
 }
 
 export class GetLeaderBoardResponse {
-  // @IsArray() @IsInstance(LeaderboardItemDto) 
+  // @IsArray() @IsInstance(LeaderboardItemDto)
   items: LeaderboardItemDto[];
   constructor(
     items: LeaderboardItemDto[]
-  ) { 
+  ) {
     this.items = items;
   }
 }
 
 export class BlockUserToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -432,11 +432,11 @@ export class BlockUserToServer {
 }
 
 export class BanUserToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   duration: number;
   constructor(
     channel: string,
@@ -450,7 +450,7 @@ export class BanUserToServer {
 }
 
 export class MatchInfoToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -460,13 +460,13 @@ export class MatchInfoToServer {
 }
 
 export class MatchInfoFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   winner: Id;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   looser: Id;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   winnerScore: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   looserScore: number;
   // @IsDate()
   date: Date;
@@ -481,18 +481,18 @@ export class MatchInfoFromServer {
     this.looser = looser;
     this.winnerScore = winnerScore;
     this.looserScore = looserScore;
-    this.date = date 
+    this.date = date
   }
 };
 
 export class RelativeMatchInfoFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   opponent: Id;
-  // @IsBoolean() 
+  // @IsBoolean()
   winner: boolean;
   // @IsPositive() @IsInt()
   score: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   opponentScore: number;
   constructor(
     opponent: Id,
@@ -508,7 +508,7 @@ export class RelativeMatchInfoFromServer {
 };
 
 export class GetBannedListToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
   constructor(
     channel: string
@@ -517,7 +517,7 @@ export class GetBannedListToServer {
   }
 }
 export class GetBannedListFromServer {
-  // @IsArray() @IsInt() 
+  // @IsArray() @IsInt()
   users: Id[];
   constructor(
     users: Id[]
@@ -526,7 +526,7 @@ export class GetBannedListFromServer {
   }
 }
 export class SetUsernameToServer {
-  // @IsString() 
+  // @IsString()
   name: string;
   constructor(
     name: string
@@ -536,9 +536,9 @@ export class SetUsernameToServer {
 }
 
 export class GameCancelFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   reason: string | undefined;
   constructor(
     source: Id,
@@ -550,9 +550,9 @@ export class GameCancelFromServer {
 }
 
 export class GameCancelToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   reason: string | undefined;
   constructor(
     target: Id,
@@ -564,7 +564,7 @@ export class GameCancelToServer {
 }
 
 export class DeleteGameInviteFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -574,7 +574,7 @@ export class DeleteGameInviteFromServer {
 }
 
 export class ChanInviteAccept {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   channel: string;
   constructor(
     channel: string,
@@ -584,7 +584,7 @@ export class ChanInviteAccept {
 }
 
 export class ChanInviteRefuse {
-  // @IsString() 
+  // @IsString()
   channel: string;
   constructor(
     channel: string
@@ -594,29 +594,29 @@ export class ChanInviteRefuse {
 }
 
 export class MyInfo {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   id: Id;
-  // @IsString() 
+  // @IsString()
   name: string;
-  // @IsArray() @IsPositive() @IsInt() 
+  // @IsArray() @IsPositive() @IsInt()
   friendlist: Id[];
-  // @IsArray() @IsPositive() @IsInt() 
+  // @IsArray() @IsPositive() @IsInt()
   blocked: Id[];
-  // @IsArray() @IsString() 
+  // @IsArray() @IsString()
   channels: string[];
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   win: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   loose: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   score: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   ranking: number;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   avatar: string | null;
-  // @IsString() 
+  // @IsString()
   totpSecret: string | null;
-  // @IsBoolean() 
+  // @IsBoolean()
   inGame: boolean;
   constructor (
     id: Id,
@@ -648,23 +648,23 @@ export class MyInfo {
 };
 
 export class UserInfo {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   id: Id;
-  // @IsString() 
+  // @IsString()
   name: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   win: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   loose: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   score: number;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   ranking: number;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   avatar: string | null;
-  // @IsBoolean() 
+  // @IsBoolean()
   isOnline: boolean;
-  // @IsBoolean() 
+  // @IsBoolean()
   inGame: boolean;
   // @IsArray() @IsInstance(RelativeMatchInfoFromServer)
   matchHistory: RelativeMatchInfoFromServer[];
@@ -694,7 +694,7 @@ export class UserInfo {
 };
 
 export class UserInfoToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -704,11 +704,11 @@ export class UserInfoToServer {
 }
 
 export class BanUserFromServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   sender: Id;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   duration: number;
   constructor(
     channel: string,
@@ -722,11 +722,11 @@ export class BanUserFromServer {
 }
 
 export class MuteUserToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   duration: number;
   constructor(
     channel: string,
@@ -740,11 +740,11 @@ export class MuteUserToServer {
 }
 
 export class MuteUserFromServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   sender: Id;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   duration: number;
   constructor(
     channel: string,
@@ -757,7 +757,7 @@ export class MuteUserFromServer {
   }
 };
 export class DeleteChannelToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
   constructor(
     channel: string
@@ -766,7 +766,7 @@ export class DeleteChannelToServer {
   }
 }
 export class IsInGameToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor (
     target: Id
@@ -775,7 +775,7 @@ export class IsInGameToServer {
   }
 }
 export class GetChannelInfoToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
   constructor (
     channel: string
@@ -789,11 +789,11 @@ export enum ChannelRights {
   USER
 }
 export class ChannelUser {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   id: Id;
-  // @IsIn([ChannelRights.ADMIN, ChannelRights.OWNER, ChannelRights.USER]) 
+  // @IsIn([ChannelRights.ADMIN, ChannelRights.OWNER, ChannelRights.USER])
   rights: ChannelRights;
-  // @IsBoolean() 
+  // @IsBoolean()
   muted: boolean;
   constructor(
     id: Id,
@@ -806,11 +806,11 @@ export class ChannelUser {
   }
 }
 export class ChannelInfo {
-  // @IsArray() @IsInstance(ChannelUser) 
+  // @IsArray() @IsInstance(ChannelUser)
   users: ChannelUser[];
-  // @IsArray() @IsPositive() @IsInt() 
+  // @IsArray() @IsPositive() @IsInt()
   bannedUsers: Id[];
-  // @IsString() 
+  // @IsString()
   channelType: ChannelCategory;
   constructor (
     users: ChannelUser[],
@@ -823,7 +823,7 @@ export class ChannelInfo {
   }
 }
 export class LeaveChannelToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
   constructor(
     channel: string,
@@ -832,7 +832,7 @@ export class LeaveChannelToServer {
   }
 }
 export class ChannelDeletedFromServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
   constructor(
     channel: string,
@@ -841,7 +841,7 @@ export class ChannelDeletedFromServer {
   }
 }
 export class BlockUserFromServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   source: Id;
   constructor(
     source: Id
@@ -850,7 +850,7 @@ export class BlockUserFromServer {
   }
 }
 export class UnblockUserToServer {
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     target: Id
@@ -859,9 +859,9 @@ export class UnblockUserToServer {
   }
 }
 export class UnbanUserToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     channel: string,
@@ -872,11 +872,11 @@ export class UnbanUserToServer {
   }
 }
 export class ChannelSummary {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsString() 
+  // @IsString()
   category: ChannelCategory;
-  // @IsBoolean() 
+  // @IsBoolean()
   inChan: boolean;
   constructor(
     channel: string,
@@ -890,9 +890,9 @@ export class ChannelSummary {
 
 }
 export class UnmuteUserToServer {
-  // @IsString() 
+  // @IsString()
   channel: string;
-  // @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt()
   target: Id;
   constructor(
     channel: string,
@@ -911,9 +911,9 @@ export class GameStyleFromServer {
 
 
 export class ChatFeedbackDto {
-  // @IsBoolean() 
+  // @IsBoolean()
   success: boolean;
-  // @IsOptional() @IsString() 
+  // @IsOptional() @IsString()
   errorMessage: string | undefined;
   constructor(
     success: boolean,
@@ -927,11 +927,11 @@ export class ChatFeedbackDto {
 export type FeedbackCallback = (feedback: ChatFeedbackDto) => void;
 
 export class RequestFeedbackDto<Result> {
-  // @IsBoolean() 
+  // @IsBoolean()
   success: boolean;
-  // @IsString() 
+  // @IsString()
   errorMessage?: string;
-  // @IsString() 
+  // @IsString()
   result?: Result;
   constructor(
     success: boolean,

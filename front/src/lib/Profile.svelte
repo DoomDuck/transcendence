@@ -12,13 +12,19 @@
 <div id="profile">
 	<div id="informations">
 		<AvatarIcon type={'user'} imageURL={user.avatar ?? 'errorUser.png'} />
-		<div id='mainInformations'>
+		<div id="mainInformations">
 			<h3>{user.name}</h3>
 			{#if !$myself.friendlist.includes(user.id)}
-				<img src='add-button.png' alt='add friend' on:click={() => sendFriendInvite({ target: user.id })} width=20 height=20/>
+				<img
+					src="add-button.png"
+					alt="add friend"
+					on:click={() => sendFriendInvite({ target: user.id })}
+					width="20"
+					height="20"
+				/>
 			{/if}
 		</div>
-			<div>ID: {user.id}</div>
+		<div>ID: {user.id}</div>
 		{#if $myself.blocked.includes(user.id)}
 			<span>You blocked this person :(</span>
 			<button on:click={() => sendUnblockUser({ target: user.id })}>Unblock</button>
@@ -44,7 +50,6 @@
 </div>
 
 <style>
-	
 	h3 {
 		font-family: 'Lato', sans-serif;
 		color: #ff00b8;
@@ -56,7 +61,7 @@
 		text-align: center;
 		margin-bottom: 3px;
 	}
-	#mainInformations{
+	#mainInformations {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
