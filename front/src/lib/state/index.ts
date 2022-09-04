@@ -153,7 +153,6 @@ function setupHooks(socket: Socket) {
 	socket.on(ChatEvent.GAME_REFUSE, onGameRefuse);
 	socket.on(ChatEvent.GAME_CANCEL, onGameCancel);
 	socket.on(ChatEvent.BANNED_NOTIF, onBannedNotif);
-	socket.on(ChatEvent.CHANNEL_DELETED_NOTIF, onChannelDeletedNotif);
 	socket.on(ChatEvent.BLOCKED_NOTIF, onBlockedNotif);
 
 	window.addEventListener('keydown', closeLastModalListener);
@@ -533,10 +532,6 @@ function onBannedNotif(message: BanUserFromServer) {
 
 function onBlockedNotif(message: BlockUserFromServer) {
 	userConvs.update((_) => _.delete(message.source));
-}
-
-function onChannelDeletedNotif(message: ChannelDeletedFromServer) {
-	channelConvs.subscribe((_) => _.delete(message.channel));
 }
 
 // Used in +layout.svelte
