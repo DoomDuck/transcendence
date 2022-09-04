@@ -28,8 +28,12 @@ export class LoginService {
     private userService: UserService,
   ) {
     const appId = configService.getOrThrow<string>('PUBLIC_APP_42_ID');
-    const serverAddress = configService.getOrThrow<string>('PUBLIC_SERVER_ADDRESS');
-    const serverPagePort = configService.getOrThrow<string>('PUBLIC_SERVER_PAGE_PORT');
+    const serverAddress = configService.getOrThrow<string>(
+      'PUBLIC_SERVER_ADDRESS',
+    );
+    const serverPagePort = configService.getOrThrow<string>(
+      'PUBLIC_SERVER_PAGE_PORT',
+    );
     this.redirectURI = `http://${serverAddress}:${serverPagePort}`;
 
     const encodedURI = encodeURIComponent(this.redirectURI);
