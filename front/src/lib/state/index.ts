@@ -34,7 +34,8 @@ import {
 	ChannelInfo,
 	ChannelCategory,
 	UnbanUserToServer,
-	LeaderboardItemDto
+	LeaderboardItemDto,
+    ChatError
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -300,7 +301,12 @@ export function updateAllChannels() {
 }
 
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
-	if (!feedback.success) throw new Error(feedback.errorMessage);
+	if (!feedback.success) {
+		if (feedback.errorMessage == ChatError.CHANNEL_NOT_FOUND) {
+			channelConvs.update(c => { c.delete(channel); return c; })
+		}
+		throw new Error(feedback.errorMessage);
+	}
 	const info = feedback.result!;
 	const entry = knownChannels.get(channel);
 	if (entry) {
@@ -318,7 +324,9 @@ export function updateAllStores() {
 	if (loggedIn()) {
 		updateMyself();
 		updateAllUsers();
-		updateAllChannels();
+		try {
+			updateAllChannels();
+		} catch (e) {}
 	}
 }
 
