@@ -7,3 +7,9 @@
 </script>
 
 <span>{$user.name}</span>
+
+<style>
+	span{
+		margin: 8px;
+	}
+</style>
