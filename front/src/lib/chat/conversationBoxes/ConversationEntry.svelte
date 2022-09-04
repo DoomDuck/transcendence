@@ -1,17 +1,23 @@
 <script lang="ts">
 	import PendingText from '$lib/PendingText.svelte';
-	import { getUser, getUserNow } from '$lib/state';
+	import { getUser, getUserNow, myself } from '$lib/state';
 	import type { ChatMessageDto } from 'backFrontCommon';
+	import { onMount } from 'svelte';
 
 	export let message: ChatMessageDto;
 	export let type: 'user' | 'channel';
-	const sender = getUserNow(message.sender).then((user) => user.name);
+	let sender: Promise<string>;
+	let isMe: boolean;
+	onMount(() => {
+		sender = getUserNow(message.sender).then((user) => user.name);
+		isMe = message.sender == $myself.id;
+	});
 </script>
 
-<article class={message.isMe ? 'user' : 'interlocutor'}>
+<article class={isMe ? 'user' : 'interlocutor'}>
 	<span class="conv-entry">{message.content}</span>
 	<br />
-	{#if type == 'channel' && !message.isMe}
+	{#if type == 'channel' && !isMe}
 		<PendingText tag="span" text={sender} />
 	{/if}
 </article>
