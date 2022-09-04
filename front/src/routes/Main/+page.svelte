@@ -1,3 +1,13 @@
+<script lang="ts">
+	import { socket } from '$lib/state';
+	import { GetUser } from 'backFrontCommon';
+	
+	setTimeout(() => {
+		socket!.emit("user info", new GetUser(898.1298), () => {});
+		console.log("BUG ?");
+	}, 1000)
+</script>
+
 <nav id="menu">
 	<div id="options">
 		<h1 class="typography">Transcendence</h1>
