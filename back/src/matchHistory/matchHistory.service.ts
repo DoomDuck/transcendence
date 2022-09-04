@@ -14,21 +14,22 @@ export class MatchHistoryService {
     private matchRepository: Repository<Match>,
   ) {}
   addOneMatch(player: User[], score: number[]) {
+    if (player[0].id === player[1].id) return;
     this.matchRepository.save(new Match(player, score));
   }
   async MatchDbToMatchDTO(match: Match): Promise<MatchInfoFromServer> {
     if (match.score[0] > match.score[1])
       return {
-        winner: (await match.player)[0].id,
-        looser: (await match.player)[1].id,
+        winner: match.player[0].id,
+        looser: match.player[1].id,
         winnerScore: match.score[0],
         looserScore: match.score[1],
         date: match.date,
       };
     else
       return {
-        winner: (await match.player)[1].id,
-        looser: (await match.player)[0].id,
+        winner: match.player[1].id,
+        looser: match.player[0].id,
         winnerScore: match.score[1],
         looserScore: match.score[0],
         date: match.date,

@@ -2,7 +2,7 @@ import { Socket } from "socket.io-client";
 import { GameEvent } from "../common/constants";
 import { ClientGameContextOnline } from "./ClientGameContextOnline";
 import { setupKeyboardOnline } from "./game";
-import { ChatEvent } from "backFrontCommon";
+import { ChatEvent, type Id } from "backFrontCommon";
 import type { ErrorCallback, FinishCallback } from "../common/utils";
 
 /**
@@ -24,6 +24,9 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
     this.transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.transmitEventFromServerToGame(GameEvent.SPAWN_PORTAL);
     this.transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_EVENT);
+    this.listeners.add(this.socket, GameEvent.GOAL, (playerId: Id) => {
+        this.gameManager.renderer.scorePanels.goalAgainst(playerId);
+    })
 
     this.listeners.add(this.socket,
       ChatEvent.PLAYER_ID_CONFIRMED,

@@ -17,11 +17,17 @@
 	}
 </script>
 
-<div class="item" class:bannedFromChannel bind:this={thisRef} on:click={handleClickOpenModal}>
-	<slot name="icon" />
-	<slot name="item-text" />
+<div class="line" class:bannedFromChannel bind:this={thisRef} on:click={handleClickOpenModal}>
+	<div class="item">
+		<slot name="icon" />
+	</div>
+	<div class="item">
+		<slot name="item-text" class="item" />
+	</div>
 	{#if hasNewMessage}
-		<NotificationIcon />
+		<div id="notification-icon" class="item">
+			<NotificationIcon />
+		</div>
 	{/if}
 </div>
 
@@ -30,7 +36,7 @@
 </Modal>
 
 <style>
-	.item {
+	.line {
 		align-items: center;
 		width: 80vw;
 		height: 70px;
@@ -38,7 +44,13 @@
 		display: flex;
 		border: 1px solid #ff00b8;
 	}
+	.item {
+		padding: 10px;
+	}
 	.bannedFromChannel {
 		background: #a80a2f;
+	}
+	#notification-icon {
+		margin-left: auto;
 	}
 </style>

@@ -39,10 +39,7 @@ export class ActiveUser {
     if (newSocket) this.socketUser.push(newSocket);
   }
   pending_invite = false;
-  get inGame(): boolean {
-    return this.numberOfCurrentGames > 0;
-  }
-  numberOfCurrentGames = 0;
+  inGame = false;
   socketUser: Socket[] = [];
   joinedChannel: Channel[] = [];
   activeUserConversation: ActiveConversation[] = [];
@@ -80,7 +77,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly databaseFilesService: DatabaseFilesService,
     private readonly channelManagerService: ChannelManagerService,
     private readonly matchHistoryService: MatchHistoryService,
   ) {}
@@ -104,8 +100,29 @@ export class UserService {
     );
     return chatMessageDto;
   }
+  async scoreUpdate(player: User[], score: number[]) {
+    if (score[0] > score[1]) {
+      this.usersRepository.update(player[0].id, {
+        win: player[0].win + 1,
+        score: player[0].score + 17,
+      });
+      this.usersRepository.update(player[1].id, {
+        loose: player[1].loose + 1,
+        score: player[1].score - 17,
+      });
+    } else {
+      this.usersRepository.update(player[1].id, {
+        win: player[1].win + 1,
+        score: player[1].score + 17,
+      });
+      this.usersRepository.update(player[0].id, {
+        loose: player[0].loose + 1,
+        score: player[0].score - 17,
+      });
+    }
+  }
   leaderbordTransformator(users: User[]): LeaderboardItemDto[] {
-    let result: LeaderboardItemDto[] = [];
+    const result: LeaderboardItemDto[] = [];
     users.forEach((user) =>
       result.push(
         new LeaderboardItemDto(
@@ -130,7 +147,7 @@ export class UserService {
         this.leaderbordTransformator(
           await this.usersRepository.find({
             order: {
-              score: 'DESC', // "ASC"
+              score: 'DESC',
             },
           }),
         ),
@@ -141,7 +158,7 @@ export class UserService {
       result: this.leaderbordTransformator(
         await this.usersRepository.find({
           order: {
-            score: 'DESC', // "ASC"
+            score: 'DESC',
           },
         }),
       ),
@@ -152,7 +169,7 @@ export class UserService {
     return (
       await this.usersRepository.find({
         order: {
-          score: 'DESC', // "ASC"
+          score: 'DESC',
         },
       })
     ).indexOf(user);
@@ -284,25 +301,26 @@ export class UserService {
     logger.log(`userDto = ${userDto.id}`);
     logger.log(id);
     let i = 0;
-    let UserDb = await this.findOneDb(id);
-    if (UserDb === null) {
+    let userDb = await this.findOneDb(id);
+    if (userDb === null) {
       while (await this.findOneDbByName(userDto.name)) {
         i++;
         userDto.name = userDto.name + i;
       }
-      UserDb = await this.usersRepository.save(
+      userDb = await this.usersRepository.save(
         new User(userDto.id, userDto.name),
       );
     }
-    logger.log(UserDb.name);
+    logger.log(userDb.name);
     const tempUser = this.arrayActiveUser.find((user) => user.id === id);
     if (!tempUser) {
       this.arrayActiveUser.push(
-        new ActiveUser(UserDb.id, userDto.name, userDto.socket),
+        new ActiveUser(userDb.id, userDto.name, userDto.socket),
       );
     } else {
       tempUser.socketUser.push(userDto.socket);
     }
+    userDb.channel.forEach((chan) => userDto.socket.join(chan));
     logger.log('end add one user');
   }
 
@@ -321,15 +339,11 @@ export class UserService {
     }
   }
 
-  async joinChanUser(activeUser: ActiveUser, channel: Channel) {
+  async joinChanUser(user: User, channel: Channel, activeUser?: ActiveUser) {
     const logger = new Logger('joinChanUser');
 
-    logger.log('ici');
-    logger.log(activeUser.id);
-    const dbUser = await this.findOneDb(activeUser.id);
-    if (dbUser === null) return;
-    dbUser.channel.push(channel.name);
-    this.usersRepository.update(dbUser!.id, { channel: dbUser.channel });
+    user.channel.push(channel.name);
+    this.usersRepository.update(user!.id, { channel: user.channel });
 
     if (activeUser) {
       this.updateChannelConversation(activeUser, activeUser, channel);
@@ -469,18 +483,20 @@ export class UserService {
   }
 
   async leaveChannel(
-    activeUser: ActiveUser,
+    dbUser: User,
     channel: Channel,
+    activeUser?: ActiveUser,
   ): Promise<ChatFeedbackDto> {
-    if (channel.member.find((id) => id === activeUser.id) === undefined)
+    if (channel.member.find((id) => id === dbUser.id) === undefined)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.NOT_IN_CHANNEL,
       );
-    const dbUser = await this.findOneDb(activeUser.id);
-    if (!dbUser) return new ChatFeedbackDto(false);
-    this.channelManagerService.leaveChannel(channel, activeUser);
-    activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+    this.channelManagerService.leaveChannel(channel, dbUser);
+    if (activeUser)
+      activeUser.socketUser.forEach((socket) => socket.leave(channel.name));
+
+    this.logger.debug(`in leave channel${dbUser.name} `);
     dbUser.channel.splice(dbUser.channel.indexOf(channel.name), 1);
     this.usersRepository.update(dbUser.id, { channel: dbUser.channel });
     return this.channelManagerService.newChatFeedbackDto(true);

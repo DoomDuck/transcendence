@@ -223,7 +223,8 @@ export function observeGame(id: Id) {
 			closeAllModals();
 			gameParams = {
 				online: true,
-				observe: true
+				observe: true,
+				classic: feedback.result!.classic
 			};
 			goto('/Play');
 		} else {
@@ -256,7 +257,7 @@ export async function updateUser(id: Id): Promise<UserInfo> {
 async function onUserInfo(feedback: RequestFeedbackDto<UserInfo>): Promise<UserInfo> {
 	if (!feedback.success) throw new Error('Could not get user info');
 	const user = feedback.result!;
-	let entry = knownUsers.get(user.id);
+	const entry = knownUsers.get(user.id);
 	if (entry) {
 		entry.store.set(user);
 	} else {
@@ -311,7 +312,7 @@ export function updateAllChannels() {
 }
 
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
-	if (!feedback.success) throw new Error('Could not get user info');
+	if (!feedback.success) throw new Error(feedback.errorMessage);
 	const info = feedback.result!;
 	const entry = knownChannels.get(channel);
 	if (entry) {

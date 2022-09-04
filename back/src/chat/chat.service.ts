@@ -81,7 +81,8 @@ export class ChatService {
     chanInfo: CreateChannelToServer,
   ) {
     const tempUser = this.userService.findOneActiveBySocket(clientSocket);
-    if (!tempUser)
+    const tempDb = await this.userService.findOneDbBySocket(clientSocket);
+    if (!tempDb)
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.U_DO_NOT_EXIST,
@@ -97,7 +98,7 @@ export class ChatService {
     if (!chanInfo.password && chanInfo.category === ChannelCategory.PROTECTED)
       return new ChatFeedbackDto(false, ChatError.MUST_SPECIFY_PASSWORD);
     const newChan = await this.channelManagerService.createChan(
-      tempUser,
+      tempDb,
       chanInfo,
     );
 
@@ -107,24 +108,31 @@ export class ChatService {
         false,
         ChatError.CHANNEL_NOT_FOUND,
       );
-    //this.channelManagerService.joinChan(tempUser, newChan);
-    this.userService.joinChanUser(tempUser, newChan);
+    // this.channelManagerService.joinChan(tempUser, newChan);
+    this.userService.joinChanUser(tempDb, newChan, tempUser);
 
     this.logger.debug('end create channel');
     return this.channelManagerService.newChatFeedbackDto(true);
   }
 
-  async handleMessageChannel(clientSocket: Socket, dto: CMToServer) {
+  async handleMessageChannel(
+    clientSocket: Socket,
+    dto: CMToServer,
+    wss: Server,
+  ) {
     const tempChannel = await this.channelManagerService.findChanByName(
       dto.channel,
     );
 
+    this.logger.debug('dans message to chan');
     const tempSender = this.userService.findOneActiveBySocket(clientSocket);
     const feedback = this.channelManagerService.msgToChannelVerif(
       tempChannel,
       tempSender,
     );
     if (!feedback.success) return feedback;
+
+    this.logger.debug('dans message to chan1');
     tempChannel!.member.forEach((member: Id) => {
       const tempUser = this.userService.findOneActive(member);
       if (tempUser)
@@ -135,7 +143,7 @@ export class ChatService {
           dto.content,
         );
     });
-    clientSocket
+    wss
       .to(tempChannel!.name)
       .except(await this.userService.getArrayBlockedFrom(tempSender!))
       .emit(ChatEvent.MSG_TO_CHANNEL, {
@@ -151,8 +159,9 @@ export class ChatService {
     const tempChan = await this.channelManagerService.findChanByName(
       joinInfo.channel,
     );
-    const tempUser = this.userService.findOneActiveBySocket(clientSocket);
+    const tempUser = await this.userService.findOneDbBySocket(clientSocket);
 
+    const tempActive = this.userService.findOneActiveBySocket(clientSocket);
     this.logger.log(
       `any joiner in the  chat ?${tempUser}  pass = ${joinInfo.password}`,
     );
@@ -181,7 +190,7 @@ export class ChatService {
     );
     if (feedback.success === true) {
       this.logger.log(`joining chanUSer `);
-      this.userService.joinChanUser(tempUser, tempChan);
+      this.userService.joinChanUser(tempUser, tempChan, tempActive);
     }
 
     return feedback;
@@ -195,11 +204,18 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
+    const targetDb = await this.userService.findOneDb(dm.target);
+    if (!targetDb) {
+      return this.channelManagerService.newChatFeedbackDto(
+        false,
+        ChatError.USER_NOT_FOUND,
+      );
+    }
     const target = this.userService.findOneActive(dm.target);
     if (!target) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
-        ChatError.USER_NOT_FOUND,
+        ChatError.USER_OFFLINE,
       );
     }
     const feedback = await this.userService.sendMessageToUser(
@@ -255,13 +271,19 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    const tempTarget = this.userService.findOneActive(banInfo.target);
+    const tempTarget = await this.userService.findOneDb(banInfo.target);
     if (!tempTarget) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
       );
     }
+    if (tempSender.id === tempTarget.id)
+      return {
+        success: false,
+        errorMessage: ChatError.YOU_CANT_BAN_YOURSELF,
+      };
+    const activeTarget = this.userService.findOneActive(banInfo.target);
     const tempChan = await this.channelManagerService.findChanByName(
       banInfo.channel,
     );
@@ -277,12 +299,13 @@ export class ChatService {
       tempChan,
       banInfo.duration,
       wss,
+      this.userService.findOneActive(tempTarget.id),
     );
     if (feedback.success === true) {
       this.logger.debug(
         '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
       );
-      this.userService.leaveChannel(tempTarget, tempChan);
+      this.userService.leaveChannel(tempTarget, tempChan, activeTarget);
     }
     return feedback;
   }
@@ -299,16 +322,22 @@ export class ChatService {
         ChatError.U_DO_NOT_EXIST,
       );
     }
-    const tempTarget = this.userService.findOneActive(muteInfo.target);
+    const tempTarget = await this.userService.findOneDb(muteInfo.target);
     if (!tempTarget) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.USER_NOT_FOUND,
       );
     }
+    if (tempSender.id === tempTarget.id)
+      return {
+        success: false,
+        errorMessage: ChatError.YOU_CANT_MUTE_YOURSELF,
+      };
     const tempChan = await this.channelManagerService.findChanByName(
       muteInfo.channel,
     );
+    const activeTarget = this.userService.findOneActive(muteInfo.target);
     if (!tempChan) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
@@ -321,6 +350,7 @@ export class ChatService {
       tempChan,
       muteInfo.duration,
       wss,
+      activeTarget,
     );
     return feedback;
   }
@@ -356,7 +386,7 @@ export class ChatService {
     );
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-    const target = this.userService.findOneActive(setInfo.target);
+    const target = await this.userService.findOneDb(setInfo.target);
     if (!target)
       return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
     return await this.channelManagerService.setNewAdmin(user, target, channel);
@@ -406,15 +436,20 @@ export class ChatService {
     );
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-    const target = this.userService.findOneActive(inviteInfo.target);
+    const target = await this.userService.findOneDb(inviteInfo.target);
+    const activeTarget = this.userService.findOneActive(inviteInfo.target);
     if (!target)
       return { success: false, errorMessage: ChatError.USER_NOT_FOUND };
-    return this.channelManagerService.inviteUserToChannel(
+    const feedback = this.channelManagerService.inviteUserToChannel(
       sender,
       target,
       channel,
       wss,
+      activeTarget,
     );
+    if (feedback.success)
+      this.userService.joinChanUser(target, channel, activeTarget);
+    return feedback;
   }
 
   async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
@@ -428,9 +463,13 @@ export class ChatService {
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
     if (!this.channelManagerService.isCreator(sender, channel))
       return { success: false, errorMessage: ChatError.INSUFICIENT_PERMISSION };
-    channel.member.forEach((member) => {
-      const tempUser = this.userService.findOneActive(member);
-      if (tempUser) this.channelManagerService.leaveChannel(channel, tempUser);
+    channel.member.forEach(async (member) => {
+      const tempUser = await this.userService.findOneDb(member);
+      const tempActive = this.userService.findOneActive(member);
+      if (tempUser) {
+        this.logger.debug(tempUser.name);
+        this.userService.leaveChannel(tempUser, channel, tempActive);
+      }
     });
     this.channelManagerService.deleteChannel(channel);
     return { success: true };
@@ -439,15 +478,16 @@ export class ChatService {
     clientSocket: Socket,
     leaveInfo: LeaveChannelToServer,
   ) {
-    const sender = this.userService.findOneActiveBySocket(clientSocket);
+    const sender = await this.userService.findOneDbBySocket(clientSocket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const activeSender = this.userService.findOneActiveBySocket(clientSocket);
     const channel = await this.channelManagerService.findChanByName(
       leaveInfo.channel,
     );
     if (!channel)
       return { success: false, errorMessage: ChatError.CHANNEL_NOT_FOUND };
-    return this.userService.leaveChannel(sender, channel);
+    return this.userService.leaveChannel(sender, channel, activeSender);
   }
   async handleGetChannelInfo(
     socket: Socket,
@@ -505,12 +545,17 @@ export class ChatService {
   async getChannelsList(
     socket: Socket,
   ): Promise<RequestFeedbackDto<ChannelSummary[]>> {
+    this.logger.log('dans getchannellist');
     const sender = this.userService.findOneActiveBySocket(socket);
     if (!sender)
       return { success: false, errorMessage: ChatError.U_DO_NOT_EXIST };
+    const result = await this.channelManagerService.getPublicProtectedChan(
+      sender,
+    );
+    this.logger.log(JSON.stringify(result));
     return {
       success: true,
-      result: await this.channelManagerService.getPublicProtectedChan(),
+      result: result,
     };
   }
 }
