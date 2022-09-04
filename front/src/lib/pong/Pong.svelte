@@ -12,7 +12,7 @@
 		socket,
 		gameParams,
 		redirectMainInvalidateGameParams,
-		clearGameParams
+		invalidateGameParams
 	} from '$lib/state';
 	import { delay } from 'pong/common/utils';
 
@@ -54,10 +54,9 @@
 		ctx.startGame();
 
 		return () => {
-			if (!gameIsOver && online) {
-				(ctx as ClientGameContextOnline).exitGame();
+			if (!gameIsOver) {
+				ctx.exitGame();
 			}
-			clearGameParams();
 		};
 	});
 </script>
@@ -68,9 +67,9 @@
 		<canvas id="game-screen" />
 	{:else}
 		<div id="gameover-screen">
-			<span>Game Over</span>
-			<span>{gameOverText}</span>
-			<span>{gameOverScoreDisplay}</span>
+			<h1 class='gameover-font'>Game Over</h1>
+			<h2 class='gameover-font'>{gameOverText}</h2>
+			<h2 class='gameover-font'>{gameOverScoreDisplay}</h2>
 		</div>
 	{/if}
 </div>
@@ -93,14 +92,20 @@
 	}
 	#gameover-screen {
 		position: absolute;
-		background-color: white;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-around;
 		text-align: center;
 		column-gap: 10px;
 	}
-	span {
-		font-size: larger;
+	h1 {
+		font-size: 2.5em;
+	}
+	h2{
+		font-size: 2em;
+	}
+	.gameover-font{
+		color: rgb(251, 251, 0);
+		-webkit-text-stroke: 2px #ff8400;
+		text-shadow: 6px 6px 6px purple, 6px 6px 6px purple;
 	}
 </style>

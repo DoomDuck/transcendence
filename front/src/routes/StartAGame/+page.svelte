@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { clearGameParams, setGameParams } from '$lib/state';
+	import { invalidateGameParams, setGameParams } from '$lib/state';
 	import { onMount } from 'svelte';
 
-	onMount(clearGameParams);
+	onMount(invalidateGameParams);
 
 	function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
 		setGameParams({
@@ -22,7 +22,6 @@
 	<div id="startGame">
 		<h4><div on:click={() => playGame(true, false, true)}>Play Online</div></h4>
 		<h4><div on:click={() => playGame(false)}>Play Offline</div></h4>
-		<h4><a href="/FriendsList"> Challenge a friend </a></h4>
 		<h4><a href="/Leaderboard"> Leaderboard </a></h4>
 	</div>
 </div>

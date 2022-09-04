@@ -125,14 +125,6 @@ export class ChannelConversationList {
 	}
 }
 
-function messageFromMe(content: string): ChatMessageDto {
-	return {
-		sender: -1,
-		isMe: true,
-		content
-	};
-}
-
 export const userConvs = writable(new UserConversationList());
 export const channelConvs = writable(new ChannelConversationList());
 

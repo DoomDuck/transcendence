@@ -58,7 +58,7 @@ import {
 import { LoginService } from './login/login.service';
 import { UserService } from './user/user.service';
 import { MatchHistoryService } from './matchHistory/matchHistory.service';
-import { Logger } from '@nestjs/common';
+import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ChatService } from './chat/chat.service';
 import { GameManagerService } from './pong/game-manager.service';
 import { ServerSocket as Socket, Server } from 'backFrontCommon';
@@ -102,27 +102,32 @@ export class AppGateway
     this.loginService.handleDisconnect(socket);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(LoginEvent.TOTP_UPDATE)
   async onTotpUpdate(socket: Socket, secret: string | null) {
     await this.loginService.onTotpUpdate(socket, secret);
     return {}; // Send feedback
   }
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GET_LEADERBOARD)
   async getLeaderboard(socket: Socket) {
     this.logger.debug('dans get leaderboard appgateway');
     return await this.userService.getLeaderboard(socket);
   }
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(GetInfoEvent.GET_CHANNELS_LIST)
   async getChannelsList(socket: Socket) {
     return await this.chatService.getChannelsList(socket);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.BLOCK_USER)
   async handleBlockUser(clientSocket: Socket, blockInfo: BlockUserToServer) {
     this.logger.log('Dans ban User');
     return await this.chatService.handleBlockUser(clientSocket, blockInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.LEAVE_CHANNEL)
   async handleLeaveChannel(
     clientSocket: Socket,
@@ -132,6 +137,7 @@ export class AppGateway
     return await this.chatService.handleLeaveChannel(clientSocket, leaveInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.CREATE_CHANNEL)
   async handleCreateChannel(
     clientSocket: Socket,
@@ -140,6 +146,7 @@ export class AppGateway
     return await this.chatService.handleCreateChannel(clientSocket, chanInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   async handleMessageChannel(clientSocket: Socket, dto: CMToServer) {
     return await this.chatService.handleMessageChannel(
@@ -149,16 +156,19 @@ export class AppGateway
     );
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
   async handleJoinChannel(clientSocket: Socket, joinInfo: JoinChannelToServer) {
     return await this.chatService.handleJoinChannel(clientSocket, joinInfo);
   }
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.MSG_TO_USER)
   handlePrivMessage(clientSocket: Socket, dm: DMToServer) {
     this.userService.printAllActiveSocket();
     return this.chatService.handlePrivMessage(clientSocket, dm, this.wss);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.FRIEND_INVITE)
   async handleFriendInvite(
     clientSocket: Socket,
@@ -171,6 +181,7 @@ export class AppGateway
     );
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.BAN_USER)
   async handleBanUser(clientSocket: Socket, banInfo: BanUserToServer) {
     this.logger.log('Dans ban User');
@@ -181,6 +192,7 @@ export class AppGateway
     );
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.MUTE_USER)
   async handleMuteUser(clientSocket: Socket, muteInfo: MuteUserToServer) {
     this.logger.log('mute ban User');
@@ -191,11 +203,13 @@ export class AppGateway
     );
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
   handleJoinMatchMaking(socket: Socket, classic: boolean): ChatFeedbackDto {
     return this.gameManagerService.addMatchmaking(socket, classic);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)
   async handleObserve(
     socket: Socket,
@@ -204,6 +218,7 @@ export class AppGateway
     return this.gameManagerService.handleObserve(socket, userId);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GAME_INVITE)
   async handleGameInvite(
     sourceSocket: Socket,
@@ -212,6 +227,7 @@ export class AppGateway
     return this.gameManagerService.handleGameInvite(sourceSocket, dto);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GAME_ACCEPT)
   async handleGameAccept(
     targetSocket: Socket,
@@ -220,60 +236,72 @@ export class AppGateway
     return this.gameManagerService.handleGameAccept(targetSocket, dto);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GAME_REFUSE)
   async handleGameRefuse(targetSocket: Socket, dto: GameRefuseToServer) {
     this.gameManagerService.handleGameRefuse(targetSocket, dto);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GAME_CANCEL)
   async handleGameCancel(sourceSocket: Socket, dto: GameCancelToServer) {
     this.gameManagerService.handleGameCancel(sourceSocket, dto);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(GetInfoEvent.MY_INFO)
   async handleMyInfo(socket: Socket) {
     return await this.userService.MyInfo(socket);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(GetInfoEvent.USER_INFO)
   async handleUserInfo(socket: Socket, userInfo: UserInfoToServer) {
     return await this.userService.UserInfo(socket, userInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(GetInfoEvent.ALL_MATCH)
   async handleAllMatch(_socket: Socket) {
     return await this.matchHistoryService.getAllMatch();
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.UNBLOCK_USER)
   async handleUnblockUser(socket: Socket, unblockInfo: UnblockUserToServer) {
     return await this.userService.handleUnblockUser(socket, unblockInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.UNBAN_USER)
   async handleUnbanUser(socket: Socket, unBanInfo: UnbanUserToServer) {
     return await this.chatService.handleUnbanUser(socket, unBanInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.UNMUTE_USER)
   async handleUnmuteUser(socket: Socket, unmuteInfo: UnmuteUserToServer) {
     return await this.chatService.handleUnmuteUser(socket, unmuteInfo);
   }
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.SET_USERNAME)
   async handleSetUsername(socket: Socket, setInfo: SetUsernameToServer) {
     return await this.userService.setUsername(socket, setInfo.name);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.SET_PASSWORD)
   async handleSetPassword(socket: Socket, setInfo: SetPasswordToServer) {
     return await this.chatService.setPassword(socket, setInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.SET_NEW_ADMIN)
   async handleSetNewAdmin(socket: Socket, setInfo: SetNewAdminToServer) {
     return await this.chatService.handleSetNewAdmin(socket, setInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.INVITE_TO_PRIVATE_CHANNEL)
   async handleSetInviteChannel(
     socket: Socket,
@@ -286,11 +314,13 @@ export class AppGateway
     );
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.POST_AVATAR)
   async handlePostAvatar(socket: Socket, avatarInfo: PostAvatar) {
     return await this.userService.handlePostAvatar(socket, avatarInfo);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GET_CHAT_HISTORY)
   async handleGetHistory(
     socket: Socket,
@@ -303,11 +333,13 @@ export class AppGateway
     return this.userService.getUserHistory(socket);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.QUIT_MATCHMAKING)
   async handleQuitMatchmaking(socket: Socket) {
     this.gameManagerService.handleQuitMatchmaking(socket);
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(GetInfoEvent.IS_IN_GAME)
   async handleIsInGame(
     socket: Socket,
@@ -318,10 +350,12 @@ export class AppGateway
     return { success: true, result: inGame };
   }
 
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.DELETE_CHANNEL)
   async handleDeleteChannel(socket: Socket, deleteInfo: DeleteChannelToServer) {
     return this.chatService.handleDeleteChannel(socket, deleteInfo);
   }
+  @UsePipes(new ValidationPipe())
   @SubscribeMessage(ChatEvent.GET_CHANNEL_INFO)
   async handleGetChannelInfo(
     socket: Socket,

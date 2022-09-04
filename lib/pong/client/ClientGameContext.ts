@@ -31,13 +31,16 @@ export abstract class ClientGameContext {
 
   handleEndOfGame(score?: [number, number]) {
     score = score ?? this.gameManager.game.score;
-    this.finally();
+    this.clean();
     this.onFinish(...score);
   }
 
-  finally() {
+  protected clean() {
     if (this.animationHandle !== undefined)
       cancelAnimationFrame(this.animationHandle);
     GameProducedEvent.removeAll();
   }
+
+  // called when the client leaves the page
+  abstract exitGame(): void;
 }

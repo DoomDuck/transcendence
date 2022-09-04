@@ -34,7 +34,8 @@ import {
 	ChannelInfo,
 	ChannelCategory,
 	UnbanUserToServer,
-	LeaderboardItemDto
+	LeaderboardItemDto,
+    ChatError
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -200,7 +201,7 @@ export function sendGameInvite(invite: GameInviteToServer, callback: FeedbackCal
 	socket!.emit(ChatEvent.GAME_INVITE, invite, callback);
 }
 
-export function clearGameParams() {
+export function invalidateGameParams() {
 	gameParams = null;
 }
 
@@ -300,7 +301,12 @@ export function updateAllChannels() {
 }
 
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
-	if (!feedback.success) throw new Error(feedback.errorMessage);
+	if (!feedback.success) {
+		if (feedback.errorMessage == ChatError.CHANNEL_NOT_FOUND) {
+			channelConvs.update(c => { c.delete(channel); return c; })
+		}
+		throw new Error(feedback.errorMessage);
+	}
 	const info = feedback.result!;
 	const entry = knownChannels.get(channel);
 	if (entry) {
@@ -318,7 +324,9 @@ export function updateAllStores() {
 	if (loggedIn()) {
 		updateMyself();
 		updateAllUsers();
-		updateAllChannels();
+		try {
+			updateAllChannels();
+		} catch (e) {}
 	}
 }
 
@@ -479,20 +487,13 @@ export const pongKeyForRefresh = writable(Symbol());
 function onGotoGameScreen(classic: boolean, ready: () => void) {
 	if (!connected()) return;
 	closeAllModals();
-	const gotoOpts: any = {
-		gameParams: { classic, online: true }
-	};
+	gameParams = { classic, online: true, valid: true };
+	let replaceState: boolean | undefined;
 	if (['/Play', '/WaitingRoom', '/ChooseGameMode'].includes(window.location.href)) {
-		gotoOpts.replaceState = true;
+		replaceState = true;
 	}
-	goto('/Play', gotoOpts).then(ready);
 	pongKeyForRefresh.set(Symbol());
-	// if (['/Play', '/WaitingRoom', '/ChooseGameMode'].includes(window.location.href)) {
-	//   goto('/Play', {replaceState: true}).then(ready);
-	// }
-	// else {
-	//   goto('/Play').then(ready);
-	// }
+	goto('/Play', { replaceState }).then(ready);
 }
 
 function onMsgToUser(message: DMFromServer) {

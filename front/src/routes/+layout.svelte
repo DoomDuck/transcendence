@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
 	import Popups from '$lib/Popups.svelte';
-	import { gameParams, redirectMainInvalidateGameParams, updateAllStores } from '$lib/state';
+	import {
+		invalidateGameParams,
+		gameParams,
+		redirectMainInvalidateGameParams,
+		updateAllStores
+	} from '$lib/state';
 	import { closeLastModal, modalCallbackStack } from '$lib/ts/modals';
 	import { onMount } from 'svelte';
 
@@ -17,9 +22,13 @@
 			cancelNavigation = !gameParams || !gameParams.valid;
 		}
 		if (cancelNavigation) {
+			console.log('Cancelling navigation');
 			navigation.cancel();
 			redirectMainInvalidateGameParams();
 			return;
+		}
+		if (navigation.from.pathname == '/Play') {
+			invalidateGameParams();
 		}
 	});
 
@@ -76,5 +85,25 @@
 
 	:global(a) {
 		all: unset;
+	}
+	:global(button) {
+		background-color: #f9fdfe;
+		border: 1px solid #f8f9fa;
+		border-radius: 4px;
+		color: #3c4043;
+		cursor: pointer;
+		font-family: arial, sans-serif;
+		text-align: center;
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: manipulation;
+		white-space: pre;
+		border-color: #dadce0;
+		box-shadow: rgba(0, 0, 0, 0.1) 0 1px 1px;
+		color: #999999;
+	}
+	:global(button:focus) {
+		border-color: #4285f4;
+		outline: none;
 	}
 </style>

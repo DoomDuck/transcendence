@@ -36,14 +36,12 @@ export abstract class ClientGameContextOnline extends ClientGameContext {
 
   protected errorExit(errorMessage: string) {
     this.gameManager.game.pause();
-    this.finally();
+    this.clean();
     this.onError!(errorMessage);
   }
 
-  public finally(): void {
+  protected clean(): void {
     this.listeners.removeAll();
-    super.finally();
+    super.clean();
   }
-
-  abstract exitGame(): void;
 }

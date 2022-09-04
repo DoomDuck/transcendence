@@ -9,7 +9,6 @@
 	import ChannelMiniature from '$lib/chat/ChannelMiniature.svelte';
 	import DeStore from '$lib/DeStore.svelte';
 	import AvailableChannelButton from './buttons/AvailableChannelButton.svelte';
-	import PendingText from '$lib/PendingText.svelte';
 </script>
 
 <div>
