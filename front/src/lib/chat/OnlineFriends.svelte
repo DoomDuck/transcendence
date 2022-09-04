@@ -32,13 +32,13 @@
 	.onlineFriends {
 		width: 80vw;
 		display: flex;
-		flex-wrap: wrap;
+		overflow-x: auto;
 	}
-
+	
 	#online {
 		color: #fa1ec7;
 	}
-
+	
 	#online-friends {
 		width: 80vw;
 		background: #12072e;
@@ -48,8 +48,6 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
-		/* align-content: flex-start; */
-		/* gap: 25px; */
 	}
 
 	.title-element {

@@ -83,37 +83,33 @@
 	{/if}
 
 	<!-- Other users -->
-	<div class="channel-details-users">
-		{#each others as user}
-			<div class="channel-details-user">
-				<!-- User Info -->
-				<UserMiniature userId={user.id} />
-				<UserName userId={user.id} />
-				<p>{channelRightsString(user.rights)}</p>
+	{#each others as user}
+		<div class="channel-details-user">
+			<!-- User Info -->
+			<UserMiniature userId={user.id} />
+			<UserName userId={user.id} />
+			<p id='rights'>{channelRightsString(user.rights)}</p>
 
-				<!-- Actions on User -->
-				{#if me?.rights != ChannelRights.USER}
-					{#if !user.muted}
-						<SelectDurationButton
-							source="muteIcon.png"
-							on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
-						/>
-					{:else}
-						<button on:click={() => onUnMuteUser(user.id)}>UnMute</button>
-					{/if}
+			<!-- Actions on User -->
+			{#if me?.rights != ChannelRights.USER}
+				{#if !user.muted}
 					<SelectDurationButton
-						source="banIcon.png"
-						on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+						source="muteIcon.png"
+						on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
 					/>
-					{#if user.rights == ChannelRights.USER}
-						<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}
-							>Set Admin</button
-						>
-					{/if}
+				{:else}
+					<img src='unmuteIcon.png' alt='unmute' width=30 height=30 on:click={() => onUnMuteUser(user.id)}/>
 				{/if}
-			</div>
-		{/each}
-	</div>
+				<SelectDurationButton
+					source="banIcon.png"
+					on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+				/>
+				{#if user.rights == ChannelRights.USER}
+					<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}>Set Admin</button>
+				{/if}
+			{/if}
+		</div>
+	{/each}
 
 	<!-- Banned Users -->
 	{#if me?.rights != ChannelRights.USER}
@@ -156,14 +152,20 @@
 	#channel-details {
 		display: flex;
 		flex-direction: column;
-		width: 40vw;
+		width: 50vw;
 		color: rgb(136, 172, 255);
+		overflow: auto;
+		justify-content: center;
 	}
 	#channelRights {
 		text-align: center;
 		color: rgb(104, 134, 240);
 	}
+	#rights{
+		width: 10vw;
+	}
 	.channel-details-user {
+		width: 100%;
 		display: flex;
 		flex-direction: row;
 		justify-content: space-around;
@@ -192,5 +194,9 @@
 	}
 	#invite-user-input {
 		width: 80%;
+	}
+	button{
+		margin-left: 10px;
+		margin-right: 10px;
 	}
 </style>
