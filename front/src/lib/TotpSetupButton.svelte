@@ -15,3 +15,9 @@
 	<button on:click={disableTotp}> disable 2fa </button>
 {/if}
 <TotpSetup bind:show={showTotpSetup} />
+
+<style>
+	button{
+		margin: 6px;
+	}
+</style>

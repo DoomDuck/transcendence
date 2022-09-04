@@ -46,12 +46,12 @@
 <style>
 	.header {
 		display: block;
-		width: 80vw;
-		background: #12072e;
 		color: #fa1ec7;
 		padding: 10px;
+		width: 80vw;
+		background: #12072e;
 	}
-
+	
 	#channel-convs-header {
 		display: flex;
 		flex-direction: row;

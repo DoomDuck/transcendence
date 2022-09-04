@@ -26,3 +26,9 @@
 		<button on:click={() => (show = false)}>Cancel</button>
 	</div>
 </form>
+
+<style>
+	form{
+		overflow: hidden;
+	}
+</style>
