@@ -8,23 +8,23 @@
 		ClientGameContext
 	} from 'pong';
 	import { goto } from '$app/navigation';
-	import { joinGame, socket, gameParams } from '$lib/state';
+	import {
+		socket,
+		gameParams,
+		redirectMainInvalidateGameParams,
+		clearGameParams
+	} from '$lib/state';
 	import { delay } from 'pong/common/utils';
 
 	const online = gameParams!.online;
 	const observe = gameParams!.observe ?? false;
-	const matchmaking = gameParams!.matchMaking ?? false;
 	const classic = gameParams!.classic ?? false;
 
 	let gameIsOver: boolean = false;
-	// let gameIsOver = true;
 	let gameOverText: string;
 	let gameOverScoreDisplay: string;
 
 	onMount(() => {
-		// TODO: check if needed
-		if (matchmaking) joinGame(classic);
-
 		const onFinish = (score1: number, score2: number) => {
 			const winner = score1 >= score2 ? 0 : 1;
 			if ((online && observe) || !online) {
@@ -38,11 +38,11 @@
 				gameOverScoreDisplay = `(${sideStrings[0]}) ${score1} - ${score2} (${sideStrings[1]})`;
 			}
 			gameIsOver = true;
-			delay(5000).then(() => goto('/Main', { replaceState: true }));
+			delay(5000).then(redirectMainInvalidateGameParams);
 		};
 		const onError = (message: string) => {
 			alert(message);
-			delay(1000).then(() => goto('/Main', { replaceState: true }));
+			delay(1000).then(redirectMainInvalidateGameParams);
 		};
 
 		let ctx: ClientGameContext;
@@ -57,6 +57,7 @@
 			if (!gameIsOver && online) {
 				(ctx as ClientGameContextOnline).exitGame();
 			}
+			clearGameParams();
 		};
 	});
 </script>

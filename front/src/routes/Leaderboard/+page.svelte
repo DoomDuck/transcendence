@@ -5,10 +5,6 @@
 	import { onMount } from 'svelte';
 
 	let entries: LeaderboardItemDto[] = [];
-	// let entries: LeaderboardItemDto[] = [
-	//   {name: 'charly', id: 0, defeat: 6, victory: 10, score: 4},
-	//   {name: 'charly', id: 0, defeat: 6, victory: 10, score: 4}
-	// ];
 	onMount(() => {
 		sendGetLeaderboard().then((_) => (entries = _));
 	});
@@ -27,8 +23,8 @@
 				<span class="user-place numeric">{i + 1} </span>
 				<span class="user-name">{entry.name}</span>
 				<span class="user-score numeric">{entry.score}</span>
-				<span class="user-victory-count numeric">+ {entry.victory}</span>
-				<span class="user-defeat-count numeric">- {entry.defeat}</span>
+				<span class="user-victory-count">+ {entry.victory}</span>
+				<span class="user-defeat-count">- {entry.defeat}</span>
 			{/each}
 		</div>
 	</div>
@@ -52,7 +48,6 @@
 		display: grid;
 		grid-template-columns: 1fr 5fr 3fr 1fr 1fr;
 		gap: 1px;
-		text-align: center;
 	}
 	#leaderboard-entries > span {
 		background-color: black;
@@ -60,19 +55,19 @@
 		overflow-x: hidden;
 	}
 	.user-name {
-		color: #4d4dff;
-		-webkit-text-stroke: 1px #ff29ea;
+		color: #ff29ea;
+		text-align: left;
 	}
 	.user-score {
 		background-color: #fff047;
+		text-align: right;
 	}
 	.user-victory-count {
-		background-color: #03fc03;
+		color: #03fc03;
+		text-align: center;
 	}
 	.user-defeat-count {
-		background-color: #fc3003;
-	}
-	.numeric {
-		color: white;
+		color: #fc3003;
+		text-align: center;
 	}
 </style>

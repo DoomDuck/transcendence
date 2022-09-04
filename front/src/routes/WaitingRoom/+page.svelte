@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { beforeNavigate, goto } from '$app/navigation';
 
-	import { socket, gameParams } from '$lib/state';
+	import { socket, gameParams, redirectMainInvalidateGameParams } from '$lib/state';
 	import { ChatEvent, ChatFeedbackDto } from 'backFrontCommon';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -11,7 +11,8 @@
 		socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic, (feedback: ChatFeedbackDto) => {
 			if (feedback.success) {
 			} else {
-				goto('/Main', { replaceState: true }).then(() => alert(feedback.errorMessage));
+				redirectMainInvalidateGameParams();
+				alert(feedback.errorMessage);
 			}
 		});
 	});

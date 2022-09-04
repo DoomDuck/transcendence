@@ -1,8 +1,21 @@
 <script lang="ts">
-	import { clearGameParams, playGame } from '$lib/state';
+	import { goto } from '$app/navigation';
+
+	import { clearGameParams, setGameParams } from '$lib/state';
 	import { onMount } from 'svelte';
 
 	onMount(clearGameParams);
+
+	function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
+		setGameParams({
+			online,
+			observe,
+			matchMaking,
+			valid: false,
+			startAGame: true
+		});
+		goto('/ChooseGameMode');
+	}
 </script>
 
 <div id="main">
