@@ -515,10 +515,9 @@ export class UserService {
       );
     }
     target.socketUser.forEach((socket) =>
-      wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, new DMFromServer(
-        sender.id,
-        content,
-      ))
+      wss
+        .to(socket.id)
+        .emit(ChatEvent.MSG_TO_USER, new DMFromServer(sender.id, content)),
     );
     sender.socketUser.forEach((socket) =>
       wss.to(socket.id).emit(ChatEvent.MSG_TO_USER, {

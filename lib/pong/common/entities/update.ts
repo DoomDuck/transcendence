@@ -26,6 +26,7 @@ export function propagateBarInputs(data: GameDataBuffer) {
 }
 
 export function updateSpawnable(
+  newEntityByCopy: (entity: Spawnable) => Spawnable,
   entitiesCurrent: Set<Spawnable>,
   entitiesNext: Set<Spawnable>,
   lifespan: number
@@ -33,7 +34,7 @@ export function updateSpawnable(
   entitiesNext.clear();
   entitiesCurrent.forEach((entity) => {
     if (entity.age < lifespan) {
-      let entityNext = Object.assign({}, entity);
+      let entityNext = newEntityByCopy(entity);
       entityNext.age++;
       entitiesNext.add(entityNext);
     }

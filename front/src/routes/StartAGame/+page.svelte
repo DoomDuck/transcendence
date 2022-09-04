@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 
-	import { clearGameParams, setGameParams } from '$lib/state';
+	import { invalidateGameParams, setGameParams } from '$lib/state';
 	import { onMount } from 'svelte';
 
-	onMount(clearGameParams);
+	onMount(invalidateGameParams);
 
 	function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
 		setGameParams({

@@ -1,5 +1,6 @@
 import { GameData, GravitonData, PortalData } from ".";
 import { type DataChanger, type DataChangerEvent } from "../../game/events";
+import { GameObjectPool } from "./GameObjectPool";
 // import { PlainObject } from "../../utils";
 
 /**
@@ -19,12 +20,12 @@ export class GameDataBuffer {
   current!: GameData;
   next!: GameData;
 
-  // constructor(data?: PlainObject<GameDataBuffer>) {
+  //
+  gravitonPool = new (GameObjectPool(GravitonData, 300))();
+  portalPool = new (GameObjectPool(PortalData, 100))();
+
   constructor() {
-    // if (data === undefined)
     this.reset();
-    // else
-    //   Object.assign(this, data);
   }
 
   get eventsNow(): DataChanger[] | null {
@@ -68,12 +69,14 @@ export class GameDataBuffer {
   }
 
   addGraviton(x: number, y: number): void {
-    let graviton = new GravitonData(x, y);
+    // let graviton = new GravitonData(x, y);
+    let graviton = this.newGravitonDataFromCoords(x, y);
     this.current.gravitons.add(graviton);
   }
 
   addPortal(x1: number, y1: number, x2: number, y2: number): void {
-    let portal = new PortalData(x1, y1, x2, y2);
+    // let portal = new PortalData(x1, y1, x2, y2);
+    let portal = this.newPortalDataFromCoords(x1, y1, x2, y2);
     this.current.portals.add(portal);
   }
 
@@ -81,5 +84,30 @@ export class GameDataBuffer {
     let timeIndex = (time - this.currentTime + this.currentIndex + 100) % 100;
     this.currentTime = time;
     this.setCurrentIndex(timeIndex);
+  }
+
+  newGravitonDataFromCoords(x: number, y: number): GravitonData {
+    const graviton = this.gravitonPool.getGameObject() as GravitonData;
+    graviton.x = x;
+    graviton.y = y;
+    return graviton;
+  }
+
+  newPortalDataFromCoords(x1: number, y1: number, x2: number, y2: number): PortalData{
+    const portal = this.portalPool.getGameObject() as PortalData;
+    portal.setPosition(x1, y1, x2, y2);
+    return portal;
+  }
+
+  newGravitonByCopy(other: GravitonData): GravitonData {
+    const graviton = this.gravitonPool.getGameObject() as GravitonData;
+    Object.assign(graviton, other);
+    return graviton;
+  }
+
+  newPortalByCopy(other: PortalData): PortalData {
+    const portal = this.portalPool.getGameObject() as PortalData;
+    Object.assign(portal, other);
+    return portal;
   }
 }

@@ -95,4 +95,8 @@ export class ClientGameContextOffline extends ClientGameContext {
       }
     });
   }
+
+  exitGame() {
+    this.clean();
+  }
 }

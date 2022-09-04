@@ -2,7 +2,7 @@ import { GSettings } from "../constants";
 import { GameProducedEvent } from "../game/events";
 import type { DataChangerEvent } from "../game/events";
 import { collisions } from "./collisions";
-import { GameDataBuffer } from "./data";
+import { GameDataBuffer, GravitonData, type Spawnable } from "./data";
 import {
   applyForces,
   applySpeed,
@@ -47,11 +47,13 @@ export class GameState {
     processExternEvents(this.data);
     propagateBarInputs(this.data);
     updateSpawnable(
+      this.data.newGravitonByCopy.bind(this.data) as unknown as (entity: Spawnable) => Spawnable,
       this.data.current.gravitons,
       this.data.next.gravitons,
       GSettings.GRAVITON_LIFESPAN
     );
     updateSpawnable(
+      this.data.newPortalByCopy.bind(this.data) as unknown as (entity: Spawnable) => Spawnable,
       this.data.current.portals,
       this.data.next.portals,
       GSettings.PORTAL_LIFESPAN
