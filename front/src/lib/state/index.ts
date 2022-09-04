@@ -358,13 +358,17 @@ export function sendChannelMessage(message: CMToServer) {
 	});
 }
 
-export function sendJoinChannel(message: JoinChannelToServer) {
-	socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			channelConvs.update((_) => _.create(message.channel));
-		} else {
-			alert(`error: ${feedback.errorMessage}`);
-		}
+export async function sendJoinChannel(message: JoinChannelToServer): Promise<void> {
+	return new Promise((resolve, reject) => {
+		socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				channelConvs.update((_) => _.create(message.channel));
+				resolve();
+			} else {
+				reject();
+				alert(`error: ${feedback.errorMessage}`);
+			}
+		});
 	});
 }
 
