@@ -14,9 +14,7 @@ export function preLogin() {
 
 // Login to 42
 export function login() {
-	window.location.assign(
-    `http://${PUBLIC_SERVER_ADDRESS}:${PUBLIC_SERVER_REQUEST_PORT}/login`
-  );
+	window.location.assign(`http://${PUBLIC_SERVER_ADDRESS}:${PUBLIC_SERVER_REQUEST_PORT}/login`);
 }
 
 export function guestLogin() {
