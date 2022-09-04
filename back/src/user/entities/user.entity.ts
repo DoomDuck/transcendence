@@ -9,7 +9,6 @@ import {
   JoinTable,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { DatabaseFile } from './databaseFile.entity';
 import { Match } from '../../matchHistory/match.entity';
 import { Id } from 'backFrontCommon';
 
@@ -19,8 +18,6 @@ export class User {
     this.id = id;
     this.name = name;
     this.friendlist = [];
-    // this.matchAsPlayerOne = [];
-    // this.matchAsPlayerTwo = [];
   }
   @PrimaryColumn('int')
   id: Id;
@@ -47,24 +44,13 @@ export class User {
 
   @Column({ type: 'int' })
   score: number = 0;
-  //
   @Column({ type: 'varchar', nullable: true })
   avatar: string | null = null;
-  // public avatar?: DatabaseFile;
-  // @Column({ nullable: true })
-  // public avatarId?: Id;
   @ManyToMany(() => Match, (match) => match.player)
   match!: Match[];
   /**
    * 2-Factor Auth TOTP secret in hex
    */
-  // TODO: check if one should use undefined or null
   @Column('varchar', { nullable: true })
   totpSecret: string | null = null;
-  // @OneToMany(() => Match, (match) => match.playerOne)
-  // matchAsPlayerOne: Match[];
-  // @OneToMany(() => Match, (match) => match.playerTwo)
-  // matchAsPlayerTwo: Match[];
-  // // @Column('int', { array: true, nullable: false })
-  // // match: Id[];
-}
+  }
