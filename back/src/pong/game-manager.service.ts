@@ -178,7 +178,10 @@ export class GameManagerService {
     });
   }
 
-  handleGameInvite(sourceSocket: Socket, dto: GameInviteToServer): ChatFeedbackDto {
+  handleGameInvite(
+    sourceSocket: Socket,
+    dto: GameInviteToServer,
+  ): ChatFeedbackDto {
     const source = this.userService.findOneActiveBySocket(sourceSocket)!;
     const target = this.userService.findOneActive(dto.target);
     if (target === undefined) {
