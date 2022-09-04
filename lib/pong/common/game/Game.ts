@@ -8,6 +8,8 @@ import {
   SpawnGravitonEvent,
   SpawnPortalEvent,
   type SpawnPortalEventStruct,
+  type SetBallEventStruct,
+  SetBallEvent,
 } from "./events";
 
 /**
@@ -45,6 +47,13 @@ export class Game {
         GameEvent.SPAWN_PORTAL,
         (...eventArgs: SpawnPortalEventStruct) => {
           this.state.registerEvent(new SpawnPortalEvent(...eventArgs));
+        },
+      ],
+      [
+        GameEvent.SET_BALL,
+        (...eventArgs: SetBallEventStruct) => {
+          console.log('set ball');
+          this.state.registerEvent(new SetBallEvent(...eventArgs));
         },
       ],
     ];

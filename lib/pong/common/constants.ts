@@ -81,8 +81,8 @@ export class GSettings {
   static readonly BALL_CLIENT_SERVER_LERP_DIST = 0.05;
   static readonly BALL_CLIENT_SERVER_LERP_FACTOR = 0.05;
   static readonly BALL_COLOR = "rgb(255, 255, 255)";
-  static readonly BALL_POS_ERROR_MAX = 0.05 * GSettings.SCREEN_WIDTH;
-  static readonly BALL_SPEED_ERROR_MAX = 0.05 * GSettings.SCREEN_WIDTH;
+  static readonly BALL_POS_ERROR_MAX = 0.03 * GSettings.SCREEN_WIDTH;
+  static readonly BALL_SPEED_ERROR_MAX = 0.03 * GSettings.SCREEN_WIDTH;
 
   // SPRITES ->
   static readonly SPRITE_FRAME_RATE = 5;
@@ -192,7 +192,8 @@ export class GameEvent {
   static readonly EXIT_GAME = "exitGame";
   //
   static readonly STOP_OBSERVING = "stopObserving";
-
+  //
+  static readonly SET_BALL = "setBall";
 }
 
 export enum KeyValue {

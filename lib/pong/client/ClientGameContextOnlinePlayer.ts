@@ -25,6 +25,7 @@ export class ClientGameContextOnlinePlayer extends ClientGameContextOnline {
     this.transmitEventFromServerToGame(GameEvent.SPAWN_GRAVITON);
     this.transmitEventFromServerToGame(GameEvent.SPAWN_PORTAL);
     this.transmitEventFromServerToGame(GameEvent.RECEIVE_BAR_EVENT);
+    this.transmitEventFromServerToGame(GameEvent.SET_BALL);
     this.listeners.add(this.socket, GameEvent.GOAL, (playerId: Id) => {
         this.gameManager.renderer.scorePanels.goalAgainst(playerId);
     })

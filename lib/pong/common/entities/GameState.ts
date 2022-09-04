@@ -65,6 +65,13 @@ export class GameState {
   }
 
   handleEvent(event: DataChangerEvent) {
+    console.log(
+      `PAST, type: '${typeof event}' event.time = ${
+        event.time
+      }, data.currentTime = ${this.data.currentTime}, data.actualNow = ${
+        this.data.actualNow
+      }`
+    );
     if (event.time < 0) return;
     if (this.data.actualNow - event.time >= 100) {
       // too old, discard
@@ -75,13 +82,13 @@ export class GameState {
       return;
     }
     if (event.time < this.data.currentTime) {
-      console.log(
-        `PAST, type: '${typeof event}' event.time = ${
-          event.time
-        }, data.currentTime = ${this.data.currentTime}, data.actualNow = ${
-          this.data.actualNow
-        }`
-      );
+      // console.log(
+      //   `PAST, type: '${typeof event}' event.time = ${
+      //     event.time
+      //   }, data.currentTime = ${this.data.currentTime}, data.actualNow = ${
+      //     this.data.actualNow
+      //   }`
+      // );
       // past event
       let now = this.data.currentTime;
       this.data.goBackTo(event.time);

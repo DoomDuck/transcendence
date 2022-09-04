@@ -69,6 +69,8 @@ export class ServerGameContext {
       );
     }
 
+    const data = this.game.state.data;
+    let cpt = 0;
     this.gameLoopHandle = setInterval(() => {
       this.game.frame();
       this.spawner?.frame();
@@ -76,6 +78,21 @@ export class ServerGameContext {
         observer.emit(GameEvent.OBSERVER_UPDATE, this.game.state.data.current, this.game.score);
       }
       this.checkBallOut();
+      if (this.gameAlreadyStarted) {
+        if (cpt % 2 == 0) {
+          for (let i = 0; i < 2; i++) {
+            players[i].emit(
+              GameEvent.SET_BALL,
+              data.actualNow,
+              data.current.ball.x,
+              data.current.ball.y,
+              data.current.ball.vx,
+              data.current.ball.vy
+              );
+          }
+        }
+        cpt++;
+      }
     }, GSettings.GAME_STEP_MS);
   }
 
