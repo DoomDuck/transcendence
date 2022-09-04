@@ -9,7 +9,7 @@
 <span>{$user.name}</span>
 
 <style>
-	span{
+	span {
 		margin: 8px;
 	}
 </style>

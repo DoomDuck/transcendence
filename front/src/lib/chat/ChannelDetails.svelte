@@ -88,7 +88,7 @@
 			<!-- User Info -->
 			<UserMiniature userId={user.id} />
 			<UserName userId={user.id} />
-			<p id='rights'>{channelRightsString(user.rights)}</p>
+			<p id="rights">{channelRightsString(user.rights)}</p>
 
 			<!-- Actions on User -->
 			{#if me?.rights != ChannelRights.USER}
@@ -98,14 +98,22 @@
 						on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
 					/>
 				{:else}
-					<img src='unmuteIcon.png' alt='unmute' width=30 height=30 on:click={() => onUnMuteUser(user.id)}/>
+					<img
+						src="unmuteIcon.png"
+						alt="unmute"
+						width="30"
+						height="30"
+						on:click={() => onUnMuteUser(user.id)}
+					/>
 				{/if}
 				<SelectDurationButton
 					source="banIcon.png"
 					on:selectDuration={(event) => onBanUser(user.id, event.detail)}
 				/>
 				{#if user.rights == ChannelRights.USER}
-					<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}>Set Admin</button>
+					<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}
+						>Set Admin</button
+					>
 				{/if}
 			{/if}
 		</div>
@@ -161,7 +169,7 @@
 		text-align: center;
 		color: rgb(104, 134, 240);
 	}
-	#rights{
+	#rights {
 		width: 10vw;
 	}
 	.channel-details-user {
@@ -195,7 +203,7 @@
 	#invite-user-input {
 		width: 80%;
 	}
-	button{
+	button {
 		margin-left: 10px;
 		margin-right: 10px;
 	}

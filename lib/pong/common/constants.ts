@@ -18,7 +18,7 @@ export class GSettings {
   static readonly GAME_BOTTOM = GSettings.GAME_HEIGHT / 2;
   static readonly GAME_LEFT = -GSettings.GAME_WIDTH / 2;
   static readonly GAME_RIGHT = GSettings.GAME_WIDTH / 2;
-  static readonly GAME_SCORE_VICTORY = 1;
+  static readonly GAME_SCORE_VICTORY = 3;
 
   // UID ----->
   static readonly SCORE_SIZE = GSettings.SCREEN_WIDTH / 30;

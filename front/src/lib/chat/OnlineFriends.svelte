@@ -34,11 +34,11 @@
 		display: flex;
 		overflow-x: auto;
 	}
-	
+
 	#online {
 		color: #fa1ec7;
 	}
-	
+
 	#online-friends {
 		width: 80vw;
 		background: #12072e;
