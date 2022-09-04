@@ -86,7 +86,7 @@ export class UserService {
       user.socketUser.forEach((socket) => logger.debug(socket.id));
     });
   }
-    dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
+  dtoTraductionChatMessage(chatMessage: ChatMessage[]): ChatMessageDto[] {
     const chatMessageDto: ChatMessageDto[] = [];
     chatMessage.forEach((message) =>
       chatMessageDto.push(
@@ -146,7 +146,7 @@ export class UserService {
         this.leaderbordTransformator(
           await this.usersRepository.find({
             order: {
-              score: 'DESC', 
+              score: 'DESC',
             },
           }),
         ),
@@ -157,8 +157,8 @@ export class UserService {
       result: this.leaderbordTransformator(
         await this.usersRepository.find({
           order: {
-            score: 'DESC', 
-		  },
+            score: 'DESC',
+          },
         }),
       ),
     };
@@ -168,7 +168,7 @@ export class UserService {
     return (
       await this.usersRepository.find({
         order: {
-          score: 'DESC', 
+          score: 'DESC',
         },
       })
     ).indexOf(user);

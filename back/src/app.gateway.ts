@@ -209,7 +209,6 @@ export class AppGateway
     sourceSocket: Socket,
     dto: GameInviteToServer,
   ): Promise<ChatFeedbackDto> {
-		
     return this.gameManagerService.handleGameInvite(sourceSocket, dto);
   }
 
