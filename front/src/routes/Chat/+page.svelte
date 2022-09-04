@@ -4,20 +4,33 @@
 	import CreateChannelButton from '$lib/chat/buttons/CreateChannelButton.svelte';
 	import SendNewMessageButton from '$lib/chat/buttons/SendNewMessageButton.svelte';
 	import JoinChannelButton from '$lib/chat/buttons/JoinChannelButton.svelte';
-	import { myself } from '$lib/state';
+	import { myself, getUser } from '$lib/state';
 	import { channelConvs } from '$lib/ts/chatUtils';
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
+	import Modal from '$lib/Modal.svelte';
+	import Profile from '$lib/Profile.svelte';
 
 	$myself.channels.forEach((channel) => {
 		$channelConvs.create(channel);
 	});
+
+ 	const myUser = getUser($myself.id);
+	
+	let showMyProfile: boolean = false;
 </script>
 
 <div id="header">
-	<AvatarIcon type={'user'} imageURL={$myself.avatar ?? 'errorUser.png'} />
+	<AvatarIcon
+		type={'user'}
+		imageURL={$myself.avatar ?? 'errorUser.png'}
+		on:clickOnImage={() => showMyProfile = true}
+	/>
 	<span>{$myself.name}</span>
 	<span>ID: {$myself.id}</span>
 </div>
+<Modal bind:show={showMyProfile}>
+	<Profile user={$myUser}/>
+</Modal>
 
 <div id="chat">
 	<div id="title">

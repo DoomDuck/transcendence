@@ -38,8 +38,9 @@
 <style>
 	.line {
 		align-items: center;
+		padding: 10px;
 		width: 80vw;
-		height: 70px;
+		height: 50px;
 		background: #040128;
 		display: flex;
 		border: 1px solid #ff00b8;

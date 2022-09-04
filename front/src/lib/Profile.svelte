@@ -12,13 +12,13 @@
 <div id="profile">
 	<div id="informations">
 		<AvatarIcon type={'user'} imageURL={user.avatar ?? 'errorUser.png'} />
-		<h3>{user.name}</h3>
-		<div>ID: {user.id}</div>
-		{#if $myself.friendlist.includes(user.id)}
-			<span>Your friend already :)</span>
-		{:else}
-			<button on:click={() => sendFriendInvite({ target: user.id })}>Add to friends</button>
-		{/if}
+		<div id='mainInformations'>
+			<h3>{user.name}</h3>
+			{#if !$myself.friendlist.includes(user.id)}
+				<img src='add-button.png' alt='add friend' on:click={() => sendFriendInvite({ target: user.id })} width=20 height=20/>
+			{/if}
+		</div>
+			<div>ID: {user.id}</div>
 		{#if $myself.blocked.includes(user.id)}
 			<span>You blocked this person :(</span>
 			<button on:click={() => sendUnblockUser({ target: user.id })}>Unblock</button>
@@ -44,15 +44,23 @@
 </div>
 
 <style>
+	
 	h3 {
 		font-family: 'Lato', sans-serif;
 		color: #ff00b8;
 		text-align: center;
+		margin-bottom: 3px;
 	}
 	div {
 		color: #c9c7c7;
 		text-align: center;
-		text-align: center;
+		margin-bottom: 3px;
+	}
+	#mainInformations{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
 	}
 	#informations {
 		display: flex;

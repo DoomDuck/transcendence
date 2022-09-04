@@ -1,5 +1,7 @@
-import { ChatEvent, ChatFeedbackDto, type ClientToServerEvents } from 'backFrontCommon';
+import { ChatEvent, ChatError, ChatFeedbackDto } from 'backFrontCommon';
+import type { ClientToServerEvents } from 'backFrontCommon';
 import { socket, updateChannel } from '$lib/state';
+import { channelConvs } from '$lib/ts/chatUtils';
 
 const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {
 	return <DTO extends Parameters<ClientToServerEvents[Key]>[0] & { channel: string }>(dto: DTO) => {
@@ -8,6 +10,10 @@ const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {
 				updateChannel(dto.channel);
 			} else {
 				alert(feedback.errorMessage);
+				if (feedback.errorMessage == ChatError.CHANNEL_NOT_FOUND) {
+					console.log("Heyo");
+					channelConvs.update(c => { c.delete(dto.channel); return c; })
+				}
 			}
 		};
 		socket!.emit(event, ...([dto, callback] as Parameters<ClientToServerEvents[Key]>));
