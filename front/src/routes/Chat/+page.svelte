@@ -25,8 +25,6 @@
 		imageURL={$myself.avatar ?? 'errorUser.png'}
 		on:clickOnImage={() => showMyProfile = true}
 	/>
-	<span>{$myself.name}</span>
-	<span>ID: {$myself.id}</span>
 </div>
 <Modal bind:show={showMyProfile}>
 	<Profile user={$myUser}/>
