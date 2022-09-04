@@ -41,7 +41,7 @@
 			case ChannelRights.ADMIN:
 				return 'Admin';
 			case ChannelRights.USER:
-				return 'a simple user';
+				return 'A simple user';
 		}
 	}
 
@@ -74,15 +74,13 @@
 <div id="channel-details">
 	<!-- Myself -->
 	{#if me}
-		<p>You are in this channel</p>
-		<p>You are {channelRightsString(me.rights)}</p>
+		<p id='channelRights'>You are {channelRightsString(me.rights)}</p>
 		{#if me.muted}
 			<p>You are currently muted</p>
 		{/if}
 	{:else}
 		<p>You are not in this channel</p>
 	{/if}
-	<br />
 
 	<!-- Other users -->
 	<div class="channel-details-users">
@@ -91,20 +89,18 @@
 				<!-- User Info -->
 				<UserMiniature userId={user.id} />
 				<UserName userId={user.id} />
-				<p>Role: {channelRightsString(user.rights)}</p>
+				<p>{channelRightsString(user.rights)}</p>
 
 				<!-- Actions on User -->
 				{#if me?.rights != ChannelRights.USER}
 					{#if !user.muted}
-						<SelectDurationButton on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
-							>Mute</SelectDurationButton
-						>
+						<SelectDurationButton source='muteIcon.png' on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
+							/>
 					{:else}
 						<button on:click={() => onUnMuteUser(user.id)}>UnMute</button>
 					{/if}
-					<SelectDurationButton on:selectDuration={(event) => onBanUser(user.id, event.detail)}
-						>Ban</SelectDurationButton
-					>
+					<SelectDurationButton source='banIcon.png' on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+						/>
 					{#if user.rights == ChannelRights.USER}
 						<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}
 							>Set Admin</button
@@ -157,11 +153,17 @@
 		display: flex;
 		flex-direction: column;
 		width: 40vw;
+		color:rgb(136, 172, 255)
+	}
+	#channelRights{
+		text-align: center;
+		color: rgb(104, 134, 240);
 	}
 	.channel-details-user {
 		display: flex;
 		flex-direction: row;
-		justify-content: space-between;
+		justify-content: space-around;
+		align-items: center;
 	}
 	.banned {
 		opacity: 0.7;
