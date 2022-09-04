@@ -12,7 +12,7 @@
 		socket,
 		gameParams,
 		redirectMainInvalidateGameParams,
-		clearGameParams
+		invalidateGameParams
 	} from '$lib/state';
 	import { delay } from 'pong/common/utils';
 
@@ -54,10 +54,9 @@
 		ctx.startGame();
 
 		return () => {
-			if (!gameIsOver && online) {
-				(ctx as ClientGameContextOnline).exitGame();
+			if (!gameIsOver) {
+				ctx.exitGame();
 			}
-			clearGameParams();
 		};
 	});
 </script>

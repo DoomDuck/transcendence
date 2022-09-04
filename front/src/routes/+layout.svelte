@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
 	import Popups from '$lib/Popups.svelte';
-	import { gameParams, redirectMainInvalidateGameParams, updateAllStores } from '$lib/state';
+	import {
+		invalidateGameParams,
+		gameParams,
+		redirectMainInvalidateGameParams,
+		updateAllStores
+	} from '$lib/state';
 	import { closeLastModal, modalCallbackStack } from '$lib/ts/modals';
 	import { onMount } from 'svelte';
 
@@ -20,6 +25,9 @@
 			navigation.cancel();
 			redirectMainInvalidateGameParams();
 			return;
+		}
+		if (navigation.from.pathname == '/Play') {
+			invalidateGameParams();
 		}
 	});
 

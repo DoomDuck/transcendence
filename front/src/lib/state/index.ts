@@ -200,7 +200,7 @@ export function sendGameInvite(invite: GameInviteToServer, callback: FeedbackCal
 	socket!.emit(ChatEvent.GAME_INVITE, invite, callback);
 }
 
-export function clearGameParams() {
+export function invalidateGameParams() {
 	gameParams = null;
 }
 
