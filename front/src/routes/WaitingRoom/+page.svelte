@@ -1,12 +1,20 @@
 <script lang="ts">
-	import { socket, gameParams } from '$lib/state';
-	import { ChatEvent } from 'backFrontCommon';
+	import { beforeNavigate, goto } from '$app/navigation';
+
+	import { socket, gameParams, redirectMainInvalidateGameParams } from '$lib/state';
+	import { ChatEvent, ChatFeedbackDto } from 'backFrontCommon';
 	import { onDestroy, onMount } from 'svelte';
 
 	const classic = gameParams?.classic ?? false;
 
 	onMount(() => {
-		socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic);
+		socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+			} else {
+				redirectMainInvalidateGameParams();
+				alert(feedback.errorMessage);
+			}
+		});
 	});
 
 	onDestroy(() => {

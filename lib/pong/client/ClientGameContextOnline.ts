@@ -8,7 +8,6 @@ import { ClientGameContext } from "./ClientGameContext";
  * ClientGameContextOnlinePlayer and ClientGameContextOnlineObserver
  */
 export abstract class ClientGameContextOnline extends ClientGameContext {
-  lastGoalPlayerId: number = -1;
   listeners: Listeners<Socket> = new Listeners();
 
   constructor(public socket: Socket, onFinish: FinishCallback, onError: ErrorCallback) {
@@ -16,13 +15,12 @@ export abstract class ClientGameContextOnline extends ClientGameContext {
 
     this.transmitEventFromServerToGame(GameEvent.RESET);
     this.listeners.add(this.socket, GameEvent.RESET, () => {
-      if (this.lastGoalPlayerId >= 0)
-        this.gameManager.renderer.scorePanels.goalAgainst(this.lastGoalPlayerId);
       this.gameManager.renderer.victoryAnimation = undefined;
     })
     this.transmitEventFromServerToGame(GameEvent.GOAL);
-    this.listeners.add(this.socket, GameEvent.GOAL, (playerId: number) => {
-      this.handleGoal(playerId);
+    this.listeners.add(this.socket, GameEvent.GOAL, () => {
+      this.gameManager.game.pause();
+      this.gameManager.renderer.startVictoryAnimationAsync();
     });
     this.listeners.add(this.socket, GameEvent.GAME_OVER, (score: [number, number]) => {
       this.handleEndOfGame(score);
@@ -34,14 +32,6 @@ export abstract class ClientGameContextOnline extends ClientGameContext {
       this.gameManager.game.emit(event, ...args);
       console.log(`From server: ${event}: ${args}`);
     });
-  }
-
-  protected handleGoal(playerId: number) {
-    const game = this.gameManager.game;
-    const renderer = this.gameManager.renderer;
-    game.pause();
-    renderer.startVictoryAnimationAsync();
-    this.lastGoalPlayerId = playerId;
   }
 
   protected errorExit(errorMessage: string) {

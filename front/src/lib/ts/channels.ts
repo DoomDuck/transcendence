@@ -1,8 +1,4 @@
-import {
-	ChatEvent,
-	ChatFeedbackDto,
-	type ClientToServerEvents,
-} from 'backFrontCommon';
+import { ChatEvent, ChatFeedbackDto, type ClientToServerEvents } from 'backFrontCommon';
 import { socket, updateChannel } from '$lib/state';
 
 const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {

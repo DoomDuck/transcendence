@@ -64,6 +64,8 @@ export class ChatEvent {
 }
 
 export class ChatError {
+  
+
   static readonly U_DO_NOT_EXIST ="u do not exist";
   static readonly USER_NOT_FOUND ="user not found";
   static readonly USER_OFFLINE ="user offline";
@@ -75,6 +77,7 @@ export class ChatError {
   static readonly YOU_ARE_BLOCKED ="you are blocked";
   static readonly NOT_IN_CHANNEL ="not in channel";
   static readonly ALREADY_FRIEND = "already friend";
+  static readonly ALREADY_IN_GAME = "already in game";
   static readonly ALREADY_IN_CHANNEL = "already in channel";
   static readonly ALREADY_ADMIN = "already admin";
   static readonly NAME_ALREADY_IN_USE = "name already in use";
@@ -93,10 +96,16 @@ export class ChatError {
   static readonly USER_NOT_IN_GAME = "user not in game";
   static readonly USER_IN_GAME = "user in game";
   static readonly YOU_CANT_BE_YOUR_OWN_FRIEND="you can't be your own friend";
-  static readonly YOU_CANT_BLOCK_YOURSELF="you can't be your own friend";
+  static readonly YOU_CANT_BLOCK_YOURSELF="you can't block yourself";
+  static readonly YOU_CANT_BAN_YOURSELF="you can't ban yourself";
+  static readonly YOU_CANT_MUTE_YOURSELF="you can't mute yourself";
   static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"
   static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
+
   static readonly MUST_SPECIFY_PASSWORD = "must specify password";
+  static readonly USER_ALREADY_INVITED = "user already invited";
+  static readonly ALREADY_IN_MATCHMAKING = "already in matchmaking";
+  static readonly YOU_ARE_ALREADY_IN_GAME = "you are already in game";
 }
 
 export class DMFromServer {
@@ -868,13 +877,18 @@ export class ChannelSummary {
   channel: string;
   // @IsString() 
   category: ChannelCategory;
+  // @IsBoolean() 
+  inChan: boolean;
   constructor(
     channel: string,
     category: ChannelCategory,
+    inChan:boolean
   ) {
     this.channel = channel;
     this.category = category;
+    this.inChan = inChan;
   }
+
 }
 export class UnmuteUserToServer {
   // @IsString() 
@@ -889,6 +903,12 @@ export class UnmuteUserToServer {
     this.target = target;
   }
 }
+export class GameStyleFromServer {
+  constructor(
+    public classic: boolean,
+  ) { }
+}
+
 
 
 export class ChatFeedbackDto {
@@ -975,11 +995,11 @@ export interface ClientToServerEvents {
   [ChatEvent.GET_FRIENDS]: (callback: FeedbackCallbackWithResult<Id[]>) => void;
   [ChatEvent.GET_LEADERBOARD]: (callback: FeedbackCallbackWithResult<LeaderboardItemDto[]>) => void;
   [ChatEvent.GET_CHAT_HISTORY]: (callback: FeedbackCallbackWithResult<UserHistoryDto>) => void;
-  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean) => void;
+  [ChatEvent.JOIN_MATCHMAKING]: (classic: boolean, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_INVITE]: (dto: GameInviteToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_ACCEPT]: (dto: GameAcceptToServer, callback: FeedbackCallback) => void;
   [ChatEvent.GAME_REFUSE]: (dto: GameRefuseToServer) => void;
-  [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallback) => void;
+  [ChatEvent.GAME_OBSERVE]: (userId: Id, callback: FeedbackCallbackWithResult<GameStyleFromServer>) => void;
   [ChatEvent.GAME_CANCEL]: (dto: GameCancelToServer) => void;
   [ChatEvent.BAN_USER]: (dto: BanUserToServer, callback: FeedbackCallback) => void;
   [ChatEvent.MUTE_USER]: (dto: MuteUserToServer, callback: FeedbackCallback) => void;

@@ -1,3 +1,4 @@
+import { GameProducedEvent } from "../common/game/events";
 import type { FinishCallback, ErrorCallback} from "../common/utils";
 import { ClientGameManager } from "./game";
 
@@ -37,5 +38,6 @@ export abstract class ClientGameContext {
   finally() {
     if (this.animationHandle !== undefined)
       cancelAnimationFrame(this.animationHandle);
+    GameProducedEvent.removeAll();
   }
 }

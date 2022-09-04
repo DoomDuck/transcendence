@@ -19,6 +19,8 @@ import {
   GetBannedListFromServer,
   Id,
   IsInGameToServer,
+  FeedbackCallback,
+  GameStyleFromServer,
 } from 'backFrontCommon';
 import type {
   UserHistoryDto,
@@ -140,7 +142,11 @@ export class AppGateway
 
   @SubscribeMessage(ChatEvent.MSG_TO_CHANNEL)
   async handleMessageChannel(clientSocket: Socket, dto: CMToServer) {
-    return await this.chatService.handleMessageChannel(clientSocket, dto);
+    return await this.chatService.handleMessageChannel(
+      clientSocket,
+      dto,
+      this.wss,
+    );
   }
 
   @SubscribeMessage(ChatEvent.JOIN_CHANNEL)
@@ -186,12 +192,15 @@ export class AppGateway
   }
 
   @SubscribeMessage(ChatEvent.JOIN_MATCHMAKING)
-  handleJoinMatchMaking(socket: Socket, classic: boolean) {
-    this.gameManagerService.addMatchmaking(socket, classic);
+  handleJoinMatchMaking(socket: Socket, classic: boolean): ChatFeedbackDto {
+    return this.gameManagerService.addMatchmaking(socket, classic);
   }
 
   @SubscribeMessage(ChatEvent.GAME_OBSERVE)
-  async handleObserve(socket: Socket, userId: Id): Promise<ChatFeedbackDto> {
+  async handleObserve(
+    socket: Socket,
+    userId: Id,
+  ): Promise<RequestFeedbackDto<GameStyleFromServer>> {
     return this.gameManagerService.handleObserve(socket, userId);
   }
 
@@ -236,15 +245,6 @@ export class AppGateway
     return await this.matchHistoryService.getAllMatch();
   }
 
-  // @SubscribeMessage(GetInfoEvent.MY_MATCH)
-  // async handleMyMatch(socket: Socket) {
-  // return await this.userService.getMyMatch(socket);
-  // }
-  //
-  // @SubscribeMessage(GetInfoEvent.USER_MATCH)
-  // async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
-  // return await this.userService.getUserMatch(socket, matchInfo.target);
-  // }
   @SubscribeMessage(ChatEvent.UNBLOCK_USER)
   async handleUnblockUser(socket: Socket, unblockInfo: UnblockUserToServer) {
     return await this.userService.handleUnblockUser(socket, unblockInfo);
