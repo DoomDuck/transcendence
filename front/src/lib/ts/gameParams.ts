@@ -3,6 +3,8 @@ export type GameParams = {
 	observe?: boolean;
 	classic?: boolean;
 	matchMaking?: boolean;
+	startAGame?: boolean;
+	valid: boolean;
 };
 
 export function gameParamsAreValid(p?: GameParams) {

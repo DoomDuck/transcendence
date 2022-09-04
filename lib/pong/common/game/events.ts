@@ -80,9 +80,18 @@ export namespace GameProducedEvent {
       allEvents.get(name)?.forEach((args: any[]) => {
         allEventsCallbacks
           .get(name)
-          ?.forEach((callback: Function) => callback(...args));
+          ?.forEach((callback: Function) => {
+            console.log(`firing event ${name} with args ${JSON.stringify(args)}`);
+            callback(...args);
+          });
       });
       allEvents.set(name, []);
     }
   }
+
+  export function removeAll() {
+    allEvents.clear();
+    allEventsCallbacks.clear();
+  }
 }
+23.

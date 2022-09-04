@@ -4,6 +4,7 @@
 	import AvatarIcon from '$lib/AvatarIcon.svelte';
 	import { myself, observeGame, sendBlockUser, sendFriendInvite, sendUnblockUser } from './state';
 	import SendNewMessageButton from './chat/buttons/SendNewMessageButton.svelte';
+	import GameInviteButton from './chat/buttons/GameInviteButton.svelte';
 
 	export let user: UserInfo;
 </script>
@@ -36,6 +37,9 @@
 		</div>
 	{:else}
 		<p>Status: Not in game</p>
+		<div id="game-invite-button">
+			<GameInviteButton {user} />
+		</div>
 	{/if}
 </div>
 
@@ -70,5 +74,8 @@
 	p {
 		color: #c9c7c7;
 		text-align: center;
+	}
+	#game-invite-button {
+		margin: auto;
 	}
 </style>
