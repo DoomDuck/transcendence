@@ -96,9 +96,12 @@ export class ChatError {
   static readonly USER_NOT_IN_GAME = "user not in game";
   static readonly USER_IN_GAME = "user in game";
   static readonly YOU_CANT_BE_YOUR_OWN_FRIEND="you can't be your own friend";
-  static readonly YOU_CANT_BLOCK_YOURSELF="you can't be your own friend";
+  static readonly YOU_CANT_BLOCK_YOURSELF="you can't block yourself";
+  static readonly YOU_CANT_BAN_YOURSELF="you can't ban yourself";
+  static readonly YOU_CANT_MUTE_YOURSELF="you can't mute yourself";
   static readonly YOU_CANT_PLAY_WITH_YOURSELF = "you can't play with yourself..... here"
   static readonly CANNOT_INVITE_YOURSELF = "you cannot invite yourself";
+
   static readonly MUST_SPECIFY_PASSWORD = "must specify password";
   static readonly USER_ALREADY_INVITED = "user already invited";
   static readonly ALREADY_IN_MATCHMAKING = "already in matchmaking";

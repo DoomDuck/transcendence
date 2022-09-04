@@ -278,6 +278,11 @@ export class ChatService {
         ChatError.USER_NOT_FOUND,
       );
     }
+	if(tempSender.id === tempTarget.id)
+		return {
+			success:false,
+			errorMessage:ChatError.YOU_CANT_BAN_YOURSELF,
+		}
     const activeTarget = this.userService.findOneActive(banInfo.target);
     const tempChan = await this.channelManagerService.findChanByName(
       banInfo.channel,
@@ -324,6 +329,11 @@ export class ChatService {
         ChatError.USER_NOT_FOUND,
       );
     }
+		if(tempSender.id === tempTarget.id)
+		return {
+			success:false,
+			errorMessage:ChatError.YOU_CANT_MUTE_YOURSELF,
+		}
     const tempChan = await this.channelManagerService.findChanByName(
       muteInfo.channel,
     );

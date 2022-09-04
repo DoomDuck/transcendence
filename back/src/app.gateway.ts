@@ -209,6 +209,7 @@ export class AppGateway
     sourceSocket: Socket,
     dto: GameInviteToServer,
   ): Promise<ChatFeedbackDto> {
+		
     return this.gameManagerService.handleGameInvite(sourceSocket, dto);
   }
 
@@ -245,15 +246,6 @@ export class AppGateway
     return await this.matchHistoryService.getAllMatch();
   }
 
-  // @SubscribeMessage(GetInfoEvent.MY_MATCH)
-  // async handleMyMatch(socket: Socket) {
-  // return await this.userService.getMyMatch(socket);
-  // }
-  //
-  // @SubscribeMessage(GetInfoEvent.USER_MATCH)
-  // async handleUserMatch(socket: Socket, matchInfo: MatchInfoToServer) {
-  // return await this.userService.getUserMatch(socket, matchInfo.target);
-  // }
   @SubscribeMessage(ChatEvent.UNBLOCK_USER)
   async handleUnblockUser(socket: Socket, unblockInfo: UnblockUserToServer) {
     return await this.userService.handleUnblockUser(socket, unblockInfo);

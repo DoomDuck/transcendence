@@ -146,7 +146,7 @@ export class UserService {
         this.leaderbordTransformator(
           await this.usersRepository.find({
             order: {
-              score: 'DESC', // "ASC"
+              score: 'DESC', 
             },
           }),
         ),
@@ -157,8 +157,8 @@ export class UserService {
       result: this.leaderbordTransformator(
         await this.usersRepository.find({
           order: {
-            score: 'DESC', // "ASC"
-          },
+            score: 'DESC', 
+		  },
         }),
       ),
     };
@@ -168,7 +168,7 @@ export class UserService {
     return (
       await this.usersRepository.find({
         order: {
-          score: 'DESC', // "ASC"
+          score: 'DESC', 
         },
       })
     ).indexOf(user);
