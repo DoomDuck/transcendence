@@ -1,8 +1,27 @@
 <script lang="ts">
+	import { beforeNavigate } from '$app/navigation';
 	import Popups from '$lib/Popups.svelte';
-	import { updateAllStores } from '$lib/state';
+	import { gameParams, redirectMainInvalidateGameParams, updateAllStores } from '$lib/state';
 	import { closeLastModal, modalCallbackStack } from '$lib/ts/modals';
 	import { onMount } from 'svelte';
+
+	beforeNavigate((navigation) => {
+		if (!navigation.to) return;
+		console.log(`Navigate to ${navigation.to.pathname}`);
+		let cancelNavigation = false;
+		if (navigation.to.pathname == '/Play') {
+			cancelNavigation = !gameParams || !gameParams.valid;
+		} else if (navigation.to.pathname == '/ChooseGameMode') {
+			cancelNavigation = !gameParams || !gameParams.startAGame;
+		} else if (navigation.to.pathname == '/WaitingRoom') {
+			cancelNavigation = !gameParams || !gameParams.valid;
+		}
+		if (cancelNavigation) {
+			navigation.cancel();
+			redirectMainInvalidateGameParams();
+			return;
+		}
+	});
 
 	onMount(() => {
 		const timeout = setInterval(updateAllStores, 1000);

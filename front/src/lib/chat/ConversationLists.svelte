@@ -21,7 +21,7 @@
 			<DeStore
 				component={ConversationListItemText}
 				slot="item-text"
-				text={storeMap(getUser(conversation.interlocutor), user => user.name)}
+				text={storeMap(getUser(conversation.interlocutor), (user) => user.name)}
 			/>
 			<ConversationBox slot="conversation-modal" {conversation} />
 		</ConversationListItem>

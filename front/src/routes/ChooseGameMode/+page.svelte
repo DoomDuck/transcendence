@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { gameParams } from '$lib/state';
+	import { gameParams, redirectMainInvalidateGameParams } from '$lib/state';
 
 	function play(classic: boolean) {
-		// TODO: ERROR PAGE
-		// if (!gameParamsAreValid(state.gameParams))
-		//   goto('/StartAGame');
-		gameParams!.classic = classic;
-		if (gameParams?.matchMaking) goto('/WaitingRoom');
-		else goto('/Play');
+		if (!gameParams || !gameParams.startAGame) return redirectMainInvalidateGameParams();
+		gameParams.classic = classic;
+		gameParams.valid = true;
+		if (gameParams?.matchMaking) goto('/WaitingRoom', { replaceState: true });
+		else goto('/Play', { replaceState: true });
 	}
 </script>
 

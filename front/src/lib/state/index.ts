@@ -159,11 +159,11 @@ function setupHooks(socket: Socket) {
 
 	// DEBUG
 	socket.onAny((event: string, ...args: any[]) => {
-		// if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
+		if (Object.getOwnPropertyNames(event).includes(event)) return;
 		console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
 	});
 	socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-		// if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
+		if (Object.getOwnPropertyNames(event).includes(event)) return;
 		console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
 	});
 }
@@ -204,19 +204,6 @@ export function clearGameParams() {
 	gameParams = null;
 }
 
-export function joinGame(classic: boolean) {
-	socket!.emit(ChatEvent.JOIN_MATCHMAKING, classic);
-}
-
-export function playGame(online: boolean, observe?: boolean, matchMaking?: boolean) {
-	gameParams = {
-		online,
-		observe,
-		matchMaking
-	};
-	goto('/ChooseGameMode');
-}
-
 export function observeGame(id: Id) {
 	socket!.emit(ChatEvent.GAME_OBSERVE, id, (feedback) => {
 		if (feedback.success) {
@@ -224,7 +211,8 @@ export function observeGame(id: Id) {
 			gameParams = {
 				online: true,
 				observe: true,
-				classic: feedback.result!.classic
+				classic: feedback.result!.classic,
+				valid: true
 			};
 			goto('/Play');
 		} else {
@@ -370,13 +358,17 @@ export function sendChannelMessage(message: CMToServer) {
 	});
 }
 
-export function sendJoinChannel(message: JoinChannelToServer) {
-	socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
-		if (feedback.success) {
-			channelConvs.update((_) => _.create(message.channel));
-		} else {
-			alert(`error: ${feedback.errorMessage}`);
-		}
+export async function sendJoinChannel(message: JoinChannelToServer): Promise<void> {
+	return new Promise((resolve, reject) => {
+		socket!.emit(ChatEvent.JOIN_CHANNEL, message, (feedback: ChatFeedbackDto) => {
+			if (feedback.success) {
+				channelConvs.update((_) => _.create(message.channel));
+				resolve();
+			} else {
+				reject();
+				alert(`error: ${feedback.errorMessage}`);
+			}
+		});
 	});
 }
 
@@ -487,9 +479,20 @@ export const pongKeyForRefresh = writable(Symbol());
 function onGotoGameScreen(classic: boolean, ready: () => void) {
 	if (!connected()) return;
 	closeAllModals();
-	gameParams = { classic, online: true };
+	const gotoOpts: any = {
+		gameParams: { classic, online: true }
+	};
+	if (['/Play', '/WaitingRoom', '/ChooseGameMode'].includes(window.location.href)) {
+		gotoOpts.replaceState = true;
+	}
+	goto('/Play', gotoOpts).then(ready);
 	pongKeyForRefresh.set(Symbol());
-	goto('/Play').then(ready);
+	// if (['/Play', '/WaitingRoom', '/ChooseGameMode'].includes(window.location.href)) {
+	//   goto('/Play', {replaceState: true}).then(ready);
+	// }
+	// else {
+	//   goto('/Play').then(ready);
+	// }
 }
 
 function onMsgToUser(message: DMFromServer) {
@@ -544,4 +547,11 @@ export function forceRoute(): string | null {
 
 export function isBlocked(pathname: string): boolean {
 	return loggedIn() && LOGGIN_ROUTES.includes(pathname);
+}
+export function redirectMainInvalidateGameParams() {
+	goto('/Main', { replaceState: true });
+	gameParams = null;
+}
+export function setGameParams(params: GameParams) {
+	gameParams = params;
 }
