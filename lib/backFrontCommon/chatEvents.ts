@@ -174,9 +174,9 @@ export class CMToServer {
 }
 
 export class JoinChannelFromServer {
-  //   @IsString() 
+  // @IsString() 
   channel: string;
-  //   @IsPositive() @IsInt() 
+  // @IsPositive() @IsInt() 
   newUser: Id;
     constructor(
       channel: string,
@@ -188,9 +188,9 @@ export class JoinChannelFromServer {
 }
 
 export class JoinChannelToServer {
-  //   @IsString() 
+  // @IsString() 
   channel: string;
-  //   @IsOptional() @IsString() 
+  // @IsOptional() @IsString() 
   password?: string;
     constructor(
       channel: string,
@@ -611,8 +611,7 @@ export class MyInfo {
   score: number;
   // @IsPositive() @IsInt() 
   ranking: number;
-  // TODO: check for null
-  // @IsString() 
+  // @IsOptional() @IsString() 
   avatar: string | null;
   // @IsString() 
   totpSecret: string | null;
@@ -660,8 +659,7 @@ export class UserInfo {
   score: number;
   // @IsPositive() @IsInt() 
   ranking: number;
-  // TODO: check for null
-  // @IsString() 
+  // @IsOptional() @IsString() 
   avatar: string | null;
   // @IsBoolean() 
   isOnline: boolean;

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 read -p "PUBLIC_APP_42_ID: " PUBLIC_APP_42_ID
 read -p "APP_42_SECRET: " APP_42_SECRET
 read -p "PUBLIC_SERVER_ADDRESS: " PUBLIC_SERVER_ADDRESS
@@ -16,5 +16,5 @@ echo -en \
 "POSTGRES_ADDRESS=$POSTGRES_ADDRESS\n"\
 "POSTGRES_PASSWORD=$POSTGRES_PASSWORD\n"\
 "POSTGRES_USER=$POSTGRES_USER\n"\
-> .env
+> front/.env
 
