@@ -479,20 +479,13 @@ export const pongKeyForRefresh = writable(Symbol());
 function onGotoGameScreen(classic: boolean, ready: () => void) {
 	if (!connected()) return;
 	closeAllModals();
-	const gotoOpts: any = {
-		gameParams: { classic, online: true }
-	};
+	gameParams = { classic, online: true, valid: true };
+	let replaceState: boolean | undefined;
 	if (['/Play', '/WaitingRoom', '/ChooseGameMode'].includes(window.location.href)) {
-		gotoOpts.replaceState = true;
+		replaceState = true;
 	}
-	goto('/Play', gotoOpts).then(ready);
 	pongKeyForRefresh.set(Symbol());
-	// if (['/Play', '/WaitingRoom', '/ChooseGameMode'].includes(window.location.href)) {
-	//   goto('/Play', {replaceState: true}).then(ready);
-	// }
-	// else {
-	//   goto('/Play').then(ready);
-	// }
+	goto('/Play', { replaceState }).then(ready);
 }
 
 function onMsgToUser(message: DMFromServer) {

@@ -2,7 +2,7 @@
 	import { sendChangeName } from './state';
 
 	export let name: string;
-	
+
 	let nameField: string = name;
 	let changeName = false;
 

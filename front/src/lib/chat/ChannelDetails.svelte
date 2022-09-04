@@ -74,7 +74,7 @@
 <div id="channel-details">
 	<!-- Myself -->
 	{#if me}
-		<p id='channelRights'>You are {channelRightsString(me.rights)}</p>
+		<p id="channelRights">You are {channelRightsString(me.rights)}</p>
 		{#if me.muted}
 			<p>You are currently muted</p>
 		{/if}
@@ -94,13 +94,17 @@
 				<!-- Actions on User -->
 				{#if me?.rights != ChannelRights.USER}
 					{#if !user.muted}
-						<SelectDurationButton source='muteIcon.png' on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
-							/>
+						<SelectDurationButton
+							source="muteIcon.png"
+							on:selectDuration={(event) => onMuteUser(user.id, event.detail)}
+						/>
 					{:else}
 						<button on:click={() => onUnMuteUser(user.id)}>UnMute</button>
 					{/if}
-					<SelectDurationButton source='banIcon.png' on:selectDuration={(event) => onBanUser(user.id, event.detail)}
-						/>
+					<SelectDurationButton
+						source="banIcon.png"
+						on:selectDuration={(event) => onBanUser(user.id, event.detail)}
+					/>
 					{#if user.rights == ChannelRights.USER}
 						<button on:click={() => sendSetNewAdminToServer({ channel, target: user.id })}
 							>Set Admin</button
@@ -153,9 +157,9 @@
 		display: flex;
 		flex-direction: column;
 		width: 40vw;
-		color:rgb(136, 172, 255)
+		color: rgb(136, 172, 255);
 	}
-	#channelRights{
+	#channelRights {
 		text-align: center;
 		color: rgb(104, 134, 240);
 	}
