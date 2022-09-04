@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { sendDirectMessage } from '$lib/state';
+	import { onMount } from 'svelte';
 	import PositiveIntegerInput from '../PositiveIntegerInput.svelte';
 
 	export let content = '';
@@ -8,6 +9,7 @@
 	let target: number;
 	if (predefinedTarget !== undefined) target = predefinedTarget;
 	let invalidTarget: boolean;
+	let messageArea: HTMLTextAreaElement;
 
 	function handleSubmit() {
 		if (invalidTarget) return;
@@ -15,6 +17,11 @@
 		show = false;
 		return true;
 	}
+	onMount(() => {
+		if (predefinedTarget !== undefined) {
+			messageArea.focus();
+		}
+	});
 </script>
 
 <form id="formContainer" on:submit|preventDefault={handleSubmit}>
@@ -28,7 +35,13 @@
 		</div>
 	{/if}
 	<br />
-	<textarea id="message" type="text" placeholder="Type a message..." bind:value={content} />
+	<textarea
+		id="message"
+		type="text"
+		placeholder="Type a message..."
+		bind:value={content}
+		bind:this={messageArea}
+	/>
 	<button>
 		<img id="btn-send-msg" src="send.png" alt="send message" />
 	</button>

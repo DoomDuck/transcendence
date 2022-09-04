@@ -67,9 +67,9 @@
 		<canvas id="game-screen" />
 	{:else}
 		<div id="gameover-screen">
-			<h1 class='gameover-font'>Game Over</h1>
-			<h2 class='gameover-font'>{gameOverText}</h2>
-			<h2 class='gameover-font'>{gameOverScoreDisplay}</h2>
+			<h1 class="gameover-font">Game Over</h1>
+			<h2 class="gameover-font">{gameOverText}</h2>
+			<h2 class="gameover-font">{gameOverScoreDisplay}</h2>
 		</div>
 	{/if}
 </div>
@@ -100,10 +100,10 @@
 	h1 {
 		font-size: 2.5em;
 	}
-	h2{
+	h2 {
 		font-size: 2em;
 	}
-	.gameover-font{
+	.gameover-font {
 		color: rgb(251, 251, 0);
 		-webkit-text-stroke: 2px #ff8400;
 		text-shadow: 6px 6px 6px purple, 6px 6px 6px purple;

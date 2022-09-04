@@ -1,4 +1,4 @@
-import { GameEvent, GSettings } from "../common/constants";
+import { GameEvent, GSettings, KeyValue } from "../common/constants";
 import {
   GameProducedEvent,
 } from "../common/game/events";
@@ -11,6 +11,7 @@ import {
 import type { FinishCallback } from '../common/utils';
 import { ClientGameContext } from "./ClientGameContext";
 import { setupKeyboardOffline } from "./game";
+import { keyAction } from "./game/keyboardInput";
 
 /**
  * Offline version of the game in the client (see ClientGameContext)
@@ -29,7 +30,13 @@ export class ClientGameContextOffline extends ClientGameContext {
     this.reset(GSettings.BALL_INITIAL_SPEEDX);
 
     // input events
-    setupKeyboardOffline(this.gameManager.game);
+    setupKeyboardOffline(this);
+    this.registerWindowListener('blur', () => {
+      keyAction(this.gameManager.game.state, 0, KeyValue.UP, false);
+      keyAction(this.gameManager.game.state, 0, KeyValue.DOWN, false);
+      keyAction(this.gameManager.game.state, 1, KeyValue.UP, false);
+      keyAction(this.gameManager.game.state, 1, KeyValue.DOWN, false);
+    })
 
     // internal events
     GameProducedEvent.registerEvent(GameEvent.BALL_OUT, (playerId: number) => {
