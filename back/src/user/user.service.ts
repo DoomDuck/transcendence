@@ -166,13 +166,13 @@ export class UserService {
   }
 
   async getRanking(user: User): Promise<number> {
-    return (
-      await this.usersRepository.find({
-        order: {
-          score: 'DESC',
-        },
-      })
-    ).indexOf(user);
+    const users = await this.usersRepository.find({
+      order: {
+        score: 'DESC',
+      },
+    });
+    const ranking = users.findIndex((player) => player.id === user.id);
+    return ranking + 1;
   }
   dtoTraductionChannelConv(
     activeConversation: ActiveConversation[],

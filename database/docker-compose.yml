@@ -2,10 +2,7 @@ services:
     db:
       image: postgres
       restart: always
-      environment:
-        POSTGRES_PASSWORD: root
-        POSTGRES_USER: hgallien
-        POSTGRES_DB: db
+      env_file: ../front/.env
       ports:
         - "5432:5432"
     adminer:
