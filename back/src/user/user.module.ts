@@ -12,15 +12,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatService } from '../chat/chat.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User,  Channel, Match]),
-    HttpModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User, Channel, Match]), HttpModule],
   providers: [
     ChatService,
     MatchHistoryService,
     UserService,
-    
+
     ChannelManagerService,
   ],
   exports: [

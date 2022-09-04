@@ -158,7 +158,7 @@ export class ChatService {
     const tempUser = await this.userService.findOneDbBySocket(clientSocket);
 
     const tempActive = this.userService.findOneActiveBySocket(clientSocket);
-        if (!tempChan) {
+    if (!tempChan) {
       return this.channelManagerService.newChatFeedbackDto(
         false,
         ChatError.CHANNEL_NOT_FOUND,
@@ -216,7 +216,7 @@ export class ChatService {
       dm.content,
       target,
     );
-    
+
     return feedback;
   }
 
@@ -290,7 +290,6 @@ export class ChatService {
       this.userService.findOneActive(tempTarget.id),
     );
     if (feedback.success === true) {
-      
       this.userService.leaveChannel(tempTarget, tempChan, activeTarget);
     }
     return feedback;

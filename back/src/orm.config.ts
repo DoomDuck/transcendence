@@ -13,6 +13,6 @@ export function typeOrmFactory(config: ConfigService): TypeOrmModuleOptions {
     host: config.get('POSTGRES_ADDRESS'),
     database: 'postgres',
     synchronize: true,
-    entities: [User,  Channel, Match],
+    entities: [User, Channel, Match],
   };
 }

@@ -286,7 +286,7 @@ export class UserService {
     const id = userDto.id;
     const logger = new Logger('addone');
 
-        let i = 0;
+    let i = 0;
     let userDb = await this.findOneDb(id);
     if (userDb === null) {
       while (await this.findOneDbByName(userDto.name)) {
@@ -331,7 +331,7 @@ export class UserService {
 
     if (activeUser) {
       this.updateChannelConversation(activeUser, activeUser, channel);
-        activeUser.socketUser.forEach((socket: Socket) =>
+      activeUser.socketUser.forEach((socket: Socket) =>
         socket.join(channel.name),
       );
     }
@@ -458,7 +458,7 @@ export class UserService {
         );
       }
     }
-    }
+  }
 
   async leaveChannel(
     dbUser: User,
@@ -648,7 +648,7 @@ export class UserService {
         result: await this.UserInfoTransformator(target),
       };
   }
-   async matchForChatUser(match: Match[]): Promise<MatchInfoFromServer[]> {
+  async matchForChatUser(match: Match[]): Promise<MatchInfoFromServer[]> {
     const result: MatchInfoFromServer[] = [];
     if (!match) return [];
     for (let i = 0; i < Math.min(3, match.length); i++) {

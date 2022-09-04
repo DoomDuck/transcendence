@@ -11,8 +11,11 @@ const channelAction = <Key extends keyof ClientToServerEvents>(event: Key) => {
 			} else {
 				alert(feedback.errorMessage);
 				if (feedback.errorMessage == ChatError.CHANNEL_NOT_FOUND) {
-					console.log("Heyo");
-					channelConvs.update(c => { c.delete(dto.channel); return c; })
+					console.log('Heyo');
+					channelConvs.update((c) => {
+						c.delete(dto.channel);
+						return c;
+					});
 				}
 			}
 		};

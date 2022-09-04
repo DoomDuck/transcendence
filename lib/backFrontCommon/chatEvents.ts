@@ -55,6 +55,7 @@ export class ChatEvent {
   static readonly DELETE_CHANNEL = 'delete channel'
   static readonly GET_CHANNEL_INFO = 'get channel info'
   static readonly BAN_USER = 'ban user'
+  static readonly CHANNEL_DELETED_NOTIF = 'channel deleted notif'
   static readonly BLOCKED_NOTIF = 'blocked notif'
   static readonly GET_BANNED_IN_CHANNEL = "get banned in channel"
   static readonly UNBLOCK_USER = 'unblock user'
@@ -967,6 +968,7 @@ export interface ServerToClientEvents {
   [ChatEvent.BANNED_NOTIF]: (dto: BanUserFromServer) => void;
   [ChatEvent.BLOCKED_NOTIF]: (dto: BlockUserFromServer) => void;
   [ChatEvent.MUTED_NOTIF]: (dto: MuteUserFromServer) => void;
+  [ChatEvent.CHANNEL_DELETED_NOTIF]: (dto: ChannelDeletedFromServer) => void;
 
   // [ChatEvent.FRIEND_INVITE]: (dto: FriendInviteFromServer) => void;
 }

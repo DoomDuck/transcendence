@@ -17,7 +17,7 @@
 <TotpSetup bind:show={showTotpSetup} />
 
 <style>
-	button{
+	button {
 		margin: 6px;
 	}
 </style>

@@ -87,14 +87,14 @@ export class AppGateway
 
     // DEBUG
     // socket.onAny((event: string, ...args: any[]) => {
-      // // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
-      // console.log(
-        // `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
-      // );
+    // // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
+    // console.log(
+    // `[RECEIVED] event: '${event}' | args: ${JSON.stringify(args)}`,
+    // );
     // });
     // socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-      // // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
-      // console.log(`[SENT] event '${event}' with args: ${JSON.stringify(args)}`);
+    // // if (Object.getOwnPropertyNames(GameEvent).includes(event)) return;
+    // console.log(`[SENT] event '${event}' with args: ${JSON.stringify(args)}`);
     // });
   }
 
@@ -355,7 +355,6 @@ export class AppGateway
     socket: Socket,
     chatInfo: GetChannelInfoToServer,
   ): Promise<RequestFeedbackDto<ChannelInfo>> {
-   
     return await this.chatService.handleGetChannelInfo(socket, chatInfo);
   }
 }

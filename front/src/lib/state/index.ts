@@ -35,7 +35,7 @@ import {
 	ChannelCategory,
 	UnbanUserToServer,
 	LeaderboardItemDto,
-    ChatError
+	ChatError
 } from 'backFrontCommon/chatEvents';
 import type { FeedbackCallback } from 'backFrontCommon/chatEvents';
 import { MyInfo, UserInfo } from 'backFrontCommon/chatEvents';
@@ -158,14 +158,14 @@ function setupHooks(socket: Socket) {
 	window.addEventListener('keydown', closeLastModalListener);
 
 	// DEBUG
-	socket.onAny((event: string, ...args: any[]) => {
-		if (Object.getOwnPropertyNames(event).includes(event)) return;
-		console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
-	});
-	socket.prependAnyOutgoing((event: string, ...args: any[]) => {
-		if (Object.getOwnPropertyNames(event).includes(event)) return;
-		console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
-	});
+	// socket.onAny((event: string, ...args: any[]) => {
+	// 	if (Object.getOwnPropertyNames(event).includes(event)) return;
+	// 	console.log(`[RECEIVED] '${event}' << ${JSON.stringify(args)}`);
+	// });
+	// socket.prependAnyOutgoing((event: string, ...args: any[]) => {
+	// 	if (Object.getOwnPropertyNames(event).includes(event)) return;
+	// 	console.log(`[SENT] '${event}' >> ${JSON.stringify(args)}`);
+	// });
 }
 
 // Totp
@@ -296,16 +296,20 @@ export async function updateChannel(channel: string): Promise<ChannelInfo> {
 }
 
 export function updateAllChannels() {
-	for (const channel of knownChannels.keys())
-    updateChannel(channel);
+	for (const channel of knownChannels.keys()) updateChannel(channel);
 }
 
 function onChannelInfo(channel: string, feedback: RequestFeedbackDto<ChannelInfo>) {
 	if (!feedback.success) {
 		if (feedback.errorMessage == ChatError.CHANNEL_NOT_FOUND) {
-			channelConvs.update(c => { c.delete(channel); return c; })
+			if (knownChannels.has(channel)) {
+				knownChannels.delete(channel);
+			}
+			channelConvs.update((c) => {
+				c.delete(channel);
+				return c;
+			});
 		}
-		throw new Error(feedback.errorMessage);
 	}
 	const info = feedback.result!;
 	const entry = knownChannels.get(channel);
@@ -324,9 +328,7 @@ export function updateAllStores() {
 	if (loggedIn()) {
 		updateMyself();
 		updateAllUsers();
-		try {
-			updateAllChannels();
-		} catch (e) {}
+		updateAllChannels();
 	}
 }
 
